@@ -182,10 +182,21 @@
                                                                         picture = lib.mkOption { type = lib.types.path  ; } ;
                                                                     } ;
                                                                 wifi =
-                                                                    {
-                                                                        ssid = lib.mkOption { type = lib.types.str ; } ;
-                                                                        psk = lib.mkOption { type = lib.types.str ; } ;
-                                                                    } ;
+                                                                    lib.mkOption
+                                                                        {
+                                                                            type =
+                                                                                let
+                                                                                    credentials =
+                                                                                        lib.types.submodule
+                                                                                            {
+                                                                                                options =
+                                                                                                    {
+                                                                                                        ssid = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        psk = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                    } ;
+                                                                                            } ;
+                                                                                    in lib.types.listOf credentials ;
+                                                                        } ;
                                                              } ;
                                                     } ;
                                     } ;
