@@ -173,15 +173,6 @@
                                                         personal =
                                                             {
                                                                 repository = lib.mkOption { default = "repository.git" ; type = lib.types.str ; } ;
-                                                                services =
-                                                                    {
-                                                                        repository =
-                                                                            {
-                                                                                enable = lib.mkEnableOption { } ;
-                                                                                name = lib.mkOption { default = "repository" ; type = lib.types.str ; } ;
-                                                                            } ;
-                                                                    } ;
-                                                                sudo = lib.mkOption { default = "/run/wrappers/bin/sudo" ; type = lib.types.str ; } ;
                                                                 user =
                                                                     {
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
@@ -198,21 +189,45 @@
                                                              } ;
                                                     } ;
                                     } ;
-                            pkgs = import nixpkgs { system = system ; } ;
                             in
                                 {
                                     checks =
                                         {
                                             simple =
-                                                pkgs.stdenv.mkDerivation
-                                                    {
-                                                        name = "checks" ;
-                                                        src = ./. ;
-                                                        buildCommand =
-                                                            ''
-                                                                ${ pkgs.coreutils }/bin/mkdir $out
-                                                            '' ;
-                                                    } ;
+                                                let
+                                                    pkgs = import nixpkgs { system = system ; } ;
+                                                    in
+                                                        pkgs.nixosTest
+                                                            {
+                                                                name = "simple" ;
+                                                                skipTypeCheck = true ;
+                                                                nodes =
+                                                                    {
+                                                                        machine =
+                                                                            { config , ... } :
+                                                                                {
+                                                                                    config =
+                                                                                        {
+                                                                                            personal =
+                                                                                                {
+                                                                                                    user =
+                                                                                                        {
+                                                                                                            description = "Frederick G. Brown" ;
+                                                                                                            name = "brown" ;
+                                                                                                            password = "6d180183-dab9-4f04-9f40-dd8ce6d48c4e" ;
+                                                                                                        } ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                    imports = [ lib ] ;
+                                                                                } ;
+                                                                    } ;
+                                                                testScript =
+                                                                    ''
+                                                                        machine.start() ;
+                                                                        machine.wait_for_unit("multi-user.target");
+
+                                                                    '' ;
+                                                            } ;
                                         } ;
                                     lib = lib ;
                                 } ;
