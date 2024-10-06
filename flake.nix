@@ -66,7 +66,7 @@
                                                             } ;
                                                         programs =
                                                             {
-                                                                bash = { interactiveShellInit = "" ; } ;
+                                                                bash.interactiveShellInit = "" ;
                                                                 dconf.enable = true;
                                                             } ;
                                                         security =
