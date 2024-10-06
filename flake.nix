@@ -208,6 +208,7 @@
                                                                                 {
                                                                                     config =
                                                                                         {
+                                                                                            boot.kernelModules = [ "mac80211_hwsim" ] ;
                                                                                             personal =
                                                                                                 {
                                                                                                     user =
@@ -226,6 +227,7 @@
                                                                         machine.start() ;
                                                                         machine.wait_for_unit("multi-user.target");
                                                                         machine.succeed("su --login brown -c 'whoami'");
+                                                                        machine.succeed("ip link | grep -E 'wlan|wlp|wl'");
                                                                     '' ;
                                                             } ;
                                         } ;
