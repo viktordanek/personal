@@ -52,13 +52,7 @@
                                                         networking.wireless =
                                                             {
                                                                 enable = true ;
-                                                                networks =
-                                                                    {
-                                                                        ${ config.personal.wifi.ssid } =
-                                                                            {
-                                                                                psk = config.personal.wifi.psk ;
-                                                                            } ;
-                                                                    } ;
+                                                                networks = config.personal.wifi ;
                                                             } ;
                                                         nix =
                                                             {
