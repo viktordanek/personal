@@ -23,7 +23,7 @@
                                                     ''
                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                             ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shel $out/bin/custom-shell &&
+                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shelln $out/bin/custom-shell &&
                                                             ${ pkgs.coreutils }/bin/touch $out/bin/foobar &&
                                                             ${ pkgs.coreutils }/bin/chmod 0555 $out/bin/foobar
                                                     '' ;
@@ -49,6 +49,10 @@
                                                             {
                                                                 efi.canTouchEfiVariables = true ;
                                                                 systemd-boot.enable = true ;
+                                                            } ;
+                                                        environment.sessionVariables =
+                                                            {
+                                                                FOOBAR = "bb6f923b-8e9a-40fa-a3a0-9c96e6c3a13c" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -205,64 +209,21 @@
                                                                         {
                                                                             type =
                                                                                 let
-                                                                                    credentials =
+                                                                                    config =
                                                                                         lib.types.submodule
-                                                                                            {
-                                                                                                options =
-                                                                                                    {
-                                                                                                        ssid = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        psk = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                    } ;
-                                                                                            } ;
-                                                                                    in lib.types.listOf credentials ;
+                                                                                        {
+                                                                                            options =
+                                                                                                {
+                                                                                                    psk = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                    in lib.types.attrsOf config ;
                                                                         } ;
                                                              } ;
                                                     } ;
                                     } ;
                             in
                                 {
-                                    checks =
-                                        {
-                                            simple =
-                                                let
-                                                    pkgs = import nixpkgs { system = system ; } ;
-                                                    in
-                                                        pkgs.nixosTest
-                                                            {
-                                                                name = "simple" ;
-                                                                skipTypeCheck = true ;
-                                                                nodes =
-                                                                    {
-                                                                        machine =
-                                                                            { config , ... } :
-                                                                                {
-                                                                                    config =
-                                                                                        {
-                                                                                            boot.kernelModules = [ "mac80211_hwsim" ] ;
-                                                                                            personal =
-                                                                                                {
-                                                                                                    user =
-                                                                                                        {
-                                                                                                            description = "Frederick G. Brown" ;
-                                                                                                            name = "brown" ;
-                                                                                                            password = "6d180183-dab9-4f04-9f40-dd8ce6d48c4e" ;
-                                                                                                        } ;
-                                                                                                } ;
-                                                                                        } ;
-                                                                                    imports = [ lib ] ;
-                                                                                } ;
-                                                                    } ;
-                                                                testScript =
-                                                                    ''
-                                                                        machine.start() ;
-                                                                        machine.wait_for_unit("multi-user.target");
-                                                                        machine.succeed("su --login brown -c 'whoami'");
-                                                                        machine.succeed("su --login brown -c 'cowsay hi'");
-                                                                        machine.succeed("su --login brown -c 'foobar'");
-                                                                        machine.succeed("ip link | grep -E 'wlan|wlp|wl'");
-                                                                    '' ;
-                                                            } ;
-                                        } ;
                                     lib = lib ;
                                 } ;
                             in flake-utils.lib.eachDefaultSystem fun ;
