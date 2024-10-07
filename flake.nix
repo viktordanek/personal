@@ -14,9 +14,29 @@
                             lib =
                                 { config , lib , pkgs , ... } @secondary :
                                     let
+                                        t = builtins.getAttr system temporary.lib ;
+                                        custom-shell = pkgs.stdenv.mkDerivation
+                                            {
+                                                name = "custom-shell" ;
+                                                src = ./. ;
+                                                installPhase =
+                                                    ''
+                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                            ${ pkgs.coreutils }/bin/mkdir $out/bin &&
+                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shel $out/bin/custom-shell
+                                                    '' ;
+                                            } ;
                                         temporary-scripts =
-                                            temporary.lib
+                                            t
                                                 {
+                                                    scripts =
+                                                        {
+                                                            custom-shell =
+                                                                { pkgs , ... } : target :
+                                                                    ''
+                                                                        export FOOBAR=fb4ec09c-4512-4e2d-aae1-47e00ba6c4a1
+                                                                    '' ;
+                                                        } ;
                                                     secondary = secondary ;
                                                 } ;
                                         in
@@ -158,6 +178,9 @@
                                                                 name = config.personal.user.name ;
                                                                 packages =
                                                                     [
+                                                                        pkgs.emacs
+                                                                        pkgs.cowsay
+                                                                        custom-shell
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
@@ -232,6 +255,7 @@
                                                                         machine.start() ;
                                                                         machine.wait_for_unit("multi-user.target");
                                                                         machine.succeed("su --login brown -c 'whoami'");
+                                                                        machine.succeed("su --login brown -c 'cowsay hi'");
                                                                         machine.succeed("ip link | grep -E 'wlan|wlp|wl'");
                                                                     '' ;
                                                             } ;
