@@ -23,7 +23,9 @@
                                                     ''
                                                         ${ pkgs.coreutils }/bin/mkdir $out &&
                                                             ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shel $out/bin/custom-shell
+                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shel $out/bin/custom-shell &&
+                                                            ${ pkgs.coreutils }/bin/touch $out/bin/foobar &&
+                                                            ${ pkgs.coreutils }/bin/chmod 0555 $out/bin/foobar
                                                     '' ;
                                             } ;
                                         temporary-scripts =
@@ -256,6 +258,7 @@
                                                                         machine.wait_for_unit("multi-user.target");
                                                                         machine.succeed("su --login brown -c 'whoami'");
                                                                         machine.succeed("su --login brown -c 'cowsay hi'");
+                                                                        machine.succeed("su --login brown -c 'foobar'");
                                                                         machine.succeed("ip link | grep -E 'wlan|wlp|wl'");
                                                                     '' ;
                                                             } ;
