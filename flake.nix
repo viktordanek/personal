@@ -93,8 +93,8 @@
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
                                                                                                     # AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
-                                                                                            done 
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "THEN" } ${ environment-variable "PASS" }
+                                                                                            done
 
                                                                                     '' ;
                                                                             phonetic =
