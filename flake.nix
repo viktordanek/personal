@@ -48,7 +48,7 @@
                                                                                     ${ pkgs.git }/bin/git init &&
                                                                                     ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
                                                                                     ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
-                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key }" &&
+                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
                                                                                     ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
                                                                                     ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch }
                                                                             '' ;
