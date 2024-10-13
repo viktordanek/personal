@@ -28,6 +28,14 @@
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
                                                                     '' ;
+                                                            gnupg =
+                                                                { config , pkgs , ... } : target :
+                                                                    ''
+                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                            export GNUPGHOME=${ environment-variable target } &&
+                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
+                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust }
+                                                                    '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
                                                                     ''
@@ -37,6 +45,7 @@
                                                     temporary =
                                                         {
                                                             foobar = scripts : { init = scripts.foobar ; } ;
+                                                            gnupg = scripts : { init = scripts.gnupg ; } ;
                                                         } ;
                                                 } ;
                                         in
@@ -192,6 +201,23 @@
                                                     {
                                                         personal =
                                                             {
+                                                                gnupg =
+                                                                    {
+                                                                        gpg =
+                                                                            {
+                                                                                secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                            } ;
+                                                                        gpg2 =
+                                                                            {
+                                                                                secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                            } ;
+                                                                    } ;
+                                                                pass =
+                                                                    {
+
+                                                                    } ;
                                                                 repository = lib.mkOption { default = "repository.git" ; type = lib.types.str ; } ;
                                                                 user =
                                                                     {
