@@ -94,8 +94,11 @@
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
                                                                                                     AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
-                                                                                            done
+                                                                                                    if [ ${ environment-variable "AGE" } -gt ${ environment-variable "THRESHOLD" } ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
+                                                                                                    fi
+                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sorted | ${ pkgs.coreutils }/bin/cut --delimter " " --fields 2
 
                                                                                     '' ;
                                                                             phonetic =
