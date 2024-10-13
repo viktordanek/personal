@@ -17,10 +17,12 @@
                             lib =
                                 { config , lib , pkgs , ... } @secondary :
                                     let
+                                        out = "b1b107fe02af5425cf0f82c5552b73ac25904368f3b6454ebff1f815597b2281d0fd55a11f0a8d87e4615c62146f67c23b70e4d0b7a5a52d3a7b3267bd3597da" ;
                                         temporary = builtins.getAttr system temporary-lib.lib ;
                                         resources =
                                             temporary
                                                 {
+                                                    out = out ;
                                                     scripts =
                                                         {
                                                             init =
@@ -50,9 +52,24 @@
                                                                                     ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
                                                                                     ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
                                                                                     ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
-                                                                                    ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch } &&
+                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
+                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.pass.branch } &&
                                                                                     ${ pkgs.git }/bin/git checkout ${ config.personal.pass.branch }
                                                                             '' ;
+                                                                } ;
+                                                            util =
+                                                                {
+                                                                    git =
+                                                                        {
+                                                                            post-commit =
+                                                                                { pkgs , ... } : target :
+                                                                                    ''
+                                                                                        while ! ${ pkgs.git }/bin/git push origin HEAD
+                                                                                        do
+                                                                                            ${ pkgs.coreutils }/bin/sleep 1s
+                                                                                        done
+                                                                                    '' ;
+                                                                        } ;
                                                                 } ;
                                                         } ;
                                                     secondary = secondary ;
