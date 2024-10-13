@@ -94,7 +94,7 @@
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" } ) &&
                                                                                                     AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
-                                                                                            done | ${ pkgs.coreutils }/bin/sort --keys 1 --numeric
+                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sort
 
                                                                                     '' ;
                                                                             phonetic =
