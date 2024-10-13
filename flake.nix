@@ -19,6 +19,18 @@
                                     let
                                         out = "b1b107fe02af5425cf0f82c5552b73ac25904368f3b6454ebff1f815597b2281d0fd55a11f0a8d87e4615c62146f67c23b70e4d0b7a5a52d3a7b3267bd3597da" ;
                                         temporary = builtins.getAttr system temporary-lib.lib ;
+                                        password-store-extensions-dir =
+                                            pkgs :
+                                                pkgs.stdenv.mkDerivation
+                                                    {
+                                                        name = "password-store-extensions-dir" ;
+                                                        src = ./. ;
+                                                        installPhase =
+                                                            ''
+                                                                ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ resources }/scripts/util/pass/expiry $out/pass-expiry.bash
+                                                            '' ;
+                                                    } ;
                                         resources =
                                             temporary
                                                 {
@@ -318,17 +330,6 @@
                                                              } ;
                                                     } ;
                                     } ;
-                            password-store-extensions-dir =
-                                pkgs :
-                                    pkgs.stdenv.mkDerivation
-                                        {
-                                            name = "password-strore-extensions-dir" ;
-                                            src = ./. ;
-                                            installPhase =
-                                                ''
-                                                    ${ pkgs.coreutils }/bin/mkdir $out
-                                                '' ;
-                                        } ;
                             in
                                 {
                                     lib = lib ;
