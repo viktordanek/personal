@@ -86,11 +86,11 @@
                                                                     pass =
                                                                         {
                                                                             expiry =
-                                                                                { pkgs , ... } : target :
+                                                                                { config , pkgs , ... } : target :
                                                                                     ''
-                                                                                        THRESHOLD=${ environment-variable 1 } &&
+                                                                                        THRESHOLD=${ environment-variable "1:${ builtins.toString config.personal.pass.threshold }" } &&
                                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$##" | while read PASS
+                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | ${ pkgs.gnugrep }/bin/grep --invert "/\$" | ${ pkgs.gnugrep }/bin/grep --invert "^.*\$" | ${ pkgs.gnused }/bin/sed "s#\.gpg\$##" | while read PASS
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
                                                                                                     AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
@@ -302,6 +302,7 @@
                                                                     {
                                                                         branch = lib.mkOption { type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { type = lib.types.str ; } ;
+                                                                        threshold = lib.mkOption { type = lib.types.int ; default = 60 * 60 * 24 * 365 ; } ;
                                                                     } ;
                                                                 repository = lib.mkOption { default = "repository.git" ; type = lib.types.str ; } ;
                                                                 user =
