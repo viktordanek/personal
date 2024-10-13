@@ -28,7 +28,7 @@
                                                         installPhase =
                                                             ''
                                                                 ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ resources }/scripts/util/pass/expiry $out/pass-expiry.bash
+                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ resources }/scripts/util/pass/expiry $out/expiry.bash
                                                             '' ;
                                                     } ;
                                         resources =
@@ -89,7 +89,7 @@
                                                                                 { pkgs , ... } : target :
                                                                                     ''
                                                                                         NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$#/" | while read PASS
+                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$##" | while read PASS
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" } ) &&
                                                                                                     AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
