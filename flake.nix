@@ -36,9 +36,10 @@
                                                 {
                                                     scripts =
                                                         {
-                                                            custom-shell =
+                                                            foobar =
                                                                 { pkgs , ... } : target :
                                                                     ''
+                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
                                                                     '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
@@ -48,7 +49,7 @@
                                                     secondary = secondary ;
                                                     temporary =
                                                         {
-                                                            custom-shell = scripts : { init = scripts.custom-shell ; } ;
+                                                            foobar = scripts : { init = scripts.foobar ; } ;
                                                         } ;
                                                 } ;
                                         in
@@ -62,7 +63,7 @@
                                                             } ;
                                                         environment.sessionVariables =
                                                             {
-                                                                FOOBAR = "$( ${ temporary-scripts }/temporary/custom-shell )" ;
+                                                                FOOBAR = "$( ${ temporary-scripts }/temporary/foobar )" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
