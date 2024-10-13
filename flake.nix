@@ -101,10 +101,6 @@
                                                                                             done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sort | ${ pkgs.coreutils }/bin/cut --delimiter " " --fields 2
 
                                                                                     '' ;
-                                                                            phonetic =
-                                                                                { pkgs , ... } : target :
-                                                                                    ''
-                                                                                    '' ;
                                                                         } ;
                                                                 } ;
                                                         } ;
