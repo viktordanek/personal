@@ -88,7 +88,7 @@
                                                                             expiry =
                                                                                 { config , pkgs , ... } : target :
                                                                                     ''
-                                                                                        THRESHOLD=${ environment-variable "1:${ builtins.toString config.personal.pass.threshold }" } &&
+                                                                                        THRESHOLD=${ builtins.toString config.personal.pass.threshold } &&
                                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                                             ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | ${ pkgs.gnugrep }/bin/grep --invert "/\$" | ${ pkgs.gnugrep }/bin/grep --invert "^[.].*\$" | ${ pkgs.gnused }/bin/sed "s#\.gpg\$##" | while read PASS
                                                                                             do
@@ -98,7 +98,7 @@
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
                                                                                                     fi
-                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sorted | ${ pkgs.coreutils }/bin/cut --delimter " " --fields 2
+                                                                                            done
 
                                                                                     '' ;
                                                                             phonetic =
