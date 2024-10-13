@@ -72,6 +72,7 @@
                                                             {
                                                                 FOOBAR = "$( ${ resources }/temporary/foobar )" ;
                                                                 GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
+                                                                PASSWORD_STORE_DIR = "$( ${ resources }/temporary/pass )" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
