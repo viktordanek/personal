@@ -36,6 +36,7 @@
                                                                         { config , pkgs , ... } : target :
                                                                             ''
                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                    ${ pkgs.coreutils }/bin/chmod 0700 ${ environment-variable target }
                                                                                     export GNUPGHOME=${ environment-variable target } &&
                                                                                     ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
                                                                                     ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust } &&
