@@ -71,6 +71,10 @@
                                                                                         done
                                                                                     '' ;
                                                                         } ;
+                                                                    pass =
+                                                                        {
+
+                                                                        } ;
                                                                 } ;
                                                         } ;
                                                     secondary = secondary ;
@@ -95,6 +99,10 @@
                                                                 FOOBAR = "$( ${ resources }/temporary/foobar )" ;
                                                                 GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
                                                                 PASSWORD_STORE_DIR = "$( ${ resources }/temporary/pass )" ;
+                                                                PASSWORD_STORE_GENERATED_LENGTH="$( ${ pkgs.coreutils }/bin/date +%y )" ;
+                                                                PASSWORD_STORE_CHARACTER_SET="abCD23" ;
+                                                                PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS = "PTxy45-=" ;
+                                                                PASSWORD_STORE_ENABLE_EXTENSIONS = "true" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
