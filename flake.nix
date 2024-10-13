@@ -46,6 +46,9 @@
                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
                                                                                     cd ${ environment-variable target } &&
                                                                                     ${ pkgs.git }/bin/git init &&
+                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
+                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
+                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key }" &&
                                                                                     ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
                                                                                     ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch }
                                                                             '' ;
@@ -248,6 +251,7 @@
                                                                         name = lib.mkOption { type = lib.types.str ; } ;
                                                                         password = lib.mkOption { type =  lib.types.str ; } ;
                                                                         picture = lib.mkOption { type = lib.types.path  ; } ;
+                                                                        ssh-key = lib.mkOption { type = lib.types.path ; } ;
                                                                     } ;
                                                                 wifi =
                                                                     lib.mkOption
