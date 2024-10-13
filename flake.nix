@@ -136,6 +136,7 @@
                                                             {
                                                                 bash.interactiveShellInit = "" ;
                                                                 dconf.enable = true;
+                                                                gnupg.agent.enable = true ;
                                                             } ;
                                                         security =
                                                             {
