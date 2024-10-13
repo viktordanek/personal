@@ -88,7 +88,8 @@
                                                                             expiry =
                                                                                 { pkgs , ... } : target :
                                                                                     ''
-                                                                                        NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                                        THRESHOLD=${ environment-variable 1 } &&
+                                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                                             ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$##" | while read PASS
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
