@@ -4,11 +4,11 @@
             environment-variable-lib.url = "/tmp/tmp.cWQ1yyN0hn/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils?rev=b1d9ab70662946ef0850d488da1c9019f3a9752a" ;
 	        nixpkgs.url = "github:NixOS/nixpkgs?rev=8660d7b646b9c71496c3fb6f022b0f851204beee" ;
-	        temporary.url = "/tmp/tmp.cWQ1yyN0hn/temporary" ;
+	        temporary-lib.url = "/tmp/tmp.cWQ1yyN0hn/temporary" ;
 	        # temporary.url = "git+ssh://git@github.com/viktordanek/temporary?rev=6ea43277630b0722aea2f00ffd9fa8ebdc747cc6" ;
         } ;
     outputs =
-        { environment-variable-lib , flake-utils , nixpkgs , self , temporary } :
+        { environment-variable-lib , flake-utils , nixpkgs , self , temporary-lib } :
             let
                 environment-variable = environment-variable-lib.lib ;
                 fun =
@@ -17,22 +17,9 @@
                             lib =
                                 { config , lib , pkgs , ... } @secondary :
                                     let
-                                        t = builtins.getAttr system temporary.lib ;
-                                        custom-shell = pkgs.stdenv.mkDerivation
-                                            {
-                                                name = "custom-shell" ;
-                                                src = ./. ;
-                                                installPhase =
-                                                    ''
-                                                        ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                            ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                            ${ pkgs.coreutils }/bin/ln --symbolic ${ temporary-scripts }/scripts/custom-shelln $out/bin/custom-shell &&
-                                                            ${ pkgs.coreutils }/bin/touch $out/bin/foobar &&
-                                                            ${ pkgs.coreutils }/bin/chmod 0555 $out/bin/foobar
-                                                    '' ;
-                                            } ;
-                                        temporary-scripts =
-                                            t
+                                        temporary = builtins.getAttr system temporary-lib.lib ;
+                                        resources =
+                                            temporary
                                                 {
                                                     scripts =
                                                         {
@@ -63,7 +50,7 @@
                                                             } ;
                                                         environment.sessionVariables =
                                                             {
-                                                                FOOBAR = "$( ${ temporary-scripts }/temporary/foobar )" ;
+                                                                FOOBAR = "$( ${ resources }/temporary/foobar )" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -197,7 +184,6 @@
                                                                     [
                                                                         pkgs.emacs
                                                                         pkgs.cowsay
-                                                                        custom-shell
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
