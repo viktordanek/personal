@@ -1,15 +1,16 @@
 {
     inputs =
         {
-            environment-variable.url = "/tmp/tmp.cWQ1yyN0hn/environment-variable" ;
+            environment-variable-lib.url = "/tmp/tmp.cWQ1yyN0hn/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils?rev=b1d9ab70662946ef0850d488da1c9019f3a9752a" ;
 	        nixpkgs.url = "github:NixOS/nixpkgs?rev=8660d7b646b9c71496c3fb6f022b0f851204beee" ;
 	        temporary.url = "/tmp/tmp.cWQ1yyN0hn/temporary" ;
 	        # temporary.url = "git+ssh://git@github.com/viktordanek/temporary?rev=6ea43277630b0722aea2f00ffd9fa8ebdc747cc6" ;
         } ;
     outputs =
-        { environment-variable , flake-utils , nixpkgs , self , temporary } :
+        { environment-variable-lib , flake-utils , nixpkgs , self , temporary } :
             let
+                environment-variable = environment-variable-lib.lib ;
                 fun =
                     system :
                         let
