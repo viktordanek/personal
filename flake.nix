@@ -39,6 +39,10 @@
                                                                     ''
                                                                         export FOOBAR=fb4ec09c-4512-4e2d-aae1-47e00ba6c4a1
                                                                     '' ;
+                                                            virtual-machine =
+                                                                { pkgs , ... } : target :
+                                                                    ''
+                                                                    '' ;
                                                         } ;
                                                     secondary = secondary ;
                                                 } ;
