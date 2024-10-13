@@ -92,9 +92,9 @@
                                                                                             ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$##" | while read PASS
                                                                                             do
                                                                                                 THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
-                                                                                                    AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
+                                                                                                    # AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
-                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sort
+                                                                                            done 
 
                                                                                     '' ;
                                                                             phonetic =
