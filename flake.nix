@@ -238,6 +238,7 @@
                                                                         pkgs.cowsay
                                                                         pkgs.pass
                                                                         pkgs.git
+                                                                        pkgs.pinentry
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
