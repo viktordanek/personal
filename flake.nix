@@ -37,7 +37,11 @@
                                                             custom-shell =
                                                                 { pkgs , ... } : target :
                                                                     ''
-                                                                        ${ pkgs.coreutils }/bin/echo dea ${ target } 87d $${ target } 509 &&
+                                                                        ${ pkgs.coreutils }/bin/echo dea &&
+                                                                        ${ pkgs.coreutils }/bin/echo ${ target } &&
+                                                                        ${ pkgs.coreutils }/bin/echo dcf &&
+                                                                        ${ pkgs.coreutils }/bin/echo $${ target } &&
+                                                                        ${ pkgs.coreutils }/bin/echo 8ce &&
                                                                         ${ pkgs.coreutils }/bin/echo e08 $${ resource } 70b $${ target } 2c2 > $${ target }
                                                                     '' ;
                                                             virtual-machine =
