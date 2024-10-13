@@ -34,7 +34,9 @@
                                                                         ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
                                                                             export GNUPGHOME=${ environment-variable target } &&
                                                                             ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
-                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust }
+                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust } &&
+                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg2.secret-keys } &&
+                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg2.ownertrust }
                                                                     '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
