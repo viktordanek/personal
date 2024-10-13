@@ -42,7 +42,7 @@
                                                                         ${ pkgs.coreutils }/bin/echo dcf &&
                                                                         ${ pkgs.coreutils }/bin/echo $${ target } &&
                                                                         ${ pkgs.coreutils }/bin/echo 8ce &&
-                                                                        ${ pkgs.coreutils }/bin/echo e08 $${ resource } 70b $${ target } 2c2 > $${ target }
+                                                                        ${ pkgs.coreutils }/bin/echo e08 $${ resource } 70b $${ target } 2c2 > ${ builtins.concatStringsSep "" [ "$" "{" target "}" ] }
                                                                     '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
