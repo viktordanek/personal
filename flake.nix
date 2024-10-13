@@ -73,7 +73,22 @@
                                                                         } ;
                                                                     pass =
                                                                         {
+                                                                            expiry =
+                                                                                { pkgs , ... } : target :
+                                                                                    ''
+                                                                                        NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | grep --invert "/\$" | grep --invert "^.gpg-id\$" | sed "s#\.gpg\$#/" | while read PASS
+                                                                                            do
+                                                                                                THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" } ) &&
+                                                                                                    AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
+                                                                                            done | ${ pkgs.coreutils }/bin/sort --keys 1 --numeric
 
+                                                                                    '' ;
+                                                                            phonetic =
+                                                                                { pkgs , ... } : target :
+                                                                                    ''
+                                                                                    '' ;
                                                                         } ;
                                                                 } ;
                                                         } ;
@@ -103,6 +118,7 @@
                                                                 PASSWORD_STORE_CHARACTER_SET="abCD23" ;
                                                                 PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS = "PTxy45-=" ;
                                                                 PASSWORD_STORE_ENABLE_EXTENSIONS = "true" ;
+                                                                PASSWORD_STORE_EXTENSIONS_DIR = "${ password-store-extensions-dir pkgs }" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -302,6 +318,17 @@
                                                              } ;
                                                     } ;
                                     } ;
+                            password-store-extensions-dir =
+                                pkgs :
+                                    pkgs.stdenv.mkDerivation
+                                        {
+                                            name = "password-strore-extensions-dir" ;
+                                            src = ./. ;
+                                            installPhase =
+                                                ''
+                                                    ${ pkgs.coreutils }/bin/mkdir $out
+                                                '' ;
+                                        } ;
                             in
                                 {
                                     lib = lib ;
