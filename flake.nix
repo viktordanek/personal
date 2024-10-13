@@ -50,7 +50,8 @@
                                                                                     ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
                                                                                     ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
                                                                                     ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
-                                                                                    ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch }
+                                                                                    ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch } &&
+                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.pass.branch }
                                                                             '' ;
                                                                 } ;
                                                         } ;
