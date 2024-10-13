@@ -217,6 +217,7 @@
                                                                     [
                                                                         pkgs.emacs
                                                                         pkgs.cowsay
+                                                                        pkgs.pass
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
