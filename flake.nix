@@ -236,6 +236,7 @@
                                                                         pkgs.emacs
                                                                         pkgs.cowsay
                                                                         pkgs.pass
+                                                                        pkgs.git
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
