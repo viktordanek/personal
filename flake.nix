@@ -37,7 +37,7 @@
                                                             custom-shell =
                                                                 { pkgs , ... } : target :
                                                                     ''
-                                                                        export FOOBAR=fb4ec09c-4512-4e2d-aae1-47e00ba6c4a1
+                                                                        ${ pkgs.coreutils }/bin/mkdir $${ target }
                                                                     '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
@@ -45,6 +45,10 @@
                                                                     '' ;
                                                         } ;
                                                     secondary = secondary ;
+                                                    temporary =
+                                                        {
+                                                            custom-shell = scripts : { init = scripts.custom-shell ; } ;
+                                                        } ;
                                                 } ;
                                         in
                                             {
@@ -57,7 +61,7 @@
                                                             } ;
                                                         environment.sessionVariables =
                                                             {
-                                                                FOOBAR = "bb6f923b-8e9a-40fa-a3a0-9c96e6c3a13c" ;
+                                                                FOOBAR = "$( ${ temporary-scripts }/temporary/custom-shell )" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
