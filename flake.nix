@@ -23,31 +23,40 @@
                                                 {
                                                     scripts =
                                                         {
-                                                            foobar =
-                                                                { pkgs , ... } : target :
-                                                                    ''
-                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
-                                                                    '' ;
-                                                            gnupg =
-                                                                { config , pkgs , ... } : target :
-                                                                    ''
-                                                                        ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                            export GNUPGHOME=${ environment-variable target } &&
-                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
-                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust } &&
-                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg2.secret-keys } &&
-                                                                            ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg2.ownertrust }
-                                                                    '' ;
-                                                            virtual-machine =
-                                                                { pkgs , ... } : target :
-                                                                    ''
-                                                                    '' ;
+                                                            init =
+                                                                {
+                                                                    foobar =
+                                                                        { pkgs , ... } : target :
+                                                                            ''
+                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
+                                                                            '' ;
+                                                                    gnupg =
+                                                                        { config , pkgs , ... } : target :
+                                                                            ''
+                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                    export GNUPGHOME=${ environment-variable target } &&
+                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
+                                                                                    ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust } &&
+                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg2.secret-keys } &&
+                                                                                    ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg2.ownertrust }
+                                                                            '' ;
+                                                                    pass =
+                                                                        { config , pkgs , ... } : target :
+                                                                            ''
+                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                    cd ${ environment-variable target } &&
+                                                                                    ${ pkgs.git }/bin/git init &&
+                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
+                                                                                    ${ pkgs.git }/bin/git fetch ${ config.personal.pass.branch }
+                                                                            '' ;
+                                                                } ;
                                                         } ;
                                                     secondary = secondary ;
                                                     temporary =
                                                         {
-                                                            foobar = scripts : { init = scripts.foobar ; } ;
-                                                            gnupg = scripts : { init = scripts.gnupg ; } ;
+                                                            foobar = scripts : { init = scripts.init.foobar ; } ;
+                                                            gnupg = scripts : { init = scripts.init.gnupg ; } ;
+                                                            pass = scripts : { init = scripts.init.pass ; } ;
                                                         } ;
                                                 } ;
                                         in
@@ -62,6 +71,7 @@
                                                         environment.sessionVariables =
                                                             {
                                                                 FOOBAR = "$( ${ resources }/temporary/foobar )" ;
+                                                                GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -183,6 +193,14 @@
                                                             } ;
                                                         sound.enable = true ;
                                                         system.stateVersion = "23.05" ;
+                                                        systemd.user.services.resource =
+                                                            {
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart = "${ resources }/service" ;
+                                                                    } ;
+                                                                wantedBy = [ "default.target" ] ;
+                                                            } ;
                                                         time.timeZone = "America/New_York" ;
                                                         users.users.user =
                                                             {
@@ -218,7 +236,8 @@
                                                                     } ;
                                                                 pass =
                                                                     {
-
+                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
                                                                     } ;
                                                                 repository = lib.mkOption { default = "repository.git" ; type = lib.types.str ; } ;
                                                                 user =
