@@ -98,7 +98,7 @@
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
                                                                                                     fi
-                                                                                            done
+                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sort | ${ pkgs.coreutils }/bin/cut --delimiter " " --fields 2
 
                                                                                     '' ;
                                                                             phonetic =
