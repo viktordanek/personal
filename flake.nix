@@ -38,7 +38,7 @@
                                                                 { pkgs , ... } : target :
                                                                     ''
                                                                         ${ pkgs.coreutils }/bin/echo dea ${ target } 87d $${ target } 509 &&
-                                                                        ${ pkgs.coreutils }/bin/echo e089cfbe-cbf0-4eac-a1ff-86804d5ebd4c $${ target } 2c2e8a5a-d0f5-4674-bf25-aa0b06aed951 > $${ target }
+                                                                        ${ pkgs.coreutils }/bin/echo e08 $${ resource } 70b $${ target } 2c2 > $${ target }
                                                                     '' ;
                                                             virtual-machine =
                                                                 { pkgs , ... } : target :
