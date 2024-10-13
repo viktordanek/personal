@@ -37,7 +37,7 @@
                                                             custom-shell =
                                                                 { pkgs , ... } : target :
                                                                     ''
-                                                                        ${ pkgs.coreutils }/bin/echo dea7a085-29b9-4611-863d-23d594838ffb ${ target } 87ddf140-93ce-4b26-a382-b842cec1580a &&
+                                                                        ${ pkgs.coreutils }/bin/echo dea7a085-29b9-4611-863d-23d594838ffb ${ target } 87ddf140-93ce-4b26-a382-b842cec1580a $${ target } 50933dcf-f1a8-4b0b-b93e-4307e110dc14 &&
                                                                         ${ pkgs.coreutils }/bin/echo e089cfbe-cbf0-4eac-a1ff-86804d5ebd4c $${ target } 2c2e8a5a-d0f5-4674-bf25-aa0b06aed951 > $${ target }
                                                                     '' ;
                                                             virtual-machine =
