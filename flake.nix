@@ -89,7 +89,7 @@
                                                                                 { config , pkgs , ... } : target :
                                                                                     ''
                                                                                         ARG1=${ environment-variable 1 } &&
-                                                                                            THRESHOLD=${ environment-variable "ARG1:${ builtins.toString config.personal.pass.threshold }" } &&
+                                                                                            THRESHOLD=${ environment-variable "ARG1:=${ builtins.toString config.personal.pass.threshold }" } &&
                                                                                             NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
                                                                                             ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | ${ pkgs.gnugrep }/bin/grep ".gpg\$" | ${ pkgs.gnugrep }/bin/grep --invert "/\$" | ${ pkgs.gnugrep }/bin/grep --invert "^[.].*\$" | ${ pkgs.gnused }/bin/sed "s#\.gpg\$##" | while read PASS
                                                                                             do
