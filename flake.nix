@@ -56,7 +56,7 @@
                                                                                     ${ pkgs.git }/bin/git remote add origin ${ config.personal.gnucash.remote } &&
                                                                                     ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
                                                                                     ${ pkgs.git }/bin/git fetch origin ${ config.personal.gnucash.branch } &&
-                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.pass.branch }
+                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.gnucash.branch }
                                                                             '' ;
                                                                     gnupg =
                                                                         { config , pkgs , ... } : target :
