@@ -44,6 +44,20 @@
                                                                             ''
                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
                                                                             '' ;
+                                                                    gnucash =
+                                                                        { config , pkgs , ... } : target :
+                                                                            ''
+                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                    cd ${ environment-variable target } &&
+                                                                                    ${ pkgs.git }/bin/git init &&
+                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
+                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
+                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
+                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.gnucash.remote } &&
+                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
+                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.gnucash.branch } &&
+                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.pass.branch }
+                                                                            '' ;
                                                                     gnupg =
                                                                         { config , pkgs , ... } : target :
                                                                             ''
@@ -110,6 +124,7 @@
                                                         {
                                                             foobar = scripts : { init = scripts.init.foobar ; } ;
                                                             gnupg = scripts : { init = scripts.init.gnupg ; } ;
+                                                            gnucash = scripts : { init = scripts.init.gnucash ; } ;
                                                             pass = scripts : { init = scripts.init.pass ; } ;
                                                         } ;
                                                 } ;
@@ -285,6 +300,12 @@
                                                     {
                                                         personal =
                                                             {
+                                                                gnucash =
+                                                                    {
+                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
+                                                                        name = lib.mkOption { type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
+                                                                    } ;
                                                                 gnupg =
                                                                     {
                                                                         gpg =
