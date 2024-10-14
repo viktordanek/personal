@@ -140,6 +140,10 @@
                                                         environment.sessionVariables =
                                                             {
                                                                 FOOBAR = "$( ${ resources }/temporary/foobar )" ;
+                                                                # This is not doing exactly what I want.
+                                                                # I want it to provide the home variable.
+                                                                # But it does not.
+                                                                # So we must do `gnucash ${ environment-variable "GNCHOME" }/gnucash.xml.gnucash`
                                                                 GNCHOME="$( ${ resources }/temporary/gnucash )" ;
                                                                 GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
                                                                 PASSWORD_STORE_DIR = "$( ${ resources }/temporary/pass )" ;
