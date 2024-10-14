@@ -289,6 +289,7 @@
                                                                     [
                                                                         pkgs.emacs
                                                                         pkgs.cowsay
+                                                                        pkgs.gnucash
                                                                         pkgs.pass
                                                                         pkgs.git
                                                                         pkgs.pinentry
