@@ -219,6 +219,10 @@
                                                                         enable = true ;
                                                                         settings.X11Forwarding = true ;
                                                                     } ;
+                                                                paperless =
+                                                                    {
+                                                                        enable = true ;
+                                                                    } ;
                                                                 pcscd.enable = true ;
                                                                 pipewire =
                                                                     {
@@ -294,6 +298,7 @@
                                                                     [
                                                                         pkgs.emacs
                                                                         pkgs.cowsay
+                                                                        pkgs.firefox
                                                                         pkgs.gnucash
                                                                         pkgs.jrnl
                                                                         pkgs.paperless-ngx
