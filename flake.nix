@@ -140,6 +140,7 @@
                                                         environment.sessionVariables =
                                                             {
                                                                 FOOBAR = "$( ${ resources }/temporary/foobar )" ;
+                                                                GNCHOME="$( ${ resources }/temporary/gnucash )" ;
                                                                 GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
                                                                 PASSWORD_STORE_DIR = "$( ${ resources }/temporary/pass )" ;
                                                                 PASSWORD_STORE_GENERATED_LENGTH="$( ${ pkgs.coreutils }/bin/date +%y )" ;
