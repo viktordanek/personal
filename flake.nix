@@ -296,6 +296,7 @@
                                                                         pkgs.cowsay
                                                                         pkgs.gnucash
                                                                         pkgs.jrnl
+                                                                        pkgs.paperless-ngx
                                                                         pkgs.pass
                                                                         pkgs.git
                                                                         pkgs.pinentry
