@@ -2,10 +2,9 @@
     inputs =
         {
             environment-variable-lib.url = "/tmp/tmp.cWQ1yyN0hn/environment-variable" ;
-	        flake-utils.url = "github:numtide/flake-utils?rev=b1d9ab70662946ef0850d488da1c9019f3a9752a" ;
-	        nixpkgs.url = "github:NixOS/nixpkgs?rev=8660d7b646b9c71496c3fb6f022b0f851204beee" ;
-	        temporary-lib.url = "/tmp/tmp.cWQ1yyN0hn/temporary" ;
-	        # temporary.url = "git+ssh://git@github.com/viktordanek/temporary?rev=6ea43277630b0722aea2f00ffd9fa8ebdc747cc6" ;
+	        flake-utils.url = "github:numtide/flake-utils" ;
+	        nixpkgs.url = "github:NixOS/nixpkgs" ;
+	        temporary-lib.url = "github:viktordanek/temporary" ;
         } ;
     outputs =
         { environment-variable-lib , flake-utils , nixpkgs , self , temporary-lib } :
@@ -69,6 +68,20 @@
                                                                                     ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg2.secret-keys } &&
                                                                                     ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg2.ownertrust }
                                                                             '' ;
+                                                                    paperless =
+                                                                        { config , pkgs , ... } : target :
+                                                                            ''
+                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
+                                                                                    cd ${ environment-variable target } &&
+                                                                                    ${ pkgs.git }/bin/git init &&
+                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
+                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
+                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
+                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.paperless.remote } &&
+                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
+                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.paperless.branch } &&
+                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.paperless.branch }
+                                                                            '' ;
                                                                     pass =
                                                                         { config , pkgs , ... } : target :
                                                                             ''
@@ -125,6 +138,7 @@
                                                             foobar = scripts : { init = scripts.init.foobar ; } ;
                                                             gnupg = scripts : { init = scripts.init.gnupg ; } ;
                                                             gnucash = scripts : { init = scripts.init.gnucash ; } ;
+                                                            paperless = scripts : { init = scripts.init.paperless ; } ;
                                                             pass = scripts : { init = scripts.init.pass ; } ;
                                                         } ;
                                                 } ;
@@ -222,6 +236,7 @@
                                                                 paperless =
                                                                     {
                                                                         enable = true ;
+                                                                        mediaDir = "$( ${ resources }/temporary/paperless )" ;  
                                                                     } ;
                                                                 pcscd.enable = true ;
                                                                 pipewire =
@@ -331,6 +346,12 @@
                                                                                 secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                 ownertrust = lib.mkOption { type = lib.types.path ; } ;
                                                                             } ;
+                                                                    } ;
+                                                                paperless =
+                                                                    {
+                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
+                                                                        name = lib.mkOption { type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
                                                                     } ;
                                                                 pass =
                                                                     {
