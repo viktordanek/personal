@@ -161,15 +161,6 @@
                                                                 name = config.personal.user.name ;
                                                                 packages =
                                                                     [
-                                                                        pkgs.emacs
-                                                                        pkgs.cowsay
-                                                                        pkgs.firefox
-                                                                        pkgs.gnucash
-                                                                        pkgs.jrnl
-                                                                        pkgs.paperless-ngx
-                                                                        pkgs.pass
-                                                                        pkgs.git
-                                                                        pkgs.pinentry
                                                                     ] ;
                                                                 password = config.personal.user.password ;
                                                             } ;
@@ -213,11 +204,8 @@
                                                                 user =
                                                                     {
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
-                                                                        email = lib.mkOption { type = lib.types.str ; } ;
                                                                         name = lib.mkOption { type = lib.types.str ; } ;
                                                                         password = lib.mkOption { type =  lib.types.str ; } ;
-                                                                        picture = lib.mkOption { type = lib.types.path  ; } ;
-                                                                        ssh-key = lib.mkOption { type = lib.types.path ; } ;
                                                                     } ;
                                                                 wifi =
                                                                     lib.mkOption
@@ -256,8 +244,10 @@
                                                                                 {
                                                                                     user =
                                                                                         {
-                                                                                            description = "Steve T Crawford" ;
-                                                                                            name = "crawford" ;
+                                                                                            description = "Trevor C Bradford" ;
+                                                                                            email = "TrevorCBradford@armyspy.com " ;
+                                                                                            name = "trevor" ;
+                                                                                            password = "wieJeech7L" ;
                                                                                         } ;
                                                                                 } ;
                                                                         } ;
@@ -266,10 +256,11 @@
                                                                 } ;
                                                             test =
                                                                 ''
-                                                                    test ( )
+                                                                    test_user ( )
                                                                         {
-                                                                            assert_equals "Steve T Crawford" "${ module.config.users.users.user.description }" "We can set the user's full name in options." &&
-                                                                                assert_equals "crawford" "${ module.config.users.users.user.name }" "We can set the user's user name in options."
+                                                                            assert_equals "Trevor C Bradford" "${ module.config.users.users.user.description }" "We can set the user's full name in options." &&
+                                                                                assert_equals "trevor" "${ module.config.users.users.user.name }" "We can set the user's user name in options." &&
+                                                                                assert_equals "wieJeech7L" "${ module.config.users.users.user.password }" "We can set the user's password in options."
 
                                                                         }
                                                                 '' ;
