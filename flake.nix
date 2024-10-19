@@ -248,6 +248,11 @@
                                                                                             name = "trevor" ;
                                                                                             password = "wieJeech7L" ;
                                                                                         } ;
+                                                                                    wifi =
+                                                                                        {
+                                                                                            "Trevor C Bradford's WIFI SSID" = "0ac26bc8-fdad-41c1-8728-724f28533ec9" ;
+                                                                                            "GUEST WIFI SSID" = "b6fe8815-328a-41d1-93f5-e5dc759a0231" ;
+                                                                                        } ;
                                                                                 } ;
                                                                         } ;
                                                                     lib = lib ;
@@ -261,7 +266,12 @@
                                                                                 assert_equals "trevor" "${ module.config.users.users.user.name }" "We can set the user's user name in options." &&
                                                                                 assert_equals "wieJeech7L" "${ module.config.users.users.user.password }" "We can set the user's password in options."
 
-                                                                        }
+                                                                        } &&
+                                                                        test_wifi ( )
+                                                                            {
+                                                                                assert_equals "0ac26bc8-fdad-41c1-8728-724f28533ec9" "${ module.config.networking.wireless.networks."Trevor C Bradford's WIFI SSID" }" "We can set the wifi password in options." &&
+                                                                                assert_equals "b6fe8815-328a-41d1-93f5-e5dc759a0231" "${ module.config.networking.wireless.networks."GUEST WIFI SSID" }" "We can set any arbitrary number of wifi passwords in options."
+                                                                            }
                                                                 '' ;
                                                         in
                                                             ''
