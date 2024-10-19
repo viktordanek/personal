@@ -169,38 +169,6 @@
                                                     {
                                                         personal =
                                                             {
-                                                                gnucash =
-                                                                    {
-                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
-                                                                        name = lib.mkOption { type = lib.types.str ; } ;
-                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
-                                                                    } ;
-                                                                gnupg =
-                                                                    {
-                                                                        gpg =
-                                                                            {
-                                                                                secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                            } ;
-                                                                        gpg2 =
-                                                                            {
-                                                                                secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                            } ;
-                                                                    } ;
-                                                                paperless =
-                                                                    {
-                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
-                                                                        name = lib.mkOption { type = lib.types.str ; } ;
-                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
-                                                                    } ;
-                                                                pass =
-                                                                    {
-                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
-                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
-                                                                        threshold = lib.mkOption { type = lib.types.int ; default = 60 * 60 * 24 * 365 ; } ;
-                                                                    } ;
-                                                                repository = lib.mkOption { default = "repository.git" ; type = lib.types.str ; } ;
                                                                 user =
                                                                     {
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
