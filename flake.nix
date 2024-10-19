@@ -18,130 +18,6 @@
                                     let
                                         out = "b1b107fe02af5425cf0f82c5552b73ac25904368f3b6454ebff1f815597b2281d0fd55a11f0a8d87e4615c62146f67c23b70e4d0b7a5a52d3a7b3267bd3597da" ;
                                         temporary = builtins.getAttr system temporary-lib.lib ;
-                                        password-store-extensions-dir =
-                                            pkgs :
-                                                pkgs.stdenv.mkDerivation
-                                                    {
-                                                        name = "password-store-extensions-dir" ;
-                                                        src = ./. ;
-                                                        installPhase =
-                                                            ''
-                                                                ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ resources }/scripts/util/pass/expiry $out/expiry.bash
-                                                            '' ;
-                                                    } ;
-                                        resources =
-                                            temporary
-                                                {
-                                                    out = out ;
-                                                    scripts =
-                                                        {
-                                                            init =
-                                                                {
-                                                                    foobar =
-                                                                        { pkgs , ... } : target :
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target }
-                                                                            '' ;
-                                                                    gnucash =
-                                                                        { config , pkgs , ... } : target :
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                    cd ${ environment-variable target } &&
-                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
-                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
-                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
-                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.gnucash.remote } &&
-                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
-                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.gnucash.branch } &&
-                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.gnucash.branch }
-                                                                            '' ;
-                                                                    gnupg =
-                                                                        { config , pkgs , ... } : target :
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                    ${ pkgs.coreutils }/bin/chmod 0700 ${ environment-variable target }
-                                                                                    export GNUPGHOME=${ environment-variable target } &&
-                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg.secret-keys } &&
-                                                                                    ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg.ownertrust } &&
-                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --yes --import ${ config.personal.gnupg.gpg2.secret-keys } &&
-                                                                                    ${ pkgs.gnupg }/bin/gpg --import-ownertrust ${ config.personal.gnupg.gpg2.ownertrust }
-                                                                            '' ;
-                                                                    paperless =
-                                                                        { config , pkgs , ... } : target :
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                    cd ${ environment-variable target } &&
-                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
-                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
-                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
-                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.paperless.remote } &&
-                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
-                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.paperless.branch } &&
-                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.paperless.branch }
-                                                                            '' ;
-                                                                    pass =
-                                                                        { config , pkgs , ... } : target :
-                                                                            ''
-                                                                                ${ pkgs.coreutils }/bin/mkdir ${ environment-variable target } &&
-                                                                                    cd ${ environment-variable target } &&
-                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                    ${ pkgs.git }/bin/git config user.name "${ config.personal.user.description }" &&
-                                                                                    ${ pkgs.git }/bin/git config user.email "${ config.personal.user.email }" &&
-                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ config.personal.user.ssh-key } -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" &&
-                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.pass.remote } &&
-                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ environment-variable out }/scripts/util/git/post-commit .git/hooks/post-commit &&
-                                                                                    ${ pkgs.git }/bin/git fetch origin ${ config.personal.pass.branch } &&
-                                                                                    ${ pkgs.git }/bin/git checkout ${ config.personal.pass.branch }
-                                                                            '' ;
-                                                                } ;
-                                                            util =
-                                                                {
-                                                                    git =
-                                                                        {
-                                                                            post-commit =
-                                                                                { pkgs , ... } : target :
-                                                                                    ''
-                                                                                        while ! ${ pkgs.git }/bin/git push origin HEAD
-                                                                                        do
-                                                                                            ${ pkgs.coreutils }/bin/sleep 1s
-                                                                                        done
-                                                                                    '' ;
-                                                                        } ;
-                                                                    pass =
-                                                                        {
-                                                                            expiry =
-                                                                                { config , pkgs , ... } : target :
-                                                                                    ''
-                                                                                        ARG1=${ environment-variable 1 } &&
-                                                                                            THRESHOLD=${ environment-variable "ARG1:=${ builtins.toString config.personal.pass.threshold }" } &&
-                                                                                            NOW=$( ${ pkgs.coreutils }/bin/date +%s ) &&
-                                                                                            ${ pkgs.pass }/bin/pass git ls-tree -r HEAD --name-only | ${ pkgs.gnugrep }/bin/grep ".gpg\$" | ${ pkgs.gnugrep }/bin/grep --invert "/\$" | ${ pkgs.gnugrep }/bin/grep --invert "^[.].*\$" | ${ pkgs.gnused }/bin/sed "s#\.gpg\$##" | while read PASS
-                                                                                            do
-                                                                                                THEN=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ environment-variable "PASS" }.gpg ) &&
-                                                                                                    AGE=$(( ${ environment-variable "NOW" } - ${ environment-variable "THEN" } )) &&
-                                                                                                    if [ ${ environment-variable "AGE" } -gt ${ environment-variable "THRESHOLD" } ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ environment-variable "AGE" } ${ environment-variable "PASS" }
-                                                                                                    fi
-                                                                                            done | ${ pkgs.coreutils }/bin/sort --key 1 --numeric-sort | ${ pkgs.coreutils }/bin/cut --delimiter " " --fields 2
-
-                                                                                    '' ;
-                                                                        } ;
-                                                                } ;
-                                                        } ;
-                                                    secondary = secondary ;
-                                                    temporary =
-                                                        {
-                                                            foobar = scripts : { init = scripts.init.foobar ; } ;
-                                                            gnupg = scripts : { init = scripts.init.gnupg ; } ;
-                                                            gnucash = scripts : { init = scripts.init.gnucash ; } ;
-                                                            paperless = scripts : { init = scripts.init.paperless ; } ;
-                                                            pass = scripts : { init = scripts.init.pass ; } ;
-                                                        } ;
-                                                } ;
                                         in
                                             {
                                                 config =
@@ -153,19 +29,6 @@
                                                             } ;
                                                         environment.sessionVariables =
                                                             {
-                                                                FOOBAR = "$( ${ resources }/temporary/foobar )" ;
-                                                                # This is not doing exactly what I want.
-                                                                # I want it to provide the home variable.
-                                                                # But it does not.
-                                                                # So we must do `gnucash ${ environment-variable "GNCHOME" }/gnucash.xml.gnucash`
-                                                                GNCHOME="$( ${ resources }/temporary/gnucash )" ;
-                                                                GNUPGHOME= "$( ${ resources }/temporary/gnupg )" ;
-                                                                PASSWORD_STORE_DIR = "$( ${ resources }/temporary/pass )" ;
-                                                                PASSWORD_STORE_GENERATED_LENGTH="$( ${ pkgs.coreutils }/bin/date +%y )" ;
-                                                                PASSWORD_STORE_CHARACTER_SET="abCD23" ;
-                                                                PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS = "PTxy45-=" ;
-                                                                PASSWORD_STORE_ENABLE_EXTENSIONS = "true" ;
-                                                                PASSWORD_STORE_EXTENSIONS_DIR = "${ password-store-extensions-dir pkgs }" ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -233,11 +96,6 @@
                                                                         enable = true ;
                                                                         settings.X11Forwarding = true ;
                                                                     } ;
-                                                                paperless =
-                                                                    {
-                                                                        enable = true ;
-                                                                        mediaDir = "$( ${ resources }/temporary/paperless )" ;  
-                                                                    } ;
                                                                 pcscd.enable = true ;
                                                                 pipewire =
                                                                     {
@@ -293,14 +151,6 @@
                                                             } ;
                                                         sound.enable = true ;
                                                         system.stateVersion = "23.05" ;
-                                                        systemd.user.services.resource =
-                                                            {
-                                                                serviceConfig =
-                                                                    {
-                                                                        ExecStart = "${ resources }/service" ;
-                                                                    } ;
-                                                                wantedBy = [ "default.target" ] ;
-                                                            } ;
                                                         time.timeZone = "America/New_York" ;
                                                         users.users.user =
                                                             {
@@ -387,9 +237,47 @@
                                                              } ;
                                                     } ;
                                     } ;
+                            pkgs = import nixpkgs { inherit system; } ;
                             in
                                 {
+                                    checks =
+                                        {
+                                            has-pass =
+                                                pkgs.runCommand "check-pass"
+                                                    {}
+                                                    (
+                                                        let
+                                                            module = lib secondary ;
+                                                            secondary =
+                                                                {
+                                                                    config =
+                                                                        {
+                                                                            personal =
+                                                                                {
+                                                                                    user =
+                                                                                        {
+                                                                                            description = "Steve T Crawford" ;
+                                                                                            name = "crawford" ;
+                                                                                        } ;
+                                                                                } ;
+                                                                        } ;
+                                                                    lib = lib ;
+                                                                    pkgs = pkgs ;
+                                                                } ;
+                                                            test =
+                                                                ''
+                                                                    test ( )
+                                                                        {
+                                                                            assert_equals "Steve T Crawford" "${ module.config.users.users.user.description }" "We can set the user's full name in options."
+                                                                        }
+                                                                '' ;
+                                                        in
+                                                            ''
+                                                                ${ pkgs.bash_unit }/bin/bash_unit ${ pkgs.writeShellScript "test" test } > >( ${ pkgs.coreutils }/bin/tee $out ) 2>&1
+                                                            ''
+                                                    ) ;
+                                        } ;
                                     lib = lib ;
                                 } ;
-                            in flake-utils.lib.eachDefaultSystem fun ;
+                in flake-utils.lib.eachDefaultSystem fun ;
 }
