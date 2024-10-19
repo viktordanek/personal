@@ -268,7 +268,9 @@
                                                                 ''
                                                                     test ( )
                                                                         {
-                                                                            assert_equals "Steve T Crawford" "${ module.config.users.users.user.description }" "We can set the user's full name in options."
+                                                                            assert_equals "Steve T Crawford" "${ module.config.users.users.user.description }" "We can set the user's full name in options." &&
+                                                                                assert_equals "crawford" "${ module.config.users.users.user.name }" "We can set the user's user name in options."
+
                                                                         }
                                                                 '' ;
                                                         in
