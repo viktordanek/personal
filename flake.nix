@@ -245,7 +245,6 @@
                                                                                     user =
                                                                                         {
                                                                                             description = "Trevor C Bradford" ;
-                                                                                            email = "TrevorCBradford@armyspy.com " ;
                                                                                             name = "trevor" ;
                                                                                             password = "wieJeech7L" ;
                                                                                         } ;
