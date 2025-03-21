@@ -11,6 +11,7 @@ do
   git -C github/viktordanek/${REPO} fetch origin &&
   git -C github/viktordanek/${REPO} checkout origin/main &&
   git -C github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
+  git -C github/viktordanek/${REPO} config alias.ops !$(pwd}/ops.bash &&
   ( cat > github/viktordanek/${REPO}/.git/hooks/post-commit <<EOF
    while ! git push origin HEAD
    do
