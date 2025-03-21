@@ -12,7 +12,7 @@
                     (
                         pkgs.writeShellScriptBin
                             "check"
-                            ''LD_LIBRARY_PATH="" nix flake check'' ;
+                            ''LD_LIBRARY_PATH="" nix flake check''
                     )
                 ] ;
             shellHook =
