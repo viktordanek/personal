@@ -8,6 +8,9 @@ do
   git -C github/viktordanek/${REPO} config user.email "viktordanek10@gmail.com" &&
   git -C github/viktordanek/${REPO} config core.sshCommand "ssh -i ~/.ssh/victor.danek.id-rsa" &&
   git -C github/viktordanek/${REPO} remote add origin git@github.com:viktordanek/${REPO}.git &&
+  git -C github/viktordanek/${REPO} fetch origin &&
+  git -C github/viktordanek/${REPO} checkout origin/main &&
+  git -C github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
   ( cat > github/viktordanek/${REPO}/.git/hooks/post-commit <<EOF
    while ! git push origin HEAD
    do
