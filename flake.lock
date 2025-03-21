@@ -6,17 +6,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1729293705,
-        "narHash": "sha256-4Pz3avynxZLjwWumAVQDmuYuJIYoUxfNK9msGh5m2fY=",
-        "ref": "refs/heads/scratch/3d82ad7e-e120-4039-bf8e-f604678bb6aa",
-        "rev": "3a989269569191555cfdda8cce2ef6667b40fcb7",
-        "revCount": 28,
-        "type": "git",
-        "url": "file:///tmp/tmp.cWQ1yyN0hn/environment-variable"
+        "lastModified": 1729274595,
+        "narHash": "sha256-l5C4bnsUQDxIGttIjihHgh0/a4G3ZTvW+U/qPDGHweI=",
+        "owner": "viktordanek",
+        "repo": "environment-variable",
+        "rev": "db8d5948f78ffb7fc976b5f2d2981f38302dc5a7",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///tmp/tmp.cWQ1yyN0hn/environment-variable"
+        "owner": "viktordanek",
+        "repo": "environment-variable",
+        "type": "github"
       }
     },
     "environment-variable-lib_2": {
