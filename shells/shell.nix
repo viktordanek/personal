@@ -12,6 +12,6 @@
             shellHook =
                 ''
                     cd $(mktemp -d ) &&
-                        ../scripts/environment.sh ;
+                        sh ./scripts/environment.sh ;
                 '' ;
         }
