@@ -4,6 +4,7 @@
             buildInputs =
                 [
                     pkgs.coreutils
+                    pkgs.firefox
                     pkgs.git
                     pkgs.jetbrains.idea-community
                     pkgs.jq
