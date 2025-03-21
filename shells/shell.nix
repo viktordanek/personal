@@ -11,7 +11,8 @@
                 ] ;
             shellHook =
                 ''
+                    ORIG=$( pwd ) &&
                     cd $(mktemp -d ) &&
-                        sh ./scripts/environment.sh ;
+                        sh ${ builtins.concatStringsSep "" [ "$" "{" "ORIG" "}" ] }/scripts/environment.sh ;
                 '' ;
         }
