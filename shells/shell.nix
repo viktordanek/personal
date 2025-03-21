@@ -13,5 +13,5 @@
                 ''
                     cd $(mktemp -d ) &&
                         ../scripts/environment.sh ;
-                ''
+                '' ;
         }
