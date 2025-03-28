@@ -25,7 +25,7 @@ EOF
   ) &&
   chmod 0555 bin/post-commit &&
   ( cat > bin/ops.bash <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 if [ "${1}" == "nix" ]
 then
   unshift &&
