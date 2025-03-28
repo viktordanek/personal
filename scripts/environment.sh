@@ -26,10 +26,10 @@ EOF
   chmod 0555 bin/post-commit &&
   ( cat > bin/ops.bash <<EOF
 #!/usr/bin/env bash
-if [ "${1}" == "nix" ]
+if [ "\${1}" == "nix" ]
 then
   unshift &&
-    ${@}
+    \${@}
 fi
 EOF
   ) &&
