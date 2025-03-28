@@ -2,6 +2,11 @@ if [ "${1}" == "check" ]
 then
     unset LD_LIBRARY_PATH &&
         nix flake check
+elif [ "${1}" == "nix" ]
+then
+    unset LD_LIBRARY_PATH &&
+      shift &&
+      ${@}
 elif [ "${1}" == "commit" ]
 then
     unset LD_LIBRARY_PATH &&
