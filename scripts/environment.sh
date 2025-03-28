@@ -1,24 +1,36 @@
-mkdir github &&
-mkdir github/viktordanek &&
-OPS=$(pwd)/github/viktordanek/personal &&
+mkdir repos &
+mkdir repos/github &&
+mkdir repos/github/viktordanek &&
 for REPO in personal shell-scripts originator-pid environment-variable string standard-url cache temporary shell-script visitor bash-unit-checker tests invalid-value has-standard-input strip
 do
-  mkdir github/viktordanek/${REPO} &&
-  git -C github/viktordanek/${REPO} init &&
-  git -C github/viktordanek/${REPO} config user.name "Viktor Danek" &&
-  git -C github/viktordanek/${REPO} config user.email "viktordanek10@gmail.com" &&
-  git -C github/viktordanek/${REPO} config core.sshCommand "ssh -i ~/.ssh/victor.danek.id-rsa" &&
-  git -C github/viktordanek/${REPO} remote add origin git@github.com:viktordanek/${REPO}.git &&
-  git -C github/viktordanek/${REPO} fetch origin &&
-  git -C github/viktordanek/${REPO} checkout origin/main &&
-  git -C github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
-  git -C github/viktordanek/${REPO} config alias.ops '!${OPS}/ops.bash' &&
-  ( cat > github/viktordanek/${REPO}/.git/hooks/post-commit <<EOF
-   while ! git push origin HEAD
-   do
-    sleep 1m
-  done
+  mkdir repos/github/viktordanek/${REPO} &&
+  git -C repos/github/viktordanek/${REPO} init &&
+  git -C repos/github/viktordanek/${REPO} config user.name "Viktor Danek" &&
+  git -C repos/github/viktordanek/${REPO} config user.email "viktordanek10@gmail.com" &&
+  git -C repos/github/viktordanek/${REPO} config core.sshCommand "ssh -i ~/.ssh/victor.danek.id-rsa" &&
+  git -C repos/github/viktordanek/${REPO} remote add origin git@repos/github.com:viktordanek/${REPO}.git &&
+  git -C repos/github/viktordanek/${REPO} fetch origin &&
+  git -C repos/github/viktordanek/${REPO} checkout origin/main &&
+  git -C repos/github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
+  git -C repos/github/viktordanek/${REPO} config alias.ops '!../../../../ops.bash' &&
+  ln --symbolic bin/post-commit repos/github/viktordanek/${REPO}/.git/post-commit
+  mkdir bin &&
+  ( cat > bin/post-commit <<EOF
+while ! git push origin HEAD
+do
+  sleep 1m
+done
 EOF
   ) &&
-  chmod 0500 github/viktordanek/${REPO}/.git/hooks/post-commit
+  chmod 0555 bin/post-commit &&
+  ( cat > bin/ops.bash <<EOF
+#!/bin/bash
+if [ "${1}" == "nix" ]
+then
+  unshift &&
+    ${@}
+fi
+EOF
+  ) &&
+  chmod 0555 ops.bash
 done
