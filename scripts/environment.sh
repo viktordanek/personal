@@ -14,6 +14,7 @@ do
   git -C repos/github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
   git -C repos/github/viktordanek/${REPO} config alias.ops '!../../../../ops.bash' &&
   ln --symbolic bin/post-commit repos/github/viktordanek/${REPO}/.git/post-commit
+done &&
   mkdir bin &&
   ( cat > bin/post-commit <<EOF
 while ! git push origin HEAD
@@ -33,4 +34,3 @@ fi
 EOF
   ) &&
   chmod 0555 ops.bash
-done
