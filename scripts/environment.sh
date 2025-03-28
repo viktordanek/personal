@@ -8,7 +8,7 @@ do
   git -C repos/github/viktordanek/${REPO} config user.name "Viktor Danek" &&
   git -C repos/github/viktordanek/${REPO} config user.email "viktordanek10@gmail.com" &&
   git -C repos/github/viktordanek/${REPO} config core.sshCommand "ssh -i ~/.ssh/victor.danek.id-rsa" &&
-  git -C repos/github/viktordanek/${REPO} remote add origin git@repos/github.com:viktordanek/${REPO}.git &&
+  git -C repos/github/viktordanek/${REPO} remote add origin git@github.com:viktordanek/${REPO}.git &&
   git -C repos/github/viktordanek/${REPO} fetch origin &&
   git -C repos/github/viktordanek/${REPO} checkout origin/main &&
   git -C repos/github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
