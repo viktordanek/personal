@@ -28,8 +28,7 @@ EOF
 #!/usr/bin/env bash
 if [ "\${1}" == "nix" ]
 then
-  unshift &&
-    \${@}
+  \${@}
 fi
 EOF
   ) &&
