@@ -12,7 +12,7 @@ do
   git -C repos/github/viktordanek/${REPO} fetch origin &&
   git -C repos/github/viktordanek/${REPO} checkout origin/main &&
   git -C repos/github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
-  git -C repos/github/viktordanek/${REPO} config alias.ops '!../../../../ops.bash' &&
+  git -C repos/github/viktordanek/${REPO} config alias.ops '!../../../../bin/ops.bash' &&
   ln --symbolic bin/post-commit repos/github/viktordanek/${REPO}/.git/post-commit
 done &&
   mkdir bin &&
@@ -33,4 +33,4 @@ then
 fi
 EOF
   ) &&
-  chmod 0555 ops.bash
+  chmod 0555 bin/ops.bash
