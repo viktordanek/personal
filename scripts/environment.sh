@@ -1,5 +1,6 @@
 mkdir github &&
 mkdir github/viktordanek &&
+OPS=$(pwd)/github/viktordanek/personal &&
 for REPO in personal shell-scripts originator-pid environment-variable string standard-url cache temporary shell-script visitor bash-unit-checker tests invalid-value has-standard-input strip
 do
   mkdir github/viktordanek/${REPO} &&
@@ -11,7 +12,7 @@ do
   git -C github/viktordanek/${REPO} fetch origin &&
   git -C github/viktordanek/${REPO} checkout origin/main &&
   git -C github/viktordanek/${REPO} checkout -b scratch/$(uuidgen) &&
-  git -C github/viktordanek/${REPO} config alias.ops '!$(pwd)/ops.bash' &&
+  git -C github/viktordanek/${REPO} config alias.ops '!${OPS}/ops.bash' &&
   ( cat > github/viktordanek/${REPO}/.git/hooks/post-commit <<EOF
    while ! git push origin HEAD
    do
