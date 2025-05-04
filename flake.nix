@@ -3,10 +3,19 @@
         {
             environment-variable-lib.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
+	        github-runner =
+	            {
+	                url = "./configuration/github-runner" ;
+	                inputs =
+	                    {
+	                        flake-utils.follows = "flake-utils" ;
+	                        nixpkgs.follows = "nixpkgs" ;
+	                    } ;
+	            } ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-22.11" ;
         } ;
     outputs =
-        { environment-variable-lib , flake-utils , nixpkgs , self } :
+        { environment-variable-lib , flake-utils , github-runner , nixpkgs , self } :
             let
                 environment-variable = environment-variable-lib.lib ;
                 fun =
@@ -204,7 +213,7 @@
                                 } ;
                             packages =
                                 {
-                                    github-runner = import ./configurations/github-runner/flake.nix { inherit system pkgs ; } ;
+                                    github-runner = github-runner.packages.${ system }.default ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
