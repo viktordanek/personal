@@ -182,6 +182,7 @@
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 password = lib.mkOption { type =  lib.types.str ; } ;
+                                                                token = lib.mkOption { type = lib.types.str ; } ;
                                                             } ;
                                                         wifi =
                                                             lib.mkOption
