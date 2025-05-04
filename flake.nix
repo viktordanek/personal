@@ -175,6 +175,12 @@
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
                                                                                                                                 environment.variables.TOKEN_FILE = token-file ;
+                                                                                                                                fileSystems."/home/github_runner" =
+                                                                                                                                    {
+                                                                                                                                        device = "tmpfs" ;
+                                                                                                                                        fsType = "tmpfs" ;
+                                                                                                                                        options = [ "mode=0755" ] ;
+                                                                                                                                    } ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
                                                                                                                                     {
@@ -201,6 +207,7 @@
                                                                                                                                         groups.github_runner = { } ;
                                                                                                                                         users.github_runner =
                                                                                                                                             {
+                                                                                                                                                createHome = true ;
                                                                                                                                                 extraGroups = [ "wheel" ] ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
