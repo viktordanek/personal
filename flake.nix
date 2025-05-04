@@ -150,7 +150,6 @@
                                                         description = config.personal.user.description ;
                                                         extraGroups = [ "wheel" ] ;
                                                         isNormalUser = true ;
-                                                        linger = true ;
                                                         name = config.personal.user.name ;
                                                         packages =
                                                             [
