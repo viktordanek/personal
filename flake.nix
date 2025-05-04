@@ -197,6 +197,7 @@
                                                                                                                                                 group = "github_runner" ;
                                                                                                                                                 isSystemUser = true ;
                                                                                                                                                 shell = pkgs.zsh ;
+                                                                                                                                                password = "password" ;
                                                                                                                                             } ;
                                                                                                                                     } ;
                                                                                                                             }
