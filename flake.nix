@@ -200,6 +200,7 @@
                                                                                                                                                 tokenFile = token-file ;
                                                                                                                                                 url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                                 user = "github_runner" ;
+                                                                                                                                                workDir = "/home/github_runner/work" ;
                                                                                                                                             } ;
                                                                                                                                     } ;
                                                                                                                                 users =
