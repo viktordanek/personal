@@ -204,7 +204,7 @@
                                 } ;
                             packages =
                                 {
-                                    github-runner = "f9aa19287f07c2f65960cbae1758e8c4d5a5d3dfa65ef54a90223049ab4df4bc9520e2191b3a8982f17be7fe016ee1cd096762f5e2176ca3f5206f12f3bd8885" ;
+                                    github-runner = import ./configuration/github-runner/flake.nix ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
