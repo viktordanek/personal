@@ -155,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.typeOf self.packages }";
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.concatStringsSep " ; " ( builtins.attrNames self.packages ) }";
                                                                             } ;
                                                                     } ;
                                                             } ;
