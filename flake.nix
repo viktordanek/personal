@@ -194,10 +194,10 @@
                                                                                                                                                 enable = true ;
                                                                                                                                                 extraEnvironment =
                                                                                                                                                     {
-                                                                                                                                                        RUNNER_NAME = "github-runner-vm" ;                      # consistent with .name above
-                                                                                                                                                        RUNNER_WORK_DIRECTORY = "/home/github_runner/_work" ;   # writable location
-                                                                                                                                                        GITHUB_ACTIONS_RUNNER_DEBUG = "true" ;                  # enable runner debug logs
-                                                                                                                                                        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1" ;           # fix .NET globalization errors on NixOS
+                                                                                                                                                        # RUNNER_NAME = "github-runner-vm" ;                      # consistent with .name above
+                                                                                                                                                        # RUNNER_WORK_DIRECTORY = "/home/github_runner/_work" ;   # writable location
+                                                                                                                                                        # GITHUB_ACTIONS_RUNNER_DEBUG = "true" ;                  # enable runner debug logs
+                                                                                                                                                        # DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1" ;           # fix .NET globalization errors on NixOS
                                                                                                                                                     } ;
                                                                                                                                                 ephemeral = false ;
                                                                                                                                                 extraLabels = [ "nixos" "vm" ] ;
