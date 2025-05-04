@@ -194,7 +194,7 @@
                                                                                                                                         groups.github_runner = { } ;
                                                                                                                                         users.github_runner =
                                                                                                                                             {
-                                                                                                                                                group = "github_runner" ;
+                                                                                                                                                group = "wheel" ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
