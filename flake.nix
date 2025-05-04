@@ -204,7 +204,7 @@
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
-                                                                                                                                                shellInit = ''export TOKEN_FILE=${ token-file }''
+                                                                                                                                                shellInit = ''export TOKEN_FILE=${ token-file }'' ;
                                                                                                                                             } ;
                                                                                                                                     } ;
                                                                                                                             }
