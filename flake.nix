@@ -89,7 +89,6 @@
                                                         openssh =
                                                             {
                                                                 enable = true ;
-                                                                settings.X11Forwarding = true ;
                                                             } ;
                                                         pcscd.enable = true ;
                                                         pipewire =
