@@ -204,7 +204,7 @@
                                 } ;
                             packages =
                                 {
-                                    github-runner = import ./configuration/github-runner/flake.nix ;
+                                    github-runner = import ./configurations/github-runner/flake.nix ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
