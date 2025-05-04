@@ -205,7 +205,7 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                         token-file = builtins.toFile "token" config.personal.user.token ;
-                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --no-gui";
+                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --no-graphic";
                                                                             } ;
                                                                     } ;
                                                             } ;
