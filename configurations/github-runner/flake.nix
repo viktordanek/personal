@@ -12,7 +12,7 @@
                     {
                         nixosConfigurations =
                             {
-                                githubRunnerVM =
+                                github-runner =
                                     nixpkgs.lib.nixosSystem
                                         {
                                             modules =

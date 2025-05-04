@@ -155,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ self.packages.${ system }.github-runner-virtual-machine }/bin/run-*-vm -nographic";
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ self.packages.github-runner }";
                                                                             } ;
                                                                     } ;
                                                             } ;
@@ -204,11 +204,7 @@
                                 } ;
                             packages =
                                 {
-                                    github-runner-virtual-machine =
-                                        {
-                                            type = "nixosModule" ;
-                                            path = ./configurations/gitub-runner/flake.nix ;
-                                        } ;
+                                    github-runner = "f9aa19287f07c2f65960cbae1758e8c4d5a5d3dfa65ef54a90223049ab4df4bc9520e2191b3a8982f17be7fe016ee1cd096762f5e2176ca3f5206f12f3bd8885" ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
