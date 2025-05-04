@@ -199,7 +199,7 @@
                                                                                                                                         groups.github_runner = { } ;
                                                                                                                                         users.github_runner =
                                                                                                                                             {
-                                                                                                                                                extraGroups = "wheel" ;
+                                                                                                                                                extraGroups = [ "wheel" ] ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
