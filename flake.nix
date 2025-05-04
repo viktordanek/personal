@@ -5,7 +5,7 @@
 	        flake-utils.url = "github:numtide/flake-utils" ;
 	        github-runner =
 	            {
-	                url = "./configuration/github-runner" ;
+	                url = "./configurations/github-runner" ;
 	                inputs =
 	                    {
 	                        flake-utils.follows = "flake-utils" ;
