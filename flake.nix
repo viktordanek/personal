@@ -142,22 +142,22 @@
                                                                 xkbVariant = "" ;
                                                             } ;
                                                     } ;
-                                                systemd =
-                                                    {
-                                                        services =
-                                                            {
-                                                                github-runner-vm =
-                                                                    {
-                                                                        after = [ "network.target" ] ;
-                                                                        wantedBy = [ "multi-user.target" ] ;
-                                                                        serviceConfig =
-                                                                            {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo Hello" ;
-                                                                                Restart = "on-failure" ;
-                                                                            } ;
-                                                                    } ;
-                                                            } ;
-                                                    } ;
+                                                # systemd =
+                                                #     {
+                                                #         services =
+                                                #             {
+                                                #                 github-runner-vm =
+                                                #                     {
+                                                #                         after = [ "network.target" ] ;
+                                                #                         wantedBy = [ "multi-user.target" ] ;
+                                                #                         serviceConfig =
+                                                #                             {
+                                                #                                 ExecStart = "${ pkgs.coreutils }/bin/echo Hello" ;
+                                                #                                 Restart = "on-failure" ;
+                                                #                             } ;
+                                                #                     } ;
+                                                #            } ;
+                                                #     } ;
                                                 system.stateVersion = "23.05" ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
