@@ -184,7 +184,7 @@
                                                                                                                                                 extraLabels = [ "nixos" "vm" ] ;
                                                                                                                                                 name = "github-runner-vm" ;
                                                                                                                                                 replace = true ;
-                                                                                                                                                tokenFile = config.personal.user.token ;
+                                                                                                                                                tokenFile = token-file ;
                                                                                                                                                 url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                                 user = "github_runner" ;
                                                                                                                                             } ;
@@ -204,6 +204,7 @@
                                                                                                                 ] ;
                                                                                                         } ;
                                                                                             } ;
+                                                                                        token-file = builtins.toFile "token" config.personal.user.token ;
                                                                                         in "${ pkgs.findutils }/bin/find ${ nixosConfigurations.github-runner.config.system.build.vm }";
                                                                             } ;
                                                                     } ;
