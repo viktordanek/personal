@@ -186,7 +186,7 @@
                                                                                                                                         github-runner =
                                                                                                                                             {
                                                                                                                                                 enable = true ;
-                                                                                                                                                ephemeral = true ;
+                                                                                                                                                ephemeral = false ;
                                                                                                                                                 extraLabels = [ "nixos" "vm" ] ;
                                                                                                                                                 name = "github-runner-vm" ;
                                                                                                                                                 package = pkgs.github-runner ;
