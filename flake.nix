@@ -3,7 +3,7 @@
         {
             environment-variable-lib.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
-	        nixpkgs.url = "github:NixOS/nixpkgs" ;
+	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-22.11" ;
         } ;
     outputs =
         { environment-variable-lib , flake-utils , nixpkgs , self } :
