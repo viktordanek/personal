@@ -215,11 +215,9 @@
                                                                                                                                         users.github_runner =
                                                                                                                                             {
                                                                                                                                                 createHome = true ;
-                                                                                                                                                extraGroups = [ "wheel" ] ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
-                                                                                                                                                #shellInit = ''export TOKEN_FILE=${ token-file }'' ;
                                                                                                                                             } ;
                                                                                                                                     } ;
                                                                                                                             }
