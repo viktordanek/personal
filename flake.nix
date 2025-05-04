@@ -155,18 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart =
-                                                                                    let
-                                                                                        image =
-                                                                                            pkgs.runCommand
-                                                                                                "github-runner-vm-image"
-                                                                                                { }
-                                                                                                ''
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                                                        ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake ${ builtins.toFile "flake.nix" ( builtins.replaceStrings [ "config.personal.user.github-runner.token" ] [ config.personal.user.github-runner.token ] ( builtins.readFile ( self + "/servers/github-runner#githubRunnerVM" ) ) ) } &&
-                                                                                                        ${ pkgs.coreutils }/bin/mv result/*.qcow2 $out/
-                                                                                                '' ;
-                                                                                        in "qemu-system-x86_64 -hda /var/lib/github-runner-vm.qcow2 -m 2G -smp 2 -nographic" ;
+                                                                                ExecStart = "${ self.packages.${ system }.github-runner-virtual-machine }/bin/run-*-vm -nographic";
                                                                             } ;
                                                                     } ;
                                                             } ;
@@ -211,7 +200,15 @@
                                                                 } ;
                                                      } ;
                                             } ;
-                            } ;
+                                } ;
+                            nixosConfigurations =
+                                {
+                                    github-runner-virtual-machine =
+                                        {
+                                            type = "nixosModule" ;
+                                            path = ./configurations/gitub-runner/flake.nix ;
+                                        } ;
+                                } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
                         {
