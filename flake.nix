@@ -228,31 +228,21 @@
                                                 personal.user.name = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.password = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.token = lib.mkOption { type = lib.types.str ; } ;
-                                                personal2 =
-                                                    {
-                                                        user =
-                                                            {
-                                                                description = lib.mkOption { type = lib.types.str ; } ;
-                                                                name = lib.mkOption { type = lib.types.str ; } ;
-                                                                password = lib.mkOption { type =  lib.types.str ; } ;
-                                                                token = lib.mkOption { type = lib.types.str ; } ;
-                                                            } ;
-                                                        wifi =
-                                                            lib.mkOption
-                                                                {
-                                                                    type =
-                                                                        let
-                                                                            config =
-                                                                                lib.types.submodule
+                                                personal.wifi =
+                                                    lib.mkOption
+                                                        {
+                                                            type =
+                                                                let
+                                                                    config =
+                                                                        lib.types.submodule
+                                                                        {
+                                                                            options =
                                                                                 {
-                                                                                    options =
-                                                                                        {
-                                                                                            psk = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        } ;
+                                                                                    psk = lib.mkOption { type = lib.types.str ; } ;
                                                                                 } ;
-                                                                            in lib.types.attrsOf config ;
-                                                                } ;
-                                                     } ;
+                                                                        } ;
+                                                                    in lib.types.attrsOf config ;
+                                                        } ;
                                             } ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
