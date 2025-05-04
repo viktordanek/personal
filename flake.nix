@@ -174,6 +174,7 @@
                                                                                                                                         pkgs.jq
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
+                                                                                                                                environment.variable.TOKEN_FILE = token-file ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
                                                                                                                                     {
@@ -204,7 +205,7 @@
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
-                                                                                                                                                shellInit = ''export TOKEN_FILE=${ token-file }'' ;
+                                                                                                                                                #shellInit = ''export TOKEN_FILE=${ token-file }'' ;
                                                                                                                                             } ;
                                                                                                                                     } ;
                                                                                                                             }
