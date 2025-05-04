@@ -155,7 +155,56 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.findutils }/bin/find ${ nixosConfigurations.github-runner.config.system.build.vm }";
+                                                                                ExecStart =
+                                                                                    let
+                                                                                        nixosConfigurations =
+                                                                                            {
+                                                                                                github-runner =
+                                                                                                    nixpkgs.lib.nixosSystem
+                                                                                                        {
+                                                                                                            modules =
+                                                                                                                [
+                                                                                                                    (
+                                                                                                                        { config , ... } :
+                                                                                                                            {
+                                                                                                                                environment.systemPackages =
+                                                                                                                                    [
+                                                                                                                                        pkgs.git
+                                                                                                                                        pkgs.curl
+                                                                                                                                        pkgs.jq
+                                                                                                                                        pkgs.github-runner
+                                                                                                                                    ] ;
+                                                                                                                                nixpkgs.hostPlatform = "x86_64-linux" ;
+                                                                                                                                services.github-runners =
+                                                                                                                                    {
+                                                                                                                                        github-runner =
+                                                                                                                                            {
+                                                                                                                                                enable = true ;
+                                                                                                                                                ephemeral = true ;
+                                                                                                                                                extraLabels = [ "nixos" "vm" ] ;
+                                                                                                                                                name = "github-runner-vm" ;
+                                                                                                                                                replace = true ;
+                                                                                                                                                tokenFile = ( builtins.toFile "token" config.personal.user.token ) ;
+                                                                                                                                                url = "https://github.com/viktordanek/temporary" ;
+                                                                                                                                                user = "github_runner" ;
+                                                                                                                                            } ;
+                                                                                                                                    } ;
+                                                                                                                                users =
+                                                                                                                                    {
+                                                                                                                                        groups.github_runner = { } ;
+                                                                                                                                        users.github_runner =
+                                                                                                                                            {
+                                                                                                                                                group = "github_runner" ;
+                                                                                                                                                isSystemUser = true ;
+                                                                                                                                                shell = pkgs.zsh ;
+                                                                                                                                            } ;
+                                                                                                                                    } ;
+                                                                                                                            }
+                                                                                                                    )
+                                                                                                                ] ;
+                                                                                                        } ;
+                                                                                            } ;
+                                                                                        in "${ pkgs.findutils }/bin/find ${ nixosConfigurations.github-runner.config.system.build.vm }";
                                                                             } ;
                                                                     } ;
                                                             } ;
@@ -200,53 +249,6 @@
                                                                             in lib.types.attrsOf config ;
                                                                 } ;
                                                      } ;
-                                            } ;
-                                } ;
-                            nixosConfigurations =
-                                {
-                                    github-runner =
-                                        nixpkgs.lib.nixosSystem
-                                            {
-                                                modules =
-                                                    [
-                                                        (
-                                                            { config , ... } :
-                                                                {
-                                                                    environment.systemPackages =
-                                                                        [
-                                                                            pkgs.git
-                                                                            pkgs.curl
-                                                                            pkgs.jq
-                                                                            pkgs.github-runner
-                                                                        ] ;
-                                                                    nixpkgs.hostPlatform = "x86_64-linux" ;
-                                                                    services.github-runners =
-                                                                        {
-                                                                            github-runner =
-                                                                                {
-                                                                                    enable = true ;
-                                                                                    ephemeral = true ;
-                                                                                    extraLabels = [ "nixos" "vm" ] ;
-                                                                                    name = "github-runner-vm" ;
-                                                                                    replace = true ;
-                                                                                    tokenFile = ( builtins.toFile "token" config.personal.user.token ) ;
-                                                                                    url = "https://github.com/viktordanek/temporary" ;
-                                                                                    user = "github_runner" ;
-                                                                                } ;
-                                                                        } ;
-                                                                    users =
-                                                                        {
-                                                                            groups.github_runner = { } ;
-                                                                            users.github_runner =
-                                                                                {
-                                                                                    group = "github_runner" ;
-                                                                                    isSystemUser = true ;
-                                                                                    shell = pkgs.zsh ;
-                                                                                } ;
-                                                                        } ;
-                                                                }
-                                                        )
-                                                    ] ;
                                             } ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
