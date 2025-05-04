@@ -188,6 +188,7 @@
                                                                                                                                                 ephemeral = true ;
                                                                                                                                                 extraLabels = [ "nixos" "vm" ] ;
                                                                                                                                                 name = "github-runner-vm" ;
+                                                                                                                                                package = pkgs.github-runner ;
                                                                                                                                                 replace = true ;
                                                                                                                                                 tokenFile = token-file ;
                                                                                                                                                 url = "https://github.com/viktordanek/temporary" ;
