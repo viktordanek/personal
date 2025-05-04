@@ -184,7 +184,7 @@
                                                                                                                                                 extraLabels = [ "nixos" "vm" ] ;
                                                                                                                                                 name = "github-runner-vm" ;
                                                                                                                                                 replace = true ;
-                                                                                                                                                tokenFile = ( builtins.toFile "token" config.personal.user.token ) ;
+                                                                                                                                                tokenFile = ( builtins.toFile "token" "config.personal.user.token" ) ;
                                                                                                                                                 url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                                 user = "github_runner" ;
                                                                                                                                             } ;
