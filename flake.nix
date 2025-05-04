@@ -155,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.typeOf nixosConfigurations.github-runner }";
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.typeOf nixosConfigurations.github-runner.config.system.build.vm }";
                                                                             } ;
                                                                     } ;
                                                             } ;
