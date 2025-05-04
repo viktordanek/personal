@@ -202,7 +202,7 @@
                                                      } ;
                                             } ;
                                 } ;
-                            nixosConfigurations =
+                            packages =
                                 {
                                     github-runner-virtual-machine =
                                         {
@@ -214,6 +214,7 @@
                     in
                         {
                             lib = lib ;
+                            packages = packages ;
                         } ;
                 in flake-utils.lib.eachDefaultSystem fun ;
 }
