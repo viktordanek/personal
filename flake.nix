@@ -213,7 +213,7 @@
                                 } ;
                             packages =
                                 {
-                                    github-runner = github-runner.packages.${ system }.default ;
+                                    github-runner = github-runner.nixosConfigurations.${ system }.github-runner ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
