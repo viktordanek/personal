@@ -85,7 +85,21 @@
                                                     {
                                                         blueman.enable = true ;
                                                         dbus.packages = [ pkgs.gcr ] ;
-                                                        github-runners = { } ;
+                                                        github-runners =
+                                                            {
+                                                                enable = true ;
+                                                                runners =
+                                                                    {
+                                                                        runner =
+                                                                            {
+                                                                                enable = true ;
+                                                                                ephemeral = true ;
+                                                                                labels = [ "nixos" "shared" ] ;
+                                                                                tokenFile = config.personal.user.github-runners.tokenFile ;
+                                                                                url = "https://github.com/viktordanek" ;
+                                                                            } ;
+                                                                    } ;
+                                                            } ;
                                                         openssh =
                                                             {
                                                                 enable = true ;
