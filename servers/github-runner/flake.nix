@@ -28,24 +28,19 @@
                                                                         pkgs.github-runner
                                                                     ] ;
                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
-                                                                systemd.services.github-runner =
+                                                                services.github-runners =
                                                                     {
-                                                                        after = [ "network.target" ];
-                                                                        serviceConfig =
+                                                                        github-runner =
                                                                             {
-                                                                                User = "github_runner";
-                                                                                ExecStart =
-                                                                                    pkgs.writeShellScript
-                                                                                        "github_runner_setup"
-                                                                                        ''
-                                                                                            ${pkgs.github-runner}/bin/github-runner configure \
-                                                                                                --url https://github.com/YOURUSER/YOURREPO \
-                                                                                                --token "$(cat /etc/github-runner/token)" \
-                                                                                                --unattended \
-                                                                                                --name github-runner-vm
-                                                                                        '' ;
+                                                                                enable = true ;
+                                                                                ephemeral = true ;
+                                                                                extraLabels = [ "nixos" "vm" ] ;
+                                                                                name = "github-runner-vm" ;
+                                                                                replace = true ;
+                                                                                tokenFile = ( builtins.toFile "token" config.personal.user.github-runner.token ) ;
+                                                                                url = "https://github.com/viktordanek/temporary" ;
+                                                                                user = "github_runner" ;
                                                                             } ;
-                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
                                                                 users =
                                                                     {
