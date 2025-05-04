@@ -144,7 +144,6 @@
                                                                 xkbVariant = "" ;
                                                             } ;
                                                     } ;
-                                                sound.enable = true ;
                                                 system.stateVersion = "23.05" ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
