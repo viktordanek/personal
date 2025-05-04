@@ -195,7 +195,7 @@
                                                                                                                                         users.github_runner =
                                                                                                                                             {
                                                                                                                                                 group = "github_runner" ;
-                                                                                                                                                isSystemUser = true ;
+                                                                                                                                                isRegularUser = true ;
                                                                                                                                                 shell = pkgs.zsh ;
                                                                                                                                                 password = "password" ;
                                                                                                                                             } ;
