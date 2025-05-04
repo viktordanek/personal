@@ -87,18 +87,7 @@
                                                         dbus.packages = [ pkgs.gcr ] ;
                                                         github-runners =
                                                             {
-                                                                enable = true ;
-                                                                runners =
-                                                                    {
-                                                                        runner =
-                                                                            {
-                                                                                enable = true ;
-                                                                                ephemeral = true ;
-                                                                                labels = [ "nixos" "shared" ] ;
-                                                                                tokenFile = config.personal.user.github-runners.tokenFile ;
-                                                                                url = "https://github.com/viktordanek" ;
-                                                                            } ;
-                                                                    } ;
+                                                                enable = false ;
                                                             } ;
                                                         openssh =
                                                             {
@@ -155,6 +144,22 @@
                                                                             } ;
                                                                     } ;
                                                                 xkbVariant = "" ;
+                                                            } ;
+                                                    } ;
+                                                systemd =
+                                                    {
+                                                        services =
+                                                            {
+                                                                github-runner-vm =
+                                                                    {
+                                                                        after = [ "network.target" ] ;
+                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                        serviceConfig =
+                                                                            {
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo Hello" ;
+                                                                                Restart = "on-failure" ;
+                                                                            } ;
+                                                                    } ;
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
