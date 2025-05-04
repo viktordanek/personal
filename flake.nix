@@ -155,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.concatStringsSep "," ( builtins.attrNames nixosConfigurations.github-runner.config.system.build.vm ) }";
+                                                                                ExecStart = "${ pkgs.findutils }/bin/find ${ nixosConfigurations.github-runner.config.system.build.vm }";
                                                                             } ;
                                                                     } ;
                                                             } ;
