@@ -17,40 +17,40 @@
                                         {
                                             modules =
                                                 [
-                                                    {
-                                                        imports = [ <nixos/modules/virtualisation/virtualbox.nix> ] ;
-                                                        users.users.github_runner =
+                                                    (
+                                                        { config , ... } :
                                                             {
-                                                                isSystemUser = true ;
-                                                                shell = pkgs.zsh ;
-                                                            } ;
-                                                        environment.systemPackages =
-                                                            [
-                                                                pkgs.git
-                                                                pkgs.curl
-                                                                pkgs.jq
-                                                                pkgs.github-runner
-                                                            ] ;
-                                                        systemd.services.github-runner =
-                                                            {
-                                                                after = [ "network.target" ];
-                                                                serviceConfig =
+                                                                environment.systemPackages =
+                                                                    [
+                                                                        pkgs.git
+                                                                        pkgs.curl
+                                                                        pkgs.jq
+                                                                        pkgs.github-runner
+                                                                    ] ;
+                                                                nixpkgs.hostPlatform = "x86_64-linux" ;
+                                                                systemd.services.github-runner =
                                                                     {
-                                                                        User = "github_runner";
-                                                                        ExecStart = "/usr/bin/github-runner";
-                                                                        ExecStartPre = "sleep 10"; # Allow some time to initialize if necessary
+                                                                        after = [ "network.target" ];
+                                                                        serviceConfig =
+                                                                            {
+                                                                                User = "github_runner";
+                                                                                ExecStart = "/usr/bin/github-runner";
+                                                                            } ;
+                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
-                                                                wantedBy = [ "multi-user.target" ] ;
-                                                            } ;
-                                                    }
+                                                                users =
+                                                                    {
+                                                                        groups.github_runner = { } ;
+                                                                        users.github_runner =
+                                                                            {
+                                                                                group = "github_runner" ;
+                                                                                isSystemUser = true ;
+                                                                                shell = pkgs.zsh ;
+                                                                            } ;
+                                                                    } ;
+                                                            }
+                                                    )
                                                 ] ;
-                                            networking =
-                                                {
-                                                    hostName = "github-runner-vm" ;
-                                                    networking.useDHCP = true ;
-                                                } ;
-                                            logging.enable = true ;
-                                            system = system ;
                                         } ;
                             } ;
                     } ;
