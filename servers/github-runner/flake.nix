@@ -34,7 +34,16 @@
                                                                         serviceConfig =
                                                                             {
                                                                                 User = "github_runner";
-                                                                                ExecStart = "/usr/bin/github-runner";
+                                                                                ExecStart =
+                                                                                    pkgs.writeShellScript
+                                                                                        "github_runner_setup"
+                                                                                        ''
+                                                                                            ${pkgs.github-runner}/bin/github-runner configure \
+                                                                                                --url https://github.com/YOURUSER/YOURREPO \
+                                                                                                --token "$(cat /etc/github-runner/token)" \
+                                                                                                --unattended \
+                                                                                                --name github-runner-vm
+                                                                                        '' ;
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
