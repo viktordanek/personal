@@ -224,7 +224,11 @@
                                             } ;
                                         options =
                                             {
-                                                personal =
+                                                personal.user.description = lib.mkOption { type = lib.types.str ; } ;
+                                                personal.user.name = lib.mkOption { type = lib.types.str ; } ;
+                                                personal.user.password = lib.mkOption { type = lib.types.str ; } ;
+                                                personal.user.token = lib.mkOption { type = lib.types.str ; } ;
+                                                personal2 =
                                                     {
                                                         user =
                                                             {
