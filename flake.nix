@@ -85,10 +85,6 @@
                                                     {
                                                         blueman.enable = true ;
                                                         dbus.packages = [ pkgs.gcr ] ;
-                                                        github-runners =
-                                                            {
-                                                                enable = false ;
-                                                            } ;
                                                         openssh =
                                                             {
                                                                 enable = true ;
