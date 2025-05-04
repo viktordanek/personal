@@ -155,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo Hello World from Github Runner" ;
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo Hello World from Github Runner TEST " ;
                                                                             } ;
                                                                     } ;
                                                             } ;
