@@ -175,6 +175,11 @@
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
+                                                                                                                                security.sudo =
+                                                                                                                                    {
+                                                                                                                                        enable = true ;
+                                                                                                                                        wheelNeedsPassword = false ;
+                                                                                                                                    } ;
                                                                                                                                 services.github-runners =
                                                                                                                                     {
                                                                                                                                         github-runner =
