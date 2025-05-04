@@ -205,7 +205,7 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                         token-file = builtins.toFile "token" config.personal.user.token ;
-                                                                                        in "${ pkgs.findutils }/bin/find ${ nixosConfigurations.github-runner.config.system.build.vm }";
+                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }bin/run-nixos-vm";
                                                                             } ;
                                                                     } ;
                                                             } ;
