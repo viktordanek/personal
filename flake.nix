@@ -144,6 +144,22 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
+                                                systemd =
+                                                    {
+                                                        services =
+                                                            {
+                                                                github-runner =
+                                                                    {
+                                                                        description = "Github Runner Virtual Machine Service" ;
+                                                                        after = [ "network.target" ] ;
+                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                        serviceConfig =
+                                                                            {
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo Hello World from Github Runner" ;
+                                                                            } ;
+                                                                    } ;
+                                                            } ;
+                                                    } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
                                                     {
