@@ -3,19 +3,10 @@
         {
             environment-variable-lib.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
-	        github-runner =
-	            {
-	                url = "./configurations/github-runner" ;
-	                inputs =
-	                    {
-	                        flake-utils.follows = "flake-utils" ;
-	                        nixpkgs.follows = "nixpkgs" ;
-	                    } ;
-	            } ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-22.11" ;
         } ;
     outputs =
-        { environment-variable-lib , flake-utils , github-runner , nixpkgs , self } :
+        { environment-variable-lib , flake-utils , nixpkgs , self } :
             let
                 environment-variable = environment-variable-lib.lib ;
                 fun =
@@ -164,7 +155,7 @@
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                         serviceConfig =
                                                                             {
-                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ self.packages.${ system }.github-runner }";
+                                                                                ExecStart = "${ pkgs.coreutils }/bin/echo HELLO ${ builtins.typeOf nixosConfiguration.github-runner }";
                                                                             } ;
                                                                     } ;
                                                             } ;
@@ -211,15 +202,57 @@
                                                      } ;
                                             } ;
                                 } ;
-                            packages =
+                            nixosConfigurations =
                                 {
-                                    github-runner = github-runner.nixosConfigurations.${system}.github-runner.config.system.build.vm ;
+                                    github-runner =
+                                        nixpkgs.lib.nixosSystem
+                                            {
+                                                modules =
+                                                    [
+                                                        (
+                                                            { config , ... } :
+                                                                {
+                                                                    environment.systemPackages =
+                                                                        [
+                                                                            pkgs.git
+                                                                            pkgs.curl
+                                                                            pkgs.jq
+                                                                            pkgs.github-runner
+                                                                        ] ;
+                                                                    nixpkgs.hostPlatform = "x86_64-linux" ;
+                                                                    services.github-runners =
+                                                                        {
+                                                                            github-runner =
+                                                                                {
+                                                                                    enable = true ;
+                                                                                    ephemeral = true ;
+                                                                                    extraLabels = [ "nixos" "vm" ] ;
+                                                                                    name = "github-runner-vm" ;
+                                                                                    replace = true ;
+                                                                                    tokenFile = ( builtins.toFile "token" config.personal.user.token ) ;
+                                                                                    url = "https://github.com/viktordanek/temporary" ;
+                                                                                    user = "github_runner" ;
+                                                                                } ;
+                                                                        } ;
+                                                                    users =
+                                                                        {
+                                                                            groups.github_runner = { } ;
+                                                                            users.github_runner =
+                                                                                {
+                                                                                    group = "github_runner" ;
+                                                                                    isSystemUser = true ;
+                                                                                    shell = pkgs.zsh ;
+                                                                                } ;
+                                                                        } ;
+                                                                }
+                                                        )
+                                                    ] ;
+                                            } ;
                                 } ;
                     pkgs = import nixpkgs { inherit system; } ;
                     in
                         {
                             lib = lib ;
-                            packages = packages ;
                         } ;
                 in flake-utils.lib.eachDefaultSystem fun ;
 }
