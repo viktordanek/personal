@@ -155,7 +155,9 @@
                                                                             value :
                                                                                 [
                                                                                     "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
-                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } ; fi''
+                                                                                    "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
+                                                                                    "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
+                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "DIRECTORY" }.id-rsa" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } ; fi''
                                                                                 ] ;
                                                                         in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
                                                             } ;
