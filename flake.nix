@@ -172,7 +172,7 @@
                                                                                                                                         pkgs.git
                                                                                                                                         pkgs.curl
                                                                                                                                         pkgs.jq
-                                                                                                                                        pkgs.github-runner
+                                                                                                                                        # pkgs.github-runner
                                                                                                                                     ] ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
@@ -187,7 +187,19 @@
                                                                                                                                         extraLabels = [ "nixos" ] ;
                                                                                                                                         extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
                                                                                                                                         name = "virtual-machine-runner" ;
-                                                                                                                                        package = pkgs.github-runner ;
+                                                                                                                                        # package = pkgs.github-runner ;
+                                                                                                                                        package =
+                                                                                                                                        pkgs.stdenv.mkDerivation {
+                                                                                                                                          name = "github-runner-v2.322.0";
+                                                                                                                                          src = pkgs.fetchurl {
+                                                                                                                                            url = "https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz";
+                                                                                                                                            sha256 = "..."; # Get the correct sha256 hash
+                                                                                                                                          };
+                                                                                                                                          installPhase = ''
+                                                                                                                                            tar -xvf $src
+                                                                                                                                            # Set up any necessary installation steps here, e.g., placing binaries in $out
+                                                                                                                                          '';
+                                                                                                                                        } ;
                                                                                                                                         replace = true ;
                                                                                                                                         tokenFile = token-file ;
                                                                                                                                         url = "https://github.com/viktordanek/temporary" ;
