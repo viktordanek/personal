@@ -154,7 +154,7 @@
                                                                         mapper =
                                                                             value :
                                                                                 [
-                                                                                    "DIRECTORY=${ _environment-variable "TMPDIR" }/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "-" ( builtins.map builtins.toJSON [ value.identity-file value.remote value.seed value.user ] ) ) }"
+                                                                                    "DIRECTORY=${ _environment-variable "TMPDIR" }/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
                                                                                     ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } ; fi''
                                                                                 ] ;
                                                                         in builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ;
