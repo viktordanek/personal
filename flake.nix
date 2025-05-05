@@ -180,40 +180,25 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.virtual-machine-runner =
+                                                                                                                                services.github-runners.runners =
                                                                                                                                     {
-                                                                                                                                        enable = true ;
-                                                                                                                                        ephemeral = true ;
-                                                                                                                                        extraLabels = [ "nixos" ] ;
-                                                                                                                                        extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
-                                                                                                                                        name = "virtual-machine-runner" ;
-                                                                                                                                        # nodeRuntimes = [ "node20" ] ;
-                                                                                                                                        package =
-                                                                                                                                            pkgs.github-runner.override
-                                                                                                                                                {
-                                                                                                                                                    nodeRuntimes = pkgs.nodejs_20;
-                                                                                                                                                } ;
-                                                                                                                                        # package =  pkgs.github-runner ;
-                                                                                                                                        # package =
-                                                                                                                                        #     pkgs.stdenv.mkDerivation
-                                                                                                                                        #         {
-                                                                                                                                        #             name = "github-runner-v2.322.0";
-                                                                                                                                        #             src =
-                                                                                                                                        #                 pkgs.fetchurl
-                                                                                                                                        #                     {
-                                                                                                                                        #                         url = "https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz" ;
-                                                                                                                                        #                         sha256 = "b13b784808359f31bc79b08a191f5f83757852957dd8fe3dbfcc38202ccf5768"; # Get the correct sha256 hash
-                                                                                                                                        #                     } ;
-                                                                                                                                        #             installPhase =
-                                                                                                                                        #                 ''
-                                                                                                                                        #                     tar -xvf $src
-                                                                                                                                        #                     # Set up any necessary installation steps here, e.g., placing binaries in $out
-                                                                                                                                        #                 '' ;
-                                                                                                                                        #        } ;
-                                                                                                                                        replace = true ;
-                                                                                                                                        tokenFile = token-file ;
-                                                                                                                                        url = "https://github.com/viktordanek/temporary" ;
-                                                                                                                                        user = "runner" ;
+                                                                                                                                        virtual-machine-runner =
+                                                                                                                                            {
+                                                                                                                                                enable = true ;
+                                                                                                                                                ephemeral = true ;
+                                                                                                                                                extraLabels = [ "nixos" ] ;
+                                                                                                                                                extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
+                                                                                                                                                name = "virtual-machine-runner" ;
+                                                                                                                                                package =
+                                                                                                                                                    pkgs.github-runner.override
+                                                                                                                                                        {
+                                                                                                                                                            nodeRuntimes = pkgs.nodejs_20;
+                                                                                                                                                        } ;
+                                                                                                                                                replace = true ;
+                                                                                                                                                tokenFile = token-file ;
+                                                                                                                                                url = "https://github.com/viktordanek/temporary" ;
+                                                                                                                                                user = "runner" ;
+                                                                                                                                            } ;
                                                                                                                                     } ;
                                                                                                                                 services.openssh.enable = true ;
                                                                                                                                 networking.firewall.allowedTCPPorts = [ 22 ] ;
