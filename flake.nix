@@ -181,24 +181,22 @@
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
                                                                                                                                 services.github-runners.virtual-machine-runner =
-                                                                                                                                    [
-                                                                                                                                        {
-                                                                                                                                            enable = true ;
-                                                                                                                                            ephemeral = true ;
-                                                                                                                                            extraLabels = [ "nixos" ] ;
-                                                                                                                                            extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
-                                                                                                                                            name = "virtual-machine-runner" ;
-                                                                                                                                            package =
-                                                                                                                                                pkgs.github-runner.override
-                                                                                                                                                    {
-                                                                                                                                                        nodeRuntimes = pkgs.nodejs_20;
-                                                                                                                                                    } ;
-                                                                                                                                            replace = true ;
-                                                                                                                                            tokenFile = token-file ;
-                                                                                                                                            url = "https://github.com/viktordanek/temporary" ;
-                                                                                                                                            user = "runner" ;
-                                                                                                                                        }
-                                                                                                                                    ] ;
+                                                                                                                                    {
+                                                                                                                                        enable = true ;
+                                                                                                                                        ephemeral = true ;
+                                                                                                                                        extraLabels = [ "nixos" ] ;
+                                                                                                                                        extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
+                                                                                                                                        name = "virtual-machine-runner" ;
+                                                                                                                                        package =
+                                                                                                                                            pkgs.github-runner.override
+                                                                                                                                                {
+                                                                                                                                                    nodeRuntimes = pkgs.nodejs_20;
+                                                                                                                                                } ;
+                                                                                                                                        replace = true ;
+                                                                                                                                        tokenFile = token-file ;
+                                                                                                                                        url = "https://github.com/viktordanek/temporary" ;
+                                                                                                                                        user = "runner" ;
+                                                                                                                                    } ;
                                                                                                                                 services.openssh.enable = true ;
                                                                                                                                 networking.firewall.allowedTCPPorts = [ 22 ] ;
                                                                                                                                 system.stateVersion = "24.11" ;
