@@ -174,41 +174,46 @@
                                                                                                                                         pkgs.jq
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
-                                                                                                                                environment.variables.TOKEN_FILE = token-file ;
-                                                                                                                                fileSystems."/home/github_runner" =
-                                                                                                                                    {
-                                                                                                                                        device = "tmpfs" ;
-                                                                                                                                        fsType = "tmpfs" ;
-                                                                                                                                        options = [ "mode=0755" ] ;
-                                                                                                                                    } ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners =
-                                                                                                                                    {
-                                                                                                                                        github-runner =
-                                                                                                                                            {
-                                                                                                                                                enable = true ;
-                                                                                                                                                extraEnvironment =
-                                                                                                                                                    {
-                                                                                                                                                        # RUNNER_NAME = "github-runner-vm" ;                      # consistent with .name above
-                                                                                                                                                        # RUNNER_WORK_DIRECTORY = "/home/github_runner/" ;   # writable location
-                                                                                                                                                        # GITHUB_ACTIONS_RUNNER_DEBUG = "true" ;                  # enable runner debug logs
-                                                                                                                                                        # DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = "1" ;           # fix .NET globalization errors on NixOS
-                                                                                                                                                    } ;
-                                                                                                                                                ephemeral = false ;
-                                                                                                                                                extraLabels = [ "nixos" "vm" ] ;
-                                                                                                                                                name = "github-runner-vm" ;
-                                                                                                                                                package = pkgs.github-runner ;
-                                                                                                                                                replace = true ;
-                                                                                                                                                tokenFile = token-file ;
-                                                                                                                                                url = "https://github.com/viktordanek/temporary" ;
-                                                                                                                                                user = "root" ;
-                                                                                                                                            } ;
-                                                                                                                                    } ;
+systemd.services.github-runner = {
+  description = "GitHub Actions Runner";
+  after = [ "network.target" ];
+  wantedBy = [ "multi-user.target" ];
+  serviceConfig = {
+    Type = "simple";
+    WorkingDirectory = "/var/lib/github-runner";
+    ExecStartPre = pkgs.writeShellScript "setup-runner" ''
+      set -eux
+      mkdir -p /var/lib/github-runner
+      cd /var/lib/github-runner
+
+      if [ ! -f ./run.sh ]; then
+        echo "Installing GitHub Actions runner..."
+        curl -L -o runner.tar.gz https://github.com/actions/runner/releases/download/v2.316.0/actions-runner-linux-x64-2.316.0.tar.gz
+        tar xzf runner.tar.gz
+      fi
+
+      if [ ! -f .runner ]; then
+        echo "Configuring runner..."
+        ./config.sh --unattended \
+          --url https://github.com/viktordanek/temporary \
+          --token ${config.personal.user.token} \
+          --name nix-vm-runner \
+          --labels nix,vm \
+          --ephemeral
+      fi
+    '';
+    ExecStart = "/var/lib/github-runner/run.sh";
+    Restart = "always";
+  };
+};
+
+
                                                                                                                                 users =
                                                                                                                                     {
                                                                                                                                         groups.github_runner = { } ;
