@@ -180,7 +180,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.runner =
+                                                                                                                                services.github-runners.runners.runner =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         ephemeral = true ;
