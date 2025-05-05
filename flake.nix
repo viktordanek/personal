@@ -193,7 +193,7 @@
                                                                                                                                           name = "github-runner-v2.322.0";
                                                                                                                                           src = pkgs.fetchurl {
                                                                                                                                             url = "https://github.com/actions/runner/releases/download/v2.322.0/actions-runner-linux-x64-2.322.0.tar.gz";
-                                                                                                                                            sha256 = "..."; # Get the correct sha256 hash
+                                                                                                                                            sha256 = "b13b784808359f31bc79b08a191f5f83757852957dd8fe3dbfcc38202ccf5768"; # Get the correct sha256 hash
                                                                                                                                           };
                                                                                                                                           installPhase = ''
                                                                                                                                             tar -xvf $src
