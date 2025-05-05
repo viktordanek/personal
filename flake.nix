@@ -155,7 +155,7 @@
                                                                             value :
                                                                                 [
                                                                                     "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
-                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" && git remote add origin ${ value.remote } ; fi''
+                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" && git remote add origin ${ value.remote } ; fi''
                                                                                 ] ;
                                                                         in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
                                                             } ;
