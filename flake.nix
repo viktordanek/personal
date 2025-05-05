@@ -11,7 +11,7 @@
                 fun =
                     system :
                         let
-                            _environment-variable = builtins.getAttr system environment-variable-lib ;
+                            _environment-variable = builtins.getAttr system environment-variable ;
                             lib =
                                 { config , lib , pkgs , ... } :
                                     {
