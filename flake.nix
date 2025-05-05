@@ -157,7 +157,7 @@
                                                                                     "DIRECTORY=${ _environment-variable "TMPDIR" }/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
                                                                                     ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } ; fi''
                                                                                 ] ;
-                                                                        in builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ;
+                                                                        in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
                                                             } ;
                                                         wantedBy = [ "multi-user.target" ] ;
                                                     } ;
