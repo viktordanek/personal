@@ -215,7 +215,7 @@
                                                                                                                                         users.root =
                                                                                                                                             {
                                                                                                                                                 createHome = true ;
-                                                                                                                                                isNormalUser = true ;
+                                                                                                                                                # isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
                                                                                                                                             } ;
