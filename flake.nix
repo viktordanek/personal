@@ -172,8 +172,8 @@
                                                                                                                     ${ pkgs.coreutils }/bin/echo "  name: ${ _environment-variable "NAME" } >> /tmp/remotes/jobs.yaml &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "  new: ${ _environment-variable "NEW" } >> /tmp/remotes/jobs.yaml &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "  old: ${ _environment-variable "OLD" } >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  remote: ${ value.remote }" >> /tmp/remotes/jobs.yaml" &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  seed: ${ value.seed }" >> /tmp/remotes/jobs.yaml" &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  remote: ${ value.remote }" >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  seed: ${ value.seed }" >> /tmp/remotes/jobs.yaml &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "  timestamp: $( ${ pkgs.coreutils }/bin/date +%s )" >> /tmp/remotes/jobs.yaml &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo "  user: ${ value.user }" >> /tmp/remotes/jobs.yaml
                                                                                                             done
