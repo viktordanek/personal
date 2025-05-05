@@ -144,23 +144,23 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
-                                                systemd.services.github-remote =
-                                                    {
-                                                        after = [ "network.target" ] ;
-                                                        serviceConfig =
-                                                            {
-                                                                ExecStart =
-                                                                    let
-                                                                        mapper =
-                                                                            value :
-                                                                                [
-                                                                                    "DIRECTORY=${ _environment-variable "TMPDIR" }/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "-" ( builtins.map builtins.toJSON [ value.identity-file value.remote value.seed value.user ] ) ) }"
-                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" ; fi''
-                                                                                ] ;
-                                                                        in builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ;
-                                                            } ;
-                                                        wantedBy = [ "multi-user.target" ] ;
-                                                    } ;
+                                                # systemd.services.github-remote =
+                                                #     {
+                                                #         after = [ "network.target" ] ;
+                                                #         serviceConfig =
+                                                #             {
+                                                #                 ExecStart =
+                                                #                     let
+                                                #                         mapper =
+                                                #                             value :
+                                                #                                 [
+                                                #                                     "DIRECTORY=${ _environment-variable "TMPDIR" }/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "-" ( builtins.map builtins.toJSON [ value.identity-file value.remote value.seed value.user ] ) ) }"
+                                                #                                     ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" ; fi''
+                                                #                                 ] ;
+                                                #                         in builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ;
+                                                #             } ;
+                                                #         wantedBy = [ "multi-user.target" ] ;
+                                                #     } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
                                                     {
