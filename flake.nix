@@ -186,7 +186,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.runners.virtual-machine-runner =
+                                                                                                                                services.github-runners.virtual-machine-runner =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         ephemeral = true ;
