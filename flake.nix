@@ -154,7 +154,8 @@
                                                                         mapper =
                                                                             value :
                                                                                 [
-                                                                                    "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }.git"
+                                                                                    "DIRECTORY=/tmp/remotes/${ builtins.hashString "sha512" ( builtins.toJSON value ) }.git"
+                                                                                    "if [ ! -d /tmp/remotes ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/remotes ; fi"
                                                                                     "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     (
