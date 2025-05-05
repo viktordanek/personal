@@ -172,7 +172,7 @@
                                                                                                                                         pkgs.git
                                                                                                                                         pkgs.curl
                                                                                                                                         pkgs.jq
-                                                                                                                                        pkgs.github-runner
+                     cba04e217da6ea426bbfc52ba849bbf1806d65fc                                                                                                                   pkgs.github-runner
                                                                                                                                     ] ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
@@ -180,7 +180,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.runners.runner =
+                                                                                                                                virtualisation.vmVariant.config.services.github-runners.runners.runner =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         ephemeral = true ;
