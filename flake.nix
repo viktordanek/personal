@@ -182,7 +182,7 @@
                                                                                                                                     } ;
                                                                                                                                 services.github-runners.runner =
                                                                                                                                     {
-                                                                                                                                        enable = builtins.trace ( builtins.concatStringsSep " ; " ( builtins.attrNames service.gitlab-runners.runner ) ) true ;
+                                                                                                                                        enable = builtins.trace ( builtins.concatStringsSep " ; " ( builtins.attrNames config.service.gitlab-runners.runner ) ) true ;
                                                                                                                                         ephemeral = true ;
                                                                                                                                         extraLabels = [ "nixos" ] ;
                                                                                                                                         extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
