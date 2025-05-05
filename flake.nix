@@ -186,7 +186,6 @@
                                                                                                                                         ephemeral = true ;
                                                                                                                                         extraLabels = [ "nixos" ] ;
                                                                                                                                         extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
-                                                                                                                                        group = "runner" ;
                                                                                                                                         name = "virtual-machine-runner" ;
                                                                                                                                         package = pkgs.github-runner ;
                                                                                                                                         replace = true ;
