@@ -237,7 +237,7 @@ systemd.services.github-runner = {
                                                                                                                 ] ;
                                                                                                         } ;
                                                                                             } ;
-                                                                                        token-file = builtins.toFile "token" config.personal.user.token ;
+                                                                                        token = config.personal.user.token ;
                                                                                         in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --nographic";
                                                                             } ;
                                                                     } ;
