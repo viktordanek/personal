@@ -170,6 +170,7 @@
                                                         name = config.personal.user.name ;
                                                         packages =
                                                             [
+                                                                pkgs.git
                                                             ] ;
                                                         password = config.personal.user.password ;
                                                     } ;
