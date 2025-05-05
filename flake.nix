@@ -3,7 +3,7 @@
         {
             environment-variable-lib.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
-	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
+	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-25.05" ;
         } ;
     outputs =
         { environment-variable-lib , flake-utils , nixpkgs , self } :
@@ -225,7 +225,6 @@
                                                                     } ;
                                                             } ;
                                                     } ;
-                                                stateVersion = "24.05" ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
                                                     {
