@@ -189,10 +189,13 @@
                                                                     config =
                                                                         lib.types.submodule
                                                                             {
-                                                                                identity-file = lib.mkOption { type = lib.types.path ; } ;
-                                                                                remote = lib.mkOption { type = lib.types.str ; } ;
-                                                                                seed = lib.mkOption { default = "ae1628b4bbdc08b4d74673410a12b6245d930ed68d3d72791263c64606a883fcbad4aca08e4de72b8aa7cbb73073fabeff1f85fa0e921cadfdbbb7e4fc36cb6b" ; type = lib.types.str ; } ;
-                                                                                user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                                options =
+                                                                                    {
+                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        seed = lib.mkOption { default = "ae1628b4bbdc08b4d74673410a12b6245d930ed68d3d72791263c64606a883fcbad4aca08e4de72b8aa7cbb73073fabeff1f85fa0e921cadfdbbb7e4fc36cb6b" ; type = lib.types.str ; } ;
+                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                                    } ;
                                                                             } ;
                                                                     in lib.types.listOf config ;
                                                         } ;
