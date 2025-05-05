@@ -1,17 +1,17 @@
 {
     inputs =
         {
-            environment-variable-lib.url = "github:viktordanek/environment-variable" ;
+            environment-variable.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
         } ;
     outputs =
-        { environment-variable-lib , flake-utils , nixpkgs , self } :
+        { environment-variable , flake-utils , nixpkgs , self } :
             let
-                environment-variable = environment-variable-lib.lib ;
                 fun =
                     system :
                         let
+                            _environment-variable = builtins.getAttr system environment-variable-lib ;
                             lib =
                                 { config , lib , pkgs , ... } :
                                     {
