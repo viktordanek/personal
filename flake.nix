@@ -180,46 +180,29 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-systemd.services.github-runner = {
-  description = "GitHub Actions Runner";
-  after = [ "network.target" ];
-  wantedBy = [ "multi-user.target" ];
-  serviceConfig = {
-    Type = "simple";
-    WorkingDirectory = "/var/lib/github-runner";
-    ExecStartPre = pkgs.writeShellScript "setup-runner" ''
-      set -eux
-      mkdir -p /var/lib/github-runner
-      cd /var/lib/github-runner
-
-      if [ ! -f ./run.sh ]; then
-        echo "Installing GitHub Actions runner..."
-        curl -L -o runner.tar.gz https://github.com/actions/runner/releases/download/v2.316.0/actions-runner-linux-x64-2.316.0.tar.gz
-        tar xzf runner.tar.gz
-      fi
-
-      if [ ! -f .runner ]; then
-        echo "Configuring runner..."
-        ./config.sh --unattended \
-          --url https://github.com/viktordanek/temporary \
-          --token ${token} \
-          --name nix-vm-runner \
-          --labels nix,vm \
-          --ephemeral
-      fi
-    '';
-    ExecStart = "/var/lib/github-runner/run.sh";
-    Restart = "always";
-  };
-};
-
-
+                                                                                                                                services.github-runners.runner =
+                                                                                                                                    {
+                                                                                                                                        enable = true ;
+                                                                                                                                        ephemeral = true ;
+                                                                                                                                        extraLabels = [ "nixos" ] ;
+                                                                                                                                        extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
+                                                                                                                                        group = "runner" ;
+                                                                                                                                        name = "virtual-machine-runner" ;
+                                                                                                                                        package = pkgs.github-runner ;
+                                                                                                                                        replace = true ;
+                                                                                                                                        runnerGroup = "runner" ;
+                                                                                                                                        tokenFile = token-file ;
+                                                                                                                                        url = "https://github.com/viktordanek/temporary" ;
+                                                                                                                                        user = "runner" ;
+                                                                                                                                        workDir = "/home/runner/work" ;
+                                                                                                                                    } ;
                                                                                                                                 users =
                                                                                                                                     {
-                                                                                                                                        groups.github_runner = { } ;
-                                                                                                                                        users.github_runner =
+                                                                                                                                        groups.runner = { } ;
+                                                                                                                                        users.runner =
                                                                                                                                             {
                                                                                                                                                 createHome = true ;
+                                                                                                                                                extraGroups = [ "runner" ] ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
@@ -230,7 +213,7 @@ systemd.services.github-runner = {
                                                                                                                 ] ;
                                                                                                         } ;
                                                                                             } ;
-                                                                                        token = config.personal.user.token ;
+                                                                                        token-file = builtins.toFile "token" config.personal.user.token ;
                                                                                         in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --nographic";
                                                                             } ;
                                                                     } ;
