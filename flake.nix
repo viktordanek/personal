@@ -186,7 +186,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.runner =
+                                                                                                                                services.github-runners.runners.runner =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         ephemeral = true ;
@@ -197,7 +197,7 @@
                                                                                                                                         replace = true ;
                                                                                                                                         runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
-                                                                                                                                        # tokenType = "org" ;
+                                                                                                                                        tokenType = "org" ;
                                                                                                                                         url = "https://github.com/viktordanek" ;
                                                                                                                                         user = "runner" ;
                                                                                                                                         workDir = "/work" ;
