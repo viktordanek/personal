@@ -167,12 +167,12 @@
                                                                                                                     (
                                                                                                                         { config , ... } :
                                                                                                                             {
+                                                                                                                                environment.etc."github-runner-token".text = token ;
                                                                                                                                 environment.systemPackages =
                                                                                                                                     [
                                                                                                                                         pkgs.git
                                                                                                                                         pkgs.curl
                                                                                                                                         pkgs.jq
-                                                                                                                                        # pkgs.github-runner
                                                                                                                                     ] ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
@@ -193,7 +193,7 @@
                                                                                                                                                     nodeRuntimes = pkgs.nodejs_20;
                                                                                                                                                 } ;
                                                                                                                                         replace = true ;
-                                                                                                                                        tokenFile = token-file ;
+                                                                                                                                        tokenFile = "/etc/github-runner-token" ;
                                                                                                                                         url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                         user = "runner" ;
                                                                                                                                     } ;
@@ -217,9 +217,9 @@
                                                                                                                 ] ;
                                                                                                         } ;
                                                                                             } ;
-                                                                                        token-file = builtins.toFile "token" config.personal.user.token ;
+                                                                                        token = config.personal.user.token ;
                                                                                         virtual-machine = nixosConfigurations.github-runner.config.system.build.vm ;
-                                                                                        in builtins.trace token-file "${ virtual-machine }/bin/run-nixos-vm --nographic" ;
+                                                                                        in "${ virtual-machine }/bin/run-nixos-vm --nographic" ;
                                                                             } ;
                                                                     } ;
                                                             } ;
