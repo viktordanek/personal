@@ -191,7 +191,7 @@
                                                                                                                                         replace = true ;
                                                                                                                                         runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
-                                                                                                                                        url = "https://github.com/viktordanek/temporary" ;
+                                                                                                                                        url = "https://github.com/viktordanek" ;
                                                                                                                                         user = "runner" ;
                                                                                                                                     } ;
                                                                                                                                 users =
