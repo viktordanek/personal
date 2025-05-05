@@ -144,6 +144,23 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
+                                                systemd.services.github-remote =
+                                                    {
+                                                        after = [ "network.target" ] ;
+                                                        serviceConfig =
+                                                            {
+                                                                ExecStart =
+                                                                    let
+                                                                        mapper =
+                                                                            value :
+                                                                                [
+                                                                                    "DIRECTORY=${ _environment-variable "TMPDIR" }/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d ) ${ builtins.hashString "sha512" ( builtins.concatStringsSep "-" ( builtins.map builtins.toJSON [ value.identity-file value.remote value.seed value.user ] ) ) }"
+                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" ; fi''
+                                                                                ] ;
+                                                                        in builtins.concatStringsSep " &&\n\t" ( builtins.map mapper config.personal.remotes ) ;
+                                                            } ;
+                                                        wantedBy = [ "multi-user.target" ] ;
+                                                    } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
                                                     {
@@ -163,6 +180,22 @@
                                                 personal.user.name = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.password = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.token = lib.mkOption { type = lib.types.str ; } ;
+                                                personal.remotes =
+                                                    lib.mkOption
+                                                        {
+                                                            default = [ ] ;
+                                                            type =
+                                                                let
+                                                                    config =
+                                                                        lib.types.submodule
+                                                                            {
+                                                                                identity-file = lib.mkOption { type = lib.types.path ; } ;
+                                                                                remote = lib.mkOption { type = lib.types.str ; } ;
+                                                                                seed = lib.mkOption { default = "ae1628b4bbdc08b4d74673410a12b6245d930ed68d3d72791263c64606a883fcbad4aca08e4de72b8aa7cbb73073fabeff1f85fa0e921cadfdbbb7e4fc36cb6b" ; type = lib.types.str ; } ;
+                                                                                user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                            } ;
+                                                                    in lib.types.listOf config ;
+                                                        } ;
                                                 personal.wifi =
                                                     lib.mkOption
                                                         {
