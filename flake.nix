@@ -174,6 +174,12 @@
                                                                                                                                         pkgs.jq
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
+                                                                                                                                fileSystems."/work" =
+                                                                                                                                    {
+                                                                                                                                        device = "tmpfs";
+                                                                                                                                        fsType = "tmpfs";
+                                                                                                                                        options = [ "mode=0755" "size=512M" ] ;
+                                                                                                                                    } ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
                                                                                                                                     {
@@ -191,8 +197,10 @@
                                                                                                                                         replace = true ;
                                                                                                                                         runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
+                                                                                                                                        tokenType = "org" ;
                                                                                                                                         url = "https://github.com/viktordanek" ;
                                                                                                                                         user = "runner" ;
+                                                                                                                                        workDir = "/work" ;
                                                                                                                                     } ;
                                                                                                                                 users =
                                                                                                                                     {
