@@ -180,7 +180,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                services.github-runners.runners =
+                                                                                                                                services.github-runners.virtual-machine-runner =
                                                                                                                                     [
                                                                                                                                         {
                                                                                                                                             enable = true ;
@@ -220,7 +220,7 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                         token-file = builtins.toFile "token" config.personal.user.token ;
-                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --nographic";
+                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --nographic" ;
                                                                             } ;
                                                                     } ;
                                                             } ;
