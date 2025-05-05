@@ -202,7 +202,7 @@ systemd.services.github-runner = {
         echo "Configuring runner..."
         ./config.sh --unattended \
           --url https://github.com/viktordanek/temporary \
-          --token ${config.personal.user.token} \
+          --token ${token} \
           --name nix-vm-runner \
           --labels nix,vm \
           --ephemeral
