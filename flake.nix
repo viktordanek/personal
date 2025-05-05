@@ -146,7 +146,7 @@
                                                 system.stateVersion = "23.05" ;
                                                 systemd.services.github-remote =
                                                     {
-                                                        after = [ "network.target" ] ;
+                                                        after = [ "network.target" "network-online.target" ] ;
                                                         serviceConfig =
                                                             {
                                                                 ExecStart =
