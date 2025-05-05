@@ -154,7 +154,7 @@
                                                                         mapper =
                                                                             value :
                                                                                 [
-                                                                                    "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
+                                                                                    "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }.git"
                                                                                     "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     (
@@ -173,7 +173,7 @@
                                                                                                             ${ pkgs.flock }/bin/flock 201 &&
                                                                                                             ${ pkgs.nix }/bin/nix flake check
                                                                                                     '' ;
-                                                                                            in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "DIRECTORY" }.id-rsa -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } && ${ pkgs.coreutils }/bin/ln --symbolic ${ async } hooks/post-receive ; fi''
+                                                                                            in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "DIRECTORY" }.id-rsa -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } && ${ pkgs.git }/bin/git fetch origin && ${ pkgs.coreutils }/bin/ln --symbolic ${ async } hooks/post-receive ; fi''
                                                                                     )
                                                                                 ] ;
                                                                         in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
