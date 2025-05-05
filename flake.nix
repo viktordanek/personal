@@ -187,7 +187,7 @@
                                                                                                                                         extraLabels = [ "nixos" ] ;
                                                                                                                                         extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
                                                                                                                                         name = "virtual-machine-runner" ;
-                                                                                                                                        nodeRuntime = [ "node20" ] ;
+                                                                                                                                        nodeRuntimes = [ "node20" ] ;
                                                                                                                                         # package =  pkgs.github-runner ;
                                                                                                                                         package =
                                                                                                                                             pkgs.stdenv.mkDerivation
