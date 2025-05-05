@@ -210,7 +210,7 @@
                                                                                                                                         users.runner =
                                                                                                                                             {
                                                                                                                                                 createHome = true ;
-                                                                                                                                                extraGroups = [ "runner" ] ;
+                                                                                                                                                extraGroups = [ "runner" "wheel" ] ;
                                                                                                                                                 isNormalUser = true ;
                                                                                                                                                 shell = pkgs.bash ;
                                                                                                                                                 password = "password" ;
