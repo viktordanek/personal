@@ -160,19 +160,23 @@
                                                                                     "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     (
                                                                                         let
-                                                                                            async =
+                                                                                            write =
                                                                                                 pkgs.writeShellScript
-                                                                                                    "async"
+                                                                                                    "write"
                                                                                                     ''
-                                                                                                        ${ nix-flake-check } &
-                                                                                                    '' ;
-                                                                                            nix-flake-check =
-                                                                                                pkgs.writeShellScript
-                                                                                                    "nix-flake-check"
-                                                                                                    ''
-                                                                                                        exec 201> /tmp/f3db7414d1a188b06b9713f8e32019faee659209df9f877e206d109d498c74685fce60c9b2947554780383a16ce3db9bd4b8eee22d16e9dd8a7642ac1864cb46.lock &&
+                                                                                                        exec 201> /tmp/remotes/jobs.lock &&
                                                                                                             ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                            ${ pkgs.nix }/bin/nix flake check
+                                                                                                            while read OLD NEW NAME
+                                                                                                            do
+                                                                                                                ${ pkgs.coreutils }/bin/echo "- identity-file: ${ value.identity-file } >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  name: ${ _environment-variable "NAME" } >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  new: ${ _environment-variable "NEW" } >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  old: ${ _environment-variable "OLD" } >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  remote: ${ value.remote }" >> /tmp/remotes/jobs.yaml" &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  seed: ${ value.seed }" >> /tmp/remotes/jobs.yaml" &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  timestamp: $( ${ pkgs.coreutils }/bin/date +%s )" >> /tmp/remotes/jobs.yaml &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo "  user: ${ value.user }" >> /tmp/remotes/jobs.yaml"
+                                                                                                            done
                                                                                                     '' ;
                                                                                             in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && export GIT_SSH_COMMAND="${ pkgs.openssh }/bin/ssh -i ${ value.identity-file } -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git clone --mirror ${ value.remote } ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "GIT__SSH_COMMAND" } && ${ pkgs.git }/bin/git symbolic-ref HEAD refs/heads/main ; fi''
                                                                                     )
