@@ -191,7 +191,7 @@
                                                                                                                                         package =
                                                                                                                                             pkgs.github-runner.override
                                                                                                                                                 {
-                                                                                                                                                    nodeRuntime = pkgs.nodejs_20;
+                                                                                                                                                    nodeRuntimes = pkgs.nodejs_20;
                                                                                                                                                 } ;
                                                                                                                                         # package =  pkgs.github-runner ;
                                                                                                                                         # package =
