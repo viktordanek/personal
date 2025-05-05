@@ -143,7 +143,7 @@
                                                                 xkbVariant = "" ;
                                                             } ;
                                                     } ;
-                                                # system.stateVersion = "23.05" ;
+                                                system.stateVersion = "23.05" ;
                                                 systemd =
                                                     {
                                                         services =
@@ -203,6 +203,7 @@
                                                                                                                                     } ;
                                                                                                                                 services.openssh.enable = true ;
                                                                                                                                 networking.firewall.allowedTCPPorts = [ 22 ] ;
+                                                                                                                                system.stateVersion = "24.11" ;
                                                                                                                                 users =
                                                                                                                                     {
                                                                                                                                         groups.runner = { } ;
