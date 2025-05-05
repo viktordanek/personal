@@ -182,7 +182,7 @@
                                                                                                                                     } ;
                                                                                                                                 services.github-runners.runner =
                                                                                                                                     {
-                                                                                                                                        enable = true ;
+                                                                                                                                        enable = builtins.trace ( builtins.concatStringsSep " ; " ( builtins.attrNames service.gitlab-runners.runner ) ) true ;
                                                                                                                                         ephemeral = true ;
                                                                                                                                         extraLabels = [ "nixos" ] ;
                                                                                                                                         extraPackages = [ pkgs.coreutils pkgs.curl pkgs.git pkgs.github-runner pkgs.jq ] ;
@@ -191,7 +191,6 @@
                                                                                                                                         replace = true ;
                                                                                                                                         runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
-                                                                                                                                        tokenType = "org" ;
                                                                                                                                         url = "https://github.com/viktordanek" ;
                                                                                                                                         user = "runner" ;
                                                                                                                                     } ;
