@@ -189,7 +189,6 @@
                                                                                                                                         name = "virtual-machine-runner" ;
                                                                                                                                         package = pkgs.github-runner ;
                                                                                                                                         replace = true ;
-                                                                                                                                        runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
                                                                                                                                         url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                         user = "runner" ;
