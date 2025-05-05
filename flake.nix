@@ -212,6 +212,13 @@
                                                                                                                                 users =
                                                                                                                                     {
                                                                                                                                         groups.github_runner = { } ;
+                                                                                                                                        users.root =
+                                                                                                                                            {
+                                                                                                                                                createHome = true ;
+                                                                                                                                                isNormalUser = true ;
+                                                                                                                                                shell = pkgs.bash ;
+                                                                                                                                                password = "password" ;
+                                                                                                                                            } ;
                                                                                                                                         users.github_runner =
                                                                                                                                             {
                                                                                                                                                 createHome = true ;
