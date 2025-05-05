@@ -154,6 +154,7 @@
                                                                         mapper =
                                                                             value :
                                                                                 [
+                                                                                    "TMPDIR=${ _environment-variable "TMPDIR:/tmp" }"
                                                                                     "DIRECTORY=${ _environment-variable "TMPDIR" }/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
                                                                                     ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } ; fi''
                                                                                 ] ;
