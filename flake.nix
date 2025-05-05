@@ -144,47 +144,67 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
-                                                systemd.services.github-remote =
+                                                systemd.services =
                                                     {
-                                                        after = [ "network.target" "network-online.target" ] ;
-                                                        serviceConfig =
+                                                        git-remotes =
                                                             {
-                                                                ExecStart =
-                                                                    let
-                                                                        mapper =
-                                                                            value :
-                                                                                [
-                                                                                    "DIRECTORY=/tmp/remotes/${ builtins.hashString "sha512" ( builtins.toJSON value ) }.git"
-                                                                                    "if [ ! -d /tmp/remotes ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/remotes ; fi"
-                                                                                    "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
-                                                                                    "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
-                                                                                    (
-                                                                                        let
-                                                                                            write =
-                                                                                                pkgs.writeShellScript
-                                                                                                    "write"
-                                                                                                    ''
-                                                                                                        exec 201> /tmp/remotes/jobs.lock &&
-                                                                                                            ${ pkgs.flock }/bin/flock 201 &&
-                                                                                                            while read OLD NEW NAME
-                                                                                                            do
-                                                                                                                ${ pkgs.coreutils }/bin/echo "- identity-file: ${ value.identity-file }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  name: ${ _environment-variable "NAME" }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  new: ${ _environment-variable "NEW" }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  old: ${ _environment-variable "OLD" }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  remote: ${ value.remote }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  seed: ${ value.seed }" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  timestamp: $( ${ pkgs.coreutils }/bin/date +%s )" >> /tmp/remotes/jobs.yaml &&
-                                                                                                                    ${ pkgs.coreutils }/bin/echo "  user: ${ value.user }" >> /tmp/remotes/jobs.yaml
-                                                                                                            done
-                                                                                                    '' ;
-                                                                                            in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && export GIT_SSH_COMMAND="${ pkgs.openssh }/bin/ssh -i ${ value.identity-file } -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git clone --mirror ${ value.remote } ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "GIT__SSH_COMMAND" } && ${ pkgs.git }/bin/git symbolic-ref HEAD refs/heads/main ; ${ pkgs.coreutils }/bin/ln --symbolic ${ write } hooks/post-receive ; fi''
-                                                                                    )
-                                                                                ] ;
-                                                                        in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
-                                                                User = config.personal.user.name ;
+                                                                after = [ "network.target" "network-online.target" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            let
+                                                                                mapper =
+                                                                                    value :
+                                                                                        [
+                                                                                            "DIRECTORY=/tmp/remotes/${ builtins.hashString "sha512" ( builtins.toJSON value ) }.git"
+                                                                                            "if [ ! -d /tmp/remotes ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/remotes ; fi"
+                                                                                            "if [ ! -d /tmp/remotes/work ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/remotes/work ; fi"
+                                                                                            "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
+                                                                                            "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
+                                                                                            (
+                                                                                                let
+                                                                                                    nix-flake-check =
+                                                                                                        pkgs.writeShellScript
+                                                                                                            "nix-flake-check"
+                                                                                                            ''
+                                                                                                                OLD=${ _environment-variable "1" } &&
+                                                                                                                    NEW=${ _environment-variable "2" } &&
+                                                                                                                    NAME=${ _environment-variable "3" } &&
+                                                                                                                    ${ pkgs.nix }/bin/nix --collect-garbage &
+                                                                                                                    WORKTREE=$( ${ pkgs.coreutils }/bin/mktemp --directory /tmp/remotes/work/XXXXXXXX ) &&
+                                                                                                                    cleanup ( )
+                                                                                                                        {
+                                                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force ${ _environment-variable "WORKTREE" }
+                                                                                                                        } &&
+                                                                                                                    trap cleanup EXIT &&
+                                                                                                                    ${ pkgs.git }/bin/git --work-tree=${ _environment-variable "WORKTREE" } checkout ${ _environment-variable "NEW" }
+                                                                                                                    ${ pkgs.nix }/bin/nix flake check --show-trace
+                                                                                                            '' ;
+                                                                                                    write =
+                                                                                                        pkgs.writeShellScript
+                                                                                                            "write"
+                                                                                                            ''
+                                                                                                                exec 201> /tmp/remotes/jobs.lock &&
+                                                                                                                    ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                                    while read OLD NEW NAME
+                                                                                                                    do
+                                                                                                                        ${ pkgs.coreutils }/bin/echo "- timestamp: $( ${ pkgs.coreutils }/bin/date +%s )" >> /tmp/remotes/jobs.yaml &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "  priority: 50" >> /tmp/remotes/jobs.yaml" &&
+                                                                                                                            ${ pkgs.coreutils }/bin/echo "  job: ${ nix-flake-check } ${ _environment-variable "OLD" } ${ _environment-variable "NEW" } ${ _environment-variable "NAME" }" >> /tmp/remotes/jobs.yaml"
+                                                                                                                    done
+                                                                                                            '' ;
+                                                                                                    in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && export GIT_SSH_COMMAND="${ pkgs.openssh }/bin/ssh -i ${ value.identity-file } -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git clone --mirror ${ value.remote } ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "GIT__SSH_COMMAND" } && ${ pkgs.git }/bin/git symbolic-ref HEAD refs/heads/main ; ${ pkgs.coreutils }/bin/ln --symbolic ${ write } hooks/post-receive ; fi''
+                                                                                            )
+                                                                                        ] ;
+                                                                                in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
+                                                                        User = config.personal.user.name ;
+                                                                    } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
                                                             } ;
-                                                        wantedBy = [ "multi-user.target" ] ;
+                                                        job-pick =
+                                                            {
+
+                                                            } ;
                                                     } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
