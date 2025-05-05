@@ -180,7 +180,7 @@
                                                                                                                                         enable = true ;
                                                                                                                                         wheelNeedsPassword = false ;
                                                                                                                                     } ;
-                                                                                                                                virtualisation.vmVarianet.config.services.github-runners.runners.runner =
+                                                                                                                                virtualisation.vmVariant.config.services.github-runners.runners.runner =
                                                                                                                                     {
                                                                                                                                         enable = true ;
                                                                                                                                         ephemeral = true ;
