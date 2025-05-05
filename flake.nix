@@ -218,7 +218,8 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                         token-file = let token-file = builtins.toFile "token" config.personal.user.token ; in builtins.trace token-file token-file ;
-                                                                                        in "${ nixosConfigurations.github-runner.config.system.build.vm }/bin/run-nixos-vm --nographic" ;
+                                                                                        virtual-machine = nixosConfigurations.github-runner.config.system.build.vm ;
+                                                                                        in "${ virtual-machine }/bin/run-nixos-vm --nographic" ;
                                                                             } ;
                                                                     } ;
                                                             } ;
