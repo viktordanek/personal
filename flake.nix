@@ -157,7 +157,24 @@
                                                                                     "DIRECTORY=/tmp/${ builtins.hashString "sha512" ( builtins.toJSON value ) }"
                                                                                     "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DIRECTORY" }.id-rsa"
                                                                                     "${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DIRECTORY" }.id-rsa"
-                                                                                    ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "DIRECTORY" }.id-rsa -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } ; fi''
+                                                                                    (
+                                                                                        let
+                                                                                            async =
+                                                                                                pkgs.writeShellScript
+                                                                                                    "async"
+                                                                                                    ''
+                                                                                                        ${ nix-flake-check } &
+                                                                                                    '' ;
+                                                                                            nix-flake-check =
+                                                                                                pkgs.writeShellScript
+                                                                                                    "nix-flake-check"
+                                                                                                    ''
+                                                                                                        exec 201> /tmp/f3db7414d1a188b06b9713f8e32019faee659209df9f877e206d109d498c74685fce60c9b2947554780383a16ce3db9bd4b8eee22d16e9dd8a7642ac1864cb46.lock &&
+                                                                                                            ${ pkgs.flock }/bin/flock 201 &&
+                                                                                                            ${ pkgs.nix }/bin/nix flake check
+                                                                                                    '' ;
+                                                                                            in ''if [ ! -d ${ _environment-variable "DIRECTORY" } ] ; then ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DIRECTORY" } && cd ${ _environment-variable "DIRECTORY" } && ${ pkgs.git }/bin/git init --bare && ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "DIRECTORY" }.id-rsa -o StrictHostKeyChecking=accept-new" && ${ pkgs.git }/bin/git remote add origin ${ value.remote } && ${ pkgs.coreutils }/bin/ln --symbolic ${ asynch } hooks/post-receive ; fi''
+                                                                                    )
                                                                                 ] ;
                                                                         in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
                                                             } ;
