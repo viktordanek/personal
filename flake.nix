@@ -197,7 +197,7 @@
                                                                                                                                         replace = true ;
                                                                                                                                         runnerGroup = "runner" ;
                                                                                                                                         tokenFile = token-file ;
-                                                                                                                                        # tokenType = "org" ;
+                                                                                                                                        tokenType = "org" ;
                                                                                                                                         url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                         user = "runner" ;
                                                                                                                                         workDir = "/work" ;
