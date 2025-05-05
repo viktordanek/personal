@@ -174,12 +174,6 @@
                                                                                                                                         pkgs.jq
                                                                                                                                         pkgs.github-runner
                                                                                                                                     ] ;
-                                                                                                                                fileSystems."/work" =
-                                                                                                                                    {
-                                                                                                                                        device = "tmpfs";
-                                                                                                                                        fsType = "tmpfs";
-                                                                                                                                        options = [ "mode=0755" "size=512M" ] ;
-                                                                                                                                    } ;
                                                                                                                                 nixpkgs.hostPlatform = "x86_64-linux" ;
                                                                                                                                 security.sudo =
                                                                                                                                     {
@@ -199,7 +193,6 @@
                                                                                                                                         tokenFile = token-file ;
                                                                                                                                         url = "https://github.com/viktordanek/temporary" ;
                                                                                                                                         user = "runner" ;
-                                                                                                                                        workDir = "/work" ;
                                                                                                                                     } ;
                                                                                                                                 services.openssh.enable = true ;
                                                                                                                                 networking.firewall.allowedTCPPorts = [ 22 ] ;
