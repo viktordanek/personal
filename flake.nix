@@ -177,8 +177,8 @@
                                                                                     )
                                                                                 ] ;
                                                                         in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ) ;
+                                                                User = config.personal.user.name ;
                                                             } ;
-                                                        user = config.personal.user.name ;
                                                         wantedBy = [ "multi-user.target" ] ;
                                                     } ;
                                                 time.timeZone = "America/New_York" ;
