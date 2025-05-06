@@ -175,13 +175,13 @@
                                                                                                 else
                                                                                                     STATUS=${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" }
                                                                                                 fi &&
-                                                                                                MESSAGE=$(cat <<EOF
-                                                                                        {
-                                                                                          "standard_output": "$(cat ${ _environment-variable "STANDARD_OUTPUT" } )",
-                                                                                          "standard_error": "$(cat ${ _environment-variable "STANDARD_ERROR" } )",
-                                                                                          "status": "${ _environment-variable "STATUS" }"
-                                                                                        }
-                                                                                        EOF
+                                                                                                MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
+                                                                                    {
+                                                                                      "standard_output": "$( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "STANDARD_OUTPUT" } )",
+                                                                                      "standard_error": "$( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "STANDARD_ERROR" } )",
+                                                                                      "status": "${ _environment-variable "STATUS" }"
+                                                                                    }
+                                                                                    EOF
                                                                                                 ) &&
                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH nix-flake-check "${ _environment-variable "MESSAGE" }"
                                                                                         fi
