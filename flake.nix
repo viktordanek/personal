@@ -210,7 +210,7 @@
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh &&
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/git &&
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/work &&
-                                                                                            ${ user-environment }/bin/user-environment
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ user-environment }/bin/user-environment
                                                                                      '';
                                                                 in builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
