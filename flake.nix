@@ -194,7 +194,7 @@
                                                                                                                     UseStrictHostKeyChecking true
                                                                                                             EOF
                                                                                                                 ) &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 /work/.ssh/config /work/.ssh/id-rsa /work/.ssh/known-hosts &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                 ${ pkgs.git }/bin/git init --separate-git-dir=${ _environment-variable "GIT_DIR" } ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                                 ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "HOMEY" }/.ssh/config" &&
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
