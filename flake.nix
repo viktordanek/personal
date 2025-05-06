@@ -184,6 +184,7 @@
                                                                                             fi
                                                                                     done
                                                                                 '' ;
+                                                                        User = config.personal.user.name ;
                                                                     } ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
