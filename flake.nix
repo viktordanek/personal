@@ -164,7 +164,6 @@
                                                                                             ${ pkgs.flock }/bin/flock 202 &&
                                                                                             JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
                                                                                             ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
-                                                                                            ${ pkgs.coreutils }/bin/chmod +x /tmp/queue/present &&
                                                                                             if [ $( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f | ${ pkgs.coreutils }/bin/wc --lines ) == 0 ]
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/rm --recursive --future /tmp/queue/future
@@ -177,7 +176,7 @@
                                                                                             PAST=$( ${ pkgs.coreutils }/bin/mktemp --directory /tmp/queue/past/XXXXXXXX ) &&
                                                                                             ${ pkgs.coreutils }/bin/cp /tmp/queue/present > ${ _environment-variable "PAST" }/script &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/script &&
-                                                                                            if /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
+                                                                                            if ${ pkgs.bash }/bin/bash /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
                                                                                             else
