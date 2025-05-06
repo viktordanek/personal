@@ -239,17 +239,19 @@
                                                                                                                         COMMIT_EMAIL=$( ${ pkgs.git }/bin/git config user.email ) &&
                                                                                                                         COMMIT_DATE=$( ${ pkgs.git }/bin/git log -1 --format=%cd ) &&
                                                                                                                         COMMIT_MESSAGE=$( ${ pkgs.git }/bin/git log -1 --format=%s) &&
+                                                                                                                        ORIGIN=${ value.origin } &&
                                                                                                                         MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
                                                                                                                         {
                                                                                                                           "commit_hash": "${ _environment-variable "COMMIT_HASH" } ,
                                                                                                                           "author": "${ _environment-variable "COMMIT_AUTHOR" } ,
                                                                                                                           "email": "${ _environment-variable "COMMIT_EMAIL" } ,
                                                                                                                           "date": "${ _environment-variable "COMMIT_DATE" } ,
-                                                                                                                          "message": "${ _environment-variable "COMMIT_MESSAGE" }
+                                                                                                                          "message": "${ _environment-variable "COMMIT_MESSAGE" } ,
+                                                                                                                          "origin": "${ _environment-variable "ORIGIN" }
                                                                                                                         }
                                                                                                                     EOF
                                                                                                                         ) &&
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH ${ value.origin } "${ _environment-variable "MESSAGE" }"
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commits "${ _environment-variable "MESSAGE" }"
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
