@@ -164,7 +164,7 @@
                                                                                     {
                                                                                         extraBwrapArgs =
                                                                                             [
-                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /home"
+                                                                                                # "--bind ${ _environment-variable "TEMPORARY" } /home"
                                                                                             ] ;
                                                                                         name = "user-environment" ;
                                                                                         profile =
