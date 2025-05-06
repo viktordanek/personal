@@ -144,44 +144,59 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
-                                                systemd.services.job-queue =
+                                                systemd=
                                                     {
-                                                        enable = true ;
-                                                        serviceConfig =
+                                                        services.job-queue =
                                                             {
-                                                                ExecStart =
-                                                                    pkgs.writeShellScript
-                                                                        "ExecStart"
-                                                                        ''
-                                                                            while [ -d /tmp/queue/future ]
-                                                                            do
-                                                                                exec 201> /tmp/queue/present.lock &&
-                                                                                    ${ pkgs.flock }/bin/flock 201 &&
-                                                                                    exec 202> /tmp/queue/future.lock &&
-                                                                                    ${ pkgs.flock }/bin/flock 202 &&
-                                                                                    JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --limit 1 ) &&
-                                                                                    ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
-                                                                                    if [ $( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/wc --lines ) == 0 ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/rm /tmp/queue/future
-                                                                                    fi &&
-                                                                                    ${ pkgs.flock }/bin/flock -u 202 &&
-                                                                                    if [ ! -d /tmp/queue/past ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past
-                                                                                    fi &&
-                                                                                    PAST=$( ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past/XXXXXXXX ) &&
-                                                                                    ${ pkgs.coreutils }/bin/cp /tmp/queue/present > ${ _environment-variable "PAST" }/script &&
-                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/script &&
-                                                                                    if /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
-                                                                                    else
-                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
-                                                                                    fi &&
-                                                                                    ${ pkgs.coreutils }/bin/mv /tmp/queue/present ${ _environment-variable "PAST" }/script
-                                                                            done
-                                                                        '' ;
+                                                                after = [ "network.target" ] ;
+                                                                enable = true ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            pkgs.writeShellScript
+                                                                                "ExecStart"
+                                                                                ''
+                                                                                    while [ -d /tmp/queue/future ]
+                                                                                    do
+                                                                                        exec 201> /tmp/queue/present.lock &&
+                                                                                            ${ pkgs.flock }/bin/flock 201 &&
+                                                                                            exec 202> /tmp/queue/future.lock &&
+                                                                                            ${ pkgs.flock }/bin/flock 202 &&
+                                                                                            JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --limit 1 ) &&
+                                                                                            ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
+                                                                                            if [ $( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/wc --lines ) == 0 ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/rm /tmp/queue/future
+                                                                                            fi &&
+                                                                                            ${ pkgs.flock }/bin/flock -u 202 &&
+                                                                                            if [ ! -d /tmp/queue/past ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past
+                                                                                            fi &&
+                                                                                            PAST=$( ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past/XXXXXXXX ) &&
+                                                                                            ${ pkgs.coreutils }/bin/cp /tmp/queue/present > ${ _environment-variable "PAST" }/script &&
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/script &&
+                                                                                            if /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
+                                                                                            else
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
+                                                                                            fi &&
+                                                                                            ${ pkgs.coreutils }/bin/mv /tmp/queue/present ${ _environment-variable "PAST" }/script
+                                                                                    done
+                                                                                '' ;
+                                                                    } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            } ;
+                                                        timers.jobq-queue =
+                                                            {
+                                                                timerConfig =
+                                                                    {
+                                                                        OnCalendar = "*-*-* *:*:00" ;
+                                                                        Persistent = false ;
+                                                                        Unit = "job-queue.service" ;
+                                                                    } ;
+                                                                wantedBy = [ "timers.target" ] ;
                                                             } ;
                                                     } ;
                                                 time.timeZone = "America/New_York" ;
