@@ -229,34 +229,58 @@
                                                                                         runScript =
                                                                                             builtins.toString
                                                                                                 (
-                                                                                                    pkgs.writeShellScript
-                                                                                                        "script"
-                                                                                                        ''
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name } &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
-                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
-                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
-                                                                                                                    Host ${ value.host }
-                                                                                                                    IdentityFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/id-rsa
-                                                                                                                    User ${ value.user }
-                                                                                                                    UserKnownHostsFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                    StrictHostKeyChecking true
-                                                                                                            EOF
-                                                                                                                ) &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                cd /work/${ value.user-name }/tree &&
-                                                                                                                ${ pkgs.git }/bin/git init &&
-                                                                                                                ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
-                                                                                                                ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                                                ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
-                                                                                                                ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
-                                                                                                                ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                                ${ pkgs.git }/bin/git fetch &&
-                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community .
-                                                                                                        ''
+                                                                                                    let
+                                                                                                        post-commit =
+                                                                                                            pkgs.writeShellScript
+                                                                                                                "post-commit"
+                                                                                                                ''
+                                                                                                                    COMMIT_HASH=$( ${ pkgs.git }/bin/git rev-parse HEAD ) &&
+                                                                                                                        COMMIT_AUTHOR=$( ${ pkgs.git }/bin/git config user.name ) &&
+                                                                                                                        COMMIT_EMAIL=$( ${ pkgs.git }/bin/git config user.email ) &&
+                                                                                                                        COMMIT_DATE=$( ${ pkgs.git }/bin/git log -1 --format=%cd ) &&
+                                                                                                                        COMMIT_MESSAGE=$( ${ pkgs.git }/bin/git log -1 --format=%s) &&
+                                                                                                                        MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
+                                                                                                                        {
+                                                                                                                          "commit_hash": "${ _environment-variable "COMMIT_HASH" } ,
+                                                                                                                          "author": "${ _environment-variable "COMMIT_AUTHOR" } ,
+                                                                                                                          "email": "${ _environment-variable "COMMIT_EMAIL" } ,
+                                                                                                                          "date": "${ _environment-variable "COMMIT_DATE" } ,
+                                                                                                                          "message": "${ _environment-variable "COMMIT_MESSAGE" }
+                                                                                                                        }
+                                                                                                                    EOF
+                                                                                                                        ) &&
+                                                                                                                        ${ pkgs.redis-cli }/bin/redis-cli PUBLISH ${ value.origin } "${ _environment-variable "MESSAGE" }"
+                                                                                                                '' ;
+                                                                                                        in
+                                                                                                            pkgs.writeShellScript
+                                                                                                                "script"
+                                                                                                                ''
+                                                                                                                    ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                                        ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
+                                                                                                                            Host ${ value.host }
+                                                                                                                            IdentityFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/id-rsa
+                                                                                                                            User ${ value.user }
+                                                                                                                            UserKnownHostsFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                                            StrictHostKeyChecking true
+                                                                                                                    EOF
+                                                                                                                        ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                                        cd /work/${ value.user-name }/tree &&
+                                                                                                                        ${ pkgs.git }/bin/git init &&
+                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
+                                                                                                                        ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
+                                                                                                                        ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
+                                                                                                                        ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
+                                                                                                                        ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
+                                                                                                                        ${ pkgs.git }/bin/git fetch &&
+                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community .
+                                                                                                                ''
                                                                                                 ) ;
                                                                                     } ;
                                                                             in
