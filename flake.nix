@@ -156,7 +156,7 @@
                                                                         ''
                                                                             ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit | while read -r LINE
                                                                             do
-                                                                                if [ ${ _environment-variable "LINE" } == "message" ]
+                                                                                if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                 then
                                                                                     read -r CHANNEL &&
                                                                                         read -r PAYLOAD &&
