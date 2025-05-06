@@ -180,9 +180,9 @@
                                                                                             pkgs.writeShellScriptBin
                                                                                                 value.workspace-name
                                                                                                 ''
-                                                                                                    ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "HOMEY" }/.ssh/id-rsa &&
-                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
-                                                                                                        ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "HOMEY" }/.ssh/config <<EOF
+                                                                                                    ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /home/${ value.user-name }/.ssh/id-rsa &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /home/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                        ( ${ pkgs.coreutils }/bin/cat > /home/${ value.user-name }/.ssh/config <<EOF
                                                                                                             Host ${ value.host }
                                                                                                             IdentityFile /home/${ value.user-name }/.ssh/id-rsa
                                                                                                             User ${ value.user }
