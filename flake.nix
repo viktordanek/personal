@@ -167,12 +167,12 @@
                                                                                         "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.user-name }/work"
                                                                                     ] ;
                                                                                 name = value.workspace-name ;
-                                                                                # profile =
-                                                                                #     [
-                                                                                #         "export HOME=/home/${ value.username }"
-                                                                                #         "export GIT_WORK_TREE=/home/${ value.user-name }/work"
-                                                                                #         "export GIT_DIR=/home/${ value.user-name }/git"
-                                                                                #     ] ;
+                                                                                profile =
+                                                                                    [
+                                                                                        "export HOME=/home/${ value.username }"
+                                                                                        "export GIT_WORK_TREE=/home/${ value.user-name }/work"
+                                                                                        "export GIT_DIR=/home/${ value.user-name }/git"
+                                                                                    ] ;
                                                                                 # runScript =
                                                                                 #     builtins.toString
                                                                                 #         (
