@@ -171,7 +171,6 @@
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
-                                                                                                    "${ pkgs.coreutils }/bin/mkdir /home/${ value.user-name }"
                                                                                                     "export GIT_WORK_TREE=/home/${ value.user-name }/work"
                                                                                                     "export GIT_DIR=/home/${ value.user-name }/git"
                                                                                                 ] ;
