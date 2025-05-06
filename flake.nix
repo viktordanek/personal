@@ -164,16 +164,13 @@
                                                                                     {
                                                                                         extraBwrapArgs =
                                                                                             [
-                                                                                                "--bind ${ _environment-variable "DOT_SSH" } /home/${ value.user-name }/.ssh"
-                                                                                                "--bind ${ _environment-variable "GIT" } /home/${ value.user-name }/git"
-                                                                                                "--bind ${ _environment-variable "WORK" } /home/${ value.user-name }/work"
+                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /home/${ value.user-name }"
                                                                                             ] ;
                                                                                         name = "user-environment" ;
                                                                                         profile =
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
-                                                                                                    "${ pkgs.coreutils }/bin/mkdir /home/${ value.user-name }"
                                                                                                     "export GIT_WORK_TREE=/home/${ value.user-name }/work"
                                                                                                     "export GIT_DIR=/home/${ value.user-name }/git"
                                                                                                 ] ;
@@ -207,9 +204,10 @@
                                                                                 pkgs.writeShellScriptBin
                                                                                     value.workspace-name
                                                                                     ''
-                                                                                        export DOT_SSH=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                            export GIT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                            export WORK=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                        export TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/.ssh &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/git &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/work &&
                                                                                             ${ user-environment }/bin/user-environment
                                                                                      '';
                                                                 in builtins.map mapper config.personal.workspaces ;
