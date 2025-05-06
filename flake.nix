@@ -221,6 +221,7 @@
                                                                             {
                                                                                 options =
                                                                                     {
+                                                                                        host = lib.mkOption { type = lib.types.str ; } ;
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         remote = lib.mkOption { type = lib.types.str ; } ;
