@@ -224,7 +224,7 @@
                                                                                         host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        remote = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
