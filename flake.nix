@@ -188,9 +188,9 @@
                                                                                                                 ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                 ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
                                                                                                                     Host ${ value.host }
-                                                                                                                    IdentityFile id-rsa
+                                                                                                                    IdentityFile ${ _environment-variable "TEMPORARY" }/.ssh/id-rsa
                                                                                                                     User ${ value.user }
-                                                                                                                    UserKnownHostsFile known-hosts &&
+                                                                                                                    UserKnownHostsFile ${ _environment-variable "TEMPORARY" }/.ssh/known-hosts &&
                                                                                                                     StrictHostKeyChecking true
                                                                                                             EOF
                                                                                                                 ) &&
