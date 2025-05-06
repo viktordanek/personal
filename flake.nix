@@ -171,6 +171,7 @@
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
+                                                                                                    "${ pkgs.coreutils }/bin/mkdir /home/${ value.user-name }"
                                                                                                     "export GIT_WORK_TREE=/home/${ value.user-name }/work"
                                                                                                     "export GIT_DIR=/home/${ value.user-name }/git"
                                                                                                 ] ;
@@ -196,7 +197,7 @@
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                 ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                 ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                               ${ pkgs.jetbrains.idea-community }/bin/idea /home/${ value.user-name }
+                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea /home/${ value.user-name }
                                                                                                         ''
                                                                                                 ) ;
                                                                                     } ;
