@@ -166,7 +166,7 @@
                                                                                             ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
                                                                                             if [ -z "$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f )" ]
                                                                                             then
-                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --future /tmp/queue/future
+                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --force /tmp/queue/future
                                                                                             fi &&
                                                                                             ${ pkgs.flock }/bin/flock -u 202 &&
                                                                                             if [ ! -d /tmp/queue/past ]
