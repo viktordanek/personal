@@ -171,8 +171,8 @@
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
-                                                                                                    "export GIT_DIR=/work/${ value.user-name }/git"
-                                                                                                    "export GIT_WORK_TREE=/work/${ value.user-name }/tree"
+                                                                                                    # "export GIT_DIR=/work/${ value.user-name }/git"
+                                                                                                    # "export GIT_WORK_TREE=/work/${ value.user-name }/tree"
                                                                                                 ] ;
                                                                                         runScript =
                                                                                             builtins.toString
