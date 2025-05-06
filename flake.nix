@@ -154,7 +154,7 @@
                                                                     pkgs.writeShellScript
                                                                         "ExecStart"
                                                                         ''
-                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit | while read -r LINE
+                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commits | while read -r LINE
                                                                             do
                                                                                 if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                 then
