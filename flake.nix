@@ -187,7 +187,7 @@
                                                                     } ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
-                                                        timers.jobq-queue =
+                                                        timers.job-queue =
                                                             {
                                                                 timerConfig =
                                                                     {
