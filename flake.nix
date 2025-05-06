@@ -229,7 +229,7 @@
                                                                                                             pkgs.writeShellScript
                                                                                                                 "post-commit"
                                                                                                                 ''
-                                                                                                                    ${ pkgs.coreutils }/echo YES ${ _environment-variable "0" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/echo YES ${ _environment-variable "0" } &&
                                                                                                                         COMMIT_HASH=$( ${ pkgs.git }/bin/git rev-parse HEAD ) &&
                                                                                                                         COMMIT_AUTHOR=$( ${ pkgs.git }/bin/git config user.name ) &&
                                                                                                                         COMMIT_EMAIL=$( ${ pkgs.git }/bin/git config user.email ) &&
