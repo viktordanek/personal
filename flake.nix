@@ -186,7 +186,7 @@
                                                                                                 ) &&
                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH nix-flake-check "${ _environment-variable "MESSAGE" }"
                                                                                         fi &&
-                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLIC dead "${ _environment-variable "COMMIT_HASH" } ${ _environment-variable "WORK_TREE" }"
+                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH dead "${ _environment-variable "COMMIT_HASH" } ${ _environment-variable "WORK_TREE" }"
                                                                                 fi
                                                                             done
                                                                         '' ;
@@ -229,7 +229,8 @@
                                                                                                             pkgs.writeShellScript
                                                                                                                 "post-commit"
                                                                                                                 ''
-                                                                                                                    COMMIT_HASH=$( ${ pkgs.git }/bin/git rev-parse HEAD ) &&
+                                                                                                                    ${ pkgs.coreutils }/echo YES ${ _environment-variable "0" } &&
+                                                                                                                        COMMIT_HASH=$( ${ pkgs.git }/bin/git rev-parse HEAD ) &&
                                                                                                                         COMMIT_AUTHOR=$( ${ pkgs.git }/bin/git config user.name ) &&
                                                                                                                         COMMIT_EMAIL=$( ${ pkgs.git }/bin/git config user.email ) &&
                                                                                                                         COMMIT_DATE=$( ${ pkgs.git }/bin/git log -1 --format=%cd ) &&
