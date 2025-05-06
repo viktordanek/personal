@@ -164,7 +164,7 @@
                                                                                     {
                                                                                         extraBwrapArgs =
                                                                                             [
-                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /home/${ value.user-name }"
+                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /home"
                                                                                             ] ;
                                                                                         name = "user-environment" ;
                                                                                         profile =
@@ -206,9 +206,10 @@
                                                                                     value.workspace-name
                                                                                     ''
                                                                                         export TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/.ssh &&
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/git &&
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/work &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name } &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/git &&
+                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/work &&
                                                                                             ${ user-environment }/bin/user-environment
                                                                                      '';
                                                                 in builtins.map mapper config.personal.workspaces ;
