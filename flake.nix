@@ -171,8 +171,8 @@
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
-                                                                                                    "export GIT_WORK_TREE=/work/${ value.user-name }/work"
                                                                                                     "export GIT_DIR=/work/${ value.user-name }/git"
+                                                                                                    "export GIT_WORK_TREE=/work/${ value.user-name }/tree"
                                                                                                 ] ;
                                                                                         runScript =
                                                                                             builtins.toString
@@ -183,7 +183,7 @@
                                                                                                             ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name } &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/work &&
+                                                                                                                ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                 ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
                                                                                                                 ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                 ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
@@ -200,7 +200,7 @@
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                 ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                 ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea /home/${ value.user-name }
+                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea /work/${ value.user-name }/tree
                                                                                                         ''
                                                                                                 ) ;
                                                                                     } ;
