@@ -196,7 +196,7 @@
                                                                                                                 ) &&
                                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                 cd /work/${ value.user-name }/tree &&
-                                                                                                                ${ pkgs.git }/bin/git &&
+                                                                                                                ${ pkgs.git }/bin/git init &&
                                                                                                                 ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "HOMEY" }/.ssh/config" &&
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                 ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
