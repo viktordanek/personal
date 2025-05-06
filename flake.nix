@@ -168,11 +168,12 @@
                                                                                     ] ;
                                                                                 name = value.workspace-name ;
                                                                                 profile =
-                                                                                    [
-                                                                                        "export HOME=/home/${ value.user-name }"
-                                                                                        "export GIT_WORK_TREE=/home/${ value.user-name }/work"
-                                                                                        "export GIT_DIR=/home/${ value.user-name }/git"
-                                                                                    ] ;
+                                                                                    builtins.concatStringsSep
+                                                                                        " &&\n\t"
+                                                                                        [
+                                                                                            "export GIT_WORK_TREE=/home/${ value.user-name }/work"
+                                                                                            "export GIT_DIR=/home/${ value.user-name }/git"
+                                                                                        ] ;
                                                                                 # runScript =
                                                                                 #     builtins.toString
                                                                                 #         (
