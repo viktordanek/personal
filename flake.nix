@@ -162,7 +162,7 @@
                                                                                             ${ pkgs.flock }/bin/flock 201 &&
                                                                                             exec 202> /tmp/queue/future.lock &&
                                                                                             ${ pkgs.flock }/bin/flock 202 &&
-                                                                                            JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --limit 1 ) &&
+                                                                                            JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
                                                                                             ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
                                                                                             if [ $( ${ pkgs.findutils }/bin/find /tmp/queue/future | ${ pkgs.coreutils }/bin/wc --lines ) == 0 ]
                                                                                             then
