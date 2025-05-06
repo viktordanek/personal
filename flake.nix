@@ -180,7 +180,7 @@
                                                                                             builtins.toString
                                                                                                 (
                                                                                                     pkgs.writeShellScript
-                                                                                                        script
+                                                                                                        "script"
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /home/${ value.user-name }/.ssh/id-rsa &&
                                                                                                                 ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /home/${ value.user-name }/.ssh/known-hosts &&
