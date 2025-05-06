@@ -191,7 +191,7 @@
                                                                                                                     IdentityFile id-rsa
                                                                                                                     User ${ value.user }
                                                                                                                     UserKnownHostsFile known-hosts &&
-                                                                                                                    UseStrictHostKeyChecking true
+                                                                                                                    StrictHostKeyChecking true
                                                                                                             EOF
                                                                                                                 ) &&
                                                                                                                 ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
