@@ -199,7 +199,7 @@
                                                                                                 ''
                                                                                         ) ;
                                                                             } ;
-                                                                in [ ] ; # builtins.map mapper config.personal.workspaces ;
+                                                                in builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
