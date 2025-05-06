@@ -185,7 +185,8 @@
                                                                             EOF
                                                                                                 ) &&
                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH nix-flake-check "${ _environment-variable "MESSAGE" }"
-                                                                                        fi
+                                                                                        fi &&
+                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLIC dead "${ _environment-variable "COMMIT_HASH" } ${ _environment-variable "WORK_TREE" }"
                                                                                 fi
                                                                             done
                                                                         '' ;
