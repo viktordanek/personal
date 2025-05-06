@@ -184,9 +184,9 @@
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/work &&
-                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /home/${ value.user-name }/.ssh/id-rsa &&
-                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /home/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                ( ${ pkgs.coreutils }/bin/cat > /home/${ value.user-name }/.ssh/config <<EOF
+                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
+                                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                                ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
                                                                                                                     Host ${ value.host }
                                                                                                                     IdentityFile id-rsa
                                                                                                                     User ${ value.user }
@@ -194,7 +194,7 @@
                                                                                                                     UseStrictHostKeyChecking true
                                                                                                             EOF
                                                                                                                 ) &&
-                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOMEY" }/.ssh/config ${ _environment-variable "HOMEY" }/.ssh/id-rsa ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
+                                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 /work/.ssh/config /work/.ssh/id-rsa /work/.ssh/known-hosts &&
                                                                                                                 ${ pkgs.git }/bin/git init --separate-git-dir=${ _environment-variable "GIT_DIR" } ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                                 ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "HOMEY" }/.ssh/config" &&
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
