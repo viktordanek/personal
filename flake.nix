@@ -249,7 +249,7 @@
                                                                                                                         }
                                                                                                                     EOF
                                                                                                                         ) &&
-                                                                                                                        ${ pkgs.redis-cli }/bin/redis-cli PUBLISH ${ value.origin } "${ _environment-variable "MESSAGE" }"
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH ${ value.origin } "${ _environment-variable "MESSAGE" }"
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
