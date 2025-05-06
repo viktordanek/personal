@@ -173,31 +173,7 @@
                                                                                         "export GIT_WORK_TREE=/home/${ value.user-name }/work"
                                                                                         "export GIT_DIR=/home/${ value.user-name }/git"
                                                                                     ] ;
-                                                                                runScript =
-                                                                                    builtins.toString
-                                                                                        (
-                                                                                            pkgs.writeShellScriptBin
-                                                                                                value.workspace-name
-                                                                                                ''
-                                                                                                    ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "HOMEY" }/.ssh/id-rsa &&
-                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
-                                                                                                        ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "HOMEY" }/.ssh/config <<EOF
-                                                                                                            Host ${ value.git-host }
-                                                                                                            IdentityFile ${ _environment-variable "HOMEY" }/.ssh/id-rsa
-                                                                                                            User ${ value.git-user }
-                                                                                                            UserKnownHostsFile ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
-                                                                                                            UseStrictHostKeyChecking true
-                                                                                                    EOF
-                                                                                                        ) &&
-                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOMEY" }/.ssh/config ${ _environment-variable "HOMEY" }/.ssh/id-rsa ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
-                                                                                                        ${ pkgs.git }/bin/git init --separate-git-dir=${ _environment-variable "GIT_DIR" } ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "HOMEY" }/.ssh/config" &&
-                                                                                                        ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                                        ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
-                                                                                                        ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                        ${ pkgs.jet-brains.idea-community }/bin/idea /home/${ value.username }
-                                                                                                ''
-                                                                                        ) ;
+                                                                                runScript = "${ pkgs.coreutils }/bin/echo hi" ;
                                                                             } ;
                                                                 in builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
