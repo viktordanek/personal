@@ -174,7 +174,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past
                                                                                             fi &&
                                                                                             PAST=$( ${ pkgs.coreutils }/bin/mktemp --directory /tmp/queue/past/XXXXXXXX ) &&
-                                                                                            ${ pkgs.coreutils }/bin/cp /tmp/queue/present > ${ _environment-variable "PAST" }/script &&
+                                                                                            ${ pkgs.coreutils }/bin/cp /tmp/queue/present ${ _environment-variable "PAST" }/script &&
                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/script &&
                                                                                             if ${ pkgs.bash }/bin/bash /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
                                                                                             then
