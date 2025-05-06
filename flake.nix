@@ -162,16 +162,16 @@
                                                                             {
                                                                                 extraBwrapArgs =
                                                                                     [
-                                                                                        # "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
-                                                                                        # "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
-                                                                                        # "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
                                                                                     ] ;
                                                                                 name = value.workspace-name ;
                                                                                 profile =
                                                                                     [
-                                                                                        # "export HOME=/home/${ value.username }"
-                                                                                        # "export GIT_WORK_TREE=/home/${ value.user-name }/work"
-                                                                                        # "export GIT_DIR=/home/${ value.user-name }/git"
+                                                                                        "export HOME=/home/${ value.username }"
+                                                                                        "export GIT_WORK_TREE=/home/${ value.user-name }/work"
+                                                                                        "export GIT_DIR=/home/${ value.user-name }/git"
                                                                                     ] ;
                                                                                 runScript =
                                                                                     builtins.toString
@@ -199,7 +199,7 @@
                                                                                                 ''
                                                                                         ) ;
                                                                             } ;
-                                                                in builtins.map mapper config.personal.workspaces ;
+                                                                in [ ] ; # builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
