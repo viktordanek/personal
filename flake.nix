@@ -175,14 +175,13 @@
                                                                                             fi &&
                                                                                             PAST=$( ${ pkgs.coreutils }/bin/mktemp --directory /tmp/queue/past/XXXXXXXX ) &&
                                                                                             ${ pkgs.coreutils }/bin/cp /tmp/queue/present ${ _environment-variable "PAST" }/script &&
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/script &&
+                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/job &&
                                                                                             if ${ pkgs.bash }/bin/bash /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
                                                                                             else
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
-                                                                                            fi &&
-                                                                                            ${ pkgs.coreutils }/bin/mv /tmp/queue/present ${ _environment-variable "PAST" }/script
+                                                                                            fi
                                                                                     done
                                                                                 '' ;
                                                                     } ;
