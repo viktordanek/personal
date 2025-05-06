@@ -164,7 +164,7 @@
                                                                                             ${ pkgs.flock }/bin/flock 202 &&
                                                                                             JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
                                                                                             ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
-                                                                                            if [ -z "$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type )" ]
+                                                                                            if [ -z "$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f )" ]
                                                                                             then
                                                                                                 ${ pkgs.coreutils }/bin/rm --recursive --future /tmp/queue/future
                                                                                             fi &&
