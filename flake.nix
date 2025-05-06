@@ -162,9 +162,9 @@
                                                                             {
                                                                                 extraBwrapArgs =
                                                                                     [
-                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
-                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
-                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.user-name }/.ssh"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.user-name }/git"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.user-name }/work"
                                                                                     ] ;
                                                                                 name = value.workspace-name ;
                                                                                 # profile =
