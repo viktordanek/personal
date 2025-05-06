@@ -201,7 +201,7 @@
                                                                                                                 ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                 ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                 ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea .
+                                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community .
                                                                                                         ''
                                                                                                 ) ;
                                                                                     } ;
