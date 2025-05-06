@@ -164,15 +164,15 @@
                                                                                     {
                                                                                         extraBwrapArgs =
                                                                                             [
-                                                                                                # "--bind ${ _environment-variable "TEMPORARY" } /home"
+                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /work"
                                                                                             ] ;
                                                                                         name = "user-environment" ;
                                                                                         profile =
                                                                                             builtins.concatStringsSep
                                                                                                 " &&\n\t"
                                                                                                 [
-                                                                                                    "export GIT_WORK_TREE=/home/${ value.user-name }/work"
-                                                                                                    "export GIT_DIR=/home/${ value.user-name }/git"
+                                                                                                    "export GIT_WORK_TREE=/work/${ value.user-name }/work"
+                                                                                                    "export GIT_DIR=/work/${ value.user-name }/git"
                                                                                                 ] ;
                                                                                         runScript =
                                                                                             builtins.toString
@@ -210,7 +210,7 @@
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh &&
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/git &&
                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/${ value.user-name }/work &&
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ user-environment }/bin/user-environment
+                                                                                            ${ user-environment }/bin/user-environment
                                                                                      '';
                                                                 in builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
