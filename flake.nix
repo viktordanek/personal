@@ -146,77 +146,6 @@
                                                 system.stateVersion = "23.05" ;
                                                 systemd.services =
                                                     {
-                                                        git-remotes =
-                                                            {
-                                                                after = [ "network.target" "network-online.target" ] ;
-                                                                serviceConfig =
-                                                                    {
-                                                                        ExecStart =
-                                                                            let
-                                                                                preamble =
-                                                                                    [
-                                                                                        "if [ ! -d /tmp/workspaces ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces ; fi"
-                                                                                        "if [ ! -d /tmp/workspaces/checkouts ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/checkouts ; fi"
-                                                                                        "if [ ! -d /tmp/workspaces/internal ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/internal ; fi"
-                                                                                        "if [ ! -d /tmp/workspaces/ssh ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/ssh ; fi"
-                                                                                        "if [ ! -d /tmp/workspaces/temporary ] ; then ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/temporary ; fi"
-                                                                                    ] ;
-                                                                                mapper =
-                                                                                    value :
-                                                                                        [
-                                                                                            "HASH=$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H ) ${ builtins.hashString "sha512" ( builtins.toJSON value ) } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 )"
-                                                                                            "${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /tmp/workspaces/ssh/${ _environment-variable "HASH" }"
-                                                                                            "${ pkgs.coreutils }/bin/chmod 0400 /tmp/workspaces/ssh/${ _environment-variable "HASH" }"
-                                                                                            (
-                                                                                                let
-                                                                                                    initial =
-                                                                                                        ''
-                                                                                                            if [ -e /tmp/workspaces/checkouts/${ _environment-variable "HASH" } ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/mv /tmp/workspaces/checkouts/${ _environment-variable "HASH" } $( ${ pkgs.coreutils }/bin/mktemp --dry-run /tmp/workspaces/temporary/XXXXXXXX )
-                                                                                                            fi &&
-                                                                                                                if [ -e /tmp/workspaces/internal/${ _environment-variable "HASH" } ]
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/mv /tmp/workspaces/internal/${ _environment-variable "HASH" } $( ${ pkgs.coreutils }/bin/mktemp --dry-run /tmp/workspaces/temporary/XXXXXXXX )
-                                                                                                                fi &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/checkouts/${ _environment-variable "HASH" } &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir /tmp/workspaces/internal/${ _environment-variable "HASH" } &&
-                                                                                                                ${ pkgs.git }/bin/git --separte-git-dir=/tmp/workspaces/internal/${ _environment-variable "HASH" } /tmp/workspaces/checkouts/${ _environment-variable "HASH" }
-                                                                                                        '' ;
-                                                                                                    in "if [ ! -d /tmp/workspaces/checkout/${ _environment-variable "HASH" } ] || [ ! -d /tmp/workspaces/internal/${ _environment-variable "HASH" } ] ; then ${ pkgs.writeShellScript "initial" initial } ; fi"
-                                                                                            )
-                                                                                        ] ;
-                                                                                in pkgs.writeShellScript "ExecStart" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists [ preamble ( builtins.concatLists ( builtins.map mapper config.personal.remotes ) ) ] ) ) ;
-                                                                        User = config.personal.user.name ;
-                                                                    } ;
-                                                                wantedBy = [ "multi-user.target" ] ;
-                                                            } ;
-                                                        job-pick =
-                                                            {
-                                                                serviceConfig =
-                                                                    {
-                                                                        ExecStart =
-                                                                            pkgs.writeShellScript
-                                                                                "ExecStart"
-                                                                                ''
-                                                                                    exec 201> /tmp/remotes/jobs.lock &&
-                                                                                        ${ pkgs.flock }/bin/flock 201 &&
-                                                                                        if [ -s /tmp/remotes/jobs.yaml ]
-                                                                                        then
-                                                                                            WORK=$( ${ pkgs.coreutils }/bin/mkdir --directory /tmp/remotes/work/XXXXXXXX ) &&
-                                                                                                cleanup ( )
-                                                                                                    {
-                                                                                                        ${ pkgs.coreutils }/bin/rm --recursive --force ${ _environment-variable "WORK" }
-                                                                                                    } &&
-                                                                                                trap cleanup EXIT &&
-                                                                                                ${ pkgs.yq }/bin/yq 'sort_by ( .priority * -1 , .timestamp) ' > ${ _environment-variable "WORK" }/sorted.yaml
-                                                                                        fi &&
-                                                                                        ${ pkgs.coreutils }/bin/rm /tmp/remotes/jobs.lock
-                                                                                '' ;
-                                                                        User = config.personal.user.name ;
-                                                                    } ;
-                                                                wantedBy = [ "multi-user.target" ] ;
-                                                            } ;
                                                     } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
@@ -226,9 +155,48 @@
                                                         isNormalUser = true ;
                                                         name = config.personal.user.name ;
                                                         packages =
-                                                            [
-                                                                pkgs.git
-                                                            ] ;
+                                                            let
+                                                                mapper =
+                                                                    value :
+                                                                        pkgs.buildFHSUserEnv
+                                                                            {
+                                                                                extraBwrapArgs =
+                                                                                    [
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
+                                                                                    ] ;
+                                                                                name = value.workspace-name ;
+                                                                                profile =
+                                                                                    [
+                                                                                        "export HOME=/home/${ value.username }"
+                                                                                        "export GIT_WORK_TREE=/home/${ value.user-name }/work"
+                                                                                        "export GIT_DIR=/home/${ value.user-name }/git"
+                                                                                    ] ;
+                                                                                runScript =
+                                                                                    pkgs.writeShellScriptBin
+                                                                                        value.workspace-name
+                                                                                        ''
+                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "HOMEY" }/.ssh/id-rsa &&
+                                                                                                ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
+                                                                                                ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "HOMEY" }/.ssh/config <<EOF
+                                                                                                    Host ${ value.git-host }
+                                                                                                    IdentityFile ${ _environment-variable "HOMEY" }/.ssh/id-rsa
+                                                                                                    User ${ value.git-user }
+                                                                                                    UserKnownHostsFile ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
+                                                                                                    UseStrictHostKeyChecking true
+                                                                                            EOF
+                                                                                                ) &&
+                                                                                                ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOMEY" }/.ssh/config ${ _environment-variable "HOMEY" }/.ssh/id-rsa ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
+                                                                                                ${ pkgs.git }/bin/git init --separate-git-dir=${ _environment-variable "GIT_DIR" } ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "HOMEY" }/.ssh/config" &&
+                                                                                                ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
+                                                                                                ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
+                                                                                                ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
+                                                                                                ${ pkgs.jet-brains.idea-community }/bin/idea /home/${ value.username }
+                                                                                        '' ;
+                                                                            } ;
+                                                                in builtins.map mapper config.personal.workspaces ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
@@ -238,7 +206,7 @@
                                                 personal.user.name = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.password = lib.mkOption { type = lib.types.str ; } ;
                                                 personal.user.token = lib.mkOption { type = lib.types.str ; } ;
-                                                personal.remotes =
+                                                personal.workspaces =
                                                     lib.mkOption
                                                         {
                                                             default = [ ] ;
@@ -250,9 +218,11 @@
                                                                                 options =
                                                                                     {
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         remote = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        seed = lib.mkOption { default = "ae1628b4bbdc08b4d74673410a12b6245d930ed68d3d72791263c64606a883fcbad4aca08e4de72b8aa7cbb73073fabeff1f85fa0e921cadfdbbb7e4fc36cb6b" ; type = lib.types.str ; } ;
-                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        workspace-name = lib.mkOption { type = lib.types.str ; } ;
                                                                                     } ;
                                                                             } ;
                                                                     in lib.types.listOf config ;
