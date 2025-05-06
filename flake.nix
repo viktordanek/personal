@@ -160,12 +160,12 @@
                                                                     value :
                                                                         pkgs.buildFHSUserEnv
                                                                             {
-                                                                                # extraBwrapArgs =
-                                                                                #     [
-                                                                                #         "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
-                                                                                #         "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
-                                                                                #         "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
-                                                                                #     ] ;
+                                                                                extraBwrapArgs =
+                                                                                    [
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/.ssh"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/git"
+                                                                                        "--bind $( ${ pkgs.coreutils }/bin/mktemp --directory ) /home/${ value.username }/work"
+                                                                                    ] ;
                                                                                 name = value.workspace-name ;
                                                                                 # profile =
                                                                                 #     [
