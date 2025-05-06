@@ -102,6 +102,7 @@
                                                                 pulse.enable = true ;
                                                             };
                                                         printing.enable = true ;
+                                                        redis.enable = true ;
                                                         xserver =
                                                             {
                                                                 desktopManager =
