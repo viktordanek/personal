@@ -144,60 +144,53 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
-                                                systemd=
+                                                systemd.services.git-commit-subscriber =
                                                     {
-                                                        services.job-queue =
+                                                        after = [ "network.target" ] ;
+                                                        serviceConfig =
                                                             {
-                                                                after = [ "network.target" ] ;
-                                                                enable = true ;
-                                                                serviceConfig =
-                                                                    {
-                                                                        ExecStart =
-                                                                            pkgs.writeShellScript
-                                                                                "ExecStart"
-                                                                                ''
-                                                                                    while [ -d /tmp/queue/future ]
-                                                                                    do
-                                                                                        exec 201> /tmp/queue/present.lock &&
-                                                                                            ${ pkgs.flock }/bin/flock 201 &&
-                                                                                            exec 202> /tmp/queue/future.lock &&
-                                                                                            ${ pkgs.flock }/bin/flock 202 &&
-                                                                                            JOB=$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
-                                                                                            ${ pkgs.coreutils }/bin/mv ${ _environment-variable "JOB" } /tmp/queue/present &&
-                                                                                            if [ -z "$( ${ pkgs.findutils }/bin/find /tmp/queue/future -mindepth 1 -type f )" ]
-                                                                                            then
-                                                                                                ${ pkgs.coreutils }/bin/rm --recursive --force /tmp/queue/future
-                                                                                            fi &&
-                                                                                            ${ pkgs.flock }/bin/flock -u 202 &&
-                                                                                            if [ ! -d /tmp/queue/past ]
-                                                                                            then
-                                                                                                ${ pkgs.coreutils }/bin/mkdir /tmp/queue/past
-                                                                                            fi &&
-                                                                                            PAST=$( ${ pkgs.coreutils }/bin/mktemp --directory /tmp/queue/past/XXXXXXXX ) &&
-                                                                                            ${ pkgs.coreutils }/bin/cp /tmp/queue/present ${ _environment-variable "PAST" }/script &&
-                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "JOB" } > ${ _environment-variable "PAST" }/job &&
-                                                                                            if ${ pkgs.bash }/bin/bash /tmp/queue/present > ${ _environment-variable "PAST" }/standard-output 2> ${ _environment-variable "PAST" }/standard-error
-                                                                                            then
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
-                                                                                            else
-                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAST" }/status
-                                                                                            fi
-                                                                                    done
-                                                                                '' ;
-                                                                        User = config.personal.user.name ;
-                                                                    } ;
-                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                ExecStart =
+                                                                    pkgs.writeShellScript
+                                                                        "ExecStart"
+                                                                        ''
+                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit | while read -r LINE
+                                                                            do
+                                                                                if [ ${ _environment-variable "LINE" } == "message" ]
+                                                                                then
+                                                                                    read -r CHANNEL &&
+                                                                                        read -r PAYLOAD &&
+                                                                                        COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
+                                                                                        ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
+                                                                                        WORK_TREE=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".work_tree" ) &&
+                                                                                        if [ ${ _environment-variable "ORIGIN" } == "git@github.com:viktordanek/personal.git" ]
+                                                                                        then
+                                                                                            STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
+                                                                                                STANDARD_ERROR-$( ${ pkgs.coreutils }/bin/mktemp ) &&
+                                                                                                WORK=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                ${ pkgs.git }/bin/git clone --depth 1 ${ _environment-variable "WORK_TREE" } &&
+                                                                                                cd ${ _environment-variable "WORK_TREE" } &&
+                                                                                                if ${ pkgs.nix }/bin/nix flake check > ${ _environment-variable "STANDARD_OUTPUT" } 2> ${ _environment-variable "STANDARD_ERROR" }
+                                                                                                then
+                                                                                                    STATUS=${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" }
+                                                                                                else
+                                                                                                    STATUS=${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" }
+                                                                                                fi &&
+                                                                                                MESSAGE=$(cat <<EOF
+                                                                                            {
+                                                                                              "standard_output": "$(cat ${STANDARD_OUTPUT})",
+                                                                                              "standard_error": "$(cat ${STANDARD_ERROR})",
+                                                                                              "status": "${STATUS}",
+                                                                                            }
+                                                                                            EOF
+                                                                                                ) &&
+                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH nix-flake-check "${ _environment-variable "MESSAGE" }"
+                                                                                        fi
+                                                                                fi
+                                                                            done
+                                                                        '' ;
+                                                                User = config.personal.user.name ;
                                                             } ;
-                                                        timers.job-queue =
-                                                            {
-                                                                timerConfig =
-                                                                    {
-                                                                        OnCalendar = "*-*-* *:*:00" ;
-                                                                        Persistent = false ;
-                                                                        Unit = "job-queue.service" ;
-                                                                    } ;
-                                                                wantedBy = [ "timers.target" ] ;
-                                                            } ;
+                                                        wantedBy = [ "multi-user.target" ] ;
                                                     } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
@@ -240,15 +233,17 @@
                                                                                                                         COMMIT_DATE=$( ${ pkgs.git }/bin/git log -1 --format=%cd ) &&
                                                                                                                         COMMIT_MESSAGE=$( ${ pkgs.git }/bin/git log -1 --format=%s) &&
                                                                                                                         ORIGIN=${ value.origin } &&
+                                                                                                                        WORK_TREE=${ _environment-variable "TEMPORARY" }/tree &&
                                                                                                                         MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
-                                                                                                                        {
-                                                                                                                          "commit_hash": "${ _environment-variable "COMMIT_HASH" } ,
-                                                                                                                          "author": "${ _environment-variable "COMMIT_AUTHOR" } ,
-                                                                                                                          "email": "${ _environment-variable "COMMIT_EMAIL" } ,
-                                                                                                                          "date": "${ _environment-variable "COMMIT_DATE" } ,
-                                                                                                                          "message": "${ _environment-variable "COMMIT_MESSAGE" } ,
-                                                                                                                          "origin": "${ _environment-variable "ORIGIN" }
-                                                                                                                        }
+                                                                                                                    {
+                                                                                                                      "commit_hash": "${ _environment-variable "COMMIT_HASH" } ,
+                                                                                                                      "author": "${ _environment-variable "COMMIT_AUTHOR" } ,
+                                                                                                                      "email": "${ _environment-variable "COMMIT_EMAIL" } ,
+                                                                                                                      "date": "${ _environment-variable "COMMIT_DATE" } ,
+                                                                                                                      "message": "${ _environment-variable "COMMIT_MESSAGE" } ,
+                                                                                                                      "origin": "${ _environment-variable "ORIGIN" } ,
+                                                                                                                      "work_tree": "${ _environment-variable "WORK_TREE" }
+                                                                                                                    }
                                                                                                                     EOF
                                                                                                                         ) &&
                                                                                                                         ${ pkgs.redis }/bin/redis-cli PUBLISH git-commits "${ _environment-variable "MESSAGE" }"
