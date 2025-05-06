@@ -177,9 +177,9 @@
                                                                                                 fi &&
                                                                                                 MESSAGE=$(cat <<EOF
                                                                                             {
-                                                                                              "standard_output": "$(cat ${STANDARD_OUTPUT})",
-                                                                                              "standard_error": "$(cat ${STANDARD_ERROR})",
-                                                                                              "status": "${STATUS}",
+                                                                                              "standard_output": "$(cat ${ _environment-variable "STANDARD_OUTPUT" } )",
+                                                                                              "standard_error": "$(cat ${ _environment-variable "STANDARD_ERROR" } )",
+                                                                                              "status": "${ _environment-variable "STATUS" }"
                                                                                             }
                                                                                             EOF
                                                                                                 ) &&
