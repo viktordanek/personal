@@ -183,7 +183,7 @@
                                                                                                     ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "HOMEY" }/.ssh/id-rsa &&
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
                                                                                                         ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "HOMEY" }/.ssh/config <<EOF
-                                                                                                            Host ${ value.git-host }
+                                                                                                            Host ${ value.host }
                                                                                                             IdentityFile ${ _environment-variable "HOMEY" }/.ssh/id-rsa
                                                                                                             User ${ value.git-user }
                                                                                                             UserKnownHostsFile ${ _environment-variable "HOMEY" }/.ssh/known-hosts &&
