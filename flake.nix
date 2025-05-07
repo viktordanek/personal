@@ -216,6 +216,7 @@
                                                                                     done
                                                                                 '' ;
                                                                 NoNewPrivileges = false ;
+                                                                RemainAfterExit = true ;
                                                                 # Type = "oneshot" ;
                                                                 User = "root" ; # config.personal.user.name ;
                                                             } ;
