@@ -157,7 +157,7 @@
                                                                                 {
                                                                                     extraBwrapArgs =
                                                                                         [
-                                                                                            "--bind-ro ${ _environment-variable "TEMPORARY" }/${ _environment-variable "USER" } /work"
+                                                                                            "--ro-bind ${ _environment-variable "TEMPORARY" }/${ _environment-variable "USER" } /work"
                                                                                             "--bind ${ _environment-variable "OUTPUT" } /output"
                                                                                         ] ;
                                                                                     name  = "iteration" ;
