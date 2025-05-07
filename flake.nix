@@ -314,7 +314,7 @@
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         origin = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        port = lib.mkOption { default = 22 ; lib = lib.types.int ; } ;
+                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
