@@ -216,7 +216,7 @@
                                                                                     done
                                                                                 '' ;
                                                                 NoNewPrivileges = false ;
-                                                                User = root ; # config.personal.user.name ;
+                                                                User = "root" ; # config.personal.user.name ;
                                                             } ;
                                                         wantedBy = [ "multi-user.target" ] ;
                                                     } ;
