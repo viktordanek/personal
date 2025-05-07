@@ -184,10 +184,10 @@
                                                                                         then
                                                                                             read -r CHANNEL &&
                                                                                                 read -r PAYLOAD &&
-                                                                                                export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".branch" ) &&
-                                                                                                export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
-                                                                                                export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
-                                                                                                export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".temporary" ) &&
+                                                                                                export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".branch" ) &&
+                                                                                                export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".commit_hash" ) &&
+                                                                                                export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".origin" ) &&
+                                                                                                export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
                                                                                                 export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".user" ) &&
                                                                                                 export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                                                 ${ iteration }/bin/iteration
@@ -265,7 +265,8 @@
                                                                                                                         ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                         ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received git-commit-ready | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' }
+                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received git-commit-ready | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' } &&
+                                                                                                                        ${ pkgs.git }/bin/git config alias.ping !${ pkgs.writeShelllScript "ping" ''${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message ${ _environment-variable "@" }'' } &&
                                                                                                                         ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
                                                                                                                         ${ pkgs.git }/bin/git fetch &&
