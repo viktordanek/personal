@@ -79,6 +79,7 @@
                                                                 %wheel ALL=(ALL) NOPASSWD: ${ pkgs.unixtools.fsck }/bin/fsck
                                                                 %wheel ALL=(ALL) NOPASSWD: ${ pkgs.e2fsprogs }/bin/mkfs.ext4
                                                                 %wheel ALL=(ALL) NOPASSWD: ${ pkgs.coreutils }/bin/chown
+                                                                %wheel ALL=(ALL) NOPASSWD: ${ pkgs.nixos-rebuild }/bin/nixos-rebuild
                                                             '' ;
                                                     } ;
                                                 services =
@@ -179,18 +180,7 @@
                                                                                                     ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
                                                                                                     ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                     ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
-                                                                                                    ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
-                                                                                                    cd ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                    if [ -L /output/bin/process ]
-                                                                                                    then
-                                                                                                        if /output/bin/process > /output/standard-output 2> /output/standard-error
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                        else
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                        fi
-                                                                                                    fi &&
-                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
+                                                                                                    ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD
                                                                                             '' ;
                                                                                 } ;
                                                                         in
@@ -210,7 +200,18 @@
                                                                                                 export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
                                                                                                 export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
                                                                                                 export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                ${ iteration }/bin/iteration
+                                                                                                ${ iteration }/bin/iteration &&
+                                                                                                cd ${ _environment-variable "OUTPUT" }/tree &&
+                                                                                                if [ -L ${ _environment-variable "OUTPUT" }/bin/process ]
+                                                                                                then
+                                                                                                    if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" /standard-output 2> ${ _environment-variable "OUTPUT" /standard-error
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" /status
+                                                                                                    else
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" /status
+                                                                                                    fi
+                                                                                                fi &&
+                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
                                                                                         fi
                                                                                     done
                                                                                 '' ;
