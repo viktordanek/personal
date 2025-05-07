@@ -172,12 +172,23 @@
                                                                                             ''
                                                                                                 ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
                                                                                                     ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
+                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/bin /output/bin &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                     ${ pkgs.git }/bin/git init &&
+                                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
                                                                                                     ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                     ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                     ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
+                                                                                                    if [ -l /output/bin/process ]
+                                                                                                    then
+                                                                                                        if /output/bin/process > /output/standard-output 2> /output/standard-error
+                                                                                                        then
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
+                                                                                                        else
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
+                                                                                                        fi
+                                                                                                    fi &&
                                                                                                     ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
                                                                                             '' ;
                                                                                 } ;
@@ -254,8 +265,6 @@
                                                                                                                 ''
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name } &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                         ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
@@ -267,6 +276,10 @@
                                                                                                                     EOF
                                                                                                                         ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/bin &&
+                                                                                                                        ${ if builtins.typeOf value.process == "string" then "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "process" value.process } /work/bin/process" else "# NO PROCESS" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
                                                                                                                         ${ pkgs.git }/bin/git init &&
                                                                                                                         ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -p ${ builtins.toString value.port } -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
@@ -315,6 +328,7 @@
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                         port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                        process = lib.mkOption { default = null ; type = lib.types.str ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
