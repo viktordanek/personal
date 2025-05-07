@@ -216,7 +216,7 @@
                                                                                     done
                                                                                 '' ;
                                                                 NoNewPrivileges = false ;
-                                                                Type = "oneshot" ;
+                                                                # Type = "oneshot" ;
                                                                 User = "root" ; # config.personal.user.name ;
                                                             } ;
                                                         wantedBy = [ "multi-user.target" ] ;
