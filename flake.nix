@@ -171,7 +171,7 @@
                                                                                             "script"
                                                                                             ''
                                                                                                 ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > /output/env &&
-                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/.ssh /output/.ssh &&
+                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                     ${ pkgs.git }/bin/git init &&
