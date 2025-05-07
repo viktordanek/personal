@@ -277,7 +277,7 @@
                                                                                                                         ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/bin &&
-                                                                                                                        ${ if builtins.typeOf value.process == "string" then "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "process" value.process } /work/bin/process" else "# NO PROCESS" } &&
+                                                                                                                        ${ if builtins.typeOf value.process == "string" then "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "process" value.process } /work/${ value.user-name }/bin/process" else "# NO PROCESS" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
