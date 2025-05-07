@@ -328,7 +328,7 @@
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                         port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                        process = lib.mkOption { default = null ; type = lib.types.str ; } ;
+                                                                                        process = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
