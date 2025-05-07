@@ -149,7 +149,7 @@
                                                                                                                 if [ -L ${ _environment-variable "OUTPUT" }/bin/process ]
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/echo CA &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat /tmp/tmp.ysvmVurmlK/repos/github/viktordanek/personal/flake.nix &&
+                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ _environment-variable "OUTPUT" }/bin/process &&
                                                                                                                     if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" }/standard-output 2> ${ _environment-variable "OUTPUT" }/standard-error
                                                                                                                     then
                                                                                                                 ${ pkgs.coreutils }/bin/echo D &&
