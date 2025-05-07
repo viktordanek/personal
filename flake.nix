@@ -170,7 +170,7 @@
                                                                                         pkgs.writeShellScript
                                                                                             "script"
                                                                                             ''
-                                                                                                ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > /output/env &&
+                                                                                                ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
                                                                                                     ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
@@ -191,6 +191,7 @@
                                                                                         then
                                                                                             read -r CHANNEL &&
                                                                                                 read -r PAYLOAD &&
+                                                                                                export PAYLOAD &&
                                                                                                 export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".branch" ) &&
                                                                                                 export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".commit_hash" ) &&
                                                                                                 export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".origin" ) &&
