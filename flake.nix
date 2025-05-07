@@ -215,6 +215,8 @@
                                                                                         fi
                                                                                     done
                                                                                 '' ;
+                                                                NoNewPrivileges = false ;
+                                                                User = config.personal.user.name ;
                                                             } ;
                                                         wantedBy = [ "multi-user.target" ] ;
                                                     } ;
