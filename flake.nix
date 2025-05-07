@@ -204,11 +204,11 @@
                                                                                                 cd ${ _environment-variable "OUTPUT" }/tree &&
                                                                                                 if [ -L ${ _environment-variable "OUTPUT" }/bin/process ]
                                                                                                 then
-                                                                                                    if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" /standard-output 2> ${ _environment-variable "OUTPUT" /standard-error
+                                                                                                    if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" }/standard-output 2> ${ _environment-variable "OUTPUT" }/standard-error
                                                                                                     then
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" /status
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                     else
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" /status
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                     fi
                                                                                                 fi &&
                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
