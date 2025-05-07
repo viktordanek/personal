@@ -166,10 +166,15 @@
                                                                                             "script"
                                                                                             ''
                                                                                                 ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > /output/env &&
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/work &&
-                                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                                    ${ pkgs.git }/bin/git remote add origin /work/${ _environment-variable "USER" }/git &&
-                                                                                                    ${ pkgs.git }/bin/git fetch --depth=1 origin ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/.ssh /output/.ssh &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/git &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/tree &&
+                                                                                                    cd /output/tree &&
+                                                                                                    ${ pkgs.git }/bin/git --separate-git-dir /output/git init &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo BEFORE ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                    ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo AFTER ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                    ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                     ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
                                                                                                     ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
                                                                                             '' ;
