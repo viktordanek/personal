@@ -181,7 +181,7 @@
                                                                                                     ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                     ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
                                                                                                     cd ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                    if [ -l /output/bin/process ]
+                                                                                                    if [ -L /output/bin/process ]
                                                                                                     then
                                                                                                         if /output/bin/process > /output/standard-output 2> /output/standard-error
                                                                                                         then
