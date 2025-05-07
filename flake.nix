@@ -157,6 +157,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                                     fi
                                                                                                                 fi &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo F &&
                                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
                                                                                                         fi
                                                                                                     done
