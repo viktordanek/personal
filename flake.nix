@@ -216,6 +216,11 @@
                                                                                     done
                                                                                 '' ;
                                                                 NoNewPrivileges = false ;
+                                                                PrivateTmp = false ;
+                                                                ProtectSystem = false ;
+                                                                ProtectHome = false ;
+                                                                ProtectKernel = false ;
+                                                                CapabilityBoundingSet = "CAP_SYS_ADMIN CAP_DAC_OVERRIDE CAP_SETUID CAP_SETGID" ;
                                                                 RemainAfterExit = true ;
                                                                 # Type = "oneshot" ;
                                                                 User = "root" ; # config.personal.user.name ;
