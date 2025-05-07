@@ -175,9 +175,8 @@
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                     ${ pkgs.git }/bin/git init &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo BEFORE ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                     ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
-                                                                                                    ${ pkgs.coreutils }/bin/echo AFTER ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                    ${ pkgs.findutils }/bin/find /work &&
                                                                                                     ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                     ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
                                                                                                     ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
