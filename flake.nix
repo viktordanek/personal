@@ -269,7 +269,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
                                                                                                                         ${ pkgs.git }/bin/git init &&
-                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
+                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -p ${ _builtins.toString value.port } -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
                                                                                                                         ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                         ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
@@ -314,6 +314,7 @@
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         origin = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        port = lib.mkOption { default = 22 ; lib = lib.types.int ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
