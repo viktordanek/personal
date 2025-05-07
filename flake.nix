@@ -159,7 +159,7 @@
                                                                                 in "* * * * * ${ config.personal.user.name } ${ script }"
                                                                         )
                                                                     ] ;
-                                                            }
+                                                            } ;
                                                         dbus.packages = [ pkgs.gcr ] ;
                                                         github-runners = { } ;
                                                         openssh =
