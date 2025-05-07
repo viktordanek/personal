@@ -156,7 +156,7 @@
                                                                                                         fi
                                                                                                     done
                                                                                                 '' ;
-                                                                                in "* * * * * ${ config.personal.user.name } ${ script }"
+                                                                                in "@reboot ${ config.personal.user.name } ${ script }"
                                                                         )
                                                                     ] ;
                                                             } ;
