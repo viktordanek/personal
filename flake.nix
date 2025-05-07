@@ -154,39 +154,25 @@
                                                                     pkgs.writeShellScript
                                                                         "ExecStart"
                                                                         ''
-                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commits | while read -r LINE
+                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
                                                                             do
                                                                                 if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                 then
                                                                                     read -r CHANNEL &&
-                                                                                        read -r PAYLOAD &&
+                                                                                        read -r PAYLOAD &&jw
+                                                                                        BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".branch" ) &&
                                                                                         COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
                                                                                         ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
-                                                                                        WORK_TREE=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".work_tree" ) &&
-                                                                                        if [ ${ _environment-variable "ORIGIN" } == "git@github.com:viktordanek/personal.git" ]
-                                                                                        then
-                                                                                            STANDARD_OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                STANDARD_ERROR-$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                WORK=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                ${ pkgs.git }/bin/git clone --depth 1 ${ _environment-variable "WORK_TREE" } &&
-                                                                                                cd ${ _environment-variable "WORK_TREE" } &&
-                                                                                                if ${ pkgs.nix }/bin/nix flake check > ${ _environment-variable "STANDARD_OUTPUT" } 2> ${ _environment-variable "STANDARD_ERROR" }
-                                                                                                then
-                                                                                                    STATUS=${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" }
-                                                                                                else
-                                                                                                    STATUS=${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" }
-                                                                                                fi &&
-                                                                                                MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
-                                                                            {
-                                                                              "standard_output": "$( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "STANDARD_OUTPUT" } )",
-                                                                              "standard_error": "$( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "STANDARD_ERROR" } )",
-                                                                              "status": "${ _environment-variable "STATUS" }"
-                                                                            }
-                                                                            EOF
-                                                                                                ) &&
-                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH nix-flake-check "${ _environment-variable "MESSAGE" }"
-                                                                                        fi &&
-                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH dead "${ _environment-variable "COMMIT_HASH" } ${ _environment-variable "WORK_TREE" }"
+                                                                                        TREE=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".tree" ) &&
+                                                                                        TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n ORIGIN=${ _environment-variable "ORIGIN" } \n TREE=${ _environment-variable "TREE" }" > ${ _environment-variable "TEMPORARY" }/env &&
+                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/work &&
+                                                                                        cd ${ _environment-variable "TEMPORARY" }/work &&
+                                                                                        ${ pkgs.git }/bin/git init &&
+                                                                                        ${ pkgs.git }/bin/git remote add origin ${ _environment-variable "TREE" } &&
+                                                                                        ${ pkgs.git }/bin/git fetch --depth=1 origin ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                        ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
+                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "TEMPORARY" }"
                                                                                 fi
                                                                             done
                                                                         '' ;
@@ -229,27 +215,7 @@
                                                                                                             pkgs.writeShellScript
                                                                                                                 "post-commit"
                                                                                                                 ''
-                                                                                                                    ${ pkgs.coreutils }/bin/echo YES ${ _environment-variable "0" } &&
-                                                                                                                        COMMIT_HASH=$( ${ pkgs.git }/bin/git rev-parse HEAD ) &&
-                                                                                                                        COMMIT_AUTHOR=$( ${ pkgs.git }/bin/git config user.name ) &&
-                                                                                                                        COMMIT_EMAIL=$( ${ pkgs.git }/bin/git config user.email ) &&
-                                                                                                                        COMMIT_DATE=$( ${ pkgs.git }/bin/git log -1 --format=%cd ) &&
-                                                                                                                        COMMIT_MESSAGE=$( ${ pkgs.git }/bin/git log -1 --format=%s) &&
-                                                                                                                        ORIGIN=${ value.origin } &&
-                                                                                                                        WORK_TREE=${ _environment-variable "TEMPORARY" }/tree &&
-                                                                                                                        MESSAGE=$( ${ pkgs.coreutils }/bin/cat <<EOF
-                                                                                                                    {
-                                                                                                                      "commit_hash": "${ _environment-variable "COMMIT_HASH" } ,
-                                                                                                                      "author": "${ _environment-variable "COMMIT_AUTHOR" } ,
-                                                                                                                      "email": "${ _environment-variable "COMMIT_EMAIL" } ,
-                                                                                                                      "date": "${ _environment-variable "COMMIT_DATE" } ,
-                                                                                                                      "message": "${ _environment-variable "COMMIT_MESSAGE" } ,
-                                                                                                                      "origin": "${ _environment-variable "ORIGIN" } ,
-                                                                                                                      "work_tree": "${ _environment-variable "WORK_TREE" }
-                                                                                                                    }
-                                                                                                                    EOF
-                                                                                                                        ) &&
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commits "${ _environment-variable "MESSAGE" }"
+                                                                                                                    ${ pkgs.coreutils }/bin/echo -en "- \"branch\": \"$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )\", \n \"commit_hash\": \"$( ${ pkgs.coreutils }/bin/git rev-parse HEAD )\" ,\n  \"tree\": \"${ _environment-variable "TEMPORARY" }/${ value.user-name }/tree\" ,\n  \"origin\": \"${ value.origin }\" }" | ${ pkgs.jq }/bin/jq --raw-input --slurp | ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
@@ -276,7 +242,7 @@
                                                                                                                         ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                         ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commits nix-flake-check | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' }
+                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received git-commit-ready | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' }
                                                                                                                         ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
                                                                                                                         ${ pkgs.git }/bin/git fetch &&
