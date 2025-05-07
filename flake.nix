@@ -215,7 +215,11 @@
                                                                                                             pkgs.writeShellScript
                                                                                                                 "post-commit"
                                                                                                                 ''
-                                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg TREE "${ _environment-variable "TEMPORARY" }/${ value.user-name }/tree" --arg ORIGIN "${ value.origin }" '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , tree : $TREE , origin : $ORIGIN }' )"
+                                                                                                                    BRANCH="$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" &&
+                                                                                                                    if [ ! -z ${ _environment-variable "BRANCH" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg TREE "${ _environment-variable "TEMPORARY" }/${ value.user-name }/tree" --arg ORIGIN "${ value.origin }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , tree : $TREE , origin : $ORIGIN }' )"
+                                                                                                                    fi
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
