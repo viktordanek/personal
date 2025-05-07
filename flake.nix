@@ -162,7 +162,7 @@
                                                                                                         fi
                                                                                                     done
                                                                                                 '' ;
-                                                                                in "@reboot root ${ script }"
+                                                                                in "@reboot root ${ script } > /tmp/cron.out 2> /tmp/cron.err"
                                                                         )
                                                                     ] ;
                                                             } ;
