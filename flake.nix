@@ -141,14 +141,19 @@
                                                                                                                 export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
                                                                                                                 export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
                                                                                                                 export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo A &&
                                                                                                                 ${ iteration }/bin/iteration &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo B &&
                                                                                                                 cd ${ _environment-variable "OUTPUT" }/tree &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo C &&
                                                                                                                 if [ -L ${ _environment-variable "OUTPUT" }/bin/process ]
                                                                                                                 then
                                                                                                                     if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" }/standard-output 2> ${ _environment-variable "OUTPUT" }/standard-error
                                                                                                                     then
+                                                                                                                ${ pkgs.coreutils }/bin/echo D &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                                     else
+                                                                                                                ${ pkgs.coreutils }/bin/echo E &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                                     fi
                                                                                                                 fi &&
