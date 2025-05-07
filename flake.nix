@@ -161,16 +161,20 @@
                                                                                             "--bind ${ _environment-variable "OUTPUT" } /output"
                                                                                         ] ;
                                                                                     name  = "iteration" ;
+                                                                                    profile =
+                                                                                        ''
+                                                                                            export GIT_DIR=/output/git &&
+                                                                                                export GIT_WORK_TREE=/output/tree
+                                                                                        '' ;
                                                                                     runScript =
                                                                                         pkgs.writeShellScript
                                                                                             "script"
                                                                                             ''
                                                                                                 ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > /output/env &&
                                                                                                     ${ pkgs.coreutils }/bin/cp --recursive /work/.ssh /output/.ssh &&
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/git &&
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/tree &&
-                                                                                                    cd /output/tree &&
-                                                                                                    ${ pkgs.git }/bin/git --separate-git-dir /output/git init &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                    ${ pkgs.git }/bin/git init &&
                                                                                                     ${ pkgs.coreutils }/bin/echo BEFORE ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                     ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                     ${ pkgs.coreutils }/bin/echo AFTER ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
