@@ -148,6 +148,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo C &&
                                                                                                                 if [ -L ${ _environment-variable "OUTPUT" }/bin/process ]
                                                                                                                 then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo CA &&
                                                                                                                     if ${ _environment-variable "OUTPUT" }/bin/process > ${ _environment-variable "OUTPUT" }/standard-output 2> ${ _environment-variable "OUTPUT" }/standard-error
                                                                                                                     then
                                                                                                                 ${ pkgs.coreutils }/bin/echo D &&
@@ -157,7 +158,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "OUTPUT" }/status
                                                                                                                     fi
                                                                                                                 fi &&
-                                                                                                                ${ pkgs.coreutils }/bin/echo F &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo CB &&
                                                                                                                 ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
                                                                                                         fi
                                                                                                     done
