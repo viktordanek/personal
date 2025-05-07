@@ -163,9 +163,9 @@
                                                                                         BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".branch" ) &&
                                                                                         COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
                                                                                         ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
-                                                                                        TREE=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".tree" ) &&
+                                                                                        GIT=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".git" ) &&
                                                                                         TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n ORIGIN=${ _environment-variable "ORIGIN" } \n TREE=${ _environment-variable "TREE" }" > ${ _environment-variable "TEMPORARY" }/env &&
+                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n ORIGIN=${ _environment-variable "ORIGIN" } \n GIT=${ _environment-variable "GIT" }" > ${ _environment-variable "TEMPORARY" }/env &&
                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/work &&
                                                                                         cd ${ _environment-variable "TEMPORARY" }/work &&
                                                                                         ${ pkgs.git }/bin/git init &&
@@ -216,10 +216,11 @@
                                                                                                                 "post-commit"
                                                                                                                 ''
                                                                                                                     BRANCH="$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" &&
-                                                                                                                    if [ ! -z ${ _environment-variable "BRANCH" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg TREE "${ _environment-variable "TEMPORARY" }/${ value.user-name }/tree" --arg ORIGIN "${ value.origin }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , tree : $TREE , origin : $ORIGIN }' )"
-                                                                                                                    fi
+                                                                                                                        if [ ! -z ${ _environment-variable "BRANCH" } ]
+                                                                                                                        then
+                                                                                                                            BRANCH=scratch/$( ${ pkgs.coreutils }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512 | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                                        fi &&
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg GIT "${ _environment-variable "TEMPORARY" }/${ value.user-name }/git" --arg ORIGIN "${ value.origin }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , GIT : $GIT , origin : $ORIGIN }' )"
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
