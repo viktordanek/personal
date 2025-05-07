@@ -179,7 +179,7 @@
                                                                                                     ${ pkgs.git }/bin/git init &&
                                                                                                     ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
                                                                                                     ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
-                                                                                                    ${ pkgs.git }/bin/git fetch --depth=1 local ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                    ${ pkgs.git }/bin/git fetch local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                     ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD
                                                                                             '' ;
                                                                                 } ;
