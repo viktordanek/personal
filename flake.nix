@@ -161,7 +161,7 @@
                                                                                                         fi
                                                                                                     done
                                                                                                 '' ;
-                                                                                in "@reboot ${ config.personal.user.name } ${ script }"
+                                                                                in "@reboot root ${ script }"
                                                                         )
                                                                     ] ;
                                                             } ;
