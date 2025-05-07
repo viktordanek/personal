@@ -151,31 +151,49 @@
                                                         serviceConfig =
                                                             {
                                                                 ExecStart =
-                                                                    pkgs.writeShellScript
-                                                                        "ExecStart"
-                                                                        ''
-                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
-                                                                            do
-                                                                                if [ "${ _environment-variable "LINE" }" == "message" ]
-                                                                                then
-                                                                                    read -r CHANNEL &&
-                                                                                        read -r PAYLOAD &&
-                                                                                        BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".branch" ) &&
-                                                                                        COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
-                                                                                        ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
-                                                                                        GIT=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".git" ) &&
-                                                                                        TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > ${ _environment-variable "TEMPORARY" }/env &&
-                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "TEMPORARY" }/work &&
-                                                                                        cd ${ _environment-variable "TEMPORARY" }/work &&
-                                                                                        ${ pkgs.git }/bin/git init &&
-                                                                                        ${ pkgs.git }/bin/git remote add origin ${ _environment-variable "GIT" } &&
-                                                                                        ${ pkgs.git }/bin/git fetch --depth=1 origin ${ _environment-variable "COMMIT_HASH" } &&
-                                                                                        ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
-                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "TEMPORARY" }"
-                                                                                fi
-                                                                            done
-                                                                        '' ;
+                                                                    let
+                                                                        iteration =
+                                                                            pkgs.buildFHSUserEnv
+                                                                                {
+                                                                                    extraBwrapArgs =
+                                                                                        [
+                                                                                            "--bind-ro ${ _environment-variable "TEMPORARY" }/${ _environment-variable "USER" } /work"
+                                                                                            "--bind ${ _environment-variable "OUTPUT" } /output"
+                                                                                        ] ;
+                                                                                    name  = "iteration" ;
+                                                                                    runScript =
+                                                                                        pkgs.writeShellScript
+                                                                                            "script"
+                                                                                            ''
+                                                                                                ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \n COMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \n GIT=${ _environment-variable "GIT" } \n ORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD= ${ _environment-variable "PAYLOAD" }" > /output/env &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir /output/work &&
+                                                                                                    ${ pkgs.git }/bin/git init &&
+                                                                                                    ${ pkgs.git }/bin/git remote add origin /work/${ _environment-name "USER" }/git &&
+                                                                                                    ${ pkgs.git }/bin/git fetch --depth=1 origin ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                    ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
+                                                                                            '' ;
+                                                                                } ;
+                                                                        in
+                                                                            pkgs.writeShellScript
+                                                                                "ExecStart"
+                                                                                ''
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
+                                                                                    do
+                                                                                        if [ "${ _environment-variable "LINE" }" == "message" ]
+                                                                                        then
+                                                                                            read -r CHANNEL &&
+                                                                                                read -r PAYLOAD &&
+                                                                                                export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".branch" ) &&
+                                                                                                export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".commit_hash" ) &&
+                                                                                                export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".origin" ) &&
+                                                                                                export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".temporary" ) &&
+                                                                                                export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq ".user" ) &&
+                                                                                                export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                ${ iteration }/bin/iteration
+                                                                                        fi
+                                                                                    done
+                                                                                '' ;
                                                                 User = config.personal.user.name ;
                                                             } ;
                                                         wantedBy = [ "multi-user.target" ] ;
@@ -220,7 +238,7 @@
                                                                                                                         then
                                                                                                                             BRANCH=scratch/$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -64 )
                                                                                                                         fi &&
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg GIT "${ _environment-variable "TEMPORARY" }/${ value.user-name }/git" --arg ORIGIN "${ value.origin }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , git : $GIT , origin : $ORIGIN }' )"
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg ORIGIN "${ value.origin }"  --arg TEMPORARY "${ _environment-variable "TEMPORARY" }" --arg USER "${ value.user-name }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , origin : $ORIGIN , temporary : $TEMPORARY , user : $USER }' )"
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
