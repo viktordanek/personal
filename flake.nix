@@ -346,8 +346,8 @@
                                                                                                 export GIT_DIR=${ _environment-variable "PAYLOAD" }/git &&
                                                                                                 export GIT_WORK_TREE=${ _environment-variable "PAYLOAD" }/tree &&
                                                                                                 cd ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "PAYLOAD" }/.ssh/config" &&
-                                                                                                if ${ pkgs.git }/bin/git push origin HEAD
+                                                                                                source ${ _environment-variable "PAYLOAD" }/env &&
+                                                                                                if ${ pkgs.git }/bin/git push origin HEAD:refs/heads/${ _environment-variable "BRANCH" }
                                                                                                 then
                                                                                                     ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
                                                                                                 else
