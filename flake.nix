@@ -346,13 +346,15 @@
                                                                                                 export GIT_DIR=${ _environment-variable "PAYLOAD" }/git &&
                                                                                                 export GIT_WORK_TREE=${ _environment-variable "PAYLOAD" }/tree &&
                                                                                                 cd ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                DIRECTORY=${ _environment-variable "PAYLOAD" } &&
                                                                                                 source ${ _environment-variable "PAYLOAD" }/env &&
+                                                                                                ${ pkgs.coreutils }/bin/echo ${ pkgs.git }/bin/git push origin HEAD:refs/heads/${ _environment-variable "BRANCH" } &&
                                                                                                 if ${ pkgs.git }/bin/git push origin HEAD:refs/heads/${ _environment-variable "BRANCH" }
                                                                                                 then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/sleep 1m &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "REPOSITORY" }
                                                                                                 fi
                                                                                         fi
                                                                                     done
