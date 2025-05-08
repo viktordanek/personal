@@ -70,7 +70,7 @@
                                                 security =
                                                     {
                                                         rtkit.enable = true;
-                                                        sudo.extraConfig =
+                                                        /run/wrappers/bin/sudo.extraConfig =
                                                             ''
                                                                 %wheel ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/shutdown
                                                                 %wheel ALL=(ALL) NOPASSWD: ${ pkgs.umount }/bin/umount
@@ -265,13 +265,13 @@
                                                                                                 cd tree &&
                                                                                                 if [ ${ _environment-variable "BRANCH" } == "main" ]
                                                                                                 then
-                                                                                                    if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
+                                                                                                    if ! /run/wrappers/bin/sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
                                                                                                     fi
                                                                                                 elif [ ${ _environment-variable "BRANCH" } == "development" ]
                                                                                                 then
-                                                                                                    if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
+                                                                                                    if ! /run/wrappers/bin/sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
                                                                                                     fi
