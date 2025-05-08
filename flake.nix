@@ -432,7 +432,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
                                                                                                                         ${ pkgs.git }/bin/git init &&
-                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -p ${ builtins.toString value.port } -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
+                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
                                                                                                                         ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                         ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
