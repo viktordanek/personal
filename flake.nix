@@ -102,27 +102,28 @@
                                                                                                 then
                                                                                                     read -r CHANNEL &&
                                                                                                         read -r PAYLOAD &&
-                                                                                                        cd ${ _environment-variable "PAYLOAD" } &&
+                                                                                                        REPOSITORY=${ _environment-variable "PAYLOAD" } &&
+                                                                                                        cd ${ _environment-variable "REPOSITORY" } &&
                                                                                                         source ./env &&
                                                                                                         if [ ${ _environment-variable "BRANCH" } == "main" ]
                                                                                                         then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
                                                                                                             fi
                                                                                                         elif [ ${ _environment-variable "BRANCH" } == "development" ]
                                                                                                         then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
                                                                                                             fi
                                                                                                         else
-                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
                                                                                                             fi
                                                                                                         fi &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
