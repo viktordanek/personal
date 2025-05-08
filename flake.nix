@@ -85,19 +85,6 @@
                                                 services =
                                                     {
                                                         blueman.enable = true ;
-                                                        cron =
-                                                            {
-                                                                enable = true ;
-                                                                systemCronJobs =
-                                                                    [
-                                                                        (
-                                                                            let
-                                                                                script =
-
-                                                                                in "@reboot root ${ script } > /tmp/cron.out 2> /tmp/cron.err"
-                                                                        )
-                                                                    ] ;
-                                                            } ;
                                                         dbus.packages = [ pkgs.gcr ] ;
                                                         github-runners = { } ;
                                                         openssh =
