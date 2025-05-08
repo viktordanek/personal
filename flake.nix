@@ -96,7 +96,7 @@
                                                             {
                                                                 alsa =
                                                                     {
-                                                                        enable = true ;562e6b53677e1e44cbd6373dd313742dde3365bf
+                                                                        enable = true ;
                                                                         support32Bit = true ;
                                                                     } ;
                                                                 enable = true ;
