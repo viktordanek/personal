@@ -92,42 +92,7 @@
                                                                     [
                                                                         (
                                                                             let
-                                                                                script =
-                                                                                    pkgs.writeShellScript
-                                                                                        "nixos-rebuild"
-                                                                                        ''
-                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE nixos-rebuild | while read -r LINE
-                                                                                            do
-                                                                                                if [ ${ _environment-variable "LINE" } == "message" ]
-                                                                                                then
-                                                                                                    read -r CHANNEL &&
-                                                                                                        read -r PAYLOAD &&
-                                                                                                        REPOSITORY=${ _environment-variable "PAYLOAD" } &&
-                                                                                                        cd ${ _environment-variable "REPOSITORY" } &&
-                                                                                                        source ./env &&
-                                                                                                        cd tree &&
-                                                                                                        if [ ${ _environment-variable "BRANCH" } == "main" ]
-                                                                                                        then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
-                                                                                                            fi
-                                                                                                        elif [ ${ _environment-variable "BRANCH" } == "development" ]
-                                                                                                        then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
-                                                                                                            fi
-                                                                                                        else
-                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
-                                                                                                            fi
-                                                                                                        fi &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
-                                                                                                fi
-                                                                                            done
-                                                                                        '' ;
+                                                                                let script = "${ pkgs.coreutils }/bin/true" ;
                                                                                 # in "@reboot ${ config.personal.user.name } ${ script }"
                                                                                 in "@reboot root ${ script }"
                                                                         )
@@ -290,6 +255,52 @@
                                                                         User = config.personal.user.name ;
                                                                     } ;
                                                                 requires = [ "redis.service" ] ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            } ;
+                                                        nixos-rebuild =
+                                                            {
+                                                                after = [ "network.target" "redis.service" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            pkgs.writeShellScript
+                                                                                "nixos-rebuild"
+                                                                                ''
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE nixos-rebuild | while read -r LINE
+                                                                                    do
+                                                                                        if [ ${ _environment-variable "LINE" } == "message" ]
+                                                                                        then
+                                                                                            read -r CHANNEL &&
+                                                                                                read -r PAYLOAD &&
+                                                                                                REPOSITORY=${ _environment-variable "PAYLOAD" } &&
+                                                                                                cd ${ _environment-variable "REPOSITORY" } &&
+                                                                                                source ./env &&
+                                                                                                cd tree &&
+                                                                                                if [ ${ _environment-variable "BRANCH" } == "main" ]
+                                                                                                then
+                                                                                                    if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
+                                                                                                    fi
+                                                                                                elif [ ${ _environment-variable "BRANCH" } == "development" ]
+                                                                                                then
+                                                                                                    if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
+                                                                                                    fi
+                                                                                                else
+                                                                                                    if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
+                                                                                                    fi
+                                                                                                fi &&
+                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
+                                                                                        fi
+                                                                                    done
+                                                                                '' ;
+                                                                        User = config.personal.user.name ;
+                                                                    } ;
+                                                                requires = [ "redis.serviced" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                         process =
