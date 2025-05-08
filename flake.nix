@@ -98,12 +98,13 @@
                                                                                         ''
                                                                                             ${ pkgs.redis }/bin/redis-cli SUBSCRIBE "nixos-rebuild switch" | while read -r LINE
                                                                                             do
-                                                                                                if [ "${ _environment-variable "LINE" } == "message" ]
+                                                                                                if [ ${ _environment-variable "LINE" } == "message" ]
                                                                                                 then
                                                                                                     read -r CHANNEL &&
                                                                                                         read -r PAYLOAD &&
                                                                                                         cd ${ _environment-variable "PAYLOAD" } &&
-                                                                                                        sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild --flake .#myhost
+                                                                                                        sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild --flake .#myhost &&
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
