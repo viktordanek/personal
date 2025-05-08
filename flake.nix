@@ -103,7 +103,7 @@
                                                                                                     read -r CHANNEL &&
                                                                                                         read -r PAYLOAD &&
                                                                                                         cd ${ _environment-variable "PAYLOAD" } &&
-                                                                                                        source env &&
+                                                                                                        source ./env &&
                                                                                                         if [ ${ _environment-variable "BRANCH" } == "main" ]
                                                                                                         then
                                                                                                             if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
@@ -274,7 +274,7 @@
                                                                                                 read -r PAYLOAD &&
                                                                                                 export PAYLOAD &&
                                                                                                 cd ${ _environment-variable "PAYLOAD" }/tree &&
-                                                                                                if ! ${ pkgs.nix }/bin/nix flake check > ${ _environment-variable "PAYLOAD" }/nix-flake.standard-output 2> ${ _environment-variable "PAYLOAD" }/nix-flake.standard-erorr
+                                                                                                if ! ${ pkgs.nix }/bin/nix flake check > ${ _environment-variable "PAYLOAD" }/nix-flake.standard-output 2> ${ _environment-variable "PAYLOAD" }/nix-flake.standard-error
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
                                                                                                 fi &&
