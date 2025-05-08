@@ -247,7 +247,7 @@
                                                                                                         export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
                                                                                                         export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                                                         ${ user-environment }/bin/user-environment &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "OUTPUT" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "OUTPUT" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
@@ -277,7 +277,7 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
                                                                                                 fi &&
-                                                                                                ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "PAYLOAD" }
+                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
                                                                                         fi
                                                                                     done
                                                                                 '' ;
@@ -304,14 +304,14 @@
                                                                                                 export PAYLOAD &&
                                                                                                 if [ -e ${ _environment-variable "PAYLOAD" }/FAILURE ]
                                                                                                 then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND failure ${ _environment-variable "PAYLOAD" }
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH failure ${ _environment-variable "PAYLOAD" }
                                                                                                 elif [ -z "$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/wc --lines )" ]
                                                                                                 then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND success ${ _environment-variable "PAYLOAD" }
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH success ${ _environment-variable "PAYLOAD" }
                                                                                                 else
                                                                                                     FILE=$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort --numeric | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
                                                                                                         ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                         fi
                                                                                     done
@@ -341,10 +341,10 @@
                                                                                                 export GIT_WORK_TREE=${ _environment-variable "PAYLOAD" }/tree &&
                                                                                                 if ${ pkgs.git }/bin/git push origin HEAD
                                                                                                 then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "PAYLOAD" }
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/sleep 1m &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND push ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                         fi
                                                                                     done
