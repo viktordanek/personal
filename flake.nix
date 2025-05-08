@@ -94,7 +94,7 @@
                                                                             let
                                                                                 script =
                                                                                     pkgs.writeShellScript
-                                                                                        "script"
+                                                                                        "nixos-rebuild"
                                                                                         ''
                                                                                             ${ pkgs.redis }/bin/redis-cli SUBSCRIBE nixos-rebuild | while read -r LINE
                                                                                             do
@@ -106,14 +106,23 @@
                                                                                                         source env &&
                                                                                                         if [ ${ _environment-variable "BRANCH" } == "main" ]
                                                                                                         then
-                                                                                                            sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                            fi
                                                                                                         elif [ ${ _environment-variable "BRANCH" } == "development" ]
                                                                                                         then
-                                                                                                            sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                            fi
                                                                                                         else
-                                                                                                            ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost
+                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-output 2> ${ _environment-variable "PAYLOAD" }/nixos-rebuild.standard-error
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                            fi
                                                                                                         fi &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-push ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
@@ -184,14 +193,14 @@
                                                 system.stateVersion = "23.05" ;
                                                 systemd.services =
                                                     {
-                                                        git-commit-subscriber =
+                                                        commit =
                                                             {
                                                                 after = [ "network.target" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
                                                                             let
-                                                                                iteration =
+                                                                                user-environment =
                                                                                     pkgs.buildFHSUserEnv
                                                                                         {
                                                                                             extraBwrapArgs =
@@ -199,7 +208,7 @@
                                                                                                     "--ro-bind ${ _environment-variable "TEMPORARY" } /work"
                                                                                                     "--bind ${ _environment-variable "OUTPUT" } /output"
                                                                                                 ] ;
-                                                                                            name  = "iteration" ;
+                                                                                            name  = "user-environment" ;
                                                                                             profile =
                                                                                                 ''
                                                                                                     export GIT_DIR=/output/git &&
@@ -215,28 +224,18 @@
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                             ${ pkgs.git }/bin/git init &&
-                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "OUTPUT" }/.ssh/config" &&
                                                                                                             ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                             ${ pkgs.git }/bin/git fetch local ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                             ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
-                                                                                                            cd ${ _environment-variable "OUTPUT" }/tree &&
-                                                                                                            if [ -L /output/bin/process ]
-                                                                                                            then
-                                                                                                                if /output/bin/process ${ _environment-variable "OUTPUT" } > /output/standard-output 2> /output/standard-error
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                                else
-                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                                fi
-                                                                                                            fi &&
-                                                                                                            ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
+                                                                                                            ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "OUTPUT" }
                                                                                                     '' ;
                                                                                         } ;
                                                                                 in
                                                                                     pkgs.writeShellScript
-                                                                                        "ExecStart"
+                                                                                        "commit"
                                                                                         ''
-                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
+                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE commit | while read -r LINE
                                                                                             do
                                                                                                 if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                                 then
@@ -249,7 +248,7 @@
                                                                                                         export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
                                                                                                         export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
                                                                                                         export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                        ${ iteration }/bin/iteration
+                                                                                                        ${ user-environment }/bin/user-environment
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
@@ -257,16 +256,78 @@
                                                                    } ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
-                                                        git-publish-subscriber =
+                                                        nix-flake =
                                                             {
                                                                 after = [ "network.target" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
                                                                             pkgs.writeShellScript
-                                                                                "ExecStart"
+                                                                                "nix-flake"
                                                                                 ''
-                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-push | while read -r LINE
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE nix-flake | while read -r LINE
+                                                                                    do
+                                                                                        if [ "${ _environment-variable "LINE" }" == "message" ]
+                                                                                        then
+                                                                                            read -r CHANNEL &&
+                                                                                                read -r PAYLOAD &&
+                                                                                                export PAYLOAD &&
+                                                                                                cd ${ _environment-variable "PAYLOAD" }/tree &&
+                                                                                                if ! ${ pkgs.nix }/bin/nix flake check > ${ _environment-variable "PAYLOAD" }/nix-flake.standard-output 2> ${ _environment-variable "PAYLOAD" }/nix-flake.standard-erorr
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "PAYLOAD" }/FAILURE
+                                                                                                fi &&
+                                                                                                ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "PAYLOAD" }
+                                                                                        fi
+                                                                                    done
+                                                                                '' ;
+                                                                        User = config.personal.user.name ;
+                                                                    } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            }
+                                                        process =
+                                                            {
+                                                                after = [ "network.target" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            pkgs.writeShellScript
+                                                                                "process"
+                                                                                ''
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE process | while read -r LINE
+                                                                                    do
+                                                                                        if [ "${ _environment-variable "LINE" }" == "message" ]
+                                                                                        then
+                                                                                            read -r CHANNEL &&
+                                                                                                read -r PAYLOAD &&
+                                                                                                export PAYLOAD &&
+                                                                                                if [ -e ${ _environment-variable "PAYLOAD" }/FAILURE ]
+                                                                                                then
+                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND failure ${ _environment-variable "PAYLOAD" }
+                                                                                                elif [ -z "$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/wc --lines )" ]
+                                                                                                then
+                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND success ${ _environment-variable "PAYLOAD" }
+                                                                                                else
+                                                                                                    FILE=$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort --numeric | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
+                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
+                                                                                        fi
+                                                                                    done
+                                                                                '' ;
+                                                                        User = config.personal.user.name ;
+                                                                    } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            } ;
+                                                        push =
+                                                            {
+                                                                after = [ "network.target" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            pkgs.writeShellScript
+                                                                                "push"
+                                                                                ''
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE push | while read -r LINE
                                                                                     do
                                                                                         if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                         then
@@ -275,10 +336,12 @@
                                                                                                 export PAYLOAD &&
                                                                                                 export GIT_DIR=${ _environment-variable "PAYLOAD" }/git &&
                                                                                                 export GIT_WORK_TREE=${ _environment-variable "PAYLOAD" }/tree &&
-                                                                                                if ! ${ pkgs.git }/bin/git push origin HEAD
+                                                                                                if ${ pkgs.git }/bin/git push origin HEAD
                                                                                                 then
+                                                                                                    ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "PAYLOAD" }
+                                                                                                else
                                                                                                     ${ pkgs.coreutils }/bin/sleep 1m &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND git-push ${ _environment-variable "PAYLOAD" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND push ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                         fi
                                                                                     done
@@ -298,7 +361,7 @@
                                                         packages =
                                                             let
                                                                 mapper =
-                                                                    value :
+                                                                    name : value :
                                                                         let
                                                                             user-environment =
                                                                                 pkgs.buildFHSUserEnv
@@ -347,8 +410,10 @@
                                                                                                                     EOF
                                                                                                                         ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/bin &&
-                                                                                                                        ${ if builtins.typeOf value.process == "string" then "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "process" value.process } /work/${ value.user-name }/bin/process" else "# NO PROCESS" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/signals &&
+                                                                                                                        ${ if value.emit-nix-flake then "${ pkgs.coreutils }/bin/echo nix-flake > /work/${ value.user-name }/signals/5000" else "#" } &&
+                                                                                                                        ${ if value.emit-nixos-rebuild then "${ pkgs.coreutils }/bin/echo nixos-rebuild > /work/${ value.user-name }/signals/6000" else "#" } &&
+                                                                                                                        ${ if value.emit-push then "${ pkgs.coreutils }/bin/echo push > /work/${ value.user-name }/signals/7000" else "#" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
@@ -357,7 +422,7 @@
                                                                                                                         ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
                                                                                                                         ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received git-commit-ready "nixos-rebuild switch" post | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' } &&
+                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE commit process nix-flake nixos-rebuild push success failure | while read -r line ; do ${ pkgs.coreutils }/bin/echo "${ _environment-variable "line" }"; done'' } &&
                                                                                                                         ${ pkgs.git }/bin/git config alias.ping !${ pkgs.writeShellScript "ping" ''${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message ${ _environment-variable "@" }'' } &&
                                                                                                                         ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
@@ -368,12 +433,12 @@
                                                                                     } ;
                                                                             in
                                                                                 pkgs.writeShellScriptBin
-                                                                                    value.workspace-name
+                                                                                    name
                                                                                     ''
                                                                                         export TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
                                                                                             ${ user-environment }/bin/user-environment
                                                                                      '';
-                                                                in builtins.map mapper config.personal.workspaces ;
+                                                                in builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
@@ -394,19 +459,20 @@
                                                                             {
                                                                                 options =
                                                                                     {
+                                                                                        emit-nix-flake = lib.mkOption { default = false ; type = lib.types.bool ; } ;
+                                                                                        emit-nixos-rebuild = lib.mkOption { default = false ; type = lib.types.bool ; } ;
+                                                                                        emit-push = lib.mkOption { default = false ; type = lib.types.bool ; } ;
                                                                                         host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                         port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                        process = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
                                                                                         user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        workspace-name = lib.mkOption { type = lib.types.str ; } ;
                                                                                     } ;
                                                                             } ;
-                                                                    in lib.types.listOf config ;
+                                                                    in lib.types.attrsOf config ;
                                                         } ;
                                                 personal.wifi =
                                                     lib.mkOption
