@@ -183,7 +183,7 @@
                                                                                                             ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "OUTPUT" }/ssh &&
                                                                                                             ${ pkgs.git }/bin/git fetch local ${ _environment-variable "BRANCH" } &&
                                                                                                             ${ pkgs.git }/bin/git remote remove local &&
-                                                                                                            ${ pkgs.git }/bin/git checkout --detach ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                            ${ pkgs.git }/bin/git checkout ${ _environment-variable "COMMIT_HASH" } &&
                                                                                                             ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/signals /output/signals
                                                                                                     '' ;
                                                                                         } ;
