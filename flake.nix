@@ -305,13 +305,15 @@
                                                                                                 if [ -e ${ _environment-variable "PAYLOAD" }/FAILURE ]
                                                                                                 then
                                                                                                     ${ pkgs.redis }/bin/redis-cli PUBLISH failure ${ _environment-variable "PAYLOAD" }
-                                                                                                elif [ -z "$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/wc --lines )" ]
-                                                                                                then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH success ${ _environment-variable "PAYLOAD" }
                                                                                                 else
                                                                                                     FILE=$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort --numeric | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
-                                                                                                        ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
+                                                                                                        if [ -z "${ _environment-variable "FILE" }" ]
+                                                                                                        then
+                                                                                                            ${ pkgs.redis }/bin/redis-cli PUBLISH success ${ _environment-variable "PAYLOAD" }
+                                                                                                        else
+                                                                                                            ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
+                                                                                                                ${ pkgs.redis }/bin/redis-cli PUBLISH $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
+                                                                                                        fi
                                                                                                 fi
                                                                                         fi
                                                                                     done
