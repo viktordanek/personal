@@ -416,6 +416,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
                                                                                                                         ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
                                                                                                                             Host ${ value.host }
+                                                                                                                            Port ${ builtins.toString value.port }
                                                                                                                             IdentityFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/id-rsa
                                                                                                                             User ${ value.user }
                                                                                                                             UserKnownHostsFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/known-hosts &&
