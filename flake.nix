@@ -105,22 +105,23 @@
                                                                                                         REPOSITORY=${ _environment-variable "PAYLOAD" } &&
                                                                                                         cd ${ _environment-variable "REPOSITORY" } &&
                                                                                                         source ./env &&
+                                                                                                        cd tree &&
                                                                                                         if [ ${ _environment-variable "BRANCH" } == "main" ]
                                                                                                         then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
                                                                                                             fi
                                                                                                         elif [ ${ _environment-variable "BRANCH" } == "development" ]
                                                                                                         then
-                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
+                                                                                                            if ! sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
                                                                                                             fi
                                                                                                         else
-                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > nixos-rebuild.standard-output 2> nixos-rebuild.standard-error
+                                                                                                            if ! ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost > ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-output 2> ${ _environment-variable "REPOSITORY" }/nixos-rebuild.standard-error
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > FAILURE
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > ${ _environment-variable "REPOSITORY" }/FAILURE
                                                                                                             fi
                                                                                                         fi &&
                                                                                                         ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
