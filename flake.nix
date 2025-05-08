@@ -392,11 +392,12 @@
                                                                                                                 "post-commit"
                                                                                                                 ''
                                                                                                                     BRANCH="$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" &&
-                                                                                                                        if [ -z ${ _environment-variable "BRANCH" } ]
+                                                                                                                        if [ -z "${ _environment-variable "BRANCH" }" ]
                                                                                                                         then
-                                                                                                                            BRANCH=scratch/$( ${ pkgs.libuuid }/bin/uuidgen | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -64 )
+                                                                                                                            ${ pkgs.coreutils }/bin/echo We can not commit to a detached head. >&2 &&
+                                                                                                                                exit 64
                                                                                                                         fi &&
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-received "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg ORIGIN "${ value.origin }"  --arg TEMPORARY "${ _environment-variable "TEMPORARY" }" --arg USER "${ value.user-name }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , origin : $ORIGIN , temporary : $TEMPORARY , user : $USER }' )"
+                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH commit "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" --arg ORIGIN "${ value.origin }"  --arg TEMPORARY "${ _environment-variable "TEMPORARY" }" --arg USER "${ value.user-name }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , origin : $ORIGIN , temporary : $TEMPORARY , user : $USER }' )"
                                                                                                                 '' ;
                                                                                                         in
                                                                                                             pkgs.writeShellScript
