@@ -227,8 +227,7 @@
                                                                                                             ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "OUTPUT" }/.ssh/config" &&
                                                                                                             ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
                                                                                                             ${ pkgs.git }/bin/git fetch local ${ _environment-variable "COMMIT_HASH" } &&
-                                                                                                            ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
-                                                                                                            ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "OUTPUT" }
+                                                                                                            ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD
                                                                                                     '' ;
                                                                                         } ;
                                                                                 in
@@ -248,7 +247,8 @@
                                                                                                         export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
                                                                                                         export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
                                                                                                         export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                        ${ user-environment }/bin/user-environment
+                                                                                                        ${ user-environment }/bin/user-environment &&
+                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND process ${ _environment-variable "OUTPUT" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
