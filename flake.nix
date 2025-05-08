@@ -312,8 +312,8 @@
                                                                                                         then
                                                                                                             ${ pkgs.redis }/bin/redis-cli PUBLISH success ${ _environment-variable "PAYLOAD" }
                                                                                                         else
-                                                                                                            ${ pkgs.redis }/bin/redis-cli PUBLISH $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
-                                                                                                                ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
+                                                                                                            ${ pkgs.redis }/bin/redis-cli PUBLISH $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" }
                                                                                                         fi
                                                                                                 fi
                                                                                         fi
