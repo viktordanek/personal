@@ -284,7 +284,7 @@
                                                                         User = config.personal.user.name ;
                                                                     } ;
                                                                 wantedBy = [ "multi-user.target" ] ;
-                                                            }
+                                                            } ;
                                                         process =
                                                             {
                                                                 after = [ "network.target" ] ;
