@@ -287,7 +287,7 @@
                                                                                 '' ;
                                                                         User = config.personal.user.name ;
                                                                     } ;
-                                                                requires = [ "redis.serviced" ] ;
+                                                                requires = [ "redis.service" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                         process =
