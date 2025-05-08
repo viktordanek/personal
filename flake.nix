@@ -195,7 +195,7 @@
                                                     {
                                                         commit =
                                                             {
-                                                                after = [ "network.target" ] ;
+                                                                after = [ "network.target" "redis.service" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
@@ -254,11 +254,12 @@
                                                                                         '' ;
                                                                        User = config.personal.user.name ;
                                                                    } ;
+                                                                requires = [ "redis.service" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                         nix-flake =
                                                             {
-                                                                after = [ "network.target" ] ;
+                                                                after = [ "network.target" "redis.service" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
@@ -283,11 +284,12 @@
                                                                                 '' ;
                                                                         User = config.personal.user.name ;
                                                                     } ;
+                                                                requires = [ "redis.service" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                         process =
                                                             {
-                                                                after = [ "network.target" ] ;
+                                                                after = [ "network.target" "redis.service" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
@@ -317,11 +319,12 @@
                                                                                 '' ;
                                                                         User = config.personal.user.name ;
                                                                     } ;
+                                                                requires = [ "redis.service" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                         push =
                                                             {
-                                                                after = [ "network.target" ] ;
+                                                                after = [ "network.target" "redis.service" ] ;
                                                                 serviceConfig =
                                                                     {
                                                                         ExecStart =
@@ -349,6 +352,7 @@
                                                                                 '' ;
                                                                         User = config.personal.user.name ;
                                                                     } ;
+                                                                requires = [ "redis.service" ] ;
                                                                 wantedBy = [ "multi-user.target" ] ;
                                                             } ;
                                                    } ;
