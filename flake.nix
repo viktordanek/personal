@@ -180,7 +180,7 @@
                                                                                                             ${ pkgs.git }/bin/git init &&
                                                                                                             ${ pkgs.git }/bin/git remote add origin ${ _environment-variable "ORIGIN" } &&
                                                                                                             ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
-                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "OUTPUT" }/ssh &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "OUTPUT" }/.ssh/config &&
                                                                                                             ${ pkgs.git }/bin/git fetch local ${ _environment-variable "BRANCH" } &&
                                                                                                             ${ pkgs.git }/bin/git remote remove local &&
                                                                                                             ${ pkgs.git }/bin/git checkout ${ _environment-variable "COMMIT_HASH" } &&
@@ -351,10 +351,10 @@
                                                                                                 ${ pkgs.coreutils }/bin/echo ${ pkgs.git }/bin/git push origin HEAD:refs/heads/${ _environment-variable "BRANCH" } &&
                                                                                                 if ${ pkgs.git }/bin/git push origin HEAD:refs/heads/${ _environment-variable "BRANCH" }
                                                                                                 then
-                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "REPOSITORY" }
+                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH process ${ _environment-variable "DIRECTORY" }
                                                                                                 else
                                                                                                     ${ pkgs.coreutils }/bin/sleep 1m &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "REPOSITORY" }
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "DIRECTORY" }
                                                                                                 fi
                                                                                         fi
                                                                                     done
