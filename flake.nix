@@ -221,12 +221,18 @@
                                                                                                 pkgs.writeShellScript
                                                                                                     "script"
                                                                                                     ''
-                                                                                                        ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/git ${ _environment-variable "GIT_DIR" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/tree ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
                                                                                                             ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
-                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/signals /output/signals &&
-                                                                                                            ${ pkgs.git }/bin/git checkout --detach ${ _environment-variable "COMMIT_HASH" }
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                            ${ pkgs.git }/bin/git init &&
+                                                                                                            ${ pkgs.git }/bin/git remote add origin ${ _environment-variable "ORIGIN" } &&
+                                                                                                            ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "OUTPUT" }/ssh &&
+                                                                                                            ${ pkgs.git }/bin/git fetch local ${ _environment-variable "BRANCH" } &&
+                                                                                                            ${ pkgs.git }/bin/git remote remove local &&
+                                                                                                            ${ pkgs.git }/bin/git checkout --detach ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/signals /output/signals
                                                                                                     '' ;
                                                                                         } ;
                                                                                 in
