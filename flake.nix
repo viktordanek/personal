@@ -96,7 +96,7 @@
                                                             {
                                                                 alsa =
                                                                     {
-                                                                        enable = true ;
+                                                                        enable = true ;562e6b53677e1e44cbd6373dd313742dde3365bf
                                                                         support32Bit = true ;
                                                                     } ;
                                                                 enable = true ;
@@ -180,7 +180,7 @@
                                                                                                             ${ pkgs.git }/bin/git init &&
                                                                                                             ${ pkgs.git }/bin/git remote add origin ${ _environment-variable "ORIGIN" } &&
                                                                                                             ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
-                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "OUTPUT" }/.ssh/config &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "OUTPUT" }/.ssh/config" &&
                                                                                                             ${ pkgs.git }/bin/git fetch local ${ _environment-variable "BRANCH" } &&
                                                                                                             ${ pkgs.git }/bin/git remote remove local &&
                                                                                                             ${ pkgs.git }/bin/git checkout ${ _environment-variable "COMMIT_HASH" } &&
