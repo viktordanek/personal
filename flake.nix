@@ -85,6 +85,32 @@
                                                 services =
                                                     {
                                                         blueman.enable = true ;
+                                                        cron =
+                                                            {
+                                                                enable = true ;
+                                                                systemCronJobs =
+                                                                    [
+                                                                        (
+                                                                            let
+                                                                                script =
+                                                                                    pkgs.writeShellScript
+                                                                                        "script"
+                                                                                        ''
+                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE "nixos-rebuild switch" | while read -r LINE
+                                                                                            do
+                                                                                                if [ "${ _environment-variable "LINE" } == "message" ]
+                                                                                                then
+                                                                                                    read -r CHANNEL &&
+                                                                                                        read -r PAYLOAD &&
+                                                                                                        cd ${ _environment-variable "PAYLOAD" } &&
+                                                                                                        sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild --flake .#myhost
+                                                                                                fi
+                                                                                            done
+                                                                                        '' ;
+                                                                                in "@reboot ${ config.personal.user.name } ${ script }"
+                                                                        )
+                                                                    ] ;
+                                                            } ;
                                                         dbus.packages = [ pkgs.gcr ] ;
                                                         github-runners = { } ;
                                                         openssh =
