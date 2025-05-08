@@ -96,15 +96,24 @@
                                                                                     pkgs.writeShellScript
                                                                                         "script"
                                                                                         ''
-                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE "nixos-rebuild switch" | while read -r LINE
+                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE nixos-rebuild | while read -r LINE
                                                                                             do
                                                                                                 if [ ${ _environment-variable "LINE" } == "message" ]
                                                                                                 then
                                                                                                     read -r CHANNEL &&
                                                                                                         read -r PAYLOAD &&
                                                                                                         cd ${ _environment-variable "PAYLOAD" } &&
-                                                                                                        sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild --flake .#myhost &&
-                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH push ${ _environment-variable "PAYLOAD" }
+                                                                                                        source env &&
+                                                                                                        if [ ${ _environment-variable "BRANCH" } == "main" ]
+                                                                                                        then
+                                                                                                            sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild switch --flake .#myhost
+                                                                                                        elif [ ${ _environment-variable "BRANCH" } == "development" ]
+                                                                                                        then
+                                                                                                            sudo ${ pkgs.nixos-rebuild }/bin/nixos-rebuild test --flake .#myhost
+                                                                                                        else
+                                                                                                            ${ pkgs.nixos-rebuild }/bin/nixos-rebuild build-vm --flake .#myhost
+                                                                                                        fi &&
+                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH git-push ${ _environment-variable "PAYLOAD" }
                                                                                                 fi
                                                                                             done
                                                                                         '' ;
@@ -173,78 +182,111 @@
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
-                                                systemd.services.git-commit-subscriber =
+                                                systemd.services =
                                                     {
-                                                        after = [ "network.target" ] ;
-                                                        serviceConfig =
+                                                        git-commit-subscriber =
                                                             {
-                                                                ExecStart =
-                                                                    let
-                                                                        iteration =
-                                                                            pkgs.buildFHSUserEnv
-                                                                                {
-                                                                                    extraBwrapArgs =
-                                                                                        [
-                                                                                            "--ro-bind ${ _environment-variable "TEMPORARY" } /work"
-                                                                                            "--bind ${ _environment-variable "OUTPUT" } /output"
-                                                                                        ] ;
-                                                                                    name  = "iteration" ;
-                                                                                    profile =
+                                                                after = [ "network.target" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
+                                                                            let
+                                                                                iteration =
+                                                                                    pkgs.buildFHSUserEnv
+                                                                                        {
+                                                                                            extraBwrapArgs =
+                                                                                                [
+                                                                                                    "--ro-bind ${ _environment-variable "TEMPORARY" } /work"
+                                                                                                    "--bind ${ _environment-variable "OUTPUT" } /output"
+                                                                                                ] ;
+                                                                                            name  = "iteration" ;
+                                                                                            profile =
+                                                                                                ''
+                                                                                                    export GIT_DIR=/output/git &&
+                                                                                                        export GIT_WORK_TREE=/output/tree
+                                                                                                '' ;
+                                                                                            runScript =
+                                                                                                pkgs.writeShellScript
+                                                                                                    "script"
+                                                                                                    ''
+                                                                                                        ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
+                                                                                                            ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/bin /output/bin &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                            ${ pkgs.git }/bin/git init &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
+                                                                                                            ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
+                                                                                                            ${ pkgs.git }/bin/git fetch local ${ _environment-variable "COMMIT_HASH" } &&
+                                                                                                            ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
+                                                                                                            cd ${ _environment-variable "OUTPUT" }/tree &&
+                                                                                                            if [ -L /output/bin/process ]
+                                                                                                            then
+                                                                                                                if /output/bin/process ${ _environment-variable "OUTPUT" } > /output/standard-output 2> /output/standard-error
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
+                                                                                                                else
+                                                                                                                    ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
+                                                                                                                fi
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
+                                                                                                    '' ;
+                                                                                        } ;
+                                                                                in
+                                                                                    pkgs.writeShellScript
+                                                                                        "ExecStart"
                                                                                         ''
-                                                                                            export GIT_DIR=/output/git &&
-                                                                                                export GIT_WORK_TREE=/output/tree
+                                                                                            ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
+                                                                                            do
+                                                                                                if [ "${ _environment-variable "LINE" }" == "message" ]
+                                                                                                then
+                                                                                                    read -r CHANNEL &&
+                                                                                                        read -r PAYLOAD &&
+                                                                                                        export PAYLOAD &&
+                                                                                                        export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".branch" ) &&
+                                                                                                        export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".commit_hash" ) &&
+                                                                                                        export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".origin" ) &&
+                                                                                                        export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
+                                                                                                        export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
+                                                                                                        export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                        ${ iteration }/bin/iteration
+                                                                                                fi
+                                                                                            done
                                                                                         '' ;
-                                                                                    runScript =
-                                                                                        pkgs.writeShellScript
-                                                                                            "script"
-                                                                                            ''
-                                                                                                ${ pkgs.coreutils }/bin/echo -en "BRANCH=${ _environment-variable "BRANCH" } \nCOMMIT_HASH=${ _environment-variable "COMMIT_HASH" } \nORIGIN=${ _environment-variable "ORIGIN" } \nPAYLOAD=${ _environment-variable "PAYLOAD" } \nTEMPORARY=${ _environment-variable "TEMPORARY" } \nUSER=${ _environment-variable "USER" }" > /output/env &&
-                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/.ssh /output/.ssh &&
-                                                                                                    ${ pkgs.coreutils }/bin/cp --recursive /work/${ _environment-variable "USER" }/bin /output/bin &&
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" } &&
-                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /output/.ssh/config" &&
-                                                                                                    ${ pkgs.git }/bin/git remote add local /work/${ _environment-variable "USER" }/git &&
-                                                                                                    ${ pkgs.git }/bin/git fetch local ${ _environment-variable "COMMIT_HASH" } &&
-                                                                                                    ${ pkgs.git }/bin/git checkout --detach FETCH_HEAD &&
-                                                                                                    cd ${ _environment-variable "OUTPUT" }/tree &&
-                                                                                                    if [ -L /output/bin/process ]
-                                                                                                    then
-                                                                                                        if /output/bin/process ${ _environment-variable "OUTPUT" } > /output/standard-output 2> /output/standard-error
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                        else
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "?" } > /output/status
-                                                                                                        fi
-                                                                                                    fi &&
-                                                                                                    ${ pkgs.redis }/bin/redis-cli PUBLISH git-commit-ready "${ _environment-variable "OUTPUT" }"
-                                                                                            '' ;
-                                                                                } ;
-                                                                        in
+                                                                       User = config.personal.user.name ;
+                                                                   } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            } ;
+                                                        git-publish-subscriber =
+                                                            {
+                                                                after = [ "network.target" ] ;
+                                                                serviceConfig =
+                                                                    {
+                                                                        ExecStart =
                                                                             pkgs.writeShellScript
                                                                                 "ExecStart"
                                                                                 ''
-                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-commit-received | while read -r LINE
+                                                                                    ${ pkgs.redis }/bin/redis-cli SUBSCRIBE git-push | while read -r LINE
                                                                                     do
                                                                                         if [ "${ _environment-variable "LINE" }" == "message" ]
                                                                                         then
                                                                                             read -r CHANNEL &&
                                                                                                 read -r PAYLOAD &&
                                                                                                 export PAYLOAD &&
-                                                                                                export BRANCH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".branch" ) &&
-                                                                                                export COMMIT_HASH=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".commit_hash" ) &&
-                                                                                                export ORIGIN=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".origin" ) &&
-                                                                                                export TEMPORARY=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".temporary" ) &&
-                                                                                                export USER=$( ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PAYLOAD" } | ${ pkgs.jq }/bin/jq --raw-output ".user" ) &&
-                                                                                                export OUTPUT=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                ${ iteration }/bin/iteration
+                                                                                                export GIT_DIR=${ _environment-variable "PAYLOAD" }/git &&
+                                                                                                export GIT_WORK_TREE=${ _environment-variable "PAYLOAD" }/tree &&
+                                                                                                if ! ${ pkgs.git }/bin/git push origin HEAD
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/sleep 1m &&
+                                                                                                        ${ pkgs.redis }/bin/redis-cli SEND git-push ${ _environment-variable "PAYLOAD" }
+                                                                                                fi
                                                                                         fi
                                                                                     done
                                                                                 '' ;
-                                                               User = config.personal.user.name ;
-                                                           } ;
-                                                       wantedBy = [ "multi-user.target" ] ;
+                                                                        User = config.personal.user.name ;
+                                                                    } ;
+                                                                wantedBy = [ "multi-user.target" ] ;
+                                                            } ;
                                                    } ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
