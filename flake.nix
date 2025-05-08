@@ -311,6 +311,7 @@
                                                                                                     FILE=$( ${ pkgs.findutils }/bin/find ${ _environment-variable "PAYLOAD" }/signals -mindepth 1 -type f | ${ pkgs.coreutils }/bin/sort --numeric | ${ pkgs.coreutils }/bin/head --lines 1 ) &&
                                                                                                         ${ pkgs.coreutils }/bin/rm ${ _environment-variable "FILE" } &&
                                                                                                         ${ pkgs.redis }/bin/redis-cli SEND $( ${ pkgs.coreutils }/bin/cat ${ _environment-variable "FILE" } ) ${ _environment-variable "PAYLOAD" }
+                                                                                                fi
                                                                                         fi
                                                                                     done
                                                                                 '' ;
