@@ -419,7 +419,7 @@
                                                                             mapper =
                                                                                 name : value :
                                                                                     pkgs.writeShellScriptBin
-                                                                                        "name"
+                                                                                        name
                                                                                         ''
                                                                                             export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 if [ ! -d ${ _environment-variable "DOT_SSH" } ]
@@ -459,7 +459,7 @@
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } fetch origin ${ value.branch } &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } checkout ${ value.branch }
                                                                                                 fi &&
-                                                                                                export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" } &&
+                                                                                                export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" }"" &&
                                                                                                 exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@"}
                                                                                         '' ;
                                                                             in builtins.attrValues ( builtins.mapAttrs mapper config.personal.user.pass )
