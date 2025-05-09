@@ -420,7 +420,7 @@
                                                                                 name : value :
                                                                                     pkgs.stdenv.mkDerivation
                                                                                         {
-                                                                                            install =
+                                                                                            installPhase =
                                                                                                 let
                                                                                                     script =
                                                                                                         pkgs.writeShellScriptBin
