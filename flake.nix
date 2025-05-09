@@ -551,6 +551,7 @@
                                                                             {
                                                                                 options =
                                                                                     {
+                                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
                                                                                         host = lib.mkOption { type = lib.types.str ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
