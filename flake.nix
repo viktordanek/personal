@@ -419,7 +419,7 @@
                                                                                                             ${ pkgs.git }/bin/git init &&
                                                                                                             ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                             ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "DOT_SSH" }/config &&
+                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "DOT_SSH" }/config &&
                                                                                                             ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                             ${ pkgs.git }/bin/git fetch origin &&
                                                                                                             ${ pkgs.git }/bin/git checkout origin/main &&
