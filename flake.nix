@@ -412,10 +412,11 @@
                                                                                                     # then
                                                                                                     #    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
                                                                                                     # fi &&
-                                                                                                    export GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
+                                                                                                    GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
                                                                                                     if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                            cd ${ _environment-variable "GIT_WORK_TREE" } &&
                                                                                                             ${ pkgs.git }/bin/git init &&
                                                                                                             ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
                                                                                                             ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
