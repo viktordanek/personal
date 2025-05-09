@@ -431,6 +431,7 @@
                                                                                             ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
                                                                                     ''
                                                                         )
+                                                                )
                                                             ] ;
                                                         password = config.personal.user.password ;
                                                     } ;

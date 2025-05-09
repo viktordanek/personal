@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "environment-variable-lib": {
+    "environment-variable": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
@@ -57,11 +57,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1729293261,
-        "narHash": "sha256-8H7Pvnnm0/ersU4MEbh38TTMfpA9Dt6jl27OiONEIMc=",
+        "lastModified": 1729271976,
+        "narHash": "sha256-2vapEiVSlLjmQ8aa4wQ2yVDToRc0VxYLDqevMzRIfLA=",
         "owner": "NixOs",
         "repo": "nixpkgs",
-        "rev": "c47f552fc39b4cd1b9d611bf6fe197f6e2274f1a",
+        "rev": "c4a6d1bbde86f4caea10d672df73f1b0796bee7e",
         "type": "github"
       },
       "original": {
@@ -72,22 +72,23 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1729293261,
-        "narHash": "sha256-8H7Pvnnm0/ersU4MEbh38TTMfpA9Dt6jl27OiONEIMc=",
-        "owner": "NixOS",
+        "lastModified": 1735563628,
+        "narHash": "sha256-OnSAY7XDSx7CtDoqNh8jwVwh4xNL/2HaJxGjryLWzX8=",
+        "owner": "Nixos",
         "repo": "nixpkgs",
-        "rev": "c47f552fc39b4cd1b9d611bf6fe197f6e2274f1a",
+        "rev": "b134951a4c9f3c995fd7be05f3243f8ecd65d798",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
+        "owner": "Nixos",
+        "ref": "nixos-24.05",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
-        "environment-variable-lib": "environment-variable-lib",
+        "environment-variable": "environment-variable",
         "flake-utils": "flake-utils_2",
         "nixpkgs": "nixpkgs_2"
       }
