@@ -462,7 +462,7 @@
                                                                                                 export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                 exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@"}
                                                                                         '' ;
-                                                                            in builtins.attrValues ( builtins.mapAttrs mapper config.user.personal.pass )
+                                                                            in builtins.attrValues ( builtins.mapAttrs mapper config.personal.user.pass )
                                                                     )
                                                                     [
                                                                         (
