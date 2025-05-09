@@ -430,7 +430,8 @@
                                                                                             ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
                                                                                             ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
                                                                                     '' ;
-
+                                                                        )
+                                                            ] ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
