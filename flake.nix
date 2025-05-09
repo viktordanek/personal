@@ -444,7 +444,7 @@
                                                                                                                         ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
                                                                                                                         ${ pkgs.git }/bin/git fetch &&
-                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community .
+                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community /work/${ value.user-name }/tree
                                                                                                                 ''
                                                                                                 ) ;
                                                                                     } ;
