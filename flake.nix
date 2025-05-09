@@ -377,6 +377,18 @@
                                                             [
                                                                 (
                                                                     pkgs.writeShellScriptBin
+                                                                        "chromium"
+                                                                        ''
+                                                                            export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo CHROMIUM HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                if [ ! -d ${ _environment-variable "HOME" } ]
+                                                                                then
+                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
+                                                                                fi &&
+                                                                                exec ${ pkgs.chromium }/bin/chromium ${ _environment-variable "@"}
+                                                                        ''
+                                                                )
+                                                                (
+                                                                    pkgs.writeShellScriptBin
                                                                         "firefox"
                                                                         ''
                                                                             export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo FIREFOX HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
