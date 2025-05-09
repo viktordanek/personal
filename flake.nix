@@ -374,51 +374,62 @@
                                                         isNormalUser = true ;
                                                         name = config.personal.user.name ;
                                                         packages =
-                                                            let
-                                                                mapper =
-                                                                    name : value :
-                                                                        pkgs.writeShellScriptBin
-                                                                            name
-                                                                            ''
-                                                                                TIME_MASK="+%Y-%m-%d-%H-%M" &&
-                                                                                    export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_DIR ${ builtins.hashString "sha512" name } ) &&
-                                                                                    if [ ! -d ${ _environment-variable "DOT_SSH" } ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
-                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
-                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
-                                                                                            ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
-                                                                                    Host ${ value.host }
-                                                                                    Port ${ builtins.toString value.port }
-                                                                                    IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
-                                                                                    User ${ value.user }
-                                                                                    UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
-                                                                                    StrictHostKeyChecking true
-                                                                                    EOF
-                                                                                            ) &&
-                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
-                                                                                    fi &&
-                                                                                    export GIT_DIR=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_DIR ${ builtins.hashString "sha512" name } ) &&
-                                                                                    if [ ! -d ${ _environment-variable "GIT_DIR" } ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
-                                                                                    fi &&
-                                                                                    export GIT_WORK_TREE=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_WORK_TREE ${ builtins.hashString "sha512" name } ) &&
-                                                                                    if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
-                                                                                    then
-                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                            ${ pkgs.git }/bin/git init &&
-                                                                                            ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
-                                                                                            ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "DOT_SSH" }/config &&
-                                                                                            ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                            ${ pkgs.git }/bin/git fetch origin &&
-                                                                                            ${ pkgs.git }/bin/git checkout origin/main &&
-                                                                                            ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen )
-                                                                                    fi &&
-                                                                                    ${ pkgs.jetbrains.idea-community }/bin/idea-community ${ _environment-variable "GIT_WORK_TREE" }
-                                                                             '';
-                                                                in builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ;
+                                                            [
+                                                                (
+                                                                    pkgs.writeShellScriptBin
+                                                                        "studio"
+                                                                        (
+                                                                            let
+                                                                                mapper =
+                                                                                    name : value :
+                                                                                        ''
+                                                                                            export HOMEY=${ _environment-variable "ROOT_DIRECTORY" }/${ name } &&
+                                                                                            if [ ! -d ${ _environment-variable "HOMEY" } ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOMEY" }
+                                                                                            fi &&
+                                                                                                export DOT_SSH=${ _environment-variable "HOMEY" }/dot-ssh &&
+                                                                                                if [ ! -d ${ _environment-variable "DOT_SSH" } ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
+                                                                                                        ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
+                                                                                            Host ${ value.host }
+                                                                                            Port ${ builtins.toString value.port }
+                                                                                            IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
+                                                                                            User ${ value.user }
+                                                                                            UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                            StrictHostKeyChecking true
+                                                                                            EOF
+                                                                                                        ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                fi &&
+                                                                                                export GIT_DIR=${ _environment-variable "HOMEY" }/git &&
+                                                                                                if [ ! -d ${ _environment-variable "GIT_DIR" } ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
+                                                                                                fi &&
+                                                                                                export GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
+                                                                                                if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                        ${ pkgs.git }/bin/git init &&
+                                                                                                        ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
+                                                                                                        ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
+                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "DOT_SSH" }/config &&
+                                                                                                        ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
+                                                                                                        ${ pkgs.git }/bin/git fetch origin &&
+                                                                                                        ${ pkgs.git }/bin/git checkout origin/main &&
+                                                                                                        ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen )
+                                                                                                fi
+                                                                                        '';
+                                                                                in
+                                                                                    ''
+                                                                                        export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                            ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
+                                                                                            ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
+
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
