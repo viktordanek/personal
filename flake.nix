@@ -435,7 +435,7 @@
 													fi &&
                                                                                             ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
 						
-                                                                                            ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
+                                                                                            ${ pkgs.jetbrains.idea-community }/bin/idea-communit ${ _environment-variable "ROOT_DIRECTORY" }
                                                                                     ''
                                                                         )
                                                                 )
