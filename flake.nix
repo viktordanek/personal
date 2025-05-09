@@ -431,6 +431,14 @@
                                                                                                                         ${ if value.emit-nix-flake then "${ pkgs.coreutils }/bin/echo -n nix-flake > /work/${ value.user-name }/signals/5000" else "#" } &&
                                                                                                                         ${ if value.emit-nixos-rebuild then "${ pkgs.coreutils }/bin/echo -n nixos-rebuild > /work/${ value.user-name }/signals/6000" else "#" } &&
                                                                                                                         ${ if value.emit-push then "${ pkgs.coreutils }/bin/echo -n push > /work/${ value.user-name }/signals/7000" else "#" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.idea &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.idea/misc.xml <<EOF
+                                                                                                                    <?xml version="1.0" encoding="UTF-8"?>
+                                                                                                                    <project version="4">
+                                                                                                                      <component name="ProjectRootManager" version="2" />
+                                                                                                                    </project>
+                                                                                                                    EOF
+                                                                                                                        ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
                                                                                                                         cd /work/${ value.user-name }/tree &&
@@ -446,7 +454,7 @@
                                                                                                                         ${ pkgs.git }/bin/git fetch &&
                                                                                                                         ${ pkgs.git }/bin/git checkout origin/main &&
                                                                                                                         ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen ) &&
-                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community /work/${ value.user-name }/tree
+                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community /work/${ value.user-name }
                                                                                                                 ''
                                                                                                 ) ;
                                                                                     } ;
