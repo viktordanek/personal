@@ -385,10 +385,6 @@
                                                                                         pkgs.writeShellScript
                                                                                             name
                                                                                             ''
-												if [ -d ${ _environment-variable "ROOT_DIRECTORY" } ]
-												then
-													${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
-												fi &&
                                                                                                 export HOMEY=${ _environment-variable "ROOT_DIRECTORY" }/${ name } &&
                                                                                                 if [ ! -d ${ _environment-variable "HOMEY" } ]
                                                                                                 then
@@ -433,7 +429,12 @@
                                                                                 in
                                                                                     ''
                                                                                         export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+												if [ ! -d ${ _environment-variable "ROOT_DIRECTORY" } ]
+												then
+													${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
+													fi &&
                                                                                             ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
+						
                                                                                             ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
                                                                                     ''
                                                                         )
