@@ -424,7 +424,7 @@
                                                                                                 let
                                                                                                     script =
                                                                                                         pkgs.writeShellScriptBin
-                                                                                                            value.name
+                                                                                                            name
                                                                                                             ''
                                                                                                                 export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date ${ config.personal.user.time-mask } ) &&
                                                                                                                     export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
@@ -475,7 +475,7 @@
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ script } $out/bin/${ value.name } &&
+                                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ script } $out/bin/${ name } &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion/completions &&
