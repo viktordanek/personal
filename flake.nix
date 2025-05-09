@@ -249,6 +249,7 @@
                                                                 after = [ "network.target" "redis.service" ] ;
                                                                 serviceConfig =
                                                                     {
+                                                                        Environment = "PATH=/run/wrappers/bin:/usr/bin:/bin" ;
                                                                         ExecStart =
                                                                             pkgs.writeShellScript
                                                                                 "nixos-rebuild"
