@@ -407,11 +407,11 @@
                                                                                                             ) &&
                                                                                                             ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
                                                                                                     fi &&
-                                                                                                    export GIT_DIR=${ _environment-variable "HOMEY" }/git &&
-                                                                                                    if [ ! -d ${ _environment-variable "GIT_DIR" } ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
-                                                                                                    fi &&
+                                                                                                    # export GIT_DIR=${ _environment-variable "HOMEY" }/git &&
+                                                                                                    # if [ ! -d ${ _environment-variable "GIT_DIR" } ]
+                                                                                                    # then
+                                                                                                    #    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
+                                                                                                    # fi &&
                                                                                                     export GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
                                                                                                     if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
                                                                                                     then
@@ -429,12 +429,11 @@
                                                                                 in
                                                                                     ''
                                                                                         export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-												if [ ! -d ${ _environment-variable "ROOT_DIRECTORY" } ]
-												then
-													${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
-													fi &&
+                                                                                            if [ ! -d ${ _environment-variable "ROOT_DIRECTORY" } ]
+                                                                                            then
+                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
+                                                                                            fi &&
                                                                                             ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
-						
                                                                                             ${ pkgs.jetbrains.idea-community }/bin/idea-community ${ _environment-variable "ROOT_DIRECTORY" }
                                                                                     ''
                                                                         )
