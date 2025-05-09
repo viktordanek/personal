@@ -459,7 +459,7 @@
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } fetch origin ${ value.branch } &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } checkout ${ value.branch }
                                                                                                 fi &&
-                                                                                                export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" }"" &&
+                                                                                                export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" }" &&
                                                                                                 exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@"}
                                                                                         '' ;
                                                                             in builtins.attrValues ( builtins.mapAttrs mapper config.personal.user.pass )
