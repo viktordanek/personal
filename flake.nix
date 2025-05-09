@@ -561,39 +561,44 @@
                                             } ;
                                         options =
                                             {
-                                                personal.user.description = lib.mkOption { type = lib.types.str ; } ;
-                                                personal.user.name = lib.mkOption { type = lib.types.str ; } ;
-                                                personal.user.password = lib.mkOption { type = lib.types.str ; } ;
-                                                personal.user.token = lib.mkOption { type = lib.types.str ; } ;
-                                                personal.user.pass =
-                                                    lib.mkOption
-                                                        {
-                                                            default = { } ;
-                                                            type =
-                                                                let
-                                                                    config =
-                                                                        lib.types.submodule
-                                                                            {
-                                                                                options =
-                                                                                    {
-                                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        host = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        extensions = lib.mkOption { type = lib.types.bool ; } ;
-                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
-                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
-                                                                                    } ;
-                                                                            } ;
-                                                                    in lib.types.attrsOf config ;
-                                                        } ;
+                                                personal =
+                                                    {
+                                                        user =
+                                                            {
+                                                                description = lib.mkOption { type = lib.types.str ; } ;
+                                                                name = lib.mkOption { type = lib.types.str ; } ;
+                                                                pass =
+                                                                    lib.mkOption
+                                                                        {
+                                                                            default = { } ;
+                                                                            type =
+                                                                                let
+                                                                                    config =
+                                                                                        lib.types.submodule
+                                                                                            {
+                                                                                                options =
+                                                                                                    {
+                                                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        host = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        extensions = lib.mkOption { type = lib.types.bool ; } ;
+                                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                    } ;
+                                                                                            } ;
+                                                                                    in lib.types.attrsOf config ;
+                                                                        } ;
+                                                                password = lib.mkOption { type = lib.types.str ; } ;
+                                                                time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
+                                                            } ;
                                                 personal.workspaces =
                                                     lib.mkOption
                                                         {
