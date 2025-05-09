@@ -376,6 +376,18 @@
                                                         packages =
                                                             [
                                                                 (
+                                                                    pkgs.writeShellScript
+                                                                        "firefox"
+                                                                        ''
+                                                                            export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo FIREFOX HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                if [ ! -d ${ _environment-variable "HOME" } ]
+                                                                                then
+                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
+                                                                                fi &&
+                                                                                exec ${ pkgs.firefox }/bin/firefox ${ _environment-variable "@"}
+                                                                        ''
+                                                                )
+                                                                (
                                                                     pkgs.writeShellScriptBin
                                                                         "studio"
                                                                         (
