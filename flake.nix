@@ -421,7 +421,8 @@
                                                                                     pkgs.writeShellScriptBin
                                                                                         name
                                                                                         ''
-                                                                                            export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                            export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d ) &&
+                                                                                                export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
@@ -438,16 +439,18 @@
                                                                                                         ) &&
                                                                                                         ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa ${ _environment-variable "DOT_SSH" }/known-hosts
                                                                                                 fi &&
-                                                                                                export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo GNUPGHOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo GNUPGHOME ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                        ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPHOME" } --import ${ value.gpg-secret-keys } &&
-                                                                                                            ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --import ${ value.gpg-ownertrust } &&
-                                                                                                            ${ pkgs.gnupg }/bin/gpg2 --batch --homedir ${ _environment-variable "GNUPHOME" } --import ${ value.gpg2-secret-keys } &&
-                                                                                                            ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPHOME" } --import ${ value.gpg2-ownertrust }
+                                                                                                        ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-secret-keys } &&
+                                                                                                        ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-ownertrust } &&
+                                                                                                        ${ pkgs.gnupg }/bin/gpg --homeidr ${ _environment-variable "GNUPHOME" } --update-trustdb &&
+                                                                                                        ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-secret-keys } &&
+                                                                                                        ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-ownertrust } &&
+                                                                                                        ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --update-trustdb
                                                                                                 fi &&
-                                                                                                export PASSWORD_STORE_DIR=/tmp/$( ${ pkgs.coreutils }/bin/echo PASSWORD_STORE_DIR $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                export PASSWORD_STORE_DIR=/tmp/$( ${ pkgs.coreutils }/bin/echo PASSWORD_STORE_DIR ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 if [ ! -d ${ _environment-variable "PASSWORD_STORE_DIR" } ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PASSWORD_STORE_DIR" } &&
