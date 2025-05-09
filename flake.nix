@@ -566,7 +566,7 @@
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                     } ;
                                                                             } ;
-                                                                    in lib.types.attrOf config ;
+                                                                    in lib.types.attrsOf config ;
                                                         } ;
                                                 personal.workspaces =
                                                     lib.mkOption
