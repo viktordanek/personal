@@ -474,6 +474,7 @@
                                                                                                     in
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                                                ${ pkgs.coreutils }/bin/touch $out/ee87ce98-d14c-4a32-a539-a5b2b1e71cd2 &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                                 ${ pkgs.coreutils }/bin/ln --symbolic ${ script } $out/bin/${ name } &&
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share &&
