@@ -385,6 +385,10 @@
                                                                                         pkgs.writeShellScript
                                                                                             name
                                                                                             ''
+												if [ -d ${ _environment-variable "ROOT_DIRECTORY" } ]
+												then
+													${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
+												fi &&
                                                                                                 export HOMEY=${ _environment-variable "ROOT_DIRECTORY" }/${ name } &&
                                                                                                 if [ ! -d ${ _environment-variable "HOMEY" } ]
                                                                                                 then
