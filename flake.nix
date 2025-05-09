@@ -444,6 +444,8 @@
                                                                                                                         ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
                                                                                                                         ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
                                                                                                                         ${ pkgs.git }/bin/git fetch &&
+                                                                                                                        ${ pkgs.git }/bin/git checkout origin/main &&
+                                                                                                                        ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen ) &&
                                                                                                                         ${ pkgs.jetbrains.idea-community }/bin/idea-community /work/${ value.user-name }/tree
                                                                                                                 ''
                                                                                                 ) ;
