@@ -549,9 +549,8 @@
                                                                     config =
                                                                         lib.types.submodule
                                                                             {
-                                                                                option =
+                                                                                options =
                                                                                     {
-                                                                                        enable = lib.mkOption { default = true ; type = lib.types.bool ; } ;
                                                                                         host = lib.mkOption { type = lib.types.str ; } ;
                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                         identity-file = lib.mkOption { type = lib.types.path ; } ;
