@@ -432,7 +432,7 @@
                                                                                                                         ${ if value.emit-nixos-rebuild then "${ pkgs.coreutils }/bin/echo -n nixos-rebuild > /work/${ value.user-name }/signals/6000" else "#" } &&
                                                                                                                         ${ if value.emit-push then "${ pkgs.coreutils }/bin/echo -n push > /work/${ value.user-name }/signals/7000" else "#" } &&
                                                                                                                         ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.idea &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.idea/misc.xml <<EOF
+                                                                                                                        ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.idea/misc.xml <<EOF
                                                                                                                     <?xml version="1.0" encoding="UTF-8"?>
                                                                                                                     <project version="4">
                                                                                                                       <component name="ProjectRootManager" version="2" />
