@@ -426,7 +426,7 @@
                                                                                                         pkgs.writeShellScriptBin
                                                                                                             value.name
                                                                                                             ''
-                                                                                                                export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date ${ config.personal.user.time-mask ) &&
+                                                                                                                export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date ${ config.personal.user.time-mask } ) &&
                                                                                                                     export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                                     if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                                     then
