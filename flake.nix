@@ -70,7 +70,7 @@
                                                 security =
                                                     {
                                                         rtkit.enable = true;
-                                                        /run/wrappers/bin/sudo.extraConfig =
+                                                        sudo.extraConfig =
                                                             ''
                                                                 %wheel ALL=(ALL) NOPASSWD: /run/current-system/sw/bin/shutdown
                                                                 %wheel ALL=(ALL) NOPASSWD: ${ pkgs.umount }/bin/umount
