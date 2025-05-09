@@ -561,6 +561,7 @@
                                                                                         gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
                                                                                         extensions = lib.mkOption { type = lib.types.bool ; } ;
                                                                                         port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         user-name = lib.mkOption { type = lib.types.str ; } ;
                                                                                         user-email = lib.mkOption { type = lib.types.str ; } ;
                                                                                     } ;
