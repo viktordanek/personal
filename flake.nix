@@ -384,6 +384,7 @@
                                                                                         extraBwrapArgs =
                                                                                             [
                                                                                                 "--bind ${ _environment-variable "TEMPORARY" } /work"
+                                                                                                "--bind /run/user/1000 /run/user/1000"
                                                                                             ] ;
                                                                                         name = "user-environment" ;
                                                                                         profile =
