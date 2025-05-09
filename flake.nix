@@ -377,95 +377,47 @@
                                                             let
                                                                 mapper =
                                                                     name : value :
-                                                                        let
-                                                                            user-environment =
-                                                                                pkgs.buildFHSUserEnv
-                                                                                    {
-                                                                                        extraBwrapArgs =
-                                                                                            [
-                                                                                                "--bind ${ _environment-variable "TEMPORARY" } /work"
-                                                                                                "--bind /run/user/1000 /run/user/1000"
-                                                                                            ] ;
-                                                                                        name = "user-environment" ;
-                                                                                        profile =
-                                                                                            builtins.concatStringsSep
-                                                                                                " &&\n\t"
-                                                                                                [
-                                                                                                    "export GIT_DIR=/work/${ value.user-name }/git"
-                                                                                                    "export GIT_WORK_TREE=/work/${ value.user-name }/tree"
-                                                                                                ] ;
-                                                                                        runScript =
-                                                                                            builtins.toString
-                                                                                                (
-                                                                                                    let
-                                                                                                        post-commit =
-                                                                                                            pkgs.writeShellScript
-                                                                                                                "post-commit"
-                                                                                                                ''
-                                                                                                                    BRANCH="$( ${ pkgs.git }/bin/git rev-parse --abbrev-ref HEAD )" &&
-                                                                                                                        if [ -z "${ _environment-variable "BRANCH" }" ]
-                                                                                                                        then
-                                                                                                                            ${ pkgs.coreutils }/bin/echo We can not commit to a detached head. >&2 &&
-                                                                                                                                exit 64
-                                                                                                                        fi &&
-                                                                                                                        ${ pkgs.redis }/bin/redis-cli PUBLISH commit "$( ${ pkgs.jq }/bin/jq --null-input --arg BRANCH ${ _environment-variable "BRANCH" } --arg COMMIT_HASH "$( ${ pkgs.git }/bin/git rev-parse HEAD )" --arg ORIGIN "${ value.origin }"  --arg TEMPORARY "${ _environment-variable "TEMPORARY" }" --arg USER "${ value.user-name }" --compact-output '{ branch : $BRANCH , commit_hash : $COMMIT_HASH , origin : $ORIGIN , temporary : $TEMPORARY , user : $USER }' )"
-                                                                                                                '' ;
-                                                                                                        in
-                                                                                                            pkgs.writeShellScript
-                                                                                                                "script"
-                                                                                                                ''
-                                                                                                                    ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.ssh &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > /work/${ value.user-name }/.ssh/id-rsa &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > /work/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                        ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.ssh/config <<EOF
-                                                                                                                            Host ${ value.host }
-                                                                                                                            Port ${ builtins.toString value.port }
-                                                                                                                            IdentityFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/id-rsa
-                                                                                                                            User ${ value.user }
-                                                                                                                            UserKnownHostsFile ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                            StrictHostKeyChecking true
-                                                                                                                    EOF
-                                                                                                                        ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 /work/${ value.user-name }/.ssh/config /work/${ value.user-name }/.ssh/id-rsa /work/${ value.user-name }/.ssh/known-hosts &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/signals &&
-                                                                                                                        ${ if value.emit-nix-flake then "${ pkgs.coreutils }/bin/echo -n nix-flake > /work/${ value.user-name }/signals/5000" else "#" } &&
-                                                                                                                        ${ if value.emit-nixos-rebuild then "${ pkgs.coreutils }/bin/echo -n nixos-rebuild > /work/${ value.user-name }/signals/6000" else "#" } &&
-                                                                                                                        ${ if value.emit-push then "${ pkgs.coreutils }/bin/echo -n push > /work/${ value.user-name }/signals/7000" else "#" } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/.idea &&
-                                                                                                                        ( ${ pkgs.coreutils }/bin/cat > /work/${ value.user-name }/.idea/misc.xml <<EOF
-                                                                                                                    <?xml version="1.0" encoding="UTF-8"?>
-                                                                                                                    <project version="4">
-                                                                                                                      <component name="ProjectRootManager" version="2" />
-                                                                                                                    </project>
-                                                                                                                    EOF
-                                                                                                                        ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/git &&
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir /work/${ value.user-name }/tree &&
-                                                                                                                        cd /work/${ value.user-name }/tree &&
-                                                                                                                        ${ pkgs.git }/bin/git init &&
-                                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "TEMPORARY" }/${ value.user-name }/.ssh/config" &&
-                                                                                                                        ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                                                        ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.check !${ pkgs.writeShellScript "check" "unset LD_LIBRARY_PATH && ${ pkgs.nix }/bin/nix-collect-garbage && ${ pkgs.nix }/bin/nix flake check" } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.subscribe !${ pkgs.writeShellScript "subscribe" ''${ pkgs.redis }/bin/redis-cli SUBSCRIBE commit process nix-flake nixos-rebuild push success failure | while read -r LINE ; do read CHANNEL && read PAYLOAD && ${ pkgs.coreutils }/bin/echo -e "\nLINE=${ _environment-variable "LINE" }\nCHANNEL=${ _environment-variable "CHANNEL" }\nPAYLOAD=${ _environment-variable "PAYLOAD" }"; done'' } &&
-                                                                                                                        ${ pkgs.git }/bin/git config alias.ping !${ pkgs.writeShellScript "ping" ''${ pkgs.git }/bin/git commit --allow-empty --allow-empty-message ${ _environment-variable "@" }'' } &&
-                                                                                                                        ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/ln --symbolic ${ post-commit } /work/${ value.user-name }/git/hooks/post-commit &&
-                                                                                                                        ${ pkgs.git }/bin/git fetch &&
-                                                                                                                        ${ pkgs.git }/bin/git checkout origin/main &&
-                                                                                                                        ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen ) &&
-                                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community /work/${ value.user-name }/tree
-                                                                                                                ''
-                                                                                                ) ;
-                                                                                    } ;
-                                                                            in
-                                                                                pkgs.writeShellScriptBin
-                                                                                    name
-                                                                                    ''
-                                                                                        export TEMPORARY=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                            ${ user-environment }/bin/user-environment
-                                                                                     '';
+                                                                        pkgs.writeShellScriptBin
+                                                                            name
+                                                                            ''
+                                                                                TIME_MASK="+%Y-%m-%d-%H-%M" &&
+                                                                                    export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_DIR ${ builtins.hashString "sha512" name } ) &&
+                                                                                    if [ ! -d ${ _environment-variable "DOT_SSH" } ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
+                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
+                                                                                            ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
+                                                                                    Host ${ value.host }
+                                                                                    Port ${ builtins.toString value.port }
+                                                                                    IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
+                                                                                    User ${ value.user }
+                                                                                    UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                    StrictHostKeyChecking true
+                                                                                    EOF
+                                                                                            ) &&
+                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                    fi &&
+                                                                                    export GIT_DIR=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_DIR ${ builtins.hashString "sha512" name } ) &&
+                                                                                    if [ ! -d ${ _environment-variable "GIT_DIR" } ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
+                                                                                    fi &&
+                                                                                    export GIT_WORK_TREE=/tmp/$( ${ pkgs.coreutils }/bin/echo -en $( ${ pkgs.coreutils }/bin/date ${ _environment-variable "TIME_MASK" } ) GIT_WORK_TREE ${ builtins.hashString "sha512" name } ) &&
+                                                                                    if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
+                                                                                    then
+                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                            ${ pkgs.git }/bin/git init &&
+                                                                                            ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
+                                                                                            ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
+                                                                                            ${ pkgs.git }/bin/git config core.sshCommand ${ _environment-variable "DOT_SSH" }/config &&
+                                                                                            ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
+                                                                                            ${ pkgs.git }/bin/git fetch origin &&
+                                                                                            ${ pkgs.git }/bin/git checkout origin/main &&
+                                                                                            ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen )
+                                                                                    fi &&
+                                                                                    ${ pkgs.jetbrains.idea-community }/bin/idea-community ${ _environment-variable "GIT_WORK_TREE" }
+                                                                             '';
                                                                 in builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ;
                                                         password = config.personal.user.password ;
                                                     } ;
