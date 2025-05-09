@@ -485,6 +485,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
                                                                                                         '' ;
                                                                                             name = name ;
+                                                                                            src = ./. ;
                                                                                         } ;
                                                                             in builtins.attrValues ( builtins.mapAttrs mapper config.personal.user.pass )
                                                                     )
