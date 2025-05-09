@@ -376,7 +376,7 @@
                                                         packages =
                                                             [
                                                                 (
-                                                                    pkgs.writeShellScript
+                                                                    pkgs.writeShellScriptBin
                                                                         "firefox"
                                                                         ''
                                                                             export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo FIREFOX HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
