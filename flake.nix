@@ -421,7 +421,24 @@
                                                                                     pkgs.writeShellScriptBin
                                                                                         "name"
                                                                                         ''
-                                                                                            export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo GNUPGHOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                            export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                if [ ! -d ${ _environment-variable "DOT_SSH" ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
+                                                                                                        ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
+                                                                                            Host ${ value.host }
+                                                                                            User ${ value.user }
+                                                                                            IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
+                                                                                            UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                            Port ${ builtins.toString value.port }
+                                                                                            StrictHostKeyChecking true
+                                                                                            EOF
+                                                                                                        ) &&
+                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                fi &&
+                                                                                                export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo GNUPGHOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                 if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
@@ -533,12 +550,18 @@
                                                                         lib.types.submodule
                                                                             {
                                                                                 enable = lib.mkOption { default = true ; type = lib.types.bool ; } ;
+                                                                                host = lib.mkOption { type = lib.types.str ; } ;
+                                                                                known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                identity-file = lib.mkOption { type = lib.types.path ; } ;
                                                                                 origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                 gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                 gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                 gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
                                                                                 gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
                                                                                 extensions = lib.mkOption { type = lib.types.bool ; } ;
+                                                                                port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                user-name = lib.mkOption { type = lib.types.str ; } ;
+                                                                                user-email = lib.mkOption { type = lib.types.str ;
                                                                             } ;
                                                                     in lib.types.attrOf config ;
                                                         } ;
