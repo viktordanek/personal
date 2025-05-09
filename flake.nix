@@ -426,9 +426,10 @@
                                                                                         '';
                                                                                 in
                                                                                     ''
-                                                                                        export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                        export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                             ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
                                                                                             ${ pkgs.jetbrains.idea-community } ${ _environment-variable "ROOT_DIRECTORY" }
+                                                                                    '' ;
 
                                                         password = config.personal.user.password ;
                                                     } ;
