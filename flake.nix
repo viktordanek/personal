@@ -422,7 +422,7 @@
                                                                                         "name"
                                                                                         ''
                                                                                             export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                if [ ! -d ${ _environment-variable "DOT_SSH" ]
+                                                                                                if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
@@ -454,7 +454,7 @@
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } init &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config user.name ${ value.user-name } &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config user.email ${ value.user-email } &&
-                                                                                                        ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ value.identity-file }" &&
+                                                                                                        ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "DOT_SSH" }/config &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } remote add origin ${ value.origin } &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } fetch origin ${ value.branch } &&
                                                                                                         ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } checkout ${ value.branch }
@@ -549,19 +549,22 @@
                                                                     config =
                                                                         lib.types.submodule
                                                                             {
-                                                                                enable = lib.mkOption { default = true ; type = lib.types.bool ; } ;
-                                                                                host = lib.mkOption { type = lib.types.str ; } ;
-                                                                                known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                identity-file = lib.mkOption { type = lib.types.path ; } ;
-                                                                                origin = lib.mkOption { type = lib.types.str ; } ;
-                                                                                gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                extensions = lib.mkOption { type = lib.types.bool ; } ;
-                                                                                port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                user-name = lib.mkOption { type = lib.types.str ; } ;
-                                                                                user-email = lib.mkOption { type = lib.types.str ;
+                                                                                option =
+                                                                                    {
+                                                                                        enable = lib.mkOption { default = true ; type = lib.types.bool ; } ;
+                                                                                        host = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        extensions = lib.mkOption { type = lib.types.bool ; } ;
+                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
+                                                                                    } ;
                                                                             } ;
                                                                     in lib.types.attrOf config ;
                                                         } ;
