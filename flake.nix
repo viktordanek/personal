@@ -599,6 +599,7 @@
                                                                 password = lib.mkOption { type = lib.types.str ; } ;
                                                                 time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
                                                             } ;
+                                                    } ;
                                                 personal.workspaces =
                                                     lib.mkOption
                                                         {
