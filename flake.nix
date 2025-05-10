@@ -103,7 +103,6 @@
                                                                 pulse.enable = true ;
                                                             };
                                                         printing.enable = true ;
-                                                        redis.enable = true ;
                                                         xserver =
                                                             {
                                                                 desktopManager =
@@ -635,32 +634,6 @@
                                                                 time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
                                                             } ;
                                                     } ;
-                                                personal.workspaces =
-                                                    lib.mkOption
-                                                        {
-                                                            default = { } ;
-                                                            type =
-                                                                let
-                                                                    config =
-                                                                        lib.types.submodule
-                                                                            {
-                                                                                options =
-                                                                                    {
-                                                                                        emit-nix-flake = lib.mkOption { default = false ; type = lib.types.bool ; } ;
-                                                                                        emit-nixos-rebuild = lib.mkOption { default = false ; type = lib.types.bool ; } ;
-                                                                                        emit-push = lib.mkOption { default = false ; type = lib.types.bool ; } ;
-                                                                                        host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
-                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
-                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
-                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
-                                                                                    } ;
-                                                                            } ;
-                                                                    in lib.types.attrsOf config ;
-                                                        } ;
                                                 personal.wifi =
                                                     lib.mkOption
                                                         {
