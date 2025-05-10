@@ -568,7 +568,7 @@
                                                                                             {
                                                                                                 options =
                                                                                                     {
-                                                                                                        config = lib.mkOption { default = { } ; type = lib.types.attrsOf ( lib.types.optionType lib.types.str ) ; } ;
+                                                                                                        config = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                                                         initial = lib.mkOption { default = null ; type = lib.types.path ; } ;
                                                                                                         remotes = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                                                      } ;
