@@ -414,6 +414,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
                                                                                                                         ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
                                                                                                             Host ${ value.host }
+                                                                                                            ${ if builtins.typeOf value.host-name == "null" then "#" else value.host-name }
                                                                                                             User ${ value.user }
                                                                                                             IdentityFile ${ _environment-variable "DOT_SSH" }/identity
                                                                                                             UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
@@ -533,6 +534,7 @@
                                                                                                 options =
                                                                                                     {
                                                                                                         host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
+                                                                                                        host-name = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
                                                                                                         identity = lib.mkOption { type = lib.types.path ; } ;
                                                                                                         known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                                         port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
