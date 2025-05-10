@@ -591,7 +591,7 @@
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
-                                                                time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
+                                                                time-mask = lib.mkOption { default = "%Y-%m-%d-%H-%M" ; type = lib.types.str ; } ;
                                                             } ;
                                                     } ;
                                                 personal.wifi =
