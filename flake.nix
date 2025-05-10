@@ -426,7 +426,7 @@
                                                                                                                 fi &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
-                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name } ;
+                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name }" ;
                                                                                     portfolio =
                                                                                         let
                                                                                             script =
