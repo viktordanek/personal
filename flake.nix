@@ -565,7 +565,7 @@
                                                                                             gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                             gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                         } ;
-                                                                                    in lib.attrsOf config ;
+                                                                                    in lib.types.attrsOf config ;
                                                                         } ;
                                                                 dot-ssh =
                                                                     lib.mkOption
@@ -581,7 +581,7 @@
                                                                                             port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
                                                                                             user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         } ;
-                                                                                    in builtins.attrsOf config ;
+                                                                                    in lib.types.attrsOf config ;
                                                                         } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
