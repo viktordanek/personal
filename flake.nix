@@ -472,10 +472,9 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
-                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
-                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) }
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg
                                                                                         '' ;
-                                                                                    in yyy ;
+                                                                                    in builtins.trace ( builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) ) yyy ;
                                                                             name = "derivation" ;
                                                                             src = ./. ;
                                                                         } ;
