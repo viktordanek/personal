@@ -434,7 +434,7 @@
                                                                                                     if [ ! -d ${ _environment-variable "PORTFOLIO" } ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PORTFOLIO" } &&
-                                                                                                            ${ if builtins.length ( builtins.attrNames config.personal.user.repository ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrNames ( builtins.map ( name : value : "${ pkgs.coreutils }/bin/ln --symbolic $( ) ${ _environment-variable "PORTFOLIO" }/${ name }" ) config.personal.user.repository ) ) else "#" }"
+                                                                                                            ${ if builtins.length ( builtins.attrNames config.personal.user.repository ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrNames ( builtins.mapAttr ( name : value : "${ pkgs.coreutils }/bin/ln --symbolic $( ) ${ _environment-variable "PORTFOLIO" }/${ name }" ) config.personal.user.repository ) ) else "#" }"
                                                                                                     fi &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PORTFOLIO" }
                                                                                                 '' ;
