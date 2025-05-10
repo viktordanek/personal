@@ -384,7 +384,7 @@
                                                                                             let
                                                                                                 script =
                                                                                                     ''
-                                                                                                        export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | $ { pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                        export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                             if [ -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
@@ -406,7 +406,7 @@
                                                                                                     pkgs.writeShellScript
                                                                                                         "dot-ssh"
                                                                                                         ''
-                                                                                                            DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ name } ${ _environment-variable "TIMESTAMP" } | $ { pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                            DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
                                                                                                                 if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
