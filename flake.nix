@@ -410,18 +410,18 @@
                                                                                                                 if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity } > ${ _environment-variable "DOT_SSH" }/identity &&
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
                                                                                                                         ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
                                                                                                             Host ${ value.host }
                                                                                                             User ${ value.user }
-                                                                                                            IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
+                                                                                                            IdentityFile ${ _environment-variable "DOT_SSH" }/identity
                                                                                                             UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
                                                                                                             Port ${ builtins.toString value.port }
                                                                                                             StrictHostKeyChecking true
                                                                                                             EOF
                                                                                                                         ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/identity ${ _environment-variable "DOT_SSH" }/known-hosts
                                                                                                                 fi &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
