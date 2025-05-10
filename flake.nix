@@ -374,66 +374,46 @@
                                                         isNormalUser = true ;
                                                         name = config.personal.user.name ;
                                                         packages =
-                                                            builtins.concatLists
-                                                                [
-                                                                    [
-                                                                        (
-                                                                            pkgs.writeShellScriptBin
-                                                                                "brave"
-                                                                                ''
-                                                                                    export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo BRAVE HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        if [ ! -d ${ _environment-variable "HOME" } ]
-                                                                                        then
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
-                                                                                        fi &&
-                                                                                        exec ${ pkgs.brave }/bin/brave ${ _environment-variable "@"}
-                                                                                ''
-                                                                        )
-                                                                        (
-                                                                            pkgs.writeShellScriptBin
-                                                                                "chromium"
-                                                                                ''
-                                                                                    export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo CHROMIUM HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        if [ ! -d ${ _environment-variable "HOME" } ]
-                                                                                        then
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
-                                                                                        fi &&
-                                                                                        exec ${ pkgs.chromium }/bin/chromium ${ _environment-variable "@"}
-                                                                                ''
-                                                                        )
-                                                                        (
-                                                                            pkgs.writeShellScriptBin
-                                                                                "firefox"
-                                                                                ''
-                                                                                    export HOME=/tmp/$( ${ pkgs.coreutils }/bin/echo FIREFOX HOME $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                        if [ ! -d ${ _environment-variable "HOME" } ]
-                                                                                        then
-                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
-                                                                                        fi &&
-                                                                                        exec ${ pkgs.firefox }/bin/firefox ${ _environment-variable "@"}
-                                                                                ''
-                                                                        )
-                                                                    ]
-                                                                    (
-                                                                        let
-                                                                            mapper =
-                                                                                name : value :
-                                                                                    pkgs.stdenv.mkDerivation
-                                                                                        {
-                                                                                            installPhase =
-                                                                                                let
-                                                                                                    script =
-                                                                                                        pkgs.writeShellScriptBin
-                                                                                                            name
-                                                                                                            ''
-                                                                                                                export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date ${ config.personal.user.time-mask } ) &&
-                                                                                                                    export DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                    if [ ! -d ${ _environment-variable "DOT_SSH" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
-                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
-                                                                                                                            ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
+                                                            let
+                                                                derivation =
+                                                                    pkgs.stdenv.mkDerivation
+                                                                        {
+                                                                            installPhase =
+                                                                                let
+                                                                                    dot-gnupg =
+                                                                                        name : value :
+                                                                                            let
+                                                                                                script =
+                                                                                                    ''
+                                                                                                        export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | $ { pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                            if [ -d ${ _environment-variable "GNUPGHOME" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
+                                                                                                                    ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-secret-keys } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-ownertrust } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homeidr ${ _environment-variable "GNUPHOME" } --update-trustdb &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-secret-keys } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-ownertrust } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --update-trustdb
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPHOME" }
+                                                                                                    '' ;
+                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name }
+                                                                                    dot-ssh =
+                                                                                        name : value :
+                                                                                            let
+                                                                                                script =
+                                                                                                    pkgs.writeShellScript
+                                                                                                        "dot-ssh"
+                                                                                                        ''
+                                                                                                            DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ name } ${ _environment-variable "TIMESTAMP" } | $ { pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                                if [ ! -d ${ _environment-variable "DOT_SSH" } ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                                                        ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
+                                                                                                                        ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
                                                                                                                 Host ${ value.host }
                                                                                                                 User ${ value.user }
                                                                                                                 IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
@@ -441,122 +421,139 @@
                                                                                                                 Port ${ builtins.toString value.port }
                                                                                                                 StrictHostKeyChecking true
                                                                                                                 EOF
-                                                                                                                            ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa ${ _environment-variable "DOT_SSH" }/known-hosts
-                                                                                                                    fi &&
-                                                                                                                    export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo GNUPGHOME ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                    if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                            ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-secret-keys } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-ownertrust } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --homeidr ${ _environment-variable "GNUPHOME" } --update-trustdb &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-secret-keys } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-ownertrust } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --update-trustdb
-                                                                                                                    fi &&
-                                                                                                                    export PASSWORD_STORE_DIR=/tmp/$( ${ pkgs.coreutils }/bin/echo PASSWORD_STORE_DIR ${ _environment-variable "TIMESTAMP" } ${ name } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                                    if [ ! -d ${ _environment-variable "PASSWORD_STORE_DIR" } ]
-                                                                                                                    then
-                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PASSWORD_STORE_DIR" } &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } init &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config user.name ${ value.user-name } &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config user.email ${ value.user-email } &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "DOT_SSH" }/config" &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } remote add origin ${ value.origin } &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } fetch origin ${ value.branch } &&
-                                                                                                                            ${ pkgs.git }/bin/git -C ${ _environment-variable "PASSWORD_STORE_DIR" } checkout ${ value.branch }
-                                                                                                                    fi &&
-                                                                                                                    export PASSWORD_STORE_GPG_OPS="--homedir ${ _environment-variable "GNUPGHOME" }" &&
-                                                                                                                    exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@"}
-                                                                                                            '' ;
-                                                                                                    in
-                                                                                                        ''
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                                                                ${ pkgs.coreutils }/bin/touch $out/ee87ce98-d14c-4a32-a539-a5b2b1e71cd2 &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ script } $out/bin/${ name } &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion/completions &&
-                                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions/pass &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/man &&
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/man/man1 &&
-                                                                                                                ${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
+                                                                                                                        ) &&
+                                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                                fi &&
+                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
-                                                                                            name = name ;
-                                                                                            src = ./. ;
-                                                                                        } ;
-                                                                            in builtins.attrValues ( builtins.mapAttrs mapper config.personal.user.pass )
-                                                                    )
-                                                                    [
-                                                                        (
-                                                                            pkgs.writeShellScriptBin
-                                                                                "studio"
-                                                                                (
-                                                                                    let
-                                                                                        mapper =
-                                                                                            name : value :
-                                                                                                pkgs.writeShellScript
-                                                                                                    name
-                                                                                                    ''
-                                                                                                        export HOMEY=${ _environment-variable "ROOT_DIRECTORY" }/${ name } &&
-                                                                                                        if [ ! -d ${ _environment-variable "HOMEY" } ]
+                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name } ;
+                                                                                    portfolio =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    PORTFOLIO=/tmp/$( ${ pkgs.coreutils }/bin/echo PORTFOLIO ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                        if [ ! -d ${ _environment-variable "PORTFOLIO" } ]
                                                                                                         then
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOMEY" }
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PORTFOLIO" } &&
+                                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.coreutils }/bin/ln --symbolic $( $out/scripts/repository/${ name } ) ${ _environment-variable "PORTFOLIO" }/${ name } ) config.personal.user.repository ) ) }
                                                                                                         fi &&
-                                                                                                            export DOT_SSH=${ _environment-variable "HOMEY" }/dot-ssh &&
-                                                                                                            if [ ! -d ${ _environment-variable "DOT_SSH" } ]
+                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PORTFOLIO" }
+                                                                                                '' ;
+                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/portfolio
+                                                                                    repository =
+                                                                                        name : value :
+                                                                                            let
+                                                                                                script =
+                                                                                                    ''
+                                                                                                        REPOSITORY=/tmp/$( ${ pkgs.coreutils }/bin/echo REPOSITORY ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                            if [ ! -d ${ _environment-variable "REPOSITORY" } ]
                                                                                                             then
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
-                                                                                                                    ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
-                                                                                                        Host ${ value.host }
-                                                                                                        Port ${ builtins.toString value.port }
-                                                                                                        IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
-                                                                                                        User ${ value.user }
-                                                                                                        UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
-                                                                                                        StrictHostKeyChecking true
-                                                                                                        EOF
-                                                                                                                    ) &&
-                                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
-                                                                                                            fi &&
-                                                                                                            # export GIT_DIR=${ _environment-variable "HOMEY" }/git &&
-                                                                                                            # if [ ! -d ${ _environment-variable "GIT_DIR" } ]
-                                                                                                            # then
-                                                                                                            #    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
-                                                                                                            # fi &&
-                                                                                                            GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
-                                                                                                            if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
-                                                                                                                    cd ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "REPOSITORY" } &&
+                                                                                                                    cd ${ _environment-variable "REPOSITORY" } &&
                                                                                                                     ${ pkgs.git }/bin/git init &&
-                                                                                                                    ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
-                                                                                                                    ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
-                                                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "DOT_SSH" }/config" &&
-                                                                                                                    ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
-                                                                                                                    ${ pkgs.git }/bin/git fetch origin &&
-                                                                                                                    ${ pkgs.git }/bin/git checkout origin/main &&
-                                                                                                                    ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen )
-                                                                                                            fi
+                                                                                                                    ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git remote add ${ name } ${ value }" ) value.remotes ) ) } &&
+                                                                                                                    ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git config ${ name } ${ value }" ) value.config ) ) } &&
+                                                                                                                    ${ pkgs.writeShellScript "initial" value.initial }
+                                                                                                            fi &&
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "REPOSITORY" }
                                                                                                     '' ;
-                                                                                        in
-                                                                                            ''
-                                                                                                export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                    if [ ! -d ${ _environment-variable "ROOT_DIRECTORY" } ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
-                                                                                                    fi &&
-                                                                                                    ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
-                                                                                                    ${ pkgs.jetbrains.idea-community }/bin/idea-community ${ _environment-variable "ROOT_DIRECTORY" }
-                                                                                            ''
+                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/repository/${ name }" ;
+                                                                                    studio =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) &&
+                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community $( $out/scripts/profile )
+                                                                                                '' ;
+                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/bin/studio"
+                                                                                    in
+                                                                                        ''
+                                                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/bin &&
+                                                                                                ${ studio } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnug config.personal.user.dot-gnupg ) ) } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) } &&
+                                                                                                ${ portfolio } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) }
+                                                                                        '' ;
+                                                                            name = "derivation" ;
+                                                                            src = ./. ;
+                                                                        } ;
+                                                                in
+                                                                    builtins.concatLists
+                                                                        [
+                                                                            [
+                                                                                derivation
+                                                                                (
+                                                                                    pkgs.writeShellScriptBin
+                                                                                        "old-studio"
+                                                                                        (
+                                                                                            let
+                                                                                                mapper =
+                                                                                                    name : value :
+                                                                                                        pkgs.writeShellScript
+                                                                                                            name
+                                                                                                            ''
+                                                                                                                export HOMEY=${ _environment-variable "ROOT_DIRECTORY" }/${ name } &&
+                                                                                                                if [ ! -d ${ _environment-variable "HOMEY" } ]
+                                                                                                                then
+                                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOMEY" }
+                                                                                                                fi &&
+                                                                                                                    export DOT_SSH=${ _environment-variable "HOMEY" }/dot-ssh &&
+                                                                                                                    if [ ! -d ${ _environment-variable "DOT_SSH" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.identity-file } > ${ _environment-variable "DOT_SSH" }/id-rsa &&
+                                                                                                                            ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
+                                                                                                                            ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
+                                                                                                                Host ${ value.host }
+                                                                                                                Port ${ builtins.toString value.port }
+                                                                                                                IdentityFile ${ _environment-variable "DOT_SSH" }/id-rsa
+                                                                                                                User ${ value.user }
+                                                                                                                UserKnownHostsFile ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                                StrictHostKeyChecking true
+                                                                                                                EOF
+                                                                                                                            ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "DOT_SSH" }/config ${ _environment-variable "DOT_SSH" }/id-rsa  ${ _environment-variable "DOT_SSH" }/known-hosts
+                                                                                                                    fi &&
+                                                                                                                    # export GIT_DIR=${ _environment-variable "HOMEY" }/git &&
+                                                                                                                    # if [ ! -d ${ _environment-variable "GIT_DIR" } ]
+                                                                                                                    # then
+                                                                                                                    #    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_DIR" }
+                                                                                                                    # fi &&
+                                                                                                                    GIT_WORK_TREE=${ _environment-variable "HOMEY" }/tree &&
+                                                                                                                    if [ ! -d ${ _environment-variable "GIT_WORK_TREE" } ]
+                                                                                                                    then
+                                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                                            cd ${ _environment-variable "GIT_WORK_TREE" } &&
+                                                                                                                            ${ pkgs.git }/bin/git init &&
+                                                                                                                            ${ pkgs.git }/bin/git config user.name ${ value.user-name } &&
+                                                                                                                            ${ pkgs.git }/bin/git config user.email ${ value.user-email } &&
+                                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ _environment-variable "DOT_SSH" }/config" &&
+                                                                                                                            ${ pkgs.git }/bin/git remote add origin ${ value.origin } &&
+                                                                                                                            ${ pkgs.git }/bin/git fetch origin &&
+                                                                                                                            ${ pkgs.git }/bin/git checkout origin/main &&
+                                                                                                                            ${ pkgs.git }/bin/git checkout -b scratch/$( ${ pkgs.libuuid }/bin/uuidgen )
+                                                                                                                    fi
+                                                                                                            '' ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        export ROOT_DIRECTORY=/tmp/$( ${ pkgs.coreutils }/bin/echo $( ${ pkgs.coreutils }/bin/date +%Y-%m-%d-%H-%M ) | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                            if [ ! -d ${ _environment-variable "ROOT_DIRECTORY" } ]
+                                                                                                            then
+                                                                                                                ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "ROOT_DIRECTORY" }
+                                                                                                            fi &&
+                                                                                                            ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs mapper config.personal.workspaces ) ) } &&
+                                                                                                            ${ pkgs.jetbrains.idea-community }/bin/idea-community ${ _environment-variable "ROOT_DIRECTORY" }
+                                                                                                    ''
+                                                                                        )
                                                                                 )
-                                                                        )
-                                                                    ]
-                                                                ] ;
+                                                                            ]
+                                                                        ] ;
                                                         password = config.personal.user.password ;
                                                     } ;
                                             } ;
@@ -567,6 +564,37 @@
                                                         user =
                                                             {
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
+                                                                dot-gnupg =
+                                                                    lib.mkOption
+                                                                        {
+                                                                            default = { } ;
+                                                                            type =
+                                                                                let
+                                                                                    config =
+                                                                                        {
+                                                                                            gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                        } ;
+                                                                                    in builtins.attrsOf config ;
+                                                                        } ;
+                                                                dot-ssh =
+                                                                    lib.mkOption
+                                                                        {
+                                                                            default = { } ;
+                                                                            type =
+                                                                                let
+                                                                                    config =
+                                                                                        {
+                                                                                            host = lib.mkOption { type = lib.types.str ; } ;
+                                                                                            identity = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                            user = lib.mkOption { type = lib.types.str ; } ;
+                                                                                        } ;
+                                                                                    in builtins.attrsOf config ;
+                                                                        } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
                                                                     lib.mkOption
@@ -598,6 +626,24 @@
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
                                                                 password = lib.mkOption { type = lib.types.str ; } ;
+                                                                repository =
+                                                                    lib.mkOption
+                                                                        {
+                                                                            default = { } ;
+                                                                            type =
+                                                                                let
+                                                                                    config =
+                                                                                        lib.types.submodule
+                                                                                            {
+                                                                                                options =
+                                                                                                    {
+                                                                                                        config = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
+                                                                                                        initial = lib.mkOption { default = null ; type = lib.types.path ; } ;
+                                                                                                        remotes = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
+                                                                                                     } ;
+                                                                                            } ;
+                                                                                    in lib.types.attrsOf config ;
+                                                                        } ;
                                                                 time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
                                                             } ;
                                                     } ;
