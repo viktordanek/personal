@@ -461,7 +461,7 @@
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
-                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnug config.personal.user.dot-gnupg ) ) } &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
                                                                                                 ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) } &&
                                                                                                 ${ portfolio } &&
