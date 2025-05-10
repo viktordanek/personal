@@ -462,7 +462,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.dot-gnupg ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
-                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.dot-ssh ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-ssh ) ) else "#" } &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.dot-ssh ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
