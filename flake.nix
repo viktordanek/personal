@@ -455,7 +455,16 @@
                                                                                             in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/bin/studio" ;
                                                                                     in
                                                                                         ''
-                                                                                            ${ pkgs.coreutils }/bin/mkdir $out
+                                                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/bin &&
+                                                                                                ${ studio } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) }
                                                                                         '' ;
                                                                             name = "derivation" ;
                                                                             src = ./. ;
