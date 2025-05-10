@@ -413,7 +413,7 @@
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.identity } > ${ _environment-variable "DOT_SSH" }/identity &&
                                                                                                                         ${ pkgs.coreutils }/bin/cat ${ value.known-hosts } > ${ _environment-variable "DOT_SSH" }/known-hosts &&
                                                                                                                         ( ${ pkgs.coreutils }/bin/cat > ${ _environment-variable "DOT_SSH" }/config <<EOF
-                                                                                                            #{ if builtins.typeOf value.host == "null" then "#" else "HostName ${ value.host-name }" }
+                                                                                                            ${ if builtins.typeOf value.host == "null" then "#" else "HostName ${ value.host-name }" }
                                                                                                             ${ if builtins.typeOf value.host == "null" then "#" else "Host ${ value.host }" }
                                                                                                             User ${ value.user }
                                                                                                             IdentityFile ${ _environment-variable "DOT_SSH" }/identity
