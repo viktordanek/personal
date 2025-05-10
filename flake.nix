@@ -439,7 +439,7 @@
                                                                                                         fi &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PORTFOLIO" }
                                                                                                 '' ;
-                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/portfolio
+                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/portfolio" ;
                                                                                     repository =
                                                                                         name : value :
                                                                                             let
