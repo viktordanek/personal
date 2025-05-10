@@ -558,12 +558,16 @@
                                                                             type =
                                                                                 let
                                                                                     config =
-                                                                                        {
-                                                                                            gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                        } ;
+                                                                                        lib.types.submodule
+                                                                                            {
+                                                                                                options =
+                                                                                                    {
+                                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                    } ;
+                                                                                            } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
                                                                 dot-ssh =
@@ -573,13 +577,17 @@
                                                                             type =
                                                                                 let
                                                                                     config =
-                                                                                        {
-                                                                                            host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
-                                                                                            identity = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                            user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
-                                                                                        } ;
+                                                                                        lib.types.submodule
+                                                                                            {
+                                                                                                options =
+                                                                                                    {
+                                                                                                        host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
+                                                                                                        identity = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
+                                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
+                                                                                                    } ;
+                                                                                            } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
