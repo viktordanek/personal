@@ -463,9 +463,9 @@
                                                                                             script =
                                                                                                 ''
                                                                                                     export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) &&
-                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community $( $out/scripts/portfolio )
+                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community $( ${ _environment-variable "OUT" }/scripts/portfolio )
                                                                                                 '' ;
-                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/bin/studio" ;
+                                                                                            in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/studio --set OUT $out" ;
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
@@ -481,6 +481,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
                                                                              name = "derivation" ;
+                                                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
                                                                             src = ./. ;
                                                                         } ;
                                                                 in
