@@ -464,6 +464,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.dot-ssh ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.repository ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
                                                                              name = "derivation" ;
