@@ -453,7 +453,7 @@
                                                                                                         ${ pkgs.jetbrains.idea-community }/bin/idea-community $( $out/scripts/profile )
                                                                                                 '' ;
                                                                                             in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/bin/studio" ;
-                                                                                    xxx =
+                                                                                    in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
@@ -464,18 +464,10 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
                                                                                                 ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
-                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) }
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) } &&
+                                                                                                ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
-                                                                                    yyy =
-                                                                                        ''
-                                                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                                                                ${ studio } &&
-                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
-                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg
-                                                                                        '' ;
-                                                                                    in builtins.trace ( builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.user.dot-gnupg ) ) ) yyy ;
-                                                                            name = "derivation" ;
+                                                                             name = "derivation" ;
                                                                             src = ./. ;
                                                                         } ;
                                                                 in
