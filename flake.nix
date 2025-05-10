@@ -576,8 +576,8 @@
                                                                                     config =
                                                                                         {
                                                                                             host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
-                                                                                            identity = lib.mkOption { type = lib.types.oneOf lib.types.str lib.types.path ; } ;
-                                                                                            known-hosts = lib.mkOption { type = lib.types.oneOf lib.types.str lib.types.path ; } ;
+                                                                                            identity = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                             port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
                                                                                             user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         } ;
