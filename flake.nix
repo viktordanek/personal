@@ -399,7 +399,7 @@
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPHOME" }
                                                                                                     '' ;
-                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name }
+                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name }" ;
                                                                                     dot-ssh =
                                                                                         name : value :
                                                                                             let
