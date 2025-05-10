@@ -565,7 +565,7 @@
                                                                                             gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                             gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                                         } ;
-                                                                                    in builtins.attrsOf config ;
+                                                                                    in lib.attrsOf config ;
                                                                         } ;
                                                                 dot-ssh =
                                                                     lib.mkOption
@@ -575,11 +575,11 @@
                                                                                 let
                                                                                     config =
                                                                                         {
-                                                                                            host = lib.mkOption { type = lib.types.str ; } ;
-                                                                                            identity = lib.mkOption { type = lib.types.path ; } ;
-                                                                                            known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                            host = lib.mkOption { default = "github.com" ; type = lib.types.str ; } ;
+                                                                                            identity = lib.mkOption { type = lib.types.oneOf lib.types.str lib.types.path ; } ;
+                                                                                            known-hosts = lib.mkOption { type = lib.types.oneOf lib.types.str lib.types.path ; } ;
                                                                                             port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                            user = lib.mkOption { type = lib.types.str ; } ;
+                                                                                            user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
                                                                                         } ;
                                                                                     in builtins.attrsOf config ;
                                                                         } ;
