@@ -463,7 +463,7 @@
                                                                                             script =
                                                                                                 ''
                                                                                                     export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) &&
-                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community $( $out/scripts/profile )
+                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community $( $out/scripts/portfolio )
                                                                                                 '' ;
                                                                                             in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/bin/studio" ;
                                                                                     in
