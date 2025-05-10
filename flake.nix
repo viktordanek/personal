@@ -460,6 +460,7 @@
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.dot-ssh > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-gnupg config.personal.users.dot-gnupg ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
                                                                                                 ${ pkgs.coreutils }/bin/true
