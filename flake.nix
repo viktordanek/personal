@@ -398,7 +398,7 @@
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPHOME" }
                                                                                                     '' ;
-                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name }" ;
+                                                                                                in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name } --set OUT $out" ;
                                                                                     dot-ssh =
                                                                                         name : value :
                                                                                             let
@@ -425,7 +425,7 @@
                                                                                                                 fi &&
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
-                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name }" ;
+                                                                                                in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name } --set OUT $out" ;
                                                                                     portfolio =
                                                                                         let
                                                                                             script =
@@ -438,7 +438,7 @@
                                                                                                     fi &&
                                                                                                         ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PORTFOLIO" }
                                                                                                 '' ;
-                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/portfolio" ;
+                                                                                            in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/portfolio --set OUT $out" ;
                                                                                     repository =
                                                                                         name : value :
                                                                                             let
@@ -457,7 +457,7 @@
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "REPOSITORY" }
                                                                                                     '' ;
-                                                                                                in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/repository/${ name }" ;
+                                                                                                in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/repository/${ name } --set OUT $out" ;
                                                                                     studio =
                                                                                         let
                                                                                             script =
