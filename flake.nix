@@ -427,19 +427,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
                                                                                                 in "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name }" ;
-                                                                                    portfolio =
-                                                                                        let
-                                                                                            script =
-                                                                                                ''
-                                                                                                    PORTFOLIO=/tmp/$( ${ pkgs.coreutils }/bin/echo PORTFOLIO ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
-                                                                                                        if [ ! -d ${ _environment-variable "PORTFOLIO" } ]
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PORTFOLIO" } &&
-                                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.coreutils }/bin/ln --symbolic $( $out/scripts/repository/${ name } ) ${ _environment-variable "PORTFOLIO" }/${ name } ) config.personal.user.repository ) ) }
-                                                                                                        fi &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "PORTFOLIO" }
-                                                                                                '' ;
-                                                                                            in "${ pkgs.coreutils }/bin/ln --symbolic " ;
+                                                                                    portfolio = "# " &&
                                                                                     repository =
                                                                                         name : value :
                                                                                             let
