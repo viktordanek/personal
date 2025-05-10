@@ -464,7 +464,8 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-ssh &&
                                                                                                 ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs dot-ssh config.personal.user.dot-ssh ) ) } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
-                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) } ;
+                                                                                                ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) }
+                                                                                        '' ;
                                                                                     yyy =
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
