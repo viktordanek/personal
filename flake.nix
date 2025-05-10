@@ -438,8 +438,9 @@
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "REPOSITORY" } &&
                                                                                                                     cd ${ _environment-variable "REPOSITORY" } &&
                                                                                                                     ${ pkgs.git }/bin/git init &&
-                                                                                                                    ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git remote add ${ name } ${ value }" ) value.remotes ) ) } &&
-                                                                                                                    ${ builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git config ${ name } ${ value }" ) value.config ) ) } &&
+                                                                                                                    ${ if builtins.length ( builtins.attrNames value.remote ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git remote add ${ name } ${ value }" ) value.remotes ) ) else "#" } &&
+                                                                                                                    ${ if builtins.length ( builtins.attrNames value.config ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.git }/bin/git config ${ name } ${ value }" ) value.config ) ) else "#" } &&
+                                                                                                                    ${ if builtins.length ( builtins.attrNames value.hooks ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs ( name : value : "${ pkgs.coreutils }/bin/ln --symbolic ${ value } .git/hooks/${ name }" ) value.hooks ) ) else "#" } &&
                                                                                                                     ${ pkgs.writeShellScript "initial" value.initial }
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "REPOSITORY" }
@@ -569,6 +570,7 @@
                                                                                                 options =
                                                                                                     {
                                                                                                         config = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
+                                                                                                        hooks = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.path ; } ;
                                                                                                         initial = lib.mkOption { default = null ; type = lib.types.path ; } ;
                                                                                                         remotes = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                                                      } ;
