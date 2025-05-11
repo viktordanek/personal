@@ -182,10 +182,7 @@
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg-secret-keys } &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ value.gpg-ownertrust } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-secret-keys } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ value.gpg2-ownertrust } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --update-trustdb
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPGHOME" }
                                                                                                     '' ;
