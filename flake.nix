@@ -176,7 +176,7 @@
                                                                                                                     ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --import ${ value.gpg2-ownertrust } &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg2 --homedir ${ _environment-variable "GNUPGHOME" } --update-trustdb
                                                                                                             fi &&
-                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPHOME" }
+                                                                                                            ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPGHOME" }
                                                                                                     '' ;
                                                                                                 in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/dot-gnupg/${ name } --set OUT $out" ;
                                                                                     dot-ssh =
