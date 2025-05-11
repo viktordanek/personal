@@ -26,7 +26,7 @@
                                                     message = "All the pass must have defined repository" ;
                                                 }
                                                 {
-                                                    assertion = builtins.all ( repository : builtins.hasAttr pass.dot-ssh config.personal.user.dot-ssh ) config.personal.user.repository ;
+                                                    assertion = builtins.all ( repository : builtins.hasAttr repository.dot-ssh config.personal.user.dot-ssh ) config.personal.user.repository ;
                                                     message = "All the repository must have defined repository" ;
                                                 }
                                             ] ;
