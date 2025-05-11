@@ -164,7 +164,7 @@
                                                                                             let
                                                                                                 script =
                                                                                                     ''
-                                                                                                        export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                        export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                             if [ -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
@@ -186,7 +186,7 @@
                                                                                                     pkgs.writeShellScript
                                                                                                         "dot-ssh"
                                                                                                         ''
-                                                                                                            DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                            DOT_SSH=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_SSH ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                                 if [ ! -d ${ _environment-variable "DOT_SSH" } ]
                                                                                                                 then
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "DOT_SSH" } &&
@@ -224,7 +224,7 @@
                                                                                         let
                                                                                             script =
                                                                                                 ''
-                                                                                                    PORTFOLIO=/tmp/$( ${ pkgs.coreutils }/bin/echo PORTFOLIO ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                    PORTFOLIO=/tmp/$( ${ pkgs.coreutils }/bin/echo PORTFOLIO ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                     if [ ! -d ${ _environment-variable "PORTFOLIO" } ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "PORTFOLIO" } &&
@@ -238,7 +238,7 @@
                                                                                             let
                                                                                                 script =
                                                                                                     ''
-                                                                                                        REPOSITORY=/tmp/$( ${ pkgs.coreutils }/bin/echo REPOSITORY ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -128 ) &&
+                                                                                                        REPOSITORY=/tmp/$( ${ pkgs.coreutils }/bin/echo REPOSITORY ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                             if [ ! -d ${ _environment-variable "REPOSITORY" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "REPOSITORY" } &&
@@ -337,6 +337,7 @@
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
+                                                                hash-length = lib.mkOption { default = 64 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
                                                                     lib.mkOption
