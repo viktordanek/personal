@@ -212,8 +212,8 @@
                                                                                             let
                                                                                                 script =
                                                                                                     ''
-                                                                                                        export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ name } ) &&
-                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/gnupg/${ name } )" &&
+                                                                                                        export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
+                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/gnupg/${value.dot-gnupg } )" &&
                                                                                                             exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@" }
                                                                                                     '' ;
                                                                                                 in
@@ -349,20 +349,8 @@
                                                                                             {
                                                                                                 options =
                                                                                                     {
-                                                                                                        branch = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        host = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        known-hosts = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        identity-file = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        origin = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        extensions = lib.mkOption { type = lib.types.bool ; } ;
-                                                                                                        port = lib.mkOption { default = 22 ; type = lib.types.int ; } ;
-                                                                                                        user = lib.mkOption { default = "git" ; type = lib.types.str ; } ;
-                                                                                                        user-name = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        user-email = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        repository = lib.mkOption { type = lib.types.str ; } ;
                                                                                                     } ;
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
