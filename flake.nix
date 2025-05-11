@@ -231,6 +231,7 @@
                                                                                                     [
                                                                                                         "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out"
                                                                                                         ''${ pkgs.gnused }/bin/sed -e "s#^complete -o filenames -F _pass pass\$#complete -o filenames -F _pass ${ name }#" -e "s#${ builtins.concatStringsSep "" [ "\\" "$" "HOME" "/" ".password-store" "/" ] }#\$( TIMESTAMP=\$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) $out/scripts/repository/${ value.repository } )#" -e "w$out/share/bash-completion/completions/${ name }" ${ pkgs.pass }/share/bash-completion/completions/pass''
+                                                                                                        "${ pkgs.coreutils }/bin/ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/${ name }.1.gz"
                                                                                                     ] ;
                                                                                     portfolio =
                                                                                         let
@@ -280,6 +281,8 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion/completions &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/man &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/man/man1 &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists (  builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) else "#" } &&
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
