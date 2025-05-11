@@ -216,7 +216,10 @@
                                                                                                             export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/gnupg/${ name } )" &&
                                                                                                             exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@" }
                                                                                                     '' ;
-                                                                                                in "makeWrapper ${ pkgs.writeShellScript "script" script } ${ name }" ;
+                                                                                                in
+                                                                                                    [
+                                                                                                        "makeWrapper ${ pkgs.writeShellScript "script" script } ${ name }"
+                                                                                                    ] ;
                                                                                     portfolio =
                                                                                         let
                                                                                             script =
@@ -261,6 +264,7 @@
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.Lists ( builtins.attrValues ( builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) ) ) } &&
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
