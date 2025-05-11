@@ -275,6 +275,7 @@
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                                export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
