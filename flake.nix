@@ -333,10 +333,10 @@
                                                                                             {
                                                                                                 options =
                                                                                                     {
-                                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.path ; } ;
-                                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.path ; } ;
+                                                                                                        gpg-ownertrust = lib.mkOption { type = lib.types.either lib.types.str lib.types.path ; } ;
+                                                                                                        gpg2-ownertrust = lib.mkOption { type = lib.types.either lib.types.str lib.types.path ; } ;
+                                                                                                        gpg-secret-keys = lib.mkOption { type = lib.types.either lib.types.str lib.types.path ; } ;
+                                                                                                        gpg2-secret-keys = lib.mkOption { type = lib.types.either lib.types.str lib.types.path ; } ;
                                                                                                     } ;
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
