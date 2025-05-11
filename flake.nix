@@ -17,8 +17,8 @@
                                     {
                                         config =
                                             {
-                                                # assertions =
-                                                #     [
+                                                assertions =
+                                                    [
                                                 #         {
                                                 #             assertion = builtins.all ( pass : builtins.hasAttr pass.dot-gnupg config.personal.user.dot-gnupg ) config.personal.user.pass ;
                                                 #             message = "All the pass must have defined dot-gnupg" ;
@@ -31,7 +31,7 @@
                                                 #             assertion = builtins.all ( repository : builtins.hasAttr repository.dot-ssh config.personal.user.dot-ssh ) config.personal.user.repository ;
                                                 #             message = "All the repository must have defined repository" ;
                                                 #         }
-                                                #     ] ;
+                                                    ] ;
                                                 boot.loader =
                                                     {
                                                         efi.canTouchEfiVariables = true ;
