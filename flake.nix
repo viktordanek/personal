@@ -264,7 +264,7 @@
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
-                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists (  builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) else builtins.trace "YES" "#" } &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.trace "NO" ( builtins.concatStringsSep " &&\n\t" ( builtins.concatLists (  builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) ) else builtins.trace "YES" "#" } &&
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
