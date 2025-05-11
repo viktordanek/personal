@@ -19,10 +19,10 @@
                                             {
                                                 assertions =
                                                     [
-                                                #         {
-                                                #             assertion = builtins.all ( pass : builtins.hasAttr pass.dot-gnupg config.personal.user.dot-gnupg ) config.personal.user.pass ;
-                                                #             message = "All the pass must have defined dot-gnupg" ;
-                                                #         }
+                                                        {
+                                                            assertion = builtins.all ( pass : builtins.hasAttr pass.dot-gnupg config.personal.user.dot-gnupg ) ( builtins.attrValues config.personal.user.pass ) ;
+                                                            message = "All the pass must have defined dot-gnupg" ;
+                                                        }
                                                 #         {
                                                 #            assertion = builtins.all ( pass : builtins.hasAttr pass.repository config.personal.user.repository ) config.personal.user.pass ;
                                                 #             message = "All the pass must have defined repository" ;
