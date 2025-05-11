@@ -276,6 +276,9 @@
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion/completions &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists (  builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) else "#" } &&
                                                                                                 ${ studio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
