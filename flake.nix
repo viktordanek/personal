@@ -226,6 +226,8 @@
                                                                                                         export TIMESTAMP=${ _environment-variable "TIMESTAMP:$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } )" } &&
                                                                                                             export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
                                                                                                             export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${value.dot-gnupg } )" &&
+                                                                                                            export PASSWORD_STORE_ENABLE_EXTENSIONS=${ if builtins.typeOf value.extensions == "null" then "false" else "true" } &&
+                                                                                                            export PASSWORD_STORE_EXTENSIONS_DIR=${ if builtins.typeOf value.extensions == "null" then "" else builtins.toString value.extensions } &&
                                                                                                             exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@" }
                                                                                                     '' ;
                                                                                                 in
@@ -371,6 +373,7 @@
                                                                                                 options =
                                                                                                     {
                                                                                                         dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        extensions = lib.mkOptions { default = null ; type = lib.types.nullOr lib.types.package ; } ;
                                                                                                         repository = lib.mkOption { type = lib.types.str ; } ;
                                                                                                     } ;
                                                                                             } ;
