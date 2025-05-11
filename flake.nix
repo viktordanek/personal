@@ -373,7 +373,7 @@
                                                                                                 options =
                                                                                                     {
                                                                                                         dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                        extensions = lib.mkOptions { default = null ; type = lib.types.nullOr lib.types.package ; } ;
+                                                                                                        extensions = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.package ; } ;
                                                                                                         repository = lib.mkOption { type = lib.types.str ; } ;
                                                                                                     } ;
                                                                                             } ;
