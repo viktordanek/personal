@@ -230,7 +230,7 @@
                                                                                                 in
                                                                                                     [
                                                                                                         "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out"
-                                                                                                        # ''${ pkgs.coreutils }/bin/cat ${ pkgs.pass }/share/bash-completion/completions/pass > $out/share/bash-completion/completions/${ name }''
+                                                                                                        ''${ pkgs.coreutils }/bin/cat ${ pkgs.pass }/share/bash-completion/completions/pass > $out/share/bash-completion/completions/${ name }''
                                                                                                     ] ;
                                                                                     portfolio =
                                                                                         let
