@@ -228,6 +228,9 @@
                                                                                                             export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${value.dot-gnupg } )" &&
                                                                                                             export PASSWORD_STORE_ENABLE_EXTENSIONS=${ if builtins.typeOf value.extensions == "null" then "false" else "true" } &&
                                                                                                             export PASSWORD_STORE_EXTENSIONS_DIR=${ if builtins.typeOf value.extensions == "null" then "" else builtins.toString value.extensions } &&
+                                                                                                            export PASSWORD_STORE_GENERATED_LENGTH=${ if builtins.typeOf value.generated-length == null then "$( ${ pkgs.coreutils }/bin/date +%Y )" else ${ builtins.toString value.generated-length } &&
+                                                                                                            export PASSWORD_STORE_CHARACTER_SET=${ value.character-set } &&
+                                                                                                            export PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS=${ value.character-set-no-symbols } &&
                                                                                                             exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@" }
                                                                                                     '' ;
                                                                                                 in
@@ -375,6 +378,9 @@
                                                                                                         dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
                                                                                                         extensions = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.package ; } ;
                                                                                                         repository = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        generated-length = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.int ; } ;
+                                                                                                        character-set = lib.mkOption { default = "a-bd-hm-nq-rt-yA-BD-HM-NQ-RT-Y3-9@#%^*" ; type = lib.types.str ; } ;
+                                                                                                        character-set-no-symbols = lib.mkOption { default = "a-bd-hm-nq-rt-yA-BD-HM-NQ-RT-Y3-9" ; type = lib.types.str ; } ;
                                                                                                     } ;
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
