@@ -218,7 +218,7 @@
                                                                                                     '' ;
                                                                                                 in
                                                                                                     [
-                                                                                                        "makeWrapper ${ pkgs.writeShellScript "script" script } ${ name }"
+                                                                                                        "makeWrapper ${ pkgs.writeShellScript "script" script } ${ name } --set OUT $out"
                                                                                                     ] ;
                                                                                     portfolio =
                                                                                         let
