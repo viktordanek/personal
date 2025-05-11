@@ -230,7 +230,7 @@
                                                                                                 in
                                                                                                     [
                                                                                                         "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out"
-                                                                                                        ''${ pkgs.gnused }/bin/sed -e "s#^complete -o filenames -F _pass pass\$#complete -o filenames -F _pass ${ name }#" -e "s#\${ _environment-variable "PASSWORD_STORE_DIR:-\${ _environment-variable "HOME" }/.password-store/" }#$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } )#" -e "w$out/share/bash-completion/completions/${ name } ${ pkgs.pass }/share/bash-completion/completions/pass''
+                                                                                                        ''${ pkgs.gnused }/bin/sed -e "s#^complete -o filenames -F _pass pass\$#complete -o filenames -F _pass ${ name }#" -e "s#${ _environment-variable "PASSWORD_STORE_DIR:-${ _environment-variable "HOME" }/.password-store/" }#$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } )#" -e "w$out/share/bash-completion/completions/${ name } ${ pkgs.pass }/share/bash-completion/completions/pass''
                                                                                                     ] ;
                                                                                     portfolio =
                                                                                         let
