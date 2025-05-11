@@ -27,10 +27,6 @@
                                                            assertion = builtins.all ( pass : builtins.hasAttr pass.repository config.personal.user.repository ) ( builtins.attrValues config.personal.user.pass ) ;
                                                            message = "All the pass must have defined repository" ;
                                                         }
-                                                        {
-                                                            assertion = builtins.all ( repository : builtins.hasAttr repository.dot-ssh config.personal.user.dot-ssh ) ( builtins.attrValues config.personal.user.repository ) ;
-                                                            message = "All the repository must have defined repository" ;
-                                                        }
                                                     ] ;
                                                 boot.loader =
                                                     {
