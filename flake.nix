@@ -165,7 +165,7 @@
                                                                                                 script =
                                                                                                     ''
                                                                                                         export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
-                                                                                                            if [ -d ${ _environment-variable "GNUPGHOME" } ]
+                                                                                                            if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                             then
                                                                                                                 ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
