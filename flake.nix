@@ -213,7 +213,7 @@
                                                                                                 script =
                                                                                                     ''
                                                                                                         export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
-                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/gnupg/${value.dot-gnupg } )" &&
+                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${value.dot-gnupg } )" &&
                                                                                                             exec ${ pkgs.pass }/bin/pass ${ _environment-variable "@" }
                                                                                                     '' ;
                                                                                                 in
