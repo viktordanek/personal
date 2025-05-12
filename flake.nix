@@ -172,6 +172,7 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } >&2 &&
                                                                                                     ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.config &&
                                                                                                         ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
                                                                                                         cd ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
