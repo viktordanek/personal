@@ -9,9 +9,9 @@ from googleapiclient.discovery import build
 import git
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
-TOKEN_PATH = Path.home() / '.local/share/photo-scraper/token.json'
-CRED_PATH = Path.home() / '.config/photo-scraper/credentials.json'
-GIT_REPO_PATH = Path.home() / '.config/photo-scraper/repository'
+TOKEN_PATH = Path.home() / 'token.json'
+CRED_PATH = Path.home() / 'credentials.json'
+GIT_REPO_PATH = Path.home() / 'repository'
 PHOTO_METADATA_PATH = GIT_REPO_PATH / 'metadata'
 
 def get_service():
