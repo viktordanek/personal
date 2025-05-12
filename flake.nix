@@ -178,7 +178,7 @@
                                                                                                         export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                             if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                             then
-                                                                                                                if [ -f ${ value.gpg-secret-keys } ]
+                                                                                                                if [ -f "${ value.gpg-secret-keys }" ]
                                                                                                                 then
                                                                                                                     SECRET_KEYS=${ value.gpg-secret-keys }
                                                                                                                 else
