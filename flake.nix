@@ -314,7 +314,7 @@
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.repository ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) else "#" } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/files &&
-                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.files ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs files config.personal.user.files ) ) else "#" }
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.user.files ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs files config.personal.user.files ) ) else "#" }
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
                                                                              name = "derivation" ;
