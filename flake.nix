@@ -476,7 +476,7 @@
                                                                                                     {
                                                                                                         config = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                                                         hooks = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.path ; } ;
-                                                                                                        initial = lib.mkOption { default = null ; type = lib.types.path ; } ;
+                                                                                                        initial = lib.mkOption { default = null ; type = lib.types.str ; } ;
                                                                                                         remotes = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                                                      } ;
                                                                                             } ;
