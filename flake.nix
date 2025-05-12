@@ -199,7 +199,7 @@
                                                                                 DynamicUser = true ;
                                                                                 Environment =
                                                                                     [
-                                                                                        "HOME=/run/user/%U";
+                                                                                        "HOME=/run/user/%U"
                                                                                     ] ;
                                                                                 Restart = "on-failure" ;
                                                                             } ;
