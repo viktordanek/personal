@@ -208,7 +208,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/chmod +x $out/bin/scrape_google_photos.py
                                                                                                         '' ;
                                                                                                     entryPoints = [ "scrape_google_photos.py" ] ;
-                                                                                                    propogateBuildInputs =
+                                                                                                    propogatedBuildInputs =
                                                                                                         [
                                                                                                             pkgs.python3Packages.google-auth
                                                                                                             pkgs.python3Packages.google-auth-oauthlib
