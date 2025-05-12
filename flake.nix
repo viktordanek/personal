@@ -36,6 +36,7 @@
                                                 environment.sessionVariables =
                                                     {
                                                     } ;
+                                                environment.systemPackages = [ pkgs.lynx ] ;
                                                 hardware.pulseaudio =
                                                     {
                                                         enable = false ;
