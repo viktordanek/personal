@@ -207,7 +207,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/cp scrape_google_photos.py $out/bin/scrape_google_photos.py &&
                                                                                                                 ${ pkgs.coreutils }/bin/chmod +x $out/bin/scrape_google_photos.py
                                                                                                         '' ;
-                                                                                                    propogatedBuildInputs =
+                                                                                                    propagatedBuildInputs =
                                                                                                         [
                                                                                                             pkgs.python3Packages.google-auth
                                                                                                             pkgs.python3Packages.google-auth-oauthlib
