@@ -489,6 +489,7 @@
                                                                                 credentials = lib.mkOption { type = lib.types.path ; } ;
                                                                                 known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                                 identity = lib.mkOption { type = lib.types.path ; } ;
+                                                                                origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                 repository = lib.mkOption { type = lib.types.str ; } ;
                                                                             } ;
                                                                     } ;
