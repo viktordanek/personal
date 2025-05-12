@@ -208,7 +208,6 @@
                                                                                                         ] ;
                                                                                                 } ;
                                                                                         in "${ pythonEnv }/bin/google-photograph-scraper" ;
-                                                                                        in pkgs.writeShellScript "script" script ;
                                                                                 DynamicUser = true ;
                                                                                 Environment =
                                                                                     [
