@@ -192,6 +192,10 @@
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
                                                                                                                     done &&
+                                                                                                                    while [ ! -S "$( ${ pkgs.gnupg }/bin/gpgconf --list-dir agent-socket )" ]
+                                                                                                                    do
+                                                                                                                        ${ pkgs.coreutils }/bin/sleep 1
+                                                                                                                    done &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ _environment-variable "SECRET_KEYS" } &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
                                                                                                                     ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb
