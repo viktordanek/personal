@@ -182,8 +182,8 @@
                                                                                                                     OWNERTRUST=${ value.gpg-ownertrust } &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --create-socketdir &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --launch gpg-agent &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --create-socketdir &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --launch gpg-agent &&
                                                                                                                     while [ ! -f ${ _environment-variable "SECRET_KEYS" } ]
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
@@ -192,7 +192,7 @@
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
                                                                                                                     done &&
-                                                                                                                    while [ ! -S "$( ${ pkgs.gnupg }/bin/gpgconf --list-dir agent-socket )" ]
+                                                                                                                    while [ ! -S "$( ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --list-dir agent-socket )" ]
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
                                                                                                                     done &&
