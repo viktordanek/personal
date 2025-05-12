@@ -191,7 +191,10 @@
                                                                                                 fi
                                                                                              '' ;
                                                                                             in pkgs.writeShellScript "script" script ;
-                                                                                ExecStart = "${ pkgs.python3 }/bin/python3 ${ self + "/scrape_google_photos.py" } ;
+                                                                                ExecStart =
+                                                                                    let
+                                                                                        script = "${ pkgs.python3 }/bin/python3 ${ self + "/scrape_google_photos.py" }" ;
+                                                                                        in pkgs.writeShellScript "script" script ;
                                                                                 DynamicUser = true ;
                                                                                 Restart = "on-failure" ;
                                                                             } ;
