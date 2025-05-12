@@ -180,6 +180,8 @@
                                                                                                             then
                                                                                                                 SECRET_KEYS=${ value.gpg-secret-keys } &&
                                                                                                                     OWNERTRUST=${ value.gpg-ownertrust } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --create-socketdir &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --launch gpg-agent
                                                                                                                     while [ ! -f ${ _environment-variable "SECRET_KEYS" } ]
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
@@ -190,9 +192,9 @@
                                                                                                                     done &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --no-use-agent --import ${ _environment-variable "SECRET_KEYS" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --no-use-agent --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --no-use-agent --update-trustdb
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ _environment-variable "SECRET_KEYS" } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPGHOME" }
                                                                                                     '' ;
