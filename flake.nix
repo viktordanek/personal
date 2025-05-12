@@ -199,7 +199,7 @@
                                                                                                 {
                                                                                                     pname = "google-photograph-scraper" ;
                                                                                                     version = "1.0" ;
-                                                                                                    src ./. ;
+                                                                                                    src = ./. ;
                                                                                                     entryPoints = [ "scrape_google_photos.py" ] ;
                                                                                                     propogateBuildInputs =
                                                                                                         [
