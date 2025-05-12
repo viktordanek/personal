@@ -190,9 +190,9 @@
                                                                                                                     done &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --import ${ _environment-variable "SECRET_KEYS" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
-                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --batch --homedir ${ _environment-variable "GNUPGHOME" } --no-use-agent --import ${ _environment-variable "SECRET_KEYS" } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPGHOME" } --no-use-agent --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "GNUPHOME" } --no-use-agent --update-trustdb
                                                                                                             fi &&
                                                                                                             ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPGHOME" }
                                                                                                     '' ;
