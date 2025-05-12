@@ -204,7 +204,7 @@
                                                                                                     installPhase =
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents $out/bin &&
-                                                                                                                ${ pkgs.coreutils }/bin/cp ${ self }/scrape_google_photos.py $out/scrape_google_photos.py &&
+                                                                                                                ${ pkgs.coreutils }/bin/cp ${ self }/scrape_google_photos.py $out/bin/scrape_google_photos.py &&
                                                                                                                 ${ pkgs.coreutils }/bin/chmod +x $out/bin/scrape_google_photos.py
                                                                                                         '' ;
                                                                                                     entryPoints = [ "scrape_google_photos.py" ] ;
