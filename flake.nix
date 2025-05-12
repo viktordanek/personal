@@ -155,6 +155,16 @@
                                                                 xkbVariant = "" ;
                                                             } ;
                                                     } ;
+                                                systemd.services.simple-backend =
+                                                    {
+                                                        after = [ "network.target" ] ;
+                                                        serviceConfig =
+                                                            {
+                                                                ExecStart = self + "/main.py" ;
+                                                                DynamicUser = true ;
+                                                            } ;
+                                                        wantedBy = [ "multi-user.target" ] ;
+                                                    } ;
                                                 system.stateVersion = "23.05" ;
                                                 time.timeZone = "America/New_York" ;
                                                 users.users.user =
@@ -326,6 +336,7 @@
                                                                         [
                                                                             [
                                                                                 derivation
+                                                                                pkgs.python3.python3Packages.flask pkgs.python3Packages.sqlite
                                                                             ]
                                                                         ] ;
                                                         password = config.personal.user.password ;
