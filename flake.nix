@@ -168,29 +168,28 @@
                                                                                     let
                                                                                         script =
                                                                                             ''
-                                                                                                HOME=$( ${ pkgs.getent }/bin/getent passwd $( ${ pkgs.coreutils }/bin/id -u ) | ${ pkgs.coreutils }/bin/cut --delimiter ":" --field 6 ) &&
-                                                                                                    if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
-                                                                                                    then
-                                                                                                        ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } >&2 &&
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
-                                                                                                            ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
-                                                                                                            cd ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
-                                                                                                            ${ pkgs.git }/bin/git init &&
-                                                                                                            ${ pkgs.git }/bin/git config user.name "Google Photograph Scraper" &&
-                                                                                                            ${ pkgs.git }/bin/git config user.email "Google Photograph Scraper" &&
-                                                                                                            ${ pkgs.git }/bin/git remote add origin ${ config.personal.user.services.google-photograph-scraper.origin } &&
-                                                                                                            ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.identity } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity &&
-                                                                                                            ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
-                                                                                                            ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
-                                                                                                            ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity -o StrictHostKeyChecking=true -o UserKnownHostsFile=${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts" &&
-                                                                                                            if ${ pkgs.git }/bin/git fetch origin main
-                                                                                                            then
-                                                                                                                ${ pkgs.git }/bin/git checkout main
-                                                                                                            else
-                                                                                                                ${ pkgs.git }/bin/checkout -b main
-                                                                                                            fi
-                                                                                                    fi
+                                                                                                if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } >&2 &&
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
+                                                                                                        ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
+                                                                                                        cd ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
+                                                                                                        ${ pkgs.git }/bin/git init &&
+                                                                                                        ${ pkgs.git }/bin/git config user.name "Google Photograph Scraper" &&
+                                                                                                        ${ pkgs.git }/bin/git config user.email "Google Photograph Scraper" &&
+                                                                                                        ${ pkgs.git }/bin/git remote add origin ${ config.personal.user.services.google-photograph-scraper.origin } &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.identity } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
+                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
+                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity -o StrictHostKeyChecking=true -o UserKnownHostsFile=${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts" &&
+                                                                                                        if ${ pkgs.git }/bin/git fetch origin main
+                                                                                                        then
+                                                                                                            ${ pkgs.git }/bin/git checkout main
+                                                                                                        else
+                                                                                                            ${ pkgs.git }/bin/checkout -b main
+                                                                                                        fi
+                                                                                                fi
                                                                                             '' ;
                                                                                             in pkgs.writeShellScript "script" script ;
                                                                                 ExecStart =
