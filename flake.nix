@@ -183,14 +183,14 @@
                                                                                                                     SECRET_KEYS=${ value.gpg-secret-keys }
                                                                                                                 else
                                                                                                                     SECRET_KEYS=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ value.gpg-secret-keys } > ${ _environment-variable "SECRET_KEYS" }
+                                                                                                                        ${ value.gpg-secret-keys } > ${ _environment-variable "SECRET_KEYS" }
                                                                                                                 fi &&
                                                                                                                     if [ -f "${ value.gpg-ownertrust }" ]
                                                                                                                     then
                                                                                                                         OWNERTRUST=${ value.gpg-ownertrust }
                                                                                                                     else
                                                                                                                         OWNERTRUST=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }
+                                                                                                                            ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
