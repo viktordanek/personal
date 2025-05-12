@@ -231,6 +231,7 @@
                                                                                                                 ${ pkgs.coreutils }/bin/echo ${ _environment-variable "DOT_SSH" }
                                                                                                         '' ;
                                                                                                 in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name } --set OUT $out" ;
+                                                                                    files = name : value : "${ value } > $out/files/${ name }" ;
                                                                                     pass =
                                                                                         name : value :
                                                                                             let
@@ -312,6 +313,8 @@
                                                                                                 ${ portfolio } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/scripts/repository &&
                                                                                                 ${ if builtins.length ( builtins.attrNames config.personal.user.repository ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs repository config.personal.user.repository ) ) else "#" } &&
+                                                                                                ${ pkgs.coreutils }/bin/mkdir $out/files &&
+                                                                                                ${ if builtins.length ( builtins.attrNames config.personal.files ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs files config.personal.user.files ) ) else "#" }
                                                                                                 ${ pkgs.coreutils }/bin/true
                                                                                         '' ;
                                                                              name = "derivation" ;
@@ -375,6 +378,7 @@
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
+                                                                files = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
                                                                 hash-length = lib.mkOption { default = 64 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
