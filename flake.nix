@@ -211,6 +211,7 @@
                                                                                                     propogateBuildInputs =
                                                                                                         [
                                                                                                             pkgs.python3Packages.google-auth
+                                                                                                            pkgs.google-auth-oauthlib
                                                                                                             pkgs.python3Packages.google-api-python-client
                                                                                                         ] ;
                                                                                                 } ;
