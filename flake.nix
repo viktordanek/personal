@@ -233,6 +233,16 @@
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
+                                                                trashy =
+                                                                    {
+                                                                        after = [ "network.target" ] ;
+                                                                        serviceConfig =
+                                                                            {
+                                                                                ExecScript = "${ pkgs.trashy }/bin/trashy remove" ;
+                                                                                User = config.personal.user.name ;
+                                                                            } ;
+                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                    } ;
                                                             } ;
                                                         timers =
                                                             {
@@ -245,6 +255,15 @@
                                                                                 Persistent = true ;
                                                                             } ;
                                                                         wantedBy = [ "timers.target" ] ;
+                                                                    } ;
+                                                                trashy =
+                                                                    {
+                                                                        timerConfig =
+                                                                            {
+                                                                                OnBootSec = "5min" ;
+                                                                                OnUnitActiveSec = "1w" ;
+                                                                                Persistent = true
+                                                                            } ;
                                                                     } ;
                                                             } ;
                                                     } ;
