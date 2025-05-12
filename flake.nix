@@ -194,7 +194,20 @@
                                                                                             in pkgs.writeShellScript "script" script ;
                                                                                 ExecStart =
                                                                                     let
-                                                                                        script = "${ pkgs.python3 }/bin/python3 ${ self + "/scrape_google_photos.py" }" ;
+                                                                                        pythonEnv =
+                                                                                            pkgs.python3.buildPythonApplication
+                                                                                                {
+                                                                                                    pname = "google-photograph-scraper" ;
+                                                                                                    version = "1.0" ;
+                                                                                                    src ./. ;
+                                                                                                    entryPoints = [ "scrape_google_photos.py" ] ;
+                                                                                                    propogateBuildInputs =
+                                                                                                        [
+                                                                                                            pkgs.python3Packages.google-auth
+                                                                                                            pkgs.python3Packages..google-api-python-client
+                                                                                                        ] ;
+                                                                                                } ;
+                                                                                        in "${ pythonEnv }/bin/google-photograph-scraper" ;
                                                                                         in pkgs.writeShellScript "script" script ;
                                                                                 DynamicUser = true ;
                                                                                 Environment =
