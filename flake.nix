@@ -199,7 +199,8 @@
                                                                                 DynamicUser = true ;
                                                                                 Environment =
                                                                                     [
-                                                                                        "HOME=/run/user/%U"
+                                                                                        "HOME=/var/lib/google-photograph-scraper"
+                                                                                        "XDG_DATA_HOME=/var/lib/google-photograph-scraper"
                                                                                     ] ;
                                                                                 Restart = "on-failure" ;
                                                                             } ;
