@@ -185,7 +185,7 @@
                                                                                                                     SECRET_KEYS=$( ${ pkgs.coreutils }/bin/mktemp ) &&
                                                                                                                         ${ pkgs.coreutils }/bin/echo ${ value.gpg-secret-keys } > ${ _environment-variable "SECRET_KEYS" }
                                                                                                                 fi &&
-                                                                                                                    if [ -f ${ value.gpg-ownertrust } ]
+                                                                                                                    if [ -f "${ value.gpg-ownertrust }" ]
                                                                                                                     then
                                                                                                                         OWNERTRUST=${ value.gpg-ownertrust }
                                                                                                                     else
