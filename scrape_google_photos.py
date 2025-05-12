@@ -20,7 +20,7 @@ def get_service():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            'client_secrets.json',
+            CRED_PATH,
             scopes=['https://www.googleapis.com/auth/photoslibrary.readonly']
         )
         creds = flow.run_local_server(port=0)
