@@ -168,10 +168,14 @@
                                                                                     let
                                                                                         script =
                                                                                             ''
-                                                                                                if [ ! -f ${ _environment-variable "HOME" }/credentials.json ]
+                                                                                                if [ ! -d ${ _environment-variable "HOME" } ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/credentials.json
-                                                                                                fi
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
+                                                                                                fi &&
+                                                                                                    if [ ! -f ${ _environment-variable "HOME" }/credentials.json ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/credentials.json
+                                                                                                    fi &&
                                                                                                     if [ ! -d ${ _environment-variable "HOME" }/repository ]
                                                                                                         then
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/repository &&
