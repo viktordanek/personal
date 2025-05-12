@@ -214,7 +214,7 @@
                                                                                                             pkgs.python3Packages.google-api-python-client
                                                                                                         ] ;
                                                                                                 } ;
-                                                                                        in "exec ${ pythonEnv }/bin/google-photograph-scraper.py" ;
+                                                                                        in "${ pythonEnv }/bin/google-photograph-scraper.py" ;
                                                                                 DynamicUser = true ;
                                                                                 Environment =
                                                                                     [
