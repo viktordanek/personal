@@ -172,6 +172,10 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
                                                                                                 fi &&
+                                                                                                    if [ ! -f ${ _environment-variable "HOME" }/client_secrets.json ]
+                                                                                                    then
+                                                                                                        > ${ _environment-variable "HOME" }/client_secrets.json
+                                                                                                    fi &&
                                                                                                     if [ ! -f ${ _environment-variable "HOME" }/credentials.json ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/credentials.json
