@@ -16,16 +16,19 @@ PHOTO_METADATA_PATH = GIT_REPO_PATH / 'metadata'
 
 def get_service():
     """Authenticate with Google Photos API and return the service."""
+    creds = None
     if TOKEN_PATH.exists():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
-    else:
+    if not creds or not creds.valid:
         flow = InstalledAppFlow.from_client_secrets_file(
-            CRED_PATH,
+            str(CRED_PATH),
             scopes=SCOPES
         )
         creds = flow.run_local_server(port=0)
+        with open(TOKEN_PATH, 'w') as token_file:
+            token_file.write(creds.to_json())
     service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
     return service
 
