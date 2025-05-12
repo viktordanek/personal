@@ -18,14 +18,16 @@ def get_service():
     """Authenticate with Google Photos API and return the service."""
     if TOKEN_PATH.exists():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
             CRED_PATH,
-            scopes=['https://www.googleapis.com/auth/photoslibrary.readonly']
+            scopes=SCOPES
         )
         creds = flow.run_local_server(port=0)
-        service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
-        return service
+    service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
+    return service
 
 def scrape():
     """Scrape Google Photos metadata and store it in a Git repository."""
