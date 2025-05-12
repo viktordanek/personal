@@ -23,7 +23,7 @@ def get_service():
             CRED_PATH,
             scopes=['https://www.googleapis.com/auth/photoslibrary.readonly']
         )
-        creds = flow.run_console()
+        creds = flow.run_local_server(port=0)
         return build('photoslibrary', 'v1', credentials=creds)
 
 def scrape():
