@@ -189,7 +189,7 @@
                                                                                                             ${ pkgs.git }/bin/checkout -b main
                                                                                                         fi
                                                                                                 fi
-                                                                                             '' ;
+                                                                                            '' ;
                                                                                             in pkgs.writeShellScript "script" script ;
                                                                                 ExecStart =
                                                                                     let
@@ -200,6 +200,7 @@
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
+                                                            } ;
                                                         timers =
                                                             {
                                                                 simple-backend =
