@@ -155,15 +155,55 @@
                                                                 xkbVariant = "" ;
                                                             } ;
                                                     } ;
-                                                systemd.services.simple-backend =
+                                                systemd =
                                                     {
-                                                        after = [ "network.target" ] ;
-                                                        serviceConfig =
+                                                        services =
                                                             {
-                                                                ExecStart = self + "/main.py" ;
-                                                                DynamicUser = true ;
+                                                                simple-backend =
+                                                                    {
+                                                                        after = [ "network.target" ] ;
+                                                                        serviceConfig =
+                                                                            {
+                                                                                ExecStartPre =
+                                                                                    let
+                                                                                        script =
+                                                                                            ''
+                                                                                                if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
+                                                                                                then
+                                                                                                    ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
+                                                                                                        ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
+                                                                                                        cd ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
+                                                                                                        ${ pkgs.git }/bin/git init &&
+                                                                                                        ${ pkgs.git }/bin/git config user.name "Google Photograph Scraper" &&
+                                                                                                        ${ pkgs.git }/bin/git config user.email "Google Photograph Scraper" &&
+                                                                                                        ${ pkgs.git }/bin/git remote add ${ config.personal.user.service.google-photograph-scraper.origin } &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.identity } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity &&
+                                                                                                        ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
+                                                                                                        ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
+                                                                                                        ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/identity -o StrictHostKeyChecking=true -o UserKnownHostsFile=${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/known-hosts &&
+                                                                                                fi
+                                                                                             '' ;
+                                                                                            in pkgs.writeShellScript "script" script ;
+                                                                                ExecStart = "${ pkgs.python3 }/bin/python3 ${ self + "/scrape_google_photos.py" } ;
+                                                                                DynamicUser = true ;
+                                                                                Restart = "on-failure" ;
+                                                                            } ;
+                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                    } ;
+                                                        timers =
+                                                            {
+                                                                simple-backend =
+                                                                    {
+                                                                        timerConfig =
+                                                                            {
+                                                                                OnBootSec = "5min" ;
+                                                                                OnUnitActiveSec = "24h" ;
+                                                                                Persistent = true ;
+                                                                            } ;
+                                                                        wantedBy = [ "timers.target" ] ;
+                                                                    } ;
                                                             } ;
-                                                        wantedBy = [ "multi-user.target" ] ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
                                                 time.timeZone = "America/New_York" ;
@@ -336,7 +376,6 @@
                                                                         [
                                                                             [
                                                                                 derivation
-                                                                                pkgs.python3.python3Packages.flask pkgs.python3Packages.sqlite
                                                                             ]
                                                                         ] ;
                                                         password = config.personal.user.password ;
@@ -433,6 +472,16 @@
                                                                                             } ;
                                                                                     in lib.types.attrsOf config ;
                                                                         } ;
+                                                                services =
+                                                                    {
+                                                                        google-photograph-scraper =
+                                                                            {
+                                                                                credentials = lib.mkOption { type = lib.types.path ; } ;
+                                                                                known-hosts = lib.mkOption { type = lib.types.path ; } ;
+                                                                                identity = lib.mkOption { type = lib.types.path ; } ;
+                                                                                repository = lib.mkOption { type = lib.types.str ; } ;
+                                                                            } ;
+                                                                    } ;
                                                                 time-mask = lib.mkOption { default = "%Y-%m-%d-%H-%M" ; type = lib.types.str ; } ;
                                                             } ;
                                                     } ;
