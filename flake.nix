@@ -204,7 +204,7 @@
                                                                                                     propogateBuildInputs =
                                                                                                         [
                                                                                                             pkgs.python3Packages.google-auth
-                                                                                                            pkgs.python3Packages..google-api-python-client
+                                                                                                            pkgs.python3Packages.google-api-python-client
                                                                                                         ] ;
                                                                                                 } ;
                                                                                         in "${ pythonEnv }/bin/google-photograph-scraper" ;
