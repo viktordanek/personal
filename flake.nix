@@ -193,7 +193,7 @@
                                                                                                             then
                                                                                                                 ${ pkgs.git }/bin/git checkout main
                                                                                                             else
-                                                                                                                ${ pkgs.git }/bin/checkout -b main
+                                                                                                                ${ pkgs.git }/bin/git checkout -b main
                                                                                                             fi
                                                                                                     fi
                                                                                             '' ;
