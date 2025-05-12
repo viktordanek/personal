@@ -225,6 +225,7 @@
                                                                                 DynamicUser = true ;
                                                                                 Environment =
                                                                                     [
+                                                                                        "BROWSER=lynx"
                                                                                         "HOME=/var/lib/google-photograph-scraper"
                                                                                         "XDG_DATA_HOME=/var/lib/google-photograph-scraper"
                                                                                     ] ;
@@ -263,7 +264,7 @@
                                                                             {
                                                                                 OnBootSec = "5min" ;
                                                                                 OnUnitActiveSec = "1w" ;
-                                                                                Persistent = true
+                                                                                Persistent = true ;
                                                                             } ;
                                                                     } ;
                                                             } ;
