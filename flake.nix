@@ -190,7 +190,7 @@
                                                                                                                         OWNERTRUST=${ value.gpg-ownertrust }
                                                                                                                     else
                                                                                                                         OWNERTRUST=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ value.ownertrust } > ${ _environment-variable "OWNERTRUST" }
+                                                                                                                            ${ pkgs.coreutils }/bin/echo ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
