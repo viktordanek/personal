@@ -173,6 +173,10 @@
                                                                                                 then
                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
                                                                                                 fi &&
+                                                                                                    if [ ! -f ${ _environment-variable "HOME" }/token.json ]
+                                                                                                    then
+                                                                                                        ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.token } ${ _environment-variable "HOME" }/token.json
+                                                                                                    fi &&
                                                                                                     if [ ! -f ${ _environment-variable "HOME" }/credentials.json ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/credentials.json
@@ -546,6 +550,7 @@
                                                                                 identity = lib.mkOption { type = lib.types.path ; } ;
                                                                                 origin = lib.mkOption { type = lib.types.str ; } ;
                                                                                 repository = lib.mkOption { type = lib.types.str ; } ;
+                                                                                token = lib.mkOption { type = lib.types.path ; } ;
                                                                             } ;
                                                                     } ;
                                                                 time-mask = lib.mkOption { default = "%Y-%m-%d-%H-%M" ; type = lib.types.str ; } ;
