@@ -178,24 +178,12 @@
                                                                                                         export GNUPGHOME=/tmp/$( ${ pkgs.coreutils }/bin/echo DOT_GNUPG ${ name } ${ _environment-variable "TIMESTAMP" } | ${ pkgs.coreutils }/bin/sha512sum | ${ pkgs.coreutils }/bin/cut --bytes -${ builtins.toString config.personal.user.hash-length } ) &&
                                                                                                             if [ ! -d ${ _environment-variable "GNUPGHOME" } ]
                                                                                                             then
-                                                                                                                if [ -f "${ value.gpg-secret-keys }" ]
-                                                                                                                then
-                                                                                                                    SECRET_KEYS=${ value.gpg-secret-keys }
-                                                                                                                else
-                                                                                                                    SECRET_KEYS=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                                        ${ value.gpg-secret-keys } > ${ _environment-variable "SECRET_KEYS" }
-                                                                                                                fi &&
-                                                                                                                    if [ -f "${ value.gpg-ownertrust }" ]
-                                                                                                                    then
-                                                                                                                        OWNERTRUST=${ value.gpg-ownertrust }
-                                                                                                                    else
-                                                                                                                        OWNERTRUST=$( ${ pkgs.coreutils }/bin/mktemp ) &&
-                                                                                                                            ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }
-                                                                                                                    fi &&
+                                                                                                                ${ if builtins.pathExists value.gpg-secret-keys then "SECRET_KEYS=${ value.gpg-secret-keys }" else "SECRET_KEYS=$( ${ pkgs.coreutils }/bin/mktemp && ${ value.gpg-secret-keys } > ${ _environment-variable "SECRET_KEYS" }" } &&
+                                                                                                                    ${ if builtins.pathExists value.gpg-ownertrust then "OWNERTRUST=${ value.ownertrust }" else "OWNERTRUST=$( ${ pkgs.coreutils }/bin/mktemp && ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                     ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                    # ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --create-socketdir &&
-                                                                                                                    # ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --launch gpg-agent &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --create-socketdir &&
+                                                                                                                    ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --launch gpg-agent &&
                                                                                                                     while [ ! -f ${ _environment-variable "SECRET_KEYS" } ]
                                                                                                                     do
                                                                                                                         ${ pkgs.coreutils }/bin/sleep 1
