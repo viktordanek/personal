@@ -195,7 +195,7 @@
                                                                                 ExecStart =
                                                                                     let
                                                                                         pythonEnv =
-                                                                                            pkgs.python3.buildPythonApplication
+                                                                                            pkgs.python3Packages.buildPythonApplication
                                                                                                 {
                                                                                                     pname = "google-photograph-scraper" ;
                                                                                                     version = "1.0" ;
