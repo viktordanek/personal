@@ -19,12 +19,12 @@ def get_service():
     if TOKEN_PATH.exists():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
     else:
-        flow = InstalledAppFlow.from_client_secrets_file(str(CRED_PATH), SCOPES)
-        creds = flow.run_local_server(port=0)
-        TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
-        with open(TOKEN_PATH, 'w') as token_file:
-            token_file.write(creds.to_json())
-    return build('photoslibrary', 'v1', credentials=creds)
+        flow = InstalledAppFlow.from_client_secrets_file(
+            'client_secrets.json',
+            scopes=['https://www.googleapis.com/auth/photoslibrary.readonly']
+        )
+        creds = flow.run_console()
+        return build('photoslibrary', 'v1', credentials=creds)
 
 def scrape():
     """Scrape Google Photos metadata and store it in a Git repository."""
