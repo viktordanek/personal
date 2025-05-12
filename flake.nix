@@ -168,7 +168,7 @@
                                                                                     let
                                                                                         script =
                                                                                             ''
-                                                                                                HOME=$( ${ pkgs.coreutils }/bin/getent passwd ${ _environment-variable "USER" } | ${ pkgs.coreutils }/bin/cut -d d: -f6 ) &&
+                                                                                                HOME=$( ${ pkgs.getent }/bin/getent passwd ${ _environment-variable "USER" } | ${ pkgs.coreutils }/bin/cut -d d: -f6 ) &&
                                                                                                     if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
                                                                                                     then
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
