@@ -170,11 +170,11 @@
                                                                                             ''
                                                                                                 if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
                                                                                                 then
-                                                                                                    ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } > /tmp/DEBUG &&
+                                                                                                    ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } > /tmp/DEBUG2 &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
-                                                                                                        ${ pkgs.coreutils }/bin/echo created local >> /tmp/DEBUG &&
+                                                                                                        ${ pkgs.coreutils }/bin/echo created local >> /tmp/DEBUG2 &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.config/photo-scraper &&
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir created config >> /tmp/DEBUG &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir created config >> /tmp/DEBUG2 &&
                                                                                                         ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.config/photo-scraper/repository &&
                                                                                                         cd ${ _environment-variable "HOME" }/.config/photo-scraper/repository &&
