@@ -171,6 +171,7 @@
                                                                                                 HOME=$( ${ pkgs.getent }/bin/getent passwd ${ _environment-variable "USER" } | ${ pkgs.coreutils }/bin/cut --delimiter ":" --field 6 ) &&
                                                                                                     if [ ! -d ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper ]
                                                                                                     then
+                                                                                                        ${ pkgs.coreutils }/bin/echo HOME=${ _environment-variable "HOME" } >&2 &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
                                                                                                             ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
