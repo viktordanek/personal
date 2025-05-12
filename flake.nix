@@ -213,6 +213,7 @@
                                                                                                             pkgs.python3Packages.google-auth
                                                                                                             pkgs.python3Packages.google-auth-oauthlib
                                                                                                             pkgs.python3Packages.google-api-python-client
+                                                                                                            pkgs.python3Packages.GitPython
                                                                                                         ] ;
                                                                                                 } ;
                                                                                         in "${ pythonEnv }/bin/scrape_google_photos.py" ;
