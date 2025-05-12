@@ -174,8 +174,8 @@
                                                                                                     ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.config/photo-scraper &&
                                                                                                         ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/credentials.json &&
-                                                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
-                                                                                                        cd ${ _environment-variable "HOME" }/.local/share/google-photograph-scraper/repository &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "HOME" }/.config/photo-scraper/repository &&
+                                                                                                        cd ${ _environment-variable "HOME" }/.config/photo-scraper/repository &&
                                                                                                         ${ pkgs.git }/bin/git init &&
                                                                                                         ${ pkgs.git }/bin/git config user.name "Google Photograph Scraper" &&
                                                                                                         ${ pkgs.git }/bin/git config user.email "Google Photograph Scraper" &&
