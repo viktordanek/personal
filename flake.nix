@@ -198,6 +198,10 @@
                                                                                         script = "${ pkgs.python3 }/bin/python3 ${ self + "/scrape_google_photos.py" }" ;
                                                                                         in pkgs.writeShellScript "script" script ;
                                                                                 DynamicUser = true ;
+                                                                                Environment =
+                                                                                    [
+                                                                                        "HOME=/run/user/%U";
+                                                                                    ] ;
                                                                                 Restart = "on-failure" ;
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
