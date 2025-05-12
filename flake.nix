@@ -227,6 +227,7 @@
                                                                                     ] ;
                                                                                 Restart = "on-failure" ;
                                                                                 StateDirectory = "google-photograph-scraper" ;
+                                                                                StateDirectoryMode = 0755 ;
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
