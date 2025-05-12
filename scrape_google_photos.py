@@ -20,11 +20,12 @@ def get_service():
         creds = Credentials.from_authorized_user_file(str(TOKEN_PATH), SCOPES)
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            CRED_PATH,
+            'client_secrets.json',
             scopes=['https://www.googleapis.com/auth/photoslibrary.readonly']
         )
-        creds = flow.run_local_server(port=0)
-        return build('photoslibrary', 'v1', credentials=creds)
+        creds = flow.run_console()
+        service = build('photoslibrary', 'v1', credentials=creds)
+        return service
 
 def scrape():
     """Scrape Google Photos metadata and store it in a Git repository."""
