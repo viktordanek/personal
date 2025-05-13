@@ -207,6 +207,16 @@
                                                                                                     [
                                                                                                         "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
                                                                                                         "${ pkgs.yq }/bin/yq --yaml-output . ${ builtins.toFile "application.json" ( builtins.toJSON value ) } > $out/applications/${ name }/synopsis.yaml"
+                                                                                                        (
+                                                                                                            let
+                                                                                                                experience =
+                                                                                                                    let
+                                                                                                                        mapper =
+                                                                                                                            experience :
+                                                                                                                                ''### ${ experience.title } at ${ experience.company } ${ experience.from } - ${ experience.to }''
+                                                                                                                in
+                                                                                                                ''${ pkgs.coreutils }/bin/echo -en "${ experience }" > $out/applications/${ name }/resume.md''
+                                                                                                        )
                                                                                                     ] ;
                                                                                             dot-gnupg =
                                                                                                 name : value :
@@ -528,6 +538,23 @@
                                                                                                             } ;
                                                                                                     in lib.types.attrsOf config ;
                                                                                         } ;
+                                                                                    experience =
+                                                                                        lib.mkOption
+                                                                                            {
+                                                                                                default = [ ] ;
+                                                                                                type =
+                                                                                                    let
+                                                                                                        config =
+                                                                                                            lib.types.submodule
+                                                                                                                {
+                                                                                                                    company = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                    title = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                    from = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                    to = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                } ;
+                                                                                                        in lib.types.listOf c
+                                                                                                        onfig ;
+                                                                                            } ;
                                                                             } ;
                                                                         current-time = lib.mkOption { type = lib.types.int ; } ;
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
