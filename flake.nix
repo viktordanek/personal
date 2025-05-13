@@ -271,7 +271,7 @@
                                                                                                             ''
                                                                                                                 ${ timestamp } &&
                                                                                                                     REPOSITORY=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.profile } ) &&
-                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ pkgs.writeShellScript "watch" watch } ${ _environment-variable "REPOSITORY" } > /dev/null 2>&1 < /dev/null & ) &&
+                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ watch } ${ _environment-variable "REPOSITORY" } > /dev/null 2>&1 < /dev/null & ) &&
                                                                                                                     exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "REPOSITORY" } --no-remote ${ _environment-variable "@" }
                                                                                                             '' ;
                                                                                                         watch =
