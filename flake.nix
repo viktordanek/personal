@@ -303,8 +303,8 @@
                                                                                                                             ${ if builtins.substring 0 1 value.gpg-ownertrust == "/" && builtins.pathExists value.gpg-ownertrust then "OWNERTRUST=${ value.gpg-ownertrust }" else "OWNERTRUST=$( ${ pkgs.coreutils }/bin/mktemp ) && ${ value.gpg-ownertrust } > ${ _environment-variable "OWNERTRUST" }" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "GNUPGHOME" } &&
                                                                                                                             ${ pkgs.coreutils }/bin/chmod 0700 ${ _environment-variable "GNUPGHOME" } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --create-socketdir &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --launch gpg-agent &&
+                                                                                                                            ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --create-socketdir 1>&2 &&
+                                                                                                                            ${ pkgs.gnupg }/bin/gpgconf --homedir ${ _environment-variable "GNUPGHOME" } --launch gpg-agent 1>&2 &&
                                                                                                                             while [ ! -f ${ _environment-variable "SECRET_KEYS" } ]
                                                                                                                             do
                                                                                                                                 ${ pkgs.coreutils }/bin/sleep 1
@@ -317,9 +317,9 @@
                                                                                                                             do
                                                                                                                                 ${ pkgs.coreutils }/bin/sleep 1
                                                                                                                             done &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPGHOME" } --import ${ _environment-variable "SECRET_KEYS" } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ _environment-variable "OWNERTRUST" } &&
-                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb
+                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPGHOME" } --import ${ _environment-variable "SECRET_KEYS" } 1>&2 &&
+                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPGHOME" } --import-ownertrust ${ _environment-variable "OWNERTRUST" } 1>&2 &&
+                                                                                                                            ${ pkgs.gnupg }/bin/gpg --batch --yes --homedir ${ _environment-variable "GNUPHOME" } --update-trustdb 1>&2
                                                                                                                     fi &&
                                                                                                                     ${ pkgs.coreutils }/bin/echo ${ _environment-variable "GNUPGHOME" }
                                                                                                             '' ;
