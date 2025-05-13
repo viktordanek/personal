@@ -514,7 +514,7 @@
                                                                                                     in lib.types.listOf config ;
                                                                                         } ;
                                                                                 applications =
-                                                                                    lib.type.mkOption
+                                                                                    lib.types.mkOption
                                                                                         {
                                                                                             default = [ ] ;
                                                                                             type =
