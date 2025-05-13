@@ -12,7 +12,6 @@ import git
 
 
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
-SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 TOKEN_PATH = Path.home() / 'token.json'
 CRED_PATH = Path.home() / 'credentials.json'
 GIT_REPO_PATH = Path.home() / 'repository'
@@ -35,6 +34,9 @@ def get_service():
             authorization_prompt_message='Please visit this URL: {url}',
             success_message='Authentication complete. You may close this window.',
             open_browser=True
+        )
+        with open(TOKEN_PATH, 'w') as token_file:
+            token_file.write(creds.to_json())
     service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
     return service
 
