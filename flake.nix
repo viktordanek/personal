@@ -517,6 +517,7 @@
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
+                                                                                                in builtins.listOf config ;
                                                                                     } ;
                                                                             } ;
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
