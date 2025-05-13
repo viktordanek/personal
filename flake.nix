@@ -517,9 +517,10 @@
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
-                                                                                                in lib.listOf config ;
+                                                                                                in lib.listOfs config ;
                                                                                     } ;
                                                                             } ;
+                                                                        current-time = lib.mkOption { type = lib.types.int ; } ;
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
                                                                         dot-gnupg =
                                                                             lib.mkOption
