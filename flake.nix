@@ -36,7 +36,7 @@
                                                 environment.sessionVariables =
                                                     {
                                                     } ;
-                                                environment.systemPackages = [ pkgs.lynx ] ;
+                                                environment.systemPackages = [ pkgs.firefox ] ;
                                                 hardware.pulseaudio =
                                                     {
                                                         enable = false ;
