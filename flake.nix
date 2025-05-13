@@ -271,14 +271,28 @@
                                                                                                             ''
                                                                                                                 ${ timestamp } &&
                                                                                                                     REPOSITORY=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.profile } ) &&
-                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ watch } ${ _environment-variable "REPOSITORY" } > /dev/null 2>&1 < /dev/null & ) &&
-                                                                                                                    exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "REPOSITORY" } --no-remote ${ _environment-variable "@" }
+                                                                                                                    PROFILE=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
+                                                                                                                    ${ pkgs.findutils }/bin/find } ${ _environment-variable "REPOSITORY" } -type f -name "*.gpg" | while read GPG_FILE
+                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${ value.dot-gnupg } ) &&
+                                                                                                                    export PASSWORD_STORE_DIR=${ _environment-variable "REPOSITORY" } &&
+                                                                                                                    do
+                                                                                                                        REL_PATH=${ _environment-variable "GPG_FILE#${ _environment-variable "REPOSITORY" }" } &&
+                                                                                                                            REL_PATH=${ _environment-variable "REL_PATH%.gpg" } &&
+                                                                                                                            OUTPUT_PATH=$( ${ pkgs.coreutils }/bin/dirname ${ _environment-variable "REL_PATH" } ) &&
+                                                                                                                            ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "PROFILE" }/${ _environment-variable "OUTPUT_PATH" } &&
+                                                                                                                            ${ pkgs.pass }/bin/pass show "${ _environment-variable "REL_PATH" }" > ${ _environment-variable "PROFILE" }/${ _environment-variable "REL_PATH" }
+                                                                                                                    done &&
+                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ watch } "${ _environment-variable "PROFILE" } ""${ _environment-variable "PASSWORD_STORE_GPG_OPTS" }" "${ _environment-variable "REPOSITORY" } > /dev/null 2>&1 < /dev/null & ) &&
+                                                                                                                    exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "PROFILE" } --no-remote ${ _environment-variable "@" }
                                                                                                             '' ;
                                                                                                         watch =
                                                                                                             pkgs.writeShellScript
                                                                                                                 "commit"
                                                                                                                 ''
-                                                                                                                    WATCH_DIR=${ _environment-variable "1" }
+                                                                                                                    export PROFILE="${ _environment-variable "1" }" &&
+                                                                                                                    export PASSWORD_STORE_GPG_OPTS="${ _environment-variable "2" }" &&
+                                                                                                                    export PASSWORD_STORE_DIR="${ _environment-variable "3" }" &&
+                                                                                                                    WATCH_DIR=${ _environment-variable "PROFILE" }
                                                                                                                     BRANCH=main
                                                                                                                     cd ${ _environment-variable "WATCH_DIR" } &&
                                                                                                                     ${ pkgs.inotify-tools }/bin/inotifywait -m -r -e create -e modify -e delete --format '%w%f' "${ _environment-variable "WATCH_DIR" }" | \
@@ -287,12 +301,21 @@
                                                                                                                       case "${ _environment-variable "path" }" in
                                                                                                                         */.git/*) continue ;;
                                                                                                                       esac
-                                                                                                                      echo "Detected change: $path"
-                                                                                                                      git add -A
-                                                                                                                      if [ -n "$(git status --porcelain)" ]; then
-                                                                                                                          git commit -m "Auto-commit: $(date -Iseconds)"
-                                                                                                                          git push origin "$BRANCH"
-                                                                                                                      fi
+                                                                                                                        # Compute relative path
+                                                                                                                        REL_PATH="${full_path#${WATCH_DIR}/}"
+                                                                                                                        echo "Event: ${event} on ${REL_PATH}"
+                                                                                                                        case "$event" in
+                                                                                                                            *DELETE*)
+                                                                                                                                # Remove from pass if file is deleted
+                                                                                                                                ${pkgs.pass}/bin/pass rm -f "$REL_PATH"
+                                                                                                                                ;;
+                                                                                                                            *CREATE*|*MODIFY*)
+                                                                                                                                # Insert or update pass with new contents
+                                                                                                                                if [ -f "$full_path" ]; then
+                                                                                                                                    ${pkgs.pass}/bin/pass insert -f "$REL_PATH" < "$full_path"
+                                                                                                                                fi
+                                                                                                                                ;;
+                                                                                                                        esac
                                                                                                                     done
                                                                                                                 '' ;
                                                                                                         in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out" ;
@@ -538,7 +561,8 @@
                                                                                                     {
                                                                                                         options =
                                                                                                             {
-                                                                                                                profile = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                repository = lib.mkOption { type = lib.types.str ; } ;
                                                                                                             } ;
                                                                                                     } ;
                                                                                             in lib.types.attrsOf config ;
