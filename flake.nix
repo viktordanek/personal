@@ -519,7 +519,7 @@
                                                                                                                                                         options =
                                                                                                                                                             {
                                                                                                                                                                 timestamp = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                                                                note = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                                notes = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                                                             } ;
                                                                                                                                                     } ;
                                                                                                                                             in lib.types.listOf config ;
