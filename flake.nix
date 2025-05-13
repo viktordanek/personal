@@ -206,7 +206,7 @@
                                                                                                 name : value :
                                                                                                     [
                                                                                                         "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
-                                                                                                        "${ pkgs.yq-go }/bin/yq   '(.notes // []) |= sort_by(.timestamp)' ${ builtins.toFile "application.json" ( builtins.toJSON value ) } > $out/applications/${name}/synopsis.yaml"
+                                                                                                        "${ pkgs.yq-go }/bin/yq  '(.notes // []) |= sort_by(.timestamp) | .notes[] |= ( .timestamp_human = (strftime("%Y-%m-%d %H:%M:%S") | (.timestamp | tonumber | strflocaltime)) )' ${ builtins.toFile "application.json" ( builtins.toJSON value ) } > $out/applications/${name}/synopsis.yaml"
                                                                                                     ] ;
                                                                                             dot-gnupg =
                                                                                                 name : value :
