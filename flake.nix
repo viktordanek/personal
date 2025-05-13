@@ -206,13 +206,15 @@
                                                                                                 name : value :
                                                                                                     [
                                                                                                         "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
-                                                                                                        ''${pkgs.jq}/bin/jq '
+                                                                                                        '''${pkgs.jq}/bin/jq '
                                                                                                           (.notes // []) |= sort_by(.timestamp)
                                                                                                           | .notes[] |= (
                                                                                                               .timestamp_human = (.timestamp | tonumber | strflocaltime("%Y-%m-%d"))
                                                                                                             )
                                                                                                         ' ${builtins.toFile "application.json" (builtins.toJSON value)} \
-                                                                                                        | ${pkgs.yq-go}/bin/yq --from-json --output-format=yaml > $out/applications/${name}/synopsis.yaml''
+                                                                                                        | ${pkgs.yq-go}/bin/yq eval --from-json --output-format=yaml - \
+                                                                                                        > $out/applications/${name}/synopsis.yaml''
+
 
                                                                                                     ] ;
                                                                                             dot-gnupg =
