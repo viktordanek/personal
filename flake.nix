@@ -302,17 +302,17 @@
                                                                                                                         */.git/*) continue ;;
                                                                                                                       esac
                                                                                                                         # Compute relative path
-                                                                                                                        REL_PATH="${full_path#${WATCH_DIR}/}"
-                                                                                                                        echo "Event: ${event} on ${REL_PATH}"
-                                                                                                                        case "$event" in
+                                                                                                                        REL_PATH="${ _environment-variable "full_path#${WATCH_DIR}/" }"
+                                                                                                                        echo "Event: ${ _environment-variable "event" } on ${ _environment-variable "REL_PATH" }"
+                                                                                                                        case "${ _environment-variable "event" } in
                                                                                                                             *DELETE*)
                                                                                                                                 # Remove from pass if file is deleted
-                                                                                                                                ${pkgs.pass}/bin/pass rm -f "$REL_PATH"
+                                                                                                                                ${ pkgs.pass }/bin/pass rm -f "${ _environment-variable "REL_PATH" }
                                                                                                                                 ;;
                                                                                                                             *CREATE*|*MODIFY*)
                                                                                                                                 # Insert or update pass with new contents
-                                                                                                                                if [ -f "$full_path" ]; then
-                                                                                                                                    ${pkgs.pass}/bin/pass insert -f "$REL_PATH" < "$full_path"
+                                                                                                                                if [ -f "${ _environment-variable "full_path" } ]; then
+                                                                                                                                    ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" } < "${ _environment-variable "full_path" }"
                                                                                                                                 fi
                                                                                                                                 ;;
                                                                                                                         esac
