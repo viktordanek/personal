@@ -513,7 +513,10 @@
                                                                                             config =
                                                                                                 lib.types.submodule
                                                                                                     {
-                                                                                                        profile = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                        options =
+                                                                                                            {
+                                                                                                                profile = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                            } ;
                                                                                                     } ;
                                                                                             in lib.types.attrsOf config ;
                                                                                 } ;
