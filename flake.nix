@@ -282,7 +282,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "PROFILE" }/${ _environment-variable "OUTPUT_PATH" } &&
                                                                                                                             ${ pkgs.pass }/bin/pass show "${ _environment-variable "REL_PATH" }" > ${ _environment-variable "PROFILE" }/${ _environment-variable "REL_PATH" }
                                                                                                                     done &&
-                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ watch } "${ _environment-variable "PROFILE" }" "${ _environment-variable "PASSWORD_STORE_GPG_OPTS" }" "${ _environment-variable "REPOSITORY" }" > /dev/null 2>&1 < /dev/null & ) &&
+                                                                                                                    ( ${ pkgs.coreutils }/bin/nohup ${ watch } "${ _environment-variable "PROFILE" }" "${ _environment-variable "PASSWORD_STORE_GPG_OPTS" }" "${ _environment-variable "REPOSITORY" }" > /tmp/DEBUG 2>&1 < /dev/null & ) &&
                                                                                                                     exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "PROFILE" } --no-remote ${ _environment-variable "@" }
                                                                                                             '' ;
                                                                                                         watch =
