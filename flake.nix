@@ -307,12 +307,12 @@
                                                                                                                         case "${ _environment-variable "event" } in
                                                                                                                             *DELETE*)
                                                                                                                                 # Remove from pass if file is deleted
-                                                                                                                                ${ pkgs.pass }/bin/pass rm -f "${ _environment-variable "REL_PATH" }
+                                                                                                                                ${ pkgs.pass }/bin/pass rm -f "${ _environment-variable "REL_PATH" }"
                                                                                                                                 ;;
                                                                                                                             *CREATE*|*MODIFY*)
                                                                                                                                 # Insert or update pass with new contents
                                                                                                                                 if [ -f "${ _environment-variable "full_path" } ]; then
-                                                                                                                                    ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" } < "${ _environment-variable "full_path" }"
+                                                                                                                                    ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" }" < "${ _environment-variable "full_path" }"
                                                                                                                                 fi
                                                                                                                                 ;;
                                                                                                                         esac
