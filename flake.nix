@@ -270,8 +270,31 @@
                                                                                                         script =
                                                                                                             ''
                                                                                                                 ${ timestamp } &&
-                                                                                                                    exec ${ pkgs.firefox }/bin/firefox --profile $( ${ _environment-variable "OUT" }/scripts/repository/${ value.profile } ) --no-remote ${ _environment-variable "@" }
+                                                                                                                    REPOSITORY=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.profile } ) &&
+                                                                                                                    ${ pkgs.coreutils }/bin/nohup ${ pkgs.writeShellScript "watch" watch } ${ _environment-variable "REPOSITORY" } > /dev/null 2>&1 < /dev/null &
+                                                                                                                    exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "REPOSITORY" } --no-remote ${ _environment-variable "@" }
                                                                                                             '' ;
+                                                                                                        watch =
+                                                                                                            pkgs.writeShellScript
+                                                                                                                "commit"
+                                                                                                                ''
+                                                                                                                    WATCH_DIR=${ _environment-variable "1" }
+                                                                                                                    BRANCH=main
+                                                                                                                    cd ${ _environment-variable "WATCH_DIR" } &&
+                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait -m -r -e create -e modify -e delete --format '%w%f' "${ _environment-variable "WATCH_DIR" }" | \
+                                                                                                                    while read path; do
+                                                                                                                      # Exclude anything inside .git
+                                                                                                                      case "${ _environment-variable "path" }" in
+                                                                                                                        */.git/*) continue ;;
+                                                                                                                      esac
+                                                                                                                      echo "Detected change: $path"
+                                                                                                                      git add -A
+                                                                                                                      if [ -n "$(git status --porcelain)" ]; then
+                                                                                                                          git commit -m "Auto-commit: $(date -Iseconds)"
+                                                                                                                          git push origin "$BRANCH"
+                                                                                                                      fi
+                                                                                                                    done
+                                                                                                                '' ;
                                                                                                         in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out" ;
                                                                                             pass =
                                                                                                 name : value :
