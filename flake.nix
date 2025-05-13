@@ -264,6 +264,15 @@
                                                                                                                 '' ;
                                                                                                         in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/scripts/dot-ssh/${ name } --set OUT $out" ;
                                                                                             files = name : value : "${ value } > $out/files/${ name }" ;
+                                                                                            firefox =
+                                                                                                name : value :
+                                                                                                    let
+                                                                                                        script =
+                                                                                                            ''
+                                                                                                                ${ timestamp } &&
+                                                                                                                    exec ${ pkgs.firefox }/bin/firefox --profile $( $out/scripts/repository/${ value.profile } ) --no-remote ${ _environment-variable "@" } ;
+                                                                                                            '' ;
+                                                                                                        in makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out
                                                                                             pass =
                                                                                                 name : value :
                                                                                                     let
@@ -418,6 +427,7 @@
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share/man &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share/man/man1 &&
                                                                                                         ${ if builtins.length ( builtins.attrNames config.personal.user.pass ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists (  builtins.attrValues ( builtins.mapAttrs pass config.personal.user.pass ) ) ) else "#" } &&
+                                                                                                        ${ if builtins.length ( builtins.attrNames config.personal.user.firefox ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.attrValues ( builtins.mapAttrs firefox config.personal.user.firefox ) ) else "#" } &&
                                                                                                         ${ studio } &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/scripts &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/scripts/dot-gnupg &&
@@ -494,6 +504,19 @@
                                                                                             in lib.types.attrsOf config ;
                                                                                 } ;
                                                                         files = lib.mkOption { default = { } ; type = lib.types.attrsOf lib.types.str ; } ;
+                                                                        firefox =
+                                                                            lib.mkOption
+                                                                                {
+                                                                                    default = { } ;
+                                                                                    type =
+                                                                                        let
+                                                                                            config =
+                                                                                                lib.types.submodule
+                                                                                                    {
+                                                                                                        profile = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                    } ;
+                                                                                            in lib.types.attrsOf config ;
+                                                                                } ;
                                                                         hash-length = lib.mkOption { default = 64 ; type = lib.types.int ; } ;
                                                                         name = lib.mkOption { type = lib.types.str ; } ;
                                                                         pass =
