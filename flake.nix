@@ -522,11 +522,11 @@
                                                                                                                                                                 note = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                                                             } ;
                                                                                                                                                     } ;
-                                                                                                                                            in builtins.attrsOf config ;
+                                                                                                                                            in lib.types.listOf config ;
                                                                                                                                 } ;
                                                                                                                     } ;
                                                                                                             } ;
-                                                                                                    in lib.types.listOf config ;
+                                                                                                    in lib.types.attrsOf config ;
                                                                                         } ;
                                                                             } ;
                                                                         current-time = lib.mkOption { type = lib.types.int ; } ;
