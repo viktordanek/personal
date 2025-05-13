@@ -202,7 +202,7 @@
                                                                                 {
                                                                                     installPhase =
                                                                                         let
-                                                                                            applications =
+                                                                                            application =
                                                                                                 name : value :
                                                                                                     [
                                                                                                         "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
