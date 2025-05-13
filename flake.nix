@@ -508,8 +508,8 @@
                                                                                                         {
                                                                                                             company = lib.mkOption { type = lib.types.str ; } ;
                                                                                                             title = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                            from = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                            to = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
+                                                                                                            from = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                            to = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.int ; } ;
                                                                                                         } ;
                                                                                                     in lib.types.listOf config ;
                                                                                         } ;
