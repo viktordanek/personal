@@ -216,7 +216,7 @@
                                                                                                                                 ''### ${ experience.title } at ${ experience.company } ${ experience.from } - ${ experience.to }'' ;
                                                                                                                         in builtins.map mapper config.personal.user.career.experience ;
                                                                                                                 in
-                                                                                                                ''${ pkgs.coreutils }/bin/echo -en "${ experience }" > $out/applications/${ name }/resume.md''
+                                                                                                                ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
                                                                                                         )
                                                                                                     ] ;
                                                                                             dot-gnupg =
