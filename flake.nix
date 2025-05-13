@@ -272,7 +272,7 @@
                                                                                                                 ${ timestamp } &&
                                                                                                                     exec ${ pkgs.firefox }/bin/firefox --profile $( $out/scripts/repository/${ value.profile } ) --no-remote ${ _environment-variable "@" } ;
                                                                                                             '' ;
-                                                                                                        in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out
+                                                                                                        in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/${ name } --set OUT $out" ;
                                                                                             pass =
                                                                                                 name : value :
                                                                                                     let
