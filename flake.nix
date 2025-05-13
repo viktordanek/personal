@@ -450,7 +450,7 @@
                                                                                                     ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                         ${ timestamp } &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/applications &&
-                                                                                                        ${ if builtins.length ( builtins.attrNames config.personal.career.applications ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs application config.personal.user.career.applications ) ) ) else "#" } &&
+                                                                                                        ${ if builtins.length ( builtins.attrNames config.personal.user.career.applications ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.concatLists ( builtins.attrValues ( builtins.mapAttrs application config.personal.user.career.applications ) ) ) else "#" } &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
