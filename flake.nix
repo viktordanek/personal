@@ -295,8 +295,8 @@
                                                                                                                     WATCH_DIR=${ _environment-variable "PROFILE" }
                                                                                                                     BRANCH=main
                                                                                                                     cd ${ _environment-variable "WATCH_DIR" } &&
-                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait -m -r -e create -e modify -e delete --format '%w%f' "${ _environment-variable "WATCH_DIR" }" | \
-                                                                                                                    while read path; do
+                                                                                                                    ${ pkgs.inotify-tools }/bin/inotifywait -m -r -e create -e modify -e delete --format '%e %w%f' "${ _environment-variable "WATCH_DIR" }" | \
+                                                                                                                    while read event path; do
                                                                                                                       # Exclude anything inside .git
                                                                                                                       case "${ _environment-variable "path" }" in
                                                                                                                         */.git/*) continue ;;
@@ -304,15 +304,15 @@
                                                                                                                         # Compute relative path
                                                                                                                         REL_PATH="${ _environment-variable "full_path#${ _environment-variable "WATCH_DIR" }/" }"
                                                                                                                         echo "Event: ${ _environment-variable "event" } on ${ _environment-variable "REL_PATH" }"
-                                                                                                                        case "${ _environment-variable "event" } in
+                                                                                                                        case "${ _environment-variable "event" }" in
                                                                                                                             *DELETE*)
                                                                                                                                 # Remove from pass if file is deleted
                                                                                                                                 ${ pkgs.pass }/bin/pass rm -f "${ _environment-variable "REL_PATH" }"
                                                                                                                                 ;;
                                                                                                                             *CREATE*|*MODIFY*)
                                                                                                                                 # Insert or update pass with new contents
-                                                                                                                                if [ -f "${ _environment-variable "full_path" }" ]; then
-                                                                                                                                    ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" }" < "${ _environment-variable "full_path" }"
+                                                                                                                                if [ -f "${ _environment-variable "path" }" ]; then
+                                                                                                                                    ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" }" < "${ _environment-variable "path" }"
                                                                                                                                 fi
                                                                                                                                 ;;
                                                                                                                         esac
