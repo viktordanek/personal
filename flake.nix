@@ -272,7 +272,8 @@
                                                                                                                 ${ timestamp } &&
                                                                                                                     REPOSITORY=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
                                                                                                                     PROFILE=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${ value.dot-gnupg } )" &&
+                                                                                                                    DOT_GNUPG=$( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${ value.dot-gnupg } ) &&
+                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir ${ _environment-variable "DOT_GNUPG" }" &&
                                                                                                                     export PASSWORD_STORE_DIR=${ _environment-variable "REPOSITORY" } &&
                                                                                                                     ${ pkgs.findutils }/bin/find ${ _environment-variable "REPOSITORY" } -type f -name "*.gpg" | while read GPG_FILE
                                                                                                                     do
@@ -282,7 +283,7 @@
                                                                                                                             ${ pkgs.coreutils }/bin/mkdir --parents ${ _environment-variable "PROFILE" }/${ _environment-variable "OUTPUT_PATH" } &&
                                                                                                                             ${ pkgs.pass }/bin/pass show "${ _environment-variable "REL_PATH" }" > ${ _environment-variable "PROFILE" }/${ _environment-variable "REL_PATH" }
                                                                                                                     done &&
-                                                                                                                    ( ${ watch } "${ _environment-variable "PROFILE" }" "${ _environment-variable "PASSWORD_STORE_GPG_OPTS" }" "${ _environment-variable "REPOSITORY" }" > /tmp/DEBUG 2>&1 < /dev/null & ) &&
+                                                                                                                    ( ${ watch } "${ _environment-variable "PROFILE" }" "${ _environment-variable "DOT_GNUPG" }" "${ _environment-variable "REPOSITORY" }" > /tmp/DEBUG 2>&1 < /dev/null & ) &&
                                                                                                                     exec ${ pkgs.firefox }/bin/firefox --profile ${ _environment-variable "PROFILE" } --no-remote ${ _environment-variable "@" }
                                                                                                             '' ;
                                                                                                         watch =
@@ -290,8 +291,11 @@
                                                                                                                 "commit"
                                                                                                                 ''
                                                                                                                     export PROFILE="${ _environment-variable "1" }" &&
-                                                                                                                    export PASSWORD_STORE_GPG_OPTS="${ _environment-variable "2" }" &&
+                                                                                                                    export DOT_GNUPG="${ _environment-variable "2" }" &&
                                                                                                                     export PASSWORD_STORE_DIR="${ _environment-variable "3" }" &&
+                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir ${ _environment-variable "DOT_GNUPG" }" &&
+                                                                                                                    GPG_KEY_ID=$( ${ pkgs.gnupg }/bin/gpg --homedir ${ _environment-variable "DOT_GNUPG" } --list-keys --with-colons | ${ pkgs.gnugrep }/bin/grep '^pub' | ${ pkgs.coreutils }/bin/head -n 1 | cut -d ':' -f 5) &&
+                                                                                                                    ${ pkgs.pass }/bin/pass init ${ _environment-variable "GPG_KEY_ID" } &&
                                                                                                                     WATCH_DIR=${ _environment-variable "PROFILE" }
                                                                                                                     BRANCH=main
                                                                                                                     cd ${ _environment-variable "WATCH_DIR" } &&
