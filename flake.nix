@@ -499,7 +499,7 @@
                                                                         career =
                                                                             {
                                                                                 experience =
-                                                                                    lib.type.mkOption
+                                                                                    lib.mkOption
                                                                                         {
                                                                                             default = [ ] ;
                                                                                             type =
@@ -514,7 +514,7 @@
                                                                                                     in lib.types.listOf config ;
                                                                                         } ;
                                                                                 applications =
-                                                                                    lib.type.mkOption
+                                                                                    lib.mkOption
                                                                                         {
                                                                                             default = [ ] ;
                                                                                             type =
