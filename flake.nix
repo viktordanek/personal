@@ -548,10 +548,13 @@
                                                                                                         config =
                                                                                                             lib.types.submodule
                                                                                                                 {
-                                                                                                                    company = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                    title = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                    from = lib.mkOption { type = lib.types.int ; } ;
-                                                                                                                    to = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                    options =
+                                                                                                                        {
+                                                                                                                            company = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                            title = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                            from = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                            to = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                        } ;
                                                                                                                 } ;
                                                                                                         in lib.types.listOf config ;
                                                                                             } ;
