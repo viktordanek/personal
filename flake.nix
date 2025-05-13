@@ -488,37 +488,38 @@
                                                                         career =
                                                                             {
                                                                                 applications =
-                                                                                    {
-                                                                                        default = { } ;
-                                                                                        type =
-                                                                                            let
-                                                                                                config =
-                                                                                                    lib.types.submodule
-                                                                                                        {
-                                                                                                            options =
-                                                                                                                {
-                                                                                                                    recruiter = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                    synopsis =
-                                                                                                                        lib.mkOption
-                                                                                                                            {
-                                                                                                                                default = { } ;
-                                                                                                                                type =
-                                                                                                                                    let
-                                                                                                                                        config =
-                                                                                                                                            lib.types.submodule
-                                                                                                                                                {
-                                                                                                                                                    options =
-                                                                                                                                                        {
-                                                                                                                                                            timestamp = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                                                            note = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                                                        } ;
-                                                                                                                                                } ;
-                                                                                                                                        in builtins.attrsOf config ;
-                                                                                                                            } ;
-                                                                                                                } ;
-                                                                                                        } ;
-                                                                                                in lib.types.listOf config ;
-                                                                                    } ;
+                                                                                    lib.mkOption
+                                                                                        {
+                                                                                            default = { } ;
+                                                                                            type =
+                                                                                                let
+                                                                                                    config =
+                                                                                                        lib.types.submodule
+                                                                                                            {
+                                                                                                                options =
+                                                                                                                    {
+                                                                                                                        recruiter = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                        synopsis =
+                                                                                                                            lib.mkOption
+                                                                                                                                {
+                                                                                                                                    default = { } ;
+                                                                                                                                    type =
+                                                                                                                                        let
+                                                                                                                                            config =
+                                                                                                                                                lib.types.submodule
+                                                                                                                                                    {
+                                                                                                                                                        options =
+                                                                                                                                                            {
+                                                                                                                                                                timestamp = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                                note = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                            } ;
+                                                                                                                                                    } ;
+                                                                                                                                            in builtins.attrsOf config ;
+                                                                                                                                } ;
+                                                                                                                    } ;
+                                                                                                            } ;
+                                                                                                    in lib.types.listOf config ;
+                                                                                        } ;
                                                                             } ;
                                                                         current-time = lib.mkOption { type = lib.types.int ; } ;
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
