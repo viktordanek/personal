@@ -306,7 +306,7 @@
                                                                                                                         */.git/*) continue ;;
                                                                                                                       esac
                                                                                                                         # Compute relative path
-                                                                                                                        REL_PATH="${ _environment-variable "full_path#${ _environment-variable "WATCH_DIR" }/" }"
+                                                                                                                        REL_PATH="${ _environment-variable "path#${ _environment-variable "WATCH_DIR" }/" }"
                                                                                                                         echo "Event: ${ _environment-variable "event" } on ${ _environment-variable "REL_PATH" }"
                                                                                                                         case "${ _environment-variable "event" }" in
                                                                                                                             *DELETE*)
