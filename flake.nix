@@ -517,7 +517,7 @@
                                                                                                                             } ;
                                                                                                                 } ;
                                                                                                         } ;
-                                                                                                in lib.listOf config ;
+                                                                                                in lib.types.listOf config ;
                                                                                     } ;
                                                                             } ;
                                                                         current-time = lib.mkOption { type = lib.types.int ; } ;
