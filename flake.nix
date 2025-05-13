@@ -208,7 +208,7 @@
                                                                                                         "application"
                                                                                                         ''
                                                                                                             ${ pkgs.coreutils }/bin/mkdir $out/applications/${ name } &&
-                                                                                                                ${ pkgs.yq }/bin/yq --yaml-output "." ${ builtins.toFile "application.js value } > $out/applications/${ name }/notes.yaml
+                                                                                                                ${ pkgs.yq }/bin/yq --yaml-output "." ${ builtins.toFile "application.js" value } > $out/applications/${ name }/notes.yaml
                                                                                                         '' ;
                                                                                             dot-gnupg =
                                                                                                 name : value :
