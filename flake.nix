@@ -268,12 +268,94 @@
                                                                                                 name : value :
                                                                                                     let
                                                                                                         script =
+                                                                                                            let
+                                                                                                                extensions =
+                                                                                                                    pkgs.stdenv.mkDerivation
+                                                                                                                        {
+                                                                                                                            installPhase =
+                                                                                                                                let
+                                                                                                                                    expiry =
+                                                                                                                                        ''
+                                                                                                                                            CURRENT_DATE=$( ${ pkgs.coreutils }/bin/date +%s ) &&
+                                                                                                                                                ${ pkgs.pass }/bin/pass git ls-files "*.gpg" | while read -r FILE
+                                                                                                                                                do
+                                                                                                                                                    LAST_COMMIT_DATE=$( ${ pkgs.pass }/bin/pass git log -1 --format="%ct" -- ${ _environment-variable "FILE" } ) &&
+                                                                                                                                                    if [ $(( ${ _environment-variable "CURRENT_DATE" } - ${ _environment-variable "LAST_COMMIT_DATE" } )) -gt 365 ]
+                                                                                                                                                    then
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo ${ _environment-variable "FILE%.gpg" }
+                                                                                                                                                    fi
+                                                                                                                                                done
+                                                                                                                                        '' ;
+                                                                                                                                    file =
+                                                                                                                                        ''
+                                                                                                                                            FILE=$( ${ pkgs.coreutils }/bin/mktemp ) &&
+                                                                                                                                                ${ pkgs.pass }/bin/pass ${ _environment-variable "@" } > ${ _environment-variable "FILE" } &&
+                                                                                                                                                ${ pkgs.coreutils }/bin/echo ${ _environment-variable "FILE" }
+                                                                                                                                        '' ;
+                                                                                                                                    phonetic =
+                                                                                                                                        ''
+                                                                                                                                            declare -A nato=(
+                                                                                                                                                [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                                                                [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                                                                [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                                                                [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY
+                                                                                                                                                [X]=X-RAY [Y]=YANKEE [Z]=ZULU
+                                                                                                                                            )
+                                                                                                                                                declare -A alt=(
+                                                                                                                                                    [a]=adam [b]=boston [c]=charlie [d]=david [e]=edward [f]=frank
+                                                                                                                                                    [g]=george [h]=henry [i]=ida [j]=john [k]=king [l]=lincoln
+                                                                                                                                                    [m]=mary [n]=nancy [o]=oscar [p]=paul [q]=queen [r]=robert
+                                                                                                                                                    [s]=sam [t]=tom [u]=union [v]=victor [w]=william [x]=xray
+                                                                                                                                                    [y]=young [z]=zebra
+                                                                                                                                                )
+                                                                                                                                                declare -A digits=(
+                                                                                                                                                    [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                                                                    [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                                                                )
+                                                                                                                                                declare -A symbols=(
+                                                                                                                                                    ["!"]="Exclamation" ["@"]="At" ["#"]="Hash" ["$"]="Dollar" ["%"]="Percent"
+                                                                                                                                                    ["^"]="Caret" ["&"]="Ampersand" ["*"]="Asterisk" ["("]="LeftParen" [")"]="RightParen"
+                                                                                                                                                    ["-"]="Dash" ["_"]="Underscore" ["="]="Equals" ["+"]="Plus" ["["]="LeftBracket"
+                                                                                                                                                    ["]"]="RightBracket" ["{"]="LeftBrace" ["}"]="RightBrace" ["\\"]="Backslash"
+                                                                                                                                                    ["|"]="Pipe" [";"]="Semicolon" [":"]="Colon" ["'"]="Apostrophe" ['"']="Quote"
+                                                                                                                                                    [","]="Comma" ["."]="Period" ["/"]="Slash" ["<"]="LessThan" [">"]="GreaterThan"
+                                                                                                                                                    ["?"]="Question" ["\`"]="Backtick" ["~"]="Tilde" [" "]="Space"
+                                                                                                                                                )
+                                                                                                                                                SECRET=$( ${ pkgs.pass }/bin/pass show ${ _environment-variable "@" } ) &&
+                                                                                                                                                ${ pkgs.coreutils }/bin/echo -n ${ _environment-variable "SECRET" } | while IFS= read -r -n1 ch; do
+                                                                                                                                                    if [[ -n ${ _environment-variable "nato[${ _environment-variable "ch" }]" } ]]; then
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ _environment-variable "nato[${ _environment-variable "ch" }]" }
+                                                                                                                                                    elif [[ -n ${ _environment-variable "alt[${ _environment-variable "ch" }]" } ]]; then
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ _environment-variable "alt[${ _environment-variable "ch" }]" }
+                                                                                                                                                    elif [[ -n ${ _environment-variable "digits[${ _environment-variable "ch" }]" } ]]; then
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ _environment-variable "digits[${ _environment-variable "ch" }]" }
+                                                                                                                                                    elif [[ -n ${ _environment-variable "symbols[${ _environment-variable "ch" }]" } ]]; then
+                                                                                                                                                        ${ pkgs.coreutils }/bin/echo -n ${ _environment-variable "symbols[${ _environment-variable "ch" }]" }
+                                                                                                                                                    else
+                                                                                                                                                        printf 'U+%04X' "'${ _environment-variable "ch" }"
+                                                                                                                                                    fi &&
+                                                                                                                                                    ${ pkgs.coreutils }/bin/echo -n " "
+                                                                                                                                                done
+                                                                                                                                            echo
+                                                                                                                                        '' ;
+                                                                                                                                    in
+                                                                                                                                        ''
+                                                                                                                                            ${ pkgs.coreutils }/bin/mkdir $out &&
+                                                                                                                                                makeWrapper ${ pkgs.writeShellScript "expiry" expiry } $out/expiry.bash &&
+                                                                                                                                                makeWrapper ${ pkgs.writeShellScript "file" file } $out/file.bash &&
+                                                                                                                                                makeWrapper ${ pkgs.writeShellScript "phonetic" phonetic } $out/phonetic.bash
+                                                                                                                                        '' ;
+                                                                                                                            name = "extensions" ;
+                                                                                                                            nativeBuildInputs = [ pkgs.makeWrapper ] ;
+                                                                                                                            src = ./. ;
+                                                                                                                        } ;
+                                                                                                                in
                                                                                                             ''
                                                                                                                 ${ timestamp } &&
                                                                                                                     export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${value.dot-gnupg } )" &&
-                                                                                                                    export PASSWORD_STORE_ENABLE_EXTENSIONS=${ if builtins.typeOf value.extensions == "null" then "false" else "true" } &&
-                                                                                                                    export PASSWORD_STORE_EXTENSIONS_DIR=${ if builtins.typeOf value.extensions == "null" then "" else builtins.toString value.extensions } &&
+                                                                                                                    export PASSWORD_STORE_ENABLE_EXTENSIONS=true &&
+                                                                                                                    export PASSWORD_STORE_EXTENSIONS_DIR=${ extensions } &&
                                                                                                                     export PASSWORD_STORE_GENERATED_LENGTH=${ if builtins.typeOf value.generated-length == null then "$( ${ pkgs.coreutils }/bin/date +%Y )" else builtins.toString value.generated-length } &&
                                                                                                                     export PASSWORD_STORE_CHARACTER_SET=${ value.character-set } &&
                                                                                                                     export PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS=${ value.character-set-no-symbols } &&
@@ -426,7 +508,6 @@
                                                                                                         options =
                                                                                                             {
                                                                                                                 dot-gnupg = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                extensions = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.package ; } ;
                                                                                                                 repository = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                 generated-length = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.int ; } ;
                                                                                                                 character-set = lib.mkOption { default = "a-bd-hm-nq-rt-yA-BD-HM-NQ-RT-Y3-9@#%^*" ; type = lib.types.str ; } ;
