@@ -553,8 +553,7 @@
                                                                                                                     from = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                     to = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                 } ;
-                                                                                                        in lib.types.listOf c
-                                                                                                        onfig ;
+                                                                                                        in lib.types.listOf config ;
                                                                                             } ;
                                                                             } ;
                                                                         current-time = lib.mkOption { type = lib.types.int ; } ;
