@@ -12,6 +12,7 @@
                     system :
                         let
                             _environment-variable = builtins.getAttr system environment-variable.lib ;
+                            timestamp = ''export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } )'' ;
                             lib =
                                 { config , lib , pkgs , ... } :
                                     {
@@ -355,7 +356,7 @@
                                                                                             let
                                                                                                 script =
                                                                                                     ''
-                                                                                                        export TIMESTAMP=${ _environment-variable "TIMESTAMP:$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } )" } &&
+                                                                                                        ${ timestamp } &&
                                                                                                             export PASSWORD_STORE_DIR=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
                                                                                                             export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${value.dot-gnupg } )" &&
                                                                                                             export PASSWORD_STORE_ENABLE_EXTENSIONS=${ if builtins.typeOf value.extensions == "null" then "false" else "true" } &&
@@ -407,14 +408,14 @@
                                                                                         let
                                                                                             script =
                                                                                                 ''
-                                                                                                    export TIMESTAMP=${ _environment-variable "TIMESTAMP:$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } )" } &&
+                                                                                                    ${ timestamp } &&
                                                                                                         ${ pkgs.jetbrains.idea-community }/bin/idea-community $( ${ _environment-variable "OUT" }/scripts/portfolio )
                                                                                                 '' ;
                                                                                             in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/studio --set OUT $out" ;
                                                                                     in
                                                                                         ''
                                                                                             ${ pkgs.coreutils }/bin/mkdir $out &&
-                                                                                                export TIMESTAMP=$( ${ pkgs.coreutils }/bin/date +${ config.personal.user.time-mask } ) &&
+                                                                                                ${ timestamp } &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                 ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
