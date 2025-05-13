@@ -26,13 +26,15 @@ def get_service():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
     if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            str(CRED_PATH),
-            scopes=SCOPES
-        )
-        creds = flow.run_local_server(port=0)
-        with open(TOKEN_PATH, 'w') as token_file:
-            token_file.write(creds.to_json())
+        flow = InstalledAppFlow.from_client_secrets_file(CRED_PATH, scopes=SCOPES)
+
+        # Run the local server to initiate the OAuth 2.0 authorization flow
+        creds = flow.run_local_server(
+            host='localhost',
+            port=8080,
+            authorization_prompt_message='Please visit this URL: {url}',
+            success_message='Authentication complete. You may close this window.',
+            open_browser=True
     service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
     return service
 
