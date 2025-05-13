@@ -6,8 +6,12 @@ from pathlib import Path
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+
 import git
 
+
+SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 SCOPES = ['https://www.googleapis.com/auth/photoslibrary.readonly']
 TOKEN_PATH = Path.home() / 'token.json'
 CRED_PATH = Path.home() / 'credentials.json'
