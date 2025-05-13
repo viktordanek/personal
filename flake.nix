@@ -272,7 +272,7 @@
                                                                                                                 ${ timestamp } &&
                                                                                                                     REPOSITORY=$( ${ _environment-variable "OUT" }/scripts/repository/${ value.repository } ) &&
                                                                                                                     PROFILE=$( ${ pkgs.coreutils }/bin/mktemp --directory ) &&
-                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${ value.dot-gnupg } ) &&
+                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir $( ${ _environment-variable "OUT" }/scripts/dot-gnupg/${ value.dot-gnupg } )" &&
                                                                                                                     export PASSWORD_STORE_DIR=${ _environment-variable "REPOSITORY" } &&
                                                                                                                     ${ pkgs.findutils }/bin/find ${ _environment-variable "REPOSITORY" } -type f -name "*.gpg" | while read GPG_FILE
                                                                                                                     do
