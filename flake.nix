@@ -518,7 +518,7 @@
                                                                                                                                                     {
                                                                                                                                                         options =
                                                                                                                                                             {
-                                                                                                                                                                timestamp = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                                timestamp = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                                                                 notes = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                                                             } ;
                                                                                                                                                     } ;
