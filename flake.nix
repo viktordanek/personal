@@ -202,6 +202,14 @@
                                                                                 {
                                                                                     installPhase =
                                                                                         let
+                                                                                            applications =
+                                                                                                name : value :
+                                                                                                    pkgs.writeShellScript
+                                                                                                        "application"
+                                                                                                        ''
+                                                                                                            ${ pkgs.coreutils }/bin/mkdir $out/applications/${ name } &&
+                                                                                                                ${ pkgs.yq }/bin/yq --yaml-output "." ${ builtins.toFile "application.js value } > $out/applications/${ name }/notes.yaml
+                                                                                                        '' ;
                                                                                             dot-gnupg =
                                                                                                 name : value :
                                                                                                     let
@@ -439,10 +447,13 @@
                                                                                                                 ${ pkgs.jetbrains.idea-community }/bin/idea-community $( ${ _environment-variable "OUT" }/scripts/portfolio )
                                                                                                         '' ;
                                                                                                     in "makeWrapper ${ pkgs.writeShellScript "script" script } $out/bin/studio --set OUT $out" ;
+                                                                                            timestamp = 1747168855 ;
                                                                                             in
                                                                                                 ''
                                                                                                     ${ pkgs.coreutils }/bin/mkdir $out &&
                                                                                                         ${ timestamp } &&
+                                                                                                        ${ pkgs.coreutils }/bin/mkdir $out/applications &&
+                                                                                                        ${ if builtins.length ( builtins.attrNames config.personal.career.applications ) > 0 then builtins.concatStringsSep " &&\n\t" ( builtins.map applications config.personal.career.applications ) else "#" } &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/bin &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share &&
                                                                                                         ${ pkgs.coreutils }/bin/mkdir $out/share/bash-completion &&
@@ -485,6 +496,52 @@
                                                             {
                                                                 user =
                                                                     {
+                                                                        career =
+                                                                            {
+                                                                                experience =
+                                                                                    lib.type.mkOption
+                                                                                        {
+                                                                                            default = [ ] ;
+                                                                                            type =
+                                                                                                let
+                                                                                                    config =
+                                                                                                        {
+                                                                                                            company = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                            title = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                            from = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                            to = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
+                                                                                                        } ;
+                                                                                                    in list.types.listOf config ;
+                                                                                        } ;
+                                                                                applications =
+                                                                                    lib.type.mkOption
+                                                                                        {
+                                                                                            default = [ ] ;
+                                                                                            type =
+                                                                                                let
+                                                                                                    config =
+                                                                                                        {
+                                                                                                            recruiter = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                            notes =
+                                                                                                                lib.mkOption
+                                                                                                                    {
+                                                                                                                        default = [ ] ;
+                                                                                                                        type =
+                                                                                                                            let
+                                                                                                                                config =
+                                                                                                                                    {
+                                                                                                                                        options =
+                                                                                                                                            {
+                                                                                                                                                timestamp = lib.mkOption { } ;
+                                                                                                                                                synopsis = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                            } ;
+                                                                                                                                    } ;
+                                                                                                                                in lib.types.listOf config ;
+                                                                                                                    } ;
+                                                                                                        } ;
+                                                                                                    in lib.type.attrsOf config ;
+                                                                                        } ;
+                                                                            } ;
                                                                         description = lib.mkOption { type = lib.types.str ; } ;
                                                                         dot-gnupg =
                                                                             lib.mkOption
