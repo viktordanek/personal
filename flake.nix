@@ -311,7 +311,7 @@
                                                                                                                                 ;;
                                                                                                                             *CREATE*|*MODIFY*)
                                                                                                                                 # Insert or update pass with new contents
-                                                                                                                                if [ -f "${ _environment-variable "full_path" } ]; then
+                                                                                                                                if [ -f "${ _environment-variable "full_path" }" ]; then
                                                                                                                                     ${ pkgs.pass }/bin/pass insert -f "${ _environment-variable "REL_PATH" }" < "${ _environment-variable "full_path" }"
                                                                                                                                 fi
                                                                                                                                 ;;
