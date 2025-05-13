@@ -163,85 +163,6 @@
                                                             {
                                                                 services =
                                                                     {
-                                                                        simple-backend =
-                                                                            {
-                                                                                after = [ "network.target" ] ;
-                                                                                serviceConfig =
-                                                                                    {
-                                                                                        ExecStartPre =
-                                                                                            let
-                                                                                                script =
-                                                                                                    ''
-                                                                                                        if [ ! -d ${ _environment-variable "HOME" } ]
-                                                                                                        then
-                                                                                                            ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }
-                                                                                                        fi &&
-                                                                                                            if [ ! -f ${ _environment-variable "HOME" }/token.json ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.token } ${ _environment-variable "HOME" }/token.json
-                                                                                                            fi &&
-                                                                                                            if [ ! -f ${ _environment-variable "HOME" }/credentials.json ]
-                                                                                                            then
-                                                                                                                ${ pkgs.coreutils }/bin/cp ${ config.personal.user.services.google-photograph-scraper.credentials } ${ _environment-variable "HOME" }/credentials.json
-                                                                                                            fi &&
-                                                                                                            if [ ! -d ${ _environment-variable "HOME" }/repository ]
-                                                                                                                then
-                                                                                                                    ${ pkgs.coreutils }/bin/mkdir ${ _environment-variable "HOME" }/repository &&
-                                                                                                                    cd ${ _environment-variable "HOME" }/repository &&
-                                                                                                                    ${ pkgs.git }/bin/git init &&
-                                                                                                                    ${ pkgs.git }/bin/git config user.name "Google Photograph Scraper" &&
-                                                                                                                    ${ pkgs.git }/bin/git config user.email "Google Photograph Scraper" &&
-                                                                                                                    ${ pkgs.git }/bin/git remote add origin ${ config.personal.user.services.google-photograph-scraper.origin } &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.identity } > ${ _environment-variable "HOME" }/identity &&
-                                                                                                                    ${ pkgs.coreutils }/bin/cat ${ config.personal.user.services.google-photograph-scraper.known-hosts } > ${ _environment-variable "HOME" }/known-hosts &&
-                                                                                                                    ${ pkgs.coreutils }/bin/chmod 0400 ${ _environment-variable "HOME" }/identity ${ _environment-variable "HOME" }/known-hosts &&
-                                                                                                                    ${ pkgs.git }/bin/git config core.sshCommand "${ pkgs.openssh }/bin/ssh -i ${ _environment-variable "HOME" }/identity -o StrictHostKeyChecking=true -o UserKnownHostsFile=${ _environment-variable "HOME" }/known-hosts" &&
-                                                                                                                    if ${ pkgs.git }/bin/git fetch origin main
-                                                                                                                    then
-                                                                                                                        ${ pkgs.git }/bin/git checkout main
-                                                                                                                    else
-                                                                                                                        ${ pkgs.git }/bin/git checkout -b main
-                                                                                                                    fi
-                                                                                                            fi
-                                                                                                    '' ;
-                                                                                                    in pkgs.writeShellScript "script" script ;
-                                                                                        ExecStart =
-                                                                                            let
-                                                                                                pythonEnv =
-                                                                                                    pkgs.python3Packages.buildPythonApplication
-                                                                                                        {
-                                                                                                            pname = "google-photograph-scraper" ;
-                                                                                                            version = "1.0" ;
-                                                                                                            src = ./. ;
-                                                                                                            format = "other" ;
-                                                                                                            installPhase =
-                                                                                                                ''
-                                                                                                                    ${ pkgs.coreutils }/bin/mkdir --parents $out/bin &&
-                                                                                                                        ${ pkgs.coreutils }/bin/cp scrape_google_photos.py $out/bin/scrape_google_photos.py &&
-                                                                                                                        ${ pkgs.coreutils }/bin/chmod +x $out/bin/scrape_google_photos.py
-                                                                                                                '' ;
-                                                                                                            propagatedBuildInputs =
-                                                                                                                [
-                                                                                                                    pkgs.python3Packages.google-auth
-                                                                                                                    pkgs.python3Packages.google-auth-oauthlib
-                                                                                                                    pkgs.python3Packages.google-api-python-client
-                                                                                                                    pkgs.python3Packages.GitPython
-                                                                                                                ] ;
-                                                                                                        } ;
-                                                                                                in "${ pythonEnv }/bin/scrape_google_photos.py" ;
-                                                                                        DynamicUser = true ;
-                                                                                        Environment =
-                                                                                            [
-                                                                                                "BROWSER=lynx"
-                                                                                                "HOME=/var/lib/google-photograph-scraper"
-                                                                                                "XDG_DATA_HOME=/var/lib/google-photograph-scraper"
-                                                                                            ] ;
-                                                                                        Restart = "on-failure" ;
-                                                                                        StateDirectory = "google-photograph-scraper" ;
-                                                                                        StateDirectoryMode = 0755 ;
-                                                                                    } ;
-                                                                                wantedBy = [ "multi-user.target" ] ;
-                                                                            } ;
                                                                         trashy =
                                                                             {
                                                                                 after = [ "network.target" ] ;
@@ -255,16 +176,6 @@
                                                                     } ;
                                                                 timers =
                                                                     {
-                                                                        simple-backend =
-                                                                            {
-                                                                                timerConfig =
-                                                                                    {
-                                                                                        OnBootSec = "5min" ;
-                                                                                        OnUnitActiveSec = "24h" ;
-                                                                                        Persistent = true ;
-                                                                                    } ;
-                                                                                wantedBy = [ "timers.target" ] ;
-                                                                            } ;
                                                                         trashy =
                                                                             {
                                                                                 timerConfig =
