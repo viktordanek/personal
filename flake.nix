@@ -511,7 +511,7 @@
                                                                                                             from = lib.mkOption { type = lib.types.str ; } ;
                                                                                                             to = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
                                                                                                         } ;
-                                                                                                    in list.types.listOf config ;
+                                                                                                    in lib.types.listOf config ;
                                                                                         } ;
                                                                                 applications =
                                                                                     lib.type.mkOption
