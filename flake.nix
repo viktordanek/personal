@@ -276,7 +276,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n ##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
@@ -303,7 +303,7 @@
                                                                                                                                             ${ split "Separation Reason" experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n ##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
                                                                                                                 )
                                                                                                             ] ;
                                                                                             dot-gnupg =
