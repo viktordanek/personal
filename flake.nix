@@ -635,6 +635,21 @@
                                                                                                             } ;
                                                                                                     in lib.types.attrsOf config ;
                                                                                         } ;
+                                                                                    education =
+                                                                                        lib.mkOption
+                                                                                            {
+                                                                                                default = [ ] ;
+                                                                                                type =
+                                                                                                    let
+                                                                                                        config =
+                                                                                                            lib.types.submodule
+                                                                                                                {
+                                                                                                                    university = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                    degree = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                    major = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                } ;
+                                                                                                        in lib.types.listOf config
+                                                                                            } ;
                                                                                     experience =
                                                                                         lib.mkOption
                                                                                             {
