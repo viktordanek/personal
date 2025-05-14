@@ -291,7 +291,7 @@
 
 
                                                                                                                                                     ** 📌 ${ label } **
-                                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( string : "     > ** ${ string } **" ) ( builtins.filter ( line : builtins.typeOf line == "string" ) ( builtins.split "\n" string ) ) ) }
+                                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( string : ">     ** ${ string } **" ) ( builtins.filter ( line : builtins.typeOf line == "string" ) ( builtins.split "\n" string ) ) ) }
                                                                                                                                                 '' ;
                                                                                                                                     title = experience.title ;
                                                                                                                                     company = experience.company ;
