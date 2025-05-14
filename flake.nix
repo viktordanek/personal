@@ -302,7 +302,7 @@
                                                                                                                                                             in if substring == "0" then 0 else if substring == "1" then 1 else builtins.throw "This should not happen." ;
                                                                                                                                                 in builtins.genList generator ( builtins.stringLength string ) ;
                                                                                                                                         mod = a : b : builtins.trace "MOD ${ builtins.typeOf a } ${ builtins.typeOf b } ${ builtins.toString a } ${ builtins.toString b }" ( b - ( b * ( a / b ) ) ) ;
-                                                                                                                                        rand = builtins.foldl' reducer 0 list ;
+                                                                                                                                        rand = builtins.trace "RAND" ( builtins.foldl' reducer 0 list ) ;
                                                                                                                                         reducer = previous : current :
                                                                                                                                             let
                                                                                                                                                 a = previous * 2 + current ;
