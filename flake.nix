@@ -296,7 +296,7 @@
                                                                                                                                         list =
                                                                                                                                             let
                                                                                                                                                 generator = index : builtins.substring string index 1 ;
-                                                                                                                                                in builtins.genList generator ( builtins.stringLength string );
+                                                                                                                                                in builtins.genList generator ( builtins.trace "HI" ( builtins.stringLength string ) ) ;
                                                                                                                                         mod =
                                                                                                                                             A : B :
                                                                                                                                                 let
