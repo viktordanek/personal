@@ -295,7 +295,11 @@
                                                                                                                                         age = 60 * 60 * 24 * 36525 / 100 * 30 + rand ;
                                                                                                                                         list =
                                                                                                                                             let
-                                                                                                                                                generator = index : builtins.trace ( builtins.substring index 1 string ) ( builtins.fromJSON ( builtins.substring index 1 string ) ) ;
+                                                                                                                                                generator =
+                                                                                                                                                    index :
+                                                                                                                                                        let
+                                                                                                                                                            eval = builtins.fromJSON ( builtins.substring index 1 string ) ;
+                                                                                                                                                            in if eval.success then eval.value else 0 ;
                                                                                                                                                 in builtins.genList generator 1000 ;
                                                                                                                                         mod = a : b : b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
