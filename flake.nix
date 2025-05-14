@@ -300,8 +300,8 @@
                                                                                                                                         mod =
                                                                                                                                             A : B :
                                                                                                                                                 let
-                                                                                                                                                    a = if builtins.typeOf a == "string" then builtins.throw "A ${ A }" else A ;
-                                                                                                                                                    b = if builtins.typeOf b == "string" then builtins.throw "B ${ B }" else B ;
+                                                                                                                                                    a = if builtins.typeOf A == "string" then builtins.throw "A ${ A }" else A ;
+                                                                                                                                                    b = if builtins.typeOf B == "string" then builtins.throw "B ${ B }" else B ;
                                                                                                                                                     in b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
