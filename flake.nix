@@ -296,13 +296,8 @@
                                                                                                                                         list =
                                                                                                                                             let
                                                                                                                                                 generator = index : builtins.substring string index 1 ;
-                                                                                                                                                in builtins.genList generator ( builtins.trace "HI" ( builtins.stringLength string ) ) ;
-                                                                                                                                        mod =
-                                                                                                                                            A : B :
-                                                                                                                                                let
-                                                                                                                                                    a = if builtins.typeOf A == "string" then builtins.throw "A ${ A }" else A ;
-                                                                                                                                                    b = if builtins.typeOf B == "string" then builtins.throw "B ${ B }" else B ;
-                                                                                                                                                    in b - ( b * ( a / b ) ) ;
+                                                                                                                                                in builtins.genList generator 1000 ;
+                                                                                                                                        mod = b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
                                                                                                                                             let
