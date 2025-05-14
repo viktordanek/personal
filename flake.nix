@@ -264,13 +264,15 @@
                                                                                                                                 } ;
                                                                                                                             in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                 in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) ( builtins.filter ( experience : builtins.typeOf experience.to == "null" || experience.to > value.current-time - value.experience-target ) config.personal.user.career.experience ) ) ) ) ) ) ;
+                                                                                                        resume =
+                                                                                                            experience : file-name :
+                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ file-name }/resume.md''
                                                                                                         in
                                                                                                             [
                                                                                                                 "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
-                                                                                                                "${ pkgs.yq }/bin/yq --yaml-output . ${ builtins.toFile "application.json" ( builtins.toJSON value ) } > $out/applications/${ name }/synopsis.yaml"
                                                                                                                 (
                                                                                                                     let
-                                                                                                                        mapper =
+                                                                                                                        experience =
                                                                                                                             experience :
                                                                                                                                 let
                                                                                                                                     title = experience.title ;
@@ -282,7 +284,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Contact \n ## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
+                                                                                                                            resume experience "resume.md" ;
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
