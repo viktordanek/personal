@@ -286,7 +286,8 @@
                                                                                                                                     in
                                                                                                                                         ''
                                                                                                                                             ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }\n>**Commentary: ${ achievement.commentary }**" ) experience.achievements ) }
+                                                                                                                                            **Separation Reason:  ${ experience.separation-reason }**
                                                                                                                                         '' ;
                                                                                                                         in
                                                                                                                             ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
