@@ -303,7 +303,7 @@
                                                                                                                                         string = builtins.replaceStrings [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "a" "b" "c" "d" "e" "f" ] [ "00" "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" ] ( builtins.hashString "sha512" ( builtins.toString value.current-time ) ) ;
                                                                                                                                         in '''$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d --date @${ value.current-time - age } )'' ;
                                                                                                                             # in "## Insights \n ### DOB: ${ date-of-birth }" ;
-                                                                                                                            "hello"
+                                                                                                                            "hello" ;
                                                                                                                         experience-mapper =
                                                                                                                             experience :
                                                                                                                                 let
