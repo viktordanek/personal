@@ -298,7 +298,7 @@
                                                                                                                                                 generator =
                                                                                                                                                     index :
                                                                                                                                                         let
-                                                                                                                                                            substring = builtins.substring string index 1 ;
+                                                                                                                                                            substring = builtins.substring index 1 string ;
                                                                                                                                                             in if substring == "0" then 0 else if substring == "1" then 1 else builtins.throw "This should not happen." ;
                                                                                                                                                 in builtins.genList generator ( builtins.stringLength string ) ;
                                                                                                                                         mod = a : b : b - ( b * ( a / b ) ) ;
