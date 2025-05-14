@@ -300,9 +300,9 @@
                                                                                                                                         mod =
                                                                                                                                             A : B :
                                                                                                                                                 let
-                                                                                                                                                    a = if builtins.typeOf a == "string" then builtins.fromJSON A else A ;
-                                                                                                                                                    b = if builtins.typeOf b == "string then builtins.fromJSON B else B ;
-                                                                                                                                                    b - ( b * ( a / b ) ) ;
+                                                                                                                                                    a = if builtins.typeOf a == "string" then builtins.throw "A ${ a }" else A ;
+                                                                                                                                                    b = if builtins.typeOf b == "string then builtins.throw "B ${ b }" else B ;
+                                                                                                                                                    in b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
                                                                                                                                             let
