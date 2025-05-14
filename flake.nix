@@ -296,7 +296,7 @@
                                                                                                                                         list =
                                                                                                                                             let
                                                                                                                                                 generator = index : builtins.fromJSON ( builtins.substring index 1 string ) ;
-                                                                                                                                                in builtins.genList generator 2 ;
+                                                                                                                                                in builtins.genList generator ( ( builtins.stringLength string ) - 1 ) ;
                                                                                                                                         mod = a : b : b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
