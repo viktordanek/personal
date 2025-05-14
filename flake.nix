@@ -587,6 +587,19 @@
                                                                                                                             title = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                             from = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                             to = lib.mkOption { type = lib.types.int ; } ;
+                                                                                                                            achievements =
+                                                                                                                                lib.mkOption
+                                                                                                                                    {
+                                                                                                                                        default = [ ] ;
+                                                                                                                                        type =
+                                                                                                                                            let
+                                                                                                                                                config =
+                                                                                                                                                    {
+                                                                                                                                                        point = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                        skills = lib.mkOption { type = lib.types.listOf lib.types.str ; } ;
+                                                                                                                                                    } ;
+                                                                                                                                                in lib.types.listOf config ;
+                                                                                                                                    } ;
                                                                                                                         } ;
                                                                                                                 } ;
                                                                                                         in lib.types.listOf config ;
