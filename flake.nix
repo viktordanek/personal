@@ -283,14 +283,22 @@
                                                                                                                         mapper =
                                                                                                                             experience :
                                                                                                                                 let
+                                                                                                                                    split =
+                                                                                                                                        label : string :
+                                                                                                                                            if builtins.typeOf string == "null" then ""
+                                                                                                                                            else
+                                                                                                                                                ''
+                                                                                                                                                    > ** ${ label } **
+                                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( string : "> ** ${ string } **" ) ( builtins.filter ( line : line != "" ) ( builtins.split "\n" string ) ) ) }
+                                                                                                                                                '' ;
                                                                                                                                     title = experience.title ;
                                                                                                                                     company = experience.company ;
                                                                                                                                     from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )'' ;
                                                                                                                                     in
                                                                                                                                         ''
                                                                                                                                             ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }${ if builtins.typeOf achievement.commentary == "null" then "" else "\n> ** Commentary: ${ achievement.commentary } **" }" ) experience.achievements ) }
-                                                                                                                                            ${ if builtins.typeOf experience.separation-reason == "null" then "" else "**Separation Reason:  ${ experience.separation-reason }**" }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }${ split experience.commentary }" ) experience.achievements ) }
+                                                                                                                                            ${ split experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
                                                                                                                             ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
