@@ -214,7 +214,7 @@
                                                                                                                             company = experience.company ;
                                                                                                                             from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )'' ;
                                                                                                                             to = if experience.to >= config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' ;
-                                                                                                                            achievements = current.achievements ;
+                                                                                                                            achievements = experience.achievements ;
                                                                                                                         } ;
                                                                                                                 min = a : b : if a < b then a else b ;
                                                                                                                 max = a : b : if a > b then b else a ;
