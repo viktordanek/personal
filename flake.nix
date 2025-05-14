@@ -214,7 +214,9 @@
                                                                                                                         mapper =
                                                                                                                             experience :
                                                                                                                                 ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } ) – ${ if builtins.typeOf experience.to == "null" then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }'' ;
-                                                                                                                        in builtins.map mapper config.personal.user.career.experience ;
+                                                                                                                        reducer =
+                                                                                                                            previous : current : builtins.concatLists [ previous [ current ] ] ;
+                                                                                                                        in builtins.map mapper ( builtins.foldl' reducer [ ] ( builtins.sort ( a : b : a.from > b.from ) config.personal.user.career.experience ) ) ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
                                                                                                         )
@@ -518,6 +520,7 @@
                                                                                                                 options =
                                                                                                                     {
                                                                                                                         date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
+                                                                                                                        pad-end-date = lib.mkOption { default = false ; type = lib.type.bool ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                         synopsis =
                                                                                                                             lib.mkOption
@@ -536,6 +539,7 @@
                                                                                                                                                     } ;
                                                                                                                                             in lib.types.listOf config ;
                                                                                                                                 } ;
+                                                                                                                        timestamp = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                     } ;
                                                                                                             } ;
                                                                                                     in lib.types.attrsOf config ;
