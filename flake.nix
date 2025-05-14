@@ -276,7 +276,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n ##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
@@ -303,7 +303,7 @@
                                                                                                                                             ${ split "Separation Reason" experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n ##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
                                                                                                                 )
                                                                                                             ] ;
                                                                                             dot-gnupg =
@@ -609,6 +609,7 @@
                                                                                                                         date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
                                                                                                                         experience-target = lib.mkOption { default = 60 * 60 * 24 * 365 * 10 ; type = lib.types.int ; } ;
                                                                                                                         filter = lib.mkOption { default = 60 * 60 * 24 * 31 ; type = lib.types.int ; } ;
+                                                                                                                        objective = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                         padding = lib.mkOption { default = 0 ; type = lib.types.int ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                         skills = lib.mkOption { default = [ ] ; type = lib.types.listOf lib.types.str ; } ;
