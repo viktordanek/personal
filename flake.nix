@@ -213,7 +213,7 @@
                                                                                                                     let
                                                                                                                         mapper =
                                                                                                                             experience :
-                                                                                                                                ''### ${ experience.title } at ${ experience.company } ${ builtins.toString experience.from } - ${ builtins.toString experience.to }'' ;
+                                                                                                                                ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date +${ value.date-mask } @${ builtins.toString experience.from } ) - ( ${ pkgs.coreutils }/bin/date +${ value.date-mask } @${ builtins.toString experience.to } )'' ;
                                                                                                                         in builtins.map mapper config.personal.user.career.experience ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
@@ -517,6 +517,7 @@
                                                                                                             {
                                                                                                                 options =
                                                                                                                     {
+                                                                                                                        date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                         synopsis =
                                                                                                                             lib.mkOption
