@@ -326,7 +326,7 @@
                                                                                                                                             ${ split "Separation Reason" experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            resume experience-mapper null "resume"
+                                                                                                                            resume experience-mapper insights "resume"
                                                                                                                 )
                                                                                                             ] ;
                                                                                             dot-gnupg =
