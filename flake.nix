@@ -216,7 +216,7 @@
                                                                                                                                 ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } ) – ${ if builtins.typeOf experience.to == "null" then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }'' ;
                                                                                                                         min = a : b : if a < b then a else b ;
                                                                                                                         max = a : b : if a > b then b else a ;
-                                                                                                                        reducer =
+                                                                                                                        backward-reducer =
                                                                                                                             previous : current :
                                                                                                                                 let
                                                                                                                                     length = builtins.length previous ;
@@ -229,7 +229,20 @@
                                                                                                                                             to = current.to ;
                                                                                                                                         } ;
                                                                                                                                     in builtins.concatLists [ previous [ ultimate ] ] ;
-                                                                                                                        in builtins.map mapper ( builtins.foldl' reducer [ ] ( builtins.sort ( a : b : a.from > b.from ) config.personal.user.career.experience ) ) ;
+                                                                                                                        forward-reducer =
+                                                                                                                            previous : current :
+                                                                                                                                let
+                                                                                                                                    length = builtins.length previous ;
+                                                                                                                                    penultimate = builtins.elemAt previous ( length - 1 ) ;
+                                                                                                                                    ultimate =
+                                                                                                                                        {
+                                                                                                                                            company = current.company ;
+                                                                                                                                            title = current.title ;
+                                                                                                                                            from = if length == 0 then current.from else max ( current.from - value.padding ) penultimate.to ;
+                                                                                                                                            to = if builtins.typeOf current.to == "null" then config.personal.user.current.time else if length == 0 then min ( current.to + value.padding ) config.personal.user.current-time else min ( current.to + value.padding ) penultimate.from ;
+                                                                                                                                        } ;
+                                                                                                                                    in builtins.concatLists [ previous [ ultimate ] ] ;
+                                                                                                                        in builtins.map mapper ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from > b.from ) ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) config.personal.user.career.experience ) ) ) ) ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
                                                                                                         )
