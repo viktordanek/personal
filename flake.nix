@@ -230,7 +230,7 @@
                                                                                                                                             title = current.title ;
                                                                                                                                             from = if length == 0 then current.from else max ( current.from - value.padding ) penultimate.to ;
                                                                                                                                             to = current.to ;
-                                                                                                                                            achievements = current.achievements ;
+                                                                                                                                            achievements = builtins.filter ( achievement : builtins.any ( achievement-skill : builtins.any ( application-skill : achievement-skill == application-skill ) value.skills ) achievement.skills ) current.achievements ;
                                                                                                                                         } ;
                                                                                                                                     in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                         forward-reducer =
@@ -555,6 +555,7 @@
                                                                                                                         filter = lib.mkOption { default = 60 * 60 * 24 * 31 ; type = lib.types.int ; } ;
                                                                                                                         padding = lib.mkOption { default = 0 ; type = lib.types.int ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                        skills = lib.mkOption { default = [ ] ; type = lib.types.listOf lib.types.str ; } ;
                                                                                                                         synopsis =
                                                                                                                             lib.mkOption
                                                                                                                                 {
