@@ -289,6 +289,7 @@
                                                                                                                                     in
                                                                                                                                         ''
                                                                                                                                             ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }${ if builtins.typeOf achievement.commentary == "null" then "" else "\n> ** Commentary: ${ achievement.commentary } **" }" ) experience.achievements ) }
                                                                                                                                             ${ if builtins.typeOf experience.separation-reason == "null" then "" else "**Separation Reason:  ${ experience.separation-reason }**" }
                                                                                                                                         '' ;
                                                                                                                         in
