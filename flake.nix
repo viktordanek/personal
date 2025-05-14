@@ -215,6 +215,7 @@
                                                                                                                             experience :
                                                                                                                                 ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } ) – ${ if builtins.typeOf experience.to == "null" then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }'' ;
                                                                                                                         min = a : b : if a < b then a else b ;
+                                                                                                                        max = a : b : if a > b then b else a ;
                                                                                                                         reducer =
                                                                                                                             previous : current :
                                                                                                                                 let
