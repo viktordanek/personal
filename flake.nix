@@ -238,6 +238,7 @@
                                                                                                                                                         achievement.skills
                                                                                                                                             )
                                                                                                                                             current.achievements ;
+                                                                                                                                    separation-reason = current.separation-reason ;
                                                                                                                                 } ;
                                                                                                                             in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                 forward-reducer =
@@ -252,6 +253,7 @@
                                                                                                                                     from = current.from ;
                                                                                                                                     to = if builtins.typeOf current.to == "null" then config.personal.user.current.time else if length == 0 then min ( current.to + value.padding ) config.personal.user.current-time else min ( current.to + value.padding ) penultimate.from ;
                                                                                                                                     achievements = current.achievements ;
+                                                                                                                                    separation-reason = current.separation-reason ;
                                                                                                                                 } ;
                                                                                                                             in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                 in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) config.personal.user.career.experience ) ) ) ) ) ;
