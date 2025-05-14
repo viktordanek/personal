@@ -213,7 +213,7 @@
                                                                                                                     let
                                                                                                                         mapper =
                                                                                                                             experience :
-                                                                                                                                ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" @${ builtins.toString experience.from } ) - "$( ${ pkgs.coreutils }/bin/date +${ value.date-mask } @${ builtins.toString experience.to } )"'' ;
+                                                                                                                                ''### ${ experience.title } at ${ experience.company } \$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" @${ builtins.toString experience.from } ) - \$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" @${ builtins.toString experience.to } )"'' ;
                                                                                                                         in builtins.map mapper config.personal.user.career.experience ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
