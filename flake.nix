@@ -275,6 +275,22 @@
                                                                                                                         in
                                                                                                                             ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
                                                                                                                 )
+                                                                                                                (
+                                                                                                                    let
+                                                                                                                        mapper =
+                                                                                                                            experience :
+                                                                                                                                let
+                                                                                                                                    title = experience.title ;
+                                                                                                                                    company = experience.company ;
+                                                                                                                                    from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )'' ;
+                                                                                                                                    in
+                                                                                                                                        ''
+                                                                                                                                            ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
+                                                                                                                                        '' ;
+                                                                                                                        in
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/annotated.md''
+                                                                                                                )
                                                                                                             ] ;
                                                                                             dot-gnupg =
                                                                                                 name : value :
