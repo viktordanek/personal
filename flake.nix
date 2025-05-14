@@ -520,7 +520,7 @@
                                                                                                                 options =
                                                                                                                     {
                                                                                                                         date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
-                                                                                                                        pad-end-date = lib.mkOption { default = false ; type = lib.type.bool ; } ;
+                                                                                                                        padding = lib.mkOption { default = 0 ; type = lib.type.int ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                         synopsis =
                                                                                                                             lib.mkOption
