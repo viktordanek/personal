@@ -230,8 +230,15 @@
                                                                                                                                             title = current.title ;
                                                                                                                                             from = if length == 0 then current.from else max ( current.from - value.padding ) penultimate.to ;
                                                                                                                                             to = current.to ;
-                                                                                                                                            achievements = builtins.filter ( achievement : builtins.any ( achievement-skill : builtins.any ( application-skill : achievement-skill == application-skill ) value.skills ) achievement.skills ) current.achievements ;
-                                                                                                                                        } ;
+                                                                                                                                            achievements =
+                                                                                                                                                builtins.filter
+                                                                                                                                                    (
+                                                                                                                                                        achievement :
+                                                                                                                                                            builtins.any
+                                                                                                                                                                ( achievementSkill : builtins.elem achievementSkill value.skills )
+                                                                                                                                                                achievement.skills
+                                                                                                                                                    )
+                                                                                                                                                    current.achievements ;
                                                                                                                                     in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                         forward-reducer =
                                                                                                                             previous : current :
