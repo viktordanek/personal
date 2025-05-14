@@ -297,7 +297,12 @@
                                                                                                                                             let
                                                                                                                                                 generator = index : builtins.substring string index 1 ;
                                                                                                                                                 in builtins.genList generator ( builtins.stringLength string );
-                                                                                                                                        mod = a : b : b - ( b * ( a / b ) ) ;
+                                                                                                                                        mod =
+                                                                                                                                            A : B :
+                                                                                                                                                let
+                                                                                                                                                    a = if builtins.typeOf a == "string" then builtins.fromJSON A else A ;
+                                                                                                                                                    b = if builtins.typeOf b == "string then builtins.fromJSON B else B ;
+                                                                                                                                                    b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
                                                                                                                                             let
