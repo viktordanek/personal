@@ -292,7 +292,7 @@
                                                                                                                             let
                                                                                                                                 date-of-birth =
                                                                                                                                     let
-                                                                                                                                        age = 60 * 60 * 24 * 365.25 * 30 + rand ;
+                                                                                                                                        age = 60 * 60 * 24 * 365.25 * 30 + ( builtins.trace ( builtins.typeOf rand ) rand ) ;
                                                                                                                                         list =
                                                                                                                                             let
                                                                                                                                                 generator =
