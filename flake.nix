@@ -297,7 +297,7 @@
                                                                                                                                     in
                                                                                                                                         ''
                                                                                                                                             ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
-                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }${ split "Commentary" experience.commentary }" ) experience.achievements ) }
+                                                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }${ split "Commentary" achievement.commentary }" ) experience.achievements ) }
                                                                                                                                             ${ split "Separation Reason" experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
