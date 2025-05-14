@@ -214,8 +214,19 @@
                                                                                                                         mapper =
                                                                                                                             experience :
                                                                                                                                 ''### ${ experience.title } at ${ experience.company } $( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } ) – ${ if builtins.typeOf experience.to == "null" then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }'' ;
+                                                                                                                        min = a : b : if a < b then a else b ;
                                                                                                                         reducer =
-                                                                                                                            previous : current : builtins.concatLists [ previous [ current ] ] ;
+                                                                                                                            previous : current :
+                                                                                                                                let
+                                                                                                                                    penultimate = builtins.elemAt previous ( ( builtins.length previous ) - 1 ) ;
+                                                                                                                                    ultimate =
+                                                                                                                                        {
+                                                                                                                                            company = current.company ;
+                                                                                                                                            company = current.title ;
+                                                                                                                                            from = min current.from previous.to ;
+                                                                                                                                            to = current.to ;
+                                                                                                                                        } ;
+                                                                                                                                    in builtins.concatLists [ previous [ current ] ] ;
                                                                                                                         in builtins.map mapper ( builtins.foldl' reducer [ ] ( builtins.sort ( a : b : a.from > b.from ) config.personal.user.career.experience ) ) ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
