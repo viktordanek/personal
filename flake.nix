@@ -222,7 +222,7 @@
                                                                                                                                     ultimate =
                                                                                                                                         {
                                                                                                                                             company = current.company ;
-                                                                                                                                            company = current.title ;
+                                                                                                                                            title = current.title ;
                                                                                                                                             from = min current.from previous.to ;
                                                                                                                                             to = current.to ;
                                                                                                                                         } ;
