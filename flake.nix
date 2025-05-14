@@ -599,10 +599,14 @@
                                                                                                                                         type =
                                                                                                                                             let
                                                                                                                                                 config =
-                                                                                                                                                    {
-                                                                                                                                                        point = lib.mkOption { type = lib.types.str ; } ;
-                                                                                                                                                        skills = lib.mkOption { type = lib.types.listOf lib.types.str ; } ;
-                                                                                                                                                    } ;
+                                                                                                                                                    lib.types.submodule
+                                                                                                                                                        {
+                                                                                                                                                            options =
+                                                                                                                                                                {
+                                                                                                                                                                    point = lib.mkOption { type = lib.types.str ; } ;
+                                                                                                                                                                    skills = lib.mkOption { type = lib.types.listOf lib.types.str ; } ;
+                                                                                                                                                                } ;
+                                                                                                                                                        } ;
                                                                                                                                                 in lib.types.listOf config ;
                                                                                                                                     } ;
                                                                                                                         } ;
