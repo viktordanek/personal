@@ -295,7 +295,7 @@
                                                                                                                                         age = 60 * 60 * 24 * 36525 / 100 * 30 + rand ;
                                                                                                                                         list =
                                                                                                                                             let
-                                                                                                                                                generator = index : builtins.trace ( builtins.substring index 1 string ) ) ( builtins.fromJSON ( builtins.substring index 1 string ) ) ;
+                                                                                                                                                generator = index : builtins.trace ( builtins.substring index 1 string ) ( builtins.fromJSON ( builtins.substring index 1 string ) ) ;
                                                                                                                                                 in builtins.genList generator 1000 ;
                                                                                                                                         mod = a : b : b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
