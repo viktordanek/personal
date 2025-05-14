@@ -239,6 +239,7 @@
                                                                                                                                                                 achievement.skills
                                                                                                                                                     )
                                                                                                                                                     current.achievements ;
+                                                                                                                                        } ;
                                                                                                                                     in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                         forward-reducer =
                                                                                                                             previous : current :
