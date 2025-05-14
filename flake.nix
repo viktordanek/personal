@@ -596,6 +596,7 @@
                                                                                                                 options =
                                                                                                                     {
                                                                                                                         date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
+                                                                                                                        experience-target = lib.mkOption { default = 60 * 60 * 24 * 365 * 10 ; type = lib.types.int ; } ;
                                                                                                                         filter = lib.mkOption { default = 60 * 60 * 24 * 31 ; type = lib.types.int ; } ;
                                                                                                                         padding = lib.mkOption { default = 0 ; type = lib.types.int ; } ;
                                                                                                                         recruiter = lib.mkOption { type = lib.types.str ; } ;
