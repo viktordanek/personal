@@ -225,7 +225,7 @@
                                                                                                                                         {
                                                                                                                                             company = current.company ;
                                                                                                                                             title = current.title ;
-                                                                                                                                            from = if length == 0 then current.from else max ( current.from - value.padding ) previous.to ;
+                                                                                                                                            from = if length == 0 then current.from else max ( current.from - value.padding ) penultimate.to ;
                                                                                                                                             to = current.to ;
                                                                                                                                         } ;
                                                                                                                                     in builtins.concatLists [ previous [ ultimate ] ] ;
