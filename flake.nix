@@ -228,7 +228,7 @@
                                                                                                                                             from = if length == 0 then current.from else max ( current.from - value.padding ) previous.to ;
                                                                                                                                             to = current.to ;
                                                                                                                                         } ;
-                                                                                                                                    in builtins.concatLists [ previous [ current ] ] ;
+                                                                                                                                    in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                         in builtins.map mapper ( builtins.foldl' reducer [ ] ( builtins.sort ( a : b : a.from > b.from ) config.personal.user.career.experience ) ) ;
                                                                                                                 in
                                                                                                                 ''${ pkgs.coreutils }/bin/echo -en "${ builtins.concatStringsSep "\n" experience }" > $out/applications/${ name }/resume.md''
