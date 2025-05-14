@@ -266,7 +266,7 @@
                                                                                                                 in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) ( builtins.filter ( experience : builtins.typeOf experience.to == "null" || experience.to > value.current-time - value.experience-target ) config.personal.user.career.experience ) ) ) ) ) ) ;
                                                                                                         resume =
                                                                                                             experience-mapper : file-name :
-                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ file-name }/resume.md'' ;
+                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/${ file-name }.md'' ;
                                                                                                         in
                                                                                                             [
                                                                                                                 "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
@@ -284,8 +284,8 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/resume.md''
-                                                                                                                            # resume experience "resume.md"
+                                                                                                                            # ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/resume.md''
+                                                                                                                            resume experience-mapper "resume.md"
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
