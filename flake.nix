@@ -216,7 +216,7 @@
                                                                                                                                 let
                                                                                                                                     title = experience.title ;
                                                                                                                                     company = experience.company ;
-                                                                                                                                    from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )''
+                                                                                                                                    from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )'' ;
                                                                                                                                     in
                                                                                                                                         ''
                                                                                                                                             ### ${ title } at ${ company } ${ from } – ${ if experience.to == config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' }
