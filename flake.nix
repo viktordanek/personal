@@ -297,7 +297,7 @@
                                                                                                                                             let
                                                                                                                                                 generator = index : builtins.substring string index 1 ;
                                                                                                                                                 in builtins.genList generator 1000 ;
-                                                                                                                                        mod = b - ( b * ( a / b ) ) ;
+                                                                                                                                        mod = a : b : b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
                                                                                                                                             let
