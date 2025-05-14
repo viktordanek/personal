@@ -284,7 +284,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/annotated.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/resume.md''
                                                                                                                             # resume experience "resume.md"
                                                                                                                 )
                                                                                                                 (
