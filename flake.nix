@@ -265,8 +265,8 @@
                                                                                                                             in builtins.concatLists [ previous [ ultimate ] ] ;
                                                                                                                 in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) ( builtins.filter ( experience : builtins.typeOf experience.to == "null" || experience.to > value.current-time - value.experience-target ) config.personal.user.career.experience ) ) ) ) ) ) ;
                                                                                                         resume =
-                                                                                                            experience-mapper : file-name :
-                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) }" > $out/applications/${ name }/${ file-name }.md'' ;
+                                                                                                            experience-mapper : insights : file-name :
+                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map experience-mapper experience ) } ${ if builtins.typeOf insights == "null" then "" else insights }" > $out/applications/${ name }/${ file-name }.md'' ;
                                                                                                         in
                                                                                                             [
                                                                                                                 "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
@@ -284,22 +284,25 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            resume experience-mapper "resume"
+                                                                                                                            resume experience-mapper null "resume"
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
-                                                                                                                        date-of-birth =
+                                                                                                                        insights =
                                                                                                                             let
-                                                                                                                                age = 60 * 60 * 24 * 365.25 * 30 + rand ;
-                                                                                                                                list =
+                                                                                                                                date-of-birth =
                                                                                                                                     let
-                                                                                                                                        generator = index : builtins.toJSON ( builtins.substring string index ) ;
-                                                                                                                                        in builtins.genList generator string ;
-                                                                                                                                mod = a : b : b - ( b * ( a / b ) ) ;
-                                                                                                                                rand = builtins.foldl' reducer list 0 ;
-                                                                                                                                reducer = previous : current : mod ( previous * 10 + current ) ( 60 * 60 * 24 * 365.25 ) ;
-                                                                                                                                string = builtins.replaceStrings [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "a" "b" "c" "d" "e" "f" ] [ "00" "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" ] ( builtins.hashString "sha512" ( builtins.toString value.current-time ) ) ;
-                                                                                                                                in '''$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d --date @${ value.current-time - age } )'' ;
+                                                                                                                                        age = 60 * 60 * 24 * 365.25 * 30 + rand ;
+                                                                                                                                        list =
+                                                                                                                                            let
+                                                                                                                                                generator = index : builtins.toJSON ( builtins.substring string index ) ;
+                                                                                                                                                in builtins.genList generator string ;
+                                                                                                                                        mod = a : b : b - ( b * ( a / b ) ) ;
+                                                                                                                                        rand = builtins.foldl' reducer list 0 ;
+                                                                                                                                        reducer = previous : current : mod ( previous * 10 + current ) ( 60 * 60 * 24 * 365.25 ) ;
+                                                                                                                                        string = builtins.replaceStrings [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "a" "b" "c" "d" "e" "f" ] [ "00" "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" ] ( builtins.hashString "sha512" ( builtins.toString value.current-time ) ) ;
+                                                                                                                                        in '''$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d --date @${ value.current-time - age } )'' ;
+                                                                                                                            in "## Insights \n ### DOB: ${ date-of-birth }" ;
                                                                                                                         experience-mapper =
                                                                                                                             experience :
                                                                                                                                 let
@@ -323,7 +326,7 @@
                                                                                                                                             ${ split "Separation Reason" experience.separation-reason }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            resume experience-mapper "resume"
+                                                                                                                            resume experience-mapper insights "resume"
                                                                                                                 )
                                                                                                             ] ;
                                                                                             dot-gnupg =
