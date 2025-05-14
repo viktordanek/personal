@@ -648,7 +648,7 @@
                                                                                                                     degree = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                     major = lib.mkOption { type = lib.types.str ; } ;
                                                                                                                 } ;
-                                                                                                        in lib.types.listOf config
+                                                                                                        in lib.types.listOf config ;
                                                                                             } ;
                                                                                     experience =
                                                                                         lib.mkOption
