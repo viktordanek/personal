@@ -300,7 +300,7 @@
                                                                                                                                                         let
                                                                                                                                                             eval = builtins.fromJSON ( builtins.substring index 1 string ) ;
                                                                                                                                                             in if eval.success then eval.value else 0 ;
-                                                                                                                                                in builtins.genList generator 1000 ;
+                                                                                                                                                in builtins.genList generator 0 ;
                                                                                                                                         mod = a : b : b - ( b * ( a / b ) ) ;
                                                                                                                                         rand = builtins.foldl' reducer 0 list ;
                                                                                                                                         reducer = previous : current :
