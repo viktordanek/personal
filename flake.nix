@@ -213,7 +213,7 @@
                                                                                                                             title = experience.title ;
                                                                                                                             company = experience.company ;
                                                                                                                             from = ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.from } )'' ;
-                                                                                                                            to = if experience.to >= config.personal.user.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' ;
+                                                                                                                            to = if experience.to >= value.current-time then "present" else ''$( ${ pkgs.coreutils }/bin/date "+${ value.date-mask }" --date @${ builtins.toString experience.to } )'' ;
                                                                                                                             achievements = experience.achievements ;
                                                                                                                             separation-reason = experience.separation-reason ;
                                                                                                                         } ;
@@ -257,7 +257,7 @@
                                                                                                                                     separation-reason = current.separation-reason ;
                                                                                                                                 } ;
                                                                                                                             in builtins.concatLists [ previous [ ultimate ] ] ;
-                                                                                                                in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) config.personal.user.career.experience ) ) ) ) ) ;
+                                                                                                                in builtins.map mapper ( builtins.foldl' forward-reducer [ ] ( builtins.sort ( a : b : a.to > b.to ) ( builtins.foldl' backward-reducer [ ] ( builtins.sort ( a : b : a.from < b.from ) ( builtins.filter ( experience : experience.to - experience.from > value.filter ) ( builtins.filter ( experience : builtins.typeOf experience.to == "null" || experience.to > value.current-time - value.experience-target ) config.personal.user.career.experience ) ) ) ) ) ) ;
                                                                                                         in
                                                                                                             [
                                                                                                                 "${ pkgs.coreutils }/bin/mkdir $out/applications/${ name }"
@@ -603,6 +603,7 @@
                                                                                                             {
                                                                                                                 options =
                                                                                                                     {
+                                                                                                                        current-time = lib.mkOption { type = lib.types.int ; } ;
                                                                                                                         date-mask = lib.mkOption { default = "%B %Y" ; type = lib.types.str ; } ;
                                                                                                                         experience-target = lib.mkOption { default = 60 * 60 * 24 * 365 * 10 ; type = lib.types.int ; } ;
                                                                                                                         filter = lib.mkOption { default = 60 * 60 * 24 * 31 ; type = lib.types.int ; } ;
