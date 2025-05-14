@@ -284,7 +284,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            resume experience "resume.md" ;
+                                                                                                                            resume experience "resume.md"
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
