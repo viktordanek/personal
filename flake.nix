@@ -218,12 +218,13 @@
                                                                                                                         reducer =
                                                                                                                             previous : current :
                                                                                                                                 let
-                                                                                                                                    penultimate = builtins.elemAt previous ( ( builtins.length previous ) - 1 ) ;
+                                                                                                                                    length = builtins.length previous ;
+                                                                                                                                    penultimate = builtins.elemAt previous ( length - 1 ) ;
                                                                                                                                     ultimate =
                                                                                                                                         {
                                                                                                                                             company = current.company ;
                                                                                                                                             title = current.title ;
-                                                                                                                                            from = min current.from previous.to ;
+                                                                                                                                            from = if length == 0 then current.from else max ( current.from - padding ) previous.to ;
                                                                                                                                             to = current.to ;
                                                                                                                                         } ;
                                                                                                                                     in builtins.concatLists [ previous [ current ] ] ;
