@@ -205,6 +205,12 @@
                                                                                             application =
                                                                                                 name : value :
                                                                                                     let
+                                                                                                        contact =
+                                                                                                            {
+                                                                                                                name = config.personal.user.description ;
+                                                                                                                phone-number = config.personal.user.phone-number ;
+                                                                                                                email = config.personal.user.email ;
+                                                                                                            } ;
                                                                                                         experience =
                                                                                                             let
                                                                                                                 mapper =
@@ -276,7 +282,7 @@
                                                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( achievement : "- ${ achievement.point }" ) experience.achievements ) }
                                                                                                                                         '' ;
                                                                                                                         in
-                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
+                                                                                                                            ''${ pkgs.coreutils }/bin/echo -en "## Contact \n ## Objective \n${ value.objective } \n##Experience \n${ builtins.concatStringsSep "\n" ( builtins.map mapper experience ) }" > $out/applications/${ name }/resume.md''
                                                                                                                 )
                                                                                                                 (
                                                                                                                     let
@@ -291,7 +297,7 @@
                                                                                                                                 rand = builtins.foldl' reducer list 0 ;
                                                                                                                                 reducer = previous : current : mod ( previous * 10 + current ) ( 60 * 60 * 24 * 365.25 ) ;
                                                                                                                                 string = builtins.replaceStrings [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "a" "b" "c" "d" "e" "f" ] [ "00" "01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12" "13" "14" "15" ] ( builtins.hashString "sha512" ( builtins.toString value.current-time ) ) ;
-                                                                                                                                in '''$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d --date @${ value.current-time - age } )''
+                                                                                                                                in '''$( ${ pkgs.coreutils }/bin/date +%Y-%m-%d --date @${ value.current-time - age } )'' ;
                                                                                                                         mapper =
                                                                                                                             experience :
                                                                                                                                 let
