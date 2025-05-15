@@ -609,11 +609,7 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
-                                                                                        (
-                                                                                            pkgs.writeShellScriptBin
-                                                                                                "yep"
-                                                                                                ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.user.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } )
-                                                                                        )
+                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.user.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
