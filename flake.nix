@@ -190,6 +190,47 @@
                                                                     } ;
                                                             } ;
                                                         system.stateVersion = "23.05" ;
+                                                        systemd =
+                                                            {
+                                                                services =
+                                                                    {
+                                                                        clean-stash =
+                                                                            {
+                                                                                after = [ "network-online.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ExecStart =
+                                                                                            pkgs.writeShellScript
+                                                                                                "clean-stash"
+                                                                                                ''
+                                                                                                    set -euo pipefail
+                                                                                                    ${ pkgs.findutils }/bin/find /home/${ config.personal.user.name }/${ config.personal.user.stash } -mindepth 1 -maxdepth 1 -type d | while read DIRECTORY
+                                                                                                    do
+                                                                                                        if ( ! ${ pkgs.findutils }/bin/find $DIRECTORY -atype -31 -quit ) && ( ! ${ pkgs.findutils }/bin/find $DIRECTORY -ctype -31 -quit ) && ( ! ${ pkgs.findutils }/bin/find $DIRECTORY -mtype -31 -quit )
+                                                                                                        then
+                                                                                                            ${ pkgs.coreutils }/bin/rm --recursive --force $DIRECTORY
+                                                                                                        fi
+                                                                                                    done
+                                                                                                '' ;
+                                                                                        Type = "oneshot" ;
+                                                                                        User = config.personal.user.name ;
+                                                                                    } ;
+                                                                                wants = [ "network-online.target" ] ;
+                                                                            }
+                                                                    } ;
+                                                                timers =
+                                                                    {
+                                                                        clean-stash =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = "daily" ;
+                                                                                        Persistent = true ;
+                                                                                    } ;
+                                                                                wantedBy = [ "timers.target" ] ;
+                                                                            }
+                                                                    } ;
+                                                            } ;
                                                         time.timeZone = "America/New_York" ;
                                                         users.users.user =
                                                             {
@@ -609,7 +650,7 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
-                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } )
+                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/${ config.personal.user.stash }" ; time-mask = config.personal.user.time-mask ; } )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
@@ -836,6 +877,7 @@
                                                                                         token = lib.mkOption { type = lib.types.path ; } ;
                                                                                     } ;
                                                                             } ;
+                                                                        stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
                                                                         time-mask = lib.mkOption { default = "%Y-%m-%d-%H-%M" ; type = lib.types.str ; } ;
                                                                     } ;
                                                             } ;
