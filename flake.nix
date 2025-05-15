@@ -3,7 +3,7 @@
         {
             environment-variable.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
-	        identity.url = "github:viktordanek/identity/c09788dc40f022f023b16ed38c94d73f9d449e8f" ;
+	        identity.url = "github:viktordanek/identity/0150dd139887d8a48a137940ca8eca949aaea32c" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
 	        stash-factory.url = "github:viktordanek/stash-factory/bd960f587c81c338ac7ee1750d5f21ebf63ac7ad" ;
         } ;
@@ -609,7 +609,7 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
-                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.user.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } )
+                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib.generator ; generation-parameters = { nixpkgs = nixpkgs ; system = system ; } ; stash-directory = "/home/${ config.personal.user.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
