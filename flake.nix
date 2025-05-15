@@ -5,7 +5,7 @@
 	        flake-utils.url = "github:numtide/flake-utils" ;
 	        identity.url = "github:viktordanek/identity/c09788dc40f022f023b16ed38c94d73f9d449e8f" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/48ac85b54bdf74e458a2ffeb2ff2cacd311abdc5" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/bd960f587c81c338ac7ee1750d5f21ebf63ac7ad" ;
         } ;
     outputs =
         { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
