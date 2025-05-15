@@ -216,7 +216,7 @@
                                                                                         User = config.personal.user.name ;
                                                                                     } ;
                                                                                 wants = [ "network-online.target" ] ;
-                                                                            }
+                                                                            } ;
                                                                     } ;
                                                                 timers =
                                                                     {
