@@ -642,7 +642,7 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
-                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = write-secret.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; secret = config.personal.user.password ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/${ config.personal.user.stash }" ; time-mask = config.personal.user.time-mask ; } )
+                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = write-secret.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; secret = builtins.toFile "simple" "hello world" ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/${ config.personal.user.stash }" ; time-mask = config.personal.user.time-mask ; } )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
