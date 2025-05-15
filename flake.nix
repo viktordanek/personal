@@ -165,35 +165,6 @@
                                                             {
                                                                 services =
                                                                     {
-                                                                        trashy =
-                                                                            {
-                                                                                after = [ "network.target" ] ;
-                                                                                serviceConfig =
-                                                                                    {
-                                                                                        ExecScript = "${ pkgs.trashy }/bin/trashy remove" ;
-                                                                                        User = config.personal.user.name ;
-                                                                                    } ;
-                                                                                wantedBy = [ "multi-user.target" ] ;
-                                                                            } ;
-                                                                    } ;
-                                                                timers =
-                                                                    {
-                                                                        trashy =
-                                                                            {
-                                                                                timerConfig =
-                                                                                    {
-                                                                                        OnBootSec = "5min" ;
-                                                                                        OnUnitActiveSec = "1w" ;
-                                                                                        Persistent = true ;
-                                                                                    } ;
-                                                                            } ;
-                                                                    } ;
-                                                            } ;
-                                                        system.stateVersion = "23.05" ;
-                                                        systemd =
-                                                            {
-                                                                services =
-                                                                    {
                                                                         clean-stash =
                                                                             {
                                                                                 after = [ "network-online.target" ] ;
@@ -217,6 +188,16 @@
                                                                                     } ;
                                                                                 wants = [ "network-online.target" ] ;
                                                                             } ;
+                                                                        trashy =
+                                                                            {
+                                                                                after = [ "network.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ExecScript = "${ pkgs.trashy }/bin/trashy remove" ;
+                                                                                        User = config.personal.user.name ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
                                                                     } ;
                                                                 timers =
                                                                     {
@@ -229,8 +210,18 @@
                                                                                     } ;
                                                                                 wantedBy = [ "timers.target" ] ;
                                                                             } ;
+                                                                        trashy =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnBootSec = "5min" ;
+                                                                                        OnUnitActiveSec = "1w" ;
+                                                                                        Persistent = true ;
+                                                                                    } ;
+                                                                            } ;
                                                                     } ;
                                                             } ;
+                                                        system.stateVersion = "23.05" ;
                                                         time.timeZone = "America/New_York" ;
                                                         users.users.user =
                                                             {
