@@ -11,7 +11,7 @@
         { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
             let
                 fun =
-                    system :
+                    system :d658ff7dad2765fa65f7f621b2b665ddf436b913
                         let
                             _environment-variable = builtins.getAttr system environment-variable.lib ;
                             lib =
@@ -609,6 +609,13 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
+                                                                                        (
+                                                                                            pkgs.writeShellScriptBin
+                                                                                                "yep"
+                                                                                                ''
+                                                                                                    ${ stash-factory { hash-length = 16 ; generator = identity.lib.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.users.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } }
+                                                                                                ''
+                                                                                        )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
