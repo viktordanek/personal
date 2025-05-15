@@ -9,7 +9,7 @@
 	        write-secret.url = "github:viktordanek/write-secret/7afeeca6201c55c160b9c03c1e0ec3f3015d8b32" ;
         } ;
     outputs =
-        { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
+        { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory , write-secret } :
             let
                 fun =
                     system :
