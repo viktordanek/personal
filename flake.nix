@@ -11,7 +11,7 @@
         { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
             let
                 fun =
-                    system :d658ff7dad2765fa65f7f621b2b665ddf436b913
+                    system :
                         let
                             _environment-variable = builtins.getAttr system environment-variable.lib ;
                             lib =
