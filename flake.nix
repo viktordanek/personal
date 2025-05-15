@@ -228,7 +228,7 @@
                                                                                         Persistent = true ;
                                                                                     } ;
                                                                                 wantedBy = [ "timers.target" ] ;
-                                                                            }
+                                                                            } ;
                                                                     } ;
                                                             } ;
                                                         time.timeZone = "America/New_York" ;
