@@ -3,7 +3,7 @@
         {
             environment-variable.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
-	        identity.url = "github:viktordanek/identity/7379278cdb21ac22423b33dc40864c69f7c3055e" ;
+	        identity.url = "github:viktordanek/identity/4b069c1d4015986a5e2ff2d8a190cfdd7bef94ec" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
 	        stash-factory.url = "github:viktordanek/stash-factory/e5e5f5ba3fa6d8a90cfec9c66134df352112a617" ;
         } ;
