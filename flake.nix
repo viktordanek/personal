@@ -5,7 +5,7 @@
 	        flake-utils.url = "github:numtide/flake-utils" ;
 	        identity.url = "github:viktordanek/identity/c09788dc40f022f023b16ed38c94d73f9d449e8f" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/7519eaef38bbd2e55d8122730fd8fea5f6e3b467" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/dd8d2a2dd113e4a207f5e2ca6fbe7bea982d839c" ;
         } ;
     outputs =
         { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
@@ -862,7 +862,7 @@
                                                                 } ;
                                                     } ;
                                         } ;
-                    pkgs = import nixpkgs { inherit system; } ;
+                    pkgs = import nixpkgs { inherit system ; } ;
                     in
                         {
                             lib = lib ;
