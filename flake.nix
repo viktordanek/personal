@@ -613,7 +613,7 @@
                                                                                             pkgs.writeShellScriptBin
                                                                                                 "yep"
                                                                                                 ''
-                                                                                                    ${ builtins.trace ( builtins.concatStringsSep " " ( builtins.attrNames stash-factory ) ) ( stash-factory.lib.generator { hash-length = 16 ; generator = identity.lib3.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.users.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } ) }
+                                                                                                    stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = identity.lib3.generator ; generation-parameters = { pkgs = pkgs ; } ; stash-directory = "/home/${ config.personal.users.name }/stash" ; time-mask = "%Y-%m-%d-%H-%M" ; } }
                                                                                                 ''
                                                                                         )
                                                                                         pkgs.trashy
