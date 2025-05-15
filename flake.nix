@@ -3,10 +3,12 @@
         {
             environment-variable.url = "github:viktordanek/environment-variable" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
+	        identity.url = "github:viktordanek/identity/c09788dc40f022f023b16ed38c94d73f9d449e8f" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
+	        stash-factory = "github:viktordanek/stash-factory/7519eaef38bbd2e55d8122730fd8fea5f6e3b467" ;
         } ;
     outputs =
-        { environment-variable , flake-utils , nixpkgs , self } :
+        { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory } :
             let
                 fun =
                     system :
