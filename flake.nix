@@ -2,14 +2,14 @@
     inputs =
         {
             environment-variable.url = "github:viktordanek/environment-variable" ;
+	        file-linker.url = "github:viktordanek/file-linker/7afeeca6201c55c160b9c03c1e0ec3f3015d8b32" ;
 	        flake-utils.url = "github:numtide/flake-utils" ;
 	        identity.url = "github:viktordanek/identity/4b069c1d4015986a5e2ff2d8a190cfdd7bef94ec" ;
 	        nixpkgs.url = "github:Nixos/nixpkgs/nixos-24.05" ;
 	        stash-factory.url = "github:viktordanek/stash-factory/868a78d66a003790bdbdfab36b3ac4bd32149067" ;
-	        write-secret.url = "github:viktordanek/write-secret/7afeeca6201c55c160b9c03c1e0ec3f3015d8b32" ;
         } ;
     outputs =
-        { environment-variable , flake-utils , identity , nixpkgs , self , stash-factory , write-secret } :
+        { environment-variable , file-linker , flake-utils , identity , nixpkgs , self , stash-factory } :
             let
                 fun =
                     system :
@@ -642,7 +642,7 @@
                                                                             builtins.concatLists
                                                                                 [
                                                                                     [
-                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = write-secret.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; secret = builtins.toFile "simple" "hello world" ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/${ config.personal.user.stash }" ; time-mask = config.personal.user.time-mask ; } )
+                                                                                        ( stash-factory.lib.${ system }.generator { hash-length = 16 ; generator = file-linker.lib.generator ; generator-name = "generate-ssh-key" ; generation-parameters = { nixpkgs = nixpkgs ; secret = builtins.toFile "simple" "hello world" ; system = system ; } ; name = "WTF" ; stash-directory = "/home/${ config.personal.user.name }/${ config.personal.user.stash }" ; time-mask = config.personal.user.time-mask ; } )
                                                                                         pkgs.trashy
                                                                                         derivation
                                                                                     ]
