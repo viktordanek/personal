@@ -315,12 +315,6 @@
                                                                         string = path : value : value ;
                                                                     }
                                                                     config.personal.time-mask ;
-                                                            wifi =
-                                                                visitor.lib.${ system }
-                                                                    {
-                                                                        string = path : value : value ;
-                                                                    }
-                                                                    ( builtins.trace ( builtins.toJSON ( builtins.attrNames config.config ) ) config.config.personal.wifi ) ;
                                                             stash =
                                                                 visitor.lib.${ system }
                                                                     {
