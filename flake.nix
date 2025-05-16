@@ -312,7 +312,8 @@
                                                                     pkgs.writeShellScriptBin
                                                                         "test-it"
                                                                         ''
-                                                                            echo ${ builtins.typeOf primary.identity }
+                                                                            echo ${ let x = builtins.typeOf primary.identity ; in builtins.trace x x }
+                                                                            echo ${ let x = builtins.toJSON ( builtins.attrNames primary.identity ) ; in builtins.trace x x }
                                                                         ''
                                                                 )
                                                                 pkgs.trashy
