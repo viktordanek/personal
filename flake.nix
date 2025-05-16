@@ -23,7 +23,7 @@
                                 stash-factory.lib.${ system }.generator
                                     {
                                         factory-name = target ;
-                                        hash-length = config.personal.hash-length ;
+                                        hash-length = primary.hash-length ;
                                         generator = cat.lib.generator ;
                                         generator-name = target ;
                                         generation-parameters =
