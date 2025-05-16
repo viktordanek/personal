@@ -50,7 +50,7 @@
                                             networking.wireless =
                                                 {
                                                     enable = true ;
-                                                    networks = primary.config.personal.wifi ;
+                                                    networks = config.personal.wifi ;
                                                 } ;
                                             nix =
                                                 {
