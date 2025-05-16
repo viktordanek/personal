@@ -12,6 +12,7 @@
                     {
                         description ,
                         hash-length ? 16 ,
+                        hashed-password-file ,
                         identity ? null ,
                         known-hosts ? null ,
                         name ,
@@ -55,6 +56,12 @@
                                                         int = path : value : value ;
                                                     }
                                                     hash-length ;
+                                            hashed-password-file =
+                                                visitor.lib.${ system }
+                                                    {
+                                                        string = path : value : value ;
+                                                    }
+                                                    hashed-password-file ;
                                             identity =
                                                 visitor.lib.${ system }
                                                     {
@@ -305,18 +312,13 @@
                                                                         pkgs.trashy
                                                                     ]
                                                                 ] ;
-                                                        hashedPasswordFile = primary.config.personal.user.hashed-password-file ;
+                                                        hashedPasswordFile = primary.hashed-password-file ;
                                                     } ;
                                             } ;
                                         options =
                                             {
                                                 personal =
                                                     {
-                                                        hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
-                                                        hashed-password-file = lib.mkOption { type = lib.types.path ; } ;
-                                                        name = lib.mkOption { type = lib.types.str ; } ;
-                                                        stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
-                                                        time-mask = lib.mkOption { default = "%Y-%m-%d" ; type = lib.types.str ; } ;
                                                         wifi =
                                                             lib.mkOption
                                                                 {
