@@ -81,7 +81,7 @@
                                                     }
                                                     stash ;
                                         } ;
-                                    stash-directory = "/home/${ primary.user-name }/${ primary.stash }" ;
+                                    stash-directory = "/home/${ primary.name }/${ primary.stash }" ;
                             in
                                 { config , lib , pkgs , ... } :
                                     {
