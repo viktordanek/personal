@@ -240,7 +240,7 @@
                                                                                                             do
                                                                                                                 if ( ! find $DIRECTORY -atype -31 -quit ) && ( ! find $DIRECTORY -ctype -31 -quit ) && ( ! find $DIRECTORY -mtype -31 -quit )
                                                                                                                 then
-                                                                                                                    rm --recursive --force $DIRECTORY
+                                                                                                                    rm --recursive --force "$DIRECTORY"
                                                                                                                 fi
                                                                                                             done
                                                                                                         '' ;
