@@ -240,7 +240,7 @@
                                                                                                 } ;
                                                                                         in "${ application }/bin/ExecStart" ;
                                                                                 Type = "oneshot" ;
-                                                                                User = prime.name ;
+                                                                                User = primary.name ;
                                                                             } ;
                                                                         wants = [ "network-online.target" ] ;
                                                                     } ;
@@ -262,7 +262,7 @@
                                                                                                         '' ;
                                                                                                 } ;
                                                                                                 in "${ application }/bin/ExecStart" ;
-                                                                                User = primary.config.personal.user.name ;
+                                                                                User = primary.name ;
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
