@@ -12,7 +12,9 @@
             hash-length ? 16 ,
             identity ? null ,
             known-hosts ? null ,
+            name ,
             nixpkgs ,
+            stash ? "stash" ,
             system
         } :
             let
@@ -64,8 +66,14 @@
                                             path = path : value : cat-lambda "known-hosts" path value ;
                                             string = path : value : cat-lambda "known-hosts" path value ;
                                         } ;
+                                stash =
+                                    visitor.lib.${ system }
+                                        {
+                                            string = path : value : value ;
+                                        }
+                                        stash ;
                             } ;
-                        stash-directory = "/home/${ config.personal.name }/${ config.personal.stash }" ;
+                        stash-directory = "/home/${ primary.user-name }/${ primary.stash }" ;
                 in
                     { config , lib , pkgs , ... } :
                         {
