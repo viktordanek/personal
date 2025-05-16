@@ -50,7 +50,7 @@
                                             networking.wireless =
                                                 {
                                                     enable = true ;
-                                                    networks = config.personal.wifi ;
+                                                    networks = builtins.trace ( builtins.toJSON ( builtins.attrNames config ) ) config.personal.wifi ) ;
                                                 } ;
                                             nix =
                                                 {
