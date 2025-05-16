@@ -265,7 +265,7 @@
                                                                                                     runtimeInputs = [ pkgs.trashy ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            trashy remove"
+                                                                                                            trashy remove
                                                                                                         '' ;
                                                                                                 } ;
                                                                                                 in "${ application }/bin/ExecStart" ;
