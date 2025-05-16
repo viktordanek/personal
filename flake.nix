@@ -11,6 +11,7 @@
                 lib =
                     {
                         description ,
+                        dot-ssh ? null ,
                         hash-length ? 16 ,
                         identity ? null ,
                         known-hosts ? null ,
@@ -306,12 +307,10 @@
                                                         isNormalUser = true ;
                                                         name = primary.name ;
                                                         packages =
-                                                            builtins.concatLists
-                                                                [
-                                                                    [
-                                                                        pkgs.trashy
-                                                                    ]
-                                                                ] ;
+                                                            [
+                                                                primary.identity.boot
+                                                                pkgs.trashy
+                                                            ] ;
                                                         password = primary.password ;
                                                     } ;
                                             } ;
