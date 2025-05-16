@@ -12,11 +12,11 @@
                     {
                         description ,
                         hash-length ? 16 ,
-                        hashed-password-file ,
                         identity ? null ,
                         known-hosts ? null ,
                         name ,
                         nixpkgs ,
+                        password ,
                         stash ? "stash" ,
                         system
                     } :
@@ -56,12 +56,6 @@
                                                         int = path : value : value ;
                                                     }
                                                     hash-length ;
-                                            hashed-password-file =
-                                                visitor.lib.${ system }
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    hashed-password-file ;
                                             identity =
                                                 visitor.lib.${ system }
                                                     {
@@ -69,18 +63,24 @@
                                                         string = path : value : cat-lambda "identity" path value ;
                                                     }
                                                     identity ;
-                                            name =
-                                                visitor.lib.${ system }
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    name ;
                                             known-hosts =
                                                 visitor.lib.${ system }
                                                     {
                                                         path = path : value : cat-lambda "known-hosts" path value ;
                                                         string = path : value : cat-lambda "known-hosts" path value ;
                                                     } ;
+                                            name =
+                                                visitor.lib.${ system }
+                                                    {
+                                                        string = path : value : value ;
+                                                    }
+                                                    name ;
+                                            password =
+                                                visitor.lib.${ system }
+                                                    {
+                                                        string = path : value : value ;
+                                                    }
+                                                    password ;
                                             stash =
                                                 visitor.lib.${ system }
                                                     {
@@ -312,7 +312,7 @@
                                                                         pkgs.trashy
                                                                     ]
                                                                 ] ;
-                                                        hashedPasswordFile = primary.hashed-password-file ;
+                                                        password = primary.password ;
                                                     } ;
                                             } ;
                                         options =
