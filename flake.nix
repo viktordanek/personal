@@ -42,7 +42,7 @@
                                                     path = builtins.trace "path" [ "cat" target path value ] ;
                                                     stash-directory = stash-directory ;
                                                     targets = builtins.trace "target" [ target ] ;
-                                                    time-mask = primary.config.personal.time-mask ;
+                                                    time-mask = primary.time-mask ;
                                                 } ;
                                     in
                                         {
