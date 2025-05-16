@@ -33,7 +33,7 @@
                                                     generator = cat.lib.generator ;
                                                     generator-name = target ;
                                                     generation-parameters =
-                                                        builtin.trace "generation-parameters"
+                                                        builtins.trace "generation-parameters"
                                                         {
                                                             mapping = { "${ target }" = builtins.toString value ; } ;
                                                             nixpkgs = nixpkgs ;
