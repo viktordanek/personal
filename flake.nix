@@ -62,7 +62,7 @@
                                                 visitor.lib.${ system }
                                                     {
                                                         path = path : value : builtins.throw "CAUGHT path" ;
-                                                        path = path : value : builtins.throw "CAUGHT string" ;
+                                                        string = path : value : builtins.throw "CAUGHT string" ;
                                                         set = path : set : set ;
                                                     }
                                                     identity ;
