@@ -2,7 +2,7 @@
     inputs =
         {
             cat.url = "github:viktordanek/cat/240f951b90cb669c399c0a82ea9537a4ee8e9559" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/868a78d66a003790bdbdfab36b3ac4bd32149067" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/e87adc9fd1977b8bff32202a3a2806fbb3a7b780" ;
 	        visitor.url = "github:viktordanek/visitor" ;
         } ;
     outputs =
