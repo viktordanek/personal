@@ -63,7 +63,7 @@
                                                     {
                                                         path = path : value : builtins.throw "CAUGHT path" ;
                                                         string = path : value : builtins.throw "CAUGHT string" ;
-                                                        set = path : set : builtins.mapAttrs ( name : value : cat-lambda "identity" [ path name ] value ) ;
+                                                        set = path : set : builtins.mapAttrs ( name : value : cat-lambda "identity" [ path name ] value ) set ;
                                                     }
                                                     identity ;
                                             known-hosts =
