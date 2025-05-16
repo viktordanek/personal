@@ -9,6 +9,7 @@
         { cat , self , stash-factory , visitor } :
         {
             description ,
+            hash-length ? 16 ,
             identity ? null ,
             known-hosts ? null ,
             nixpkgs ,
@@ -44,6 +45,12 @@
                                             string = path : value : value ;
                                         }
                                         description ;
+                                hash-length =
+                                    visitor.lib.${ system }
+                                        {
+                                            int = path : value : value ;
+                                        }
+                                        hash-length ;
                                 identity =
                                     visitor.lib.${ system }
                                         {
