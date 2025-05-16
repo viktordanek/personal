@@ -8,7 +8,7 @@
     outputs =
         { cat , self , stash-factory , visitor } :
             let
-                lib =
+                core =
                     {
                         description ,
                         identity ? null ,
@@ -352,7 +352,7 @@
                             stash-directory = "/home/${ primary.config.personal.name }/${ primary.config.personal.stash }" ;
                             in
                                 {
-                                    lib =
+                                    config =
                                         {
                                             config = config ;
                                             test =
@@ -379,8 +379,22 @@
                                                         } ;
                                         } ;
                                 } ;
-                    in
-                        {
-                            lib = lib ;
-                        } ;
+                in
+                    {
+                        lib =
+                                {
+                                    core = core ;
+                                    examples =
+                                        nixpkgs : system :
+                                            let
+                                                foobar =
+                                                    core
+                                                        {
+                                                            description = "Nettie Brown" ;
+                                                            nixpkgs = nixpkgs ;
+                                                            system = system ;
+                                                        } ;
+                                                in foobar.test ;
+                                } ;
+                    } ;
 }
