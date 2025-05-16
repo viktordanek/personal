@@ -60,13 +60,9 @@
                                                     hash-length ;
                                             identity =
                                                 visitor.lib.${ system }
-                                                    ( builtins.trace "identity ARG 1"
                                                     {
-                                                        path = builtins.trace "ARG 1.1" ( path : value : builtins.trace "cat-lambda 1" ( cat-lambda "identity" path value ) ) ;
-                                                        string = builtins.trace "ARG 1.2" ( path : value : builtins.trace "cat-lambda 2" ( cat-lambda "identity" path value ) ) ;
-                                                    } )
-                                                    ( builtins.trace "identity ARG 2"
-                                                    identity ) ;
+                                                    }
+                                                    identity ;
                                             known-hosts =
                                                 visitor.lib.${ system }
                                                     {
