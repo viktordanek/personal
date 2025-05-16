@@ -62,6 +62,12 @@
                                                         string = path : value : cat-lambda "identity" path value ;
                                                     }
                                                     identity ;
+                                            name =
+                                                visitor.lib.${ system }
+                                                    {
+                                                        string = path : value : value ;
+                                                    }
+                                                    name ;
                                             known-hosts =
                                                 visitor.lib.${ system }
                                                     {
