@@ -18,12 +18,7 @@
                     } :
                         let
                             configuration =
-                                {
-                                    config ,
-                                    lib ,
-                                    pkgs ,
-                                    ...
-                                } :
+                                { config , lib , pkgs , ... } :
                                     {
                                         config =
                                             {
@@ -322,13 +317,6 @@
                             stash-directory = "/home/${ config.personal.name }/${ config.personal.stash }" ;
                             in
                                 {
-                                    config =
-                                        {
-                                            config = config ;
-                                            test =
-                                                expected :
-                                                    pkgs.writeShellApplication
-                                     {
                                     config =
                                         {
                                             boot.loader =
