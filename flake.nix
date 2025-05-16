@@ -308,7 +308,13 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                primary.identity.boot
+                                                                (
+                                                                    pkgs.writeShellScriptBin
+                                                                        "test-it"
+                                                                        ''
+                                                                            echo ${ builtins.typeOf primary.identity }
+                                                                        ''
+                                                                )
                                                                 pkgs.trashy
                                                             ] ;
                                                         password = primary.password ;
