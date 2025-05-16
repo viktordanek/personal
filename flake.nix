@@ -19,7 +19,8 @@
                         nixpkgs ,
                         password ,
                         stash ? "stash" ,
-                        system
+                        system ,
+                        time-mask ? "%Y-%m-%d"
                     } :
                         let
                             primary =
@@ -90,6 +91,12 @@
                                                         string = path : value : value ;
                                                     }
                                                     stash ;
+                                            time-mask =
+                                                visitor.lib.${ system }
+                                                    {
+                                                        string = path : value : value ;
+                                                    }
+                                                    time-mask ;
                                         } ;
                                     stash-directory = "/home/${ primary.name }/${ primary.stash }" ;
                             in
