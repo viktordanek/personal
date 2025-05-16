@@ -291,7 +291,7 @@
                                                         description = primary.description ;
                                                         extraGroups = [ "wheel" ] ;
                                                         isNormalUser = true ;
-                                                        name = primary.config.personal.user.name ;
+                                                        name = primary.name ;
                                                         packages =
                                                             builtins.concatLists
                                                                 [
