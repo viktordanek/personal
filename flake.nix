@@ -64,7 +64,7 @@
                                                         path = path : value : builtins.trace "cat-lambda 1" ( cat-lambda "identity" path value ) ;
                                                         string = path : value : builtins.trace "cat-lambda 2" ( cat-lambda "identity" path value ) ;
                                                     }
-                                                    identity ) ) ;
+                                                    identity ) ) ) ;
                                             known-hosts =
                                                 visitor.lib.${ system }
                                                     {
