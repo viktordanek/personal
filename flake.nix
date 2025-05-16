@@ -320,7 +320,7 @@
                                                                     {
                                                                         string = path : value : value ;
                                                                     }
-                                                                    config.personal.wifi ;
+                                                                    ( builtins.trace ( builtins.toJSON ( builtins.attrNames config ) ) config.personal.wifi ) ;
                                                             stash =
                                                                 visitor.lib.${ system }
                                                                     {
