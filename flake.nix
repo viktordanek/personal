@@ -236,7 +236,7 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             set -euo pipefail
-                                                                                                            find ${ stash-directory } -mindepth 1 -maxdepth 1 -type d | while read DIRECTORY
+                                                                                                            find ${ stash-directory } -mindepth 1 -maxdepth 1 -type d | while read -r DIRECTORY
                                                                                                             do
                                                                                                                 if ( ! find "$DIRECTORY" -atype -31 -quit ) && ( ! find "$DIRECTORY" -ctype -31 -quit ) && ( ! find "$DIRECTORY" -mtype -31 -quit )
                                                                                                                 then
