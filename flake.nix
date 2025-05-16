@@ -314,6 +314,8 @@
                                                                         ''
                                                                             echo ${ let x = builtins.typeOf primary.identity ; in builtins.trace x x }
                                                                             echo ${ let x = builtins.toJSON ( builtins.attrNames primary.identity ) ; in builtins.trace x x }
+                                                                            echo ${ let x = builtins.typeOf primary.identity.boot ; in builtins.trace x x }
+                                                                            echo ${ let x = builtins.toJSON ( builtins.attrNames primary.identity.boot ) ; in builtins.trace x x }
                                                                         ''
                                                                 )
                                                                 pkgs.trashy
