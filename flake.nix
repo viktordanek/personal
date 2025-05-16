@@ -33,14 +33,15 @@
                                                     generator = cat.lib.generator ;
                                                     generator-name = target ;
                                                     generation-parameters =
+                                                        builtin.trace "generation-parameters"
                                                         {
                                                             mapping = { "${ target }" = builtins.toString value ; } ;
                                                             nixpkgs = nixpkgs ;
                                                             system = system ;
                                                         } ;
-                                                    path = [ "cat" target path value ] ;
+                                                    path = builtins.trace "path" [ "cat" target path value ] ;
                                                     stash-directory = stash-directory ;
-                                                    targets = [ target ] ;
+                                                    targets = builtins.trace "target" [ target ] ;
                                                     time-mask = primary.config.personal.time-mask ;
                                                 } ;
                                     in
