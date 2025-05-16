@@ -61,7 +61,8 @@
                                             identity =
                                                 visitor.lib.${ system }
                                                     {
-                                                        set = path : set : builtins.throw "CAUGHT" ;
+                                                        path = path : value : builtins.throw "CAUGHT path" ;
+                                                        set = path : set : set ;
                                                     }
                                                     identity ;
                                             known-hosts =
