@@ -308,7 +308,7 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                primary.identity.boot
+                                                                # primary.identity.boot
                                                                 pkgs.trashy
                                                             ] ;
                                                         password = primary.password ;
