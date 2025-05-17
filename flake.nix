@@ -64,7 +64,7 @@
                                                     {
                                                         path = path : value : builtins.throw "CAUGHT path" ;
                                                         string = path : value : builtins.throw "CAUGHT string" ;
-                                                        set = path : set : builtins.mapAttrs ( name : value : builtins.import { system }.writeShellScriptBin "WTF" "echo" ) set ;
+                                                        set = path : set : builtins.mapAttrs ( name : value : builtins.import { system = system }.writeShellScriptBin "WTF" "echo" ) set ;
                                                     }
                                                     identity ;
                                             known-hosts =
