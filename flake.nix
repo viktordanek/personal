@@ -1,10 +1,8 @@
 {
     inputs =
         {
-            cat.url = "/tmp/tmp.t4PE8uLVvM" ;
-            # cat.url = "github:viktordanek/cat/240f951b90cb669c399c0a82ea9537a4ee8e9559" ;
-            stash-factory.url = "/tmp/tmp.6BOLvK5bZg" ;
-	        # stash-factory.url = "github:viktordanek/stash-factory/1093e8f9e51bff7024ab0c0f8f74ea3d80d33244" ;
+            cat.url = "github:viktordanek/cat/scratch/a1b4e29f-d775-48f9-a8c8-2642edd842aa" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/scratch/0c5117fc-0bcb-41d6-9eb3-196f60aa34e3" ;
 	        visitor.url = "github:viktordanek/visitor/scratch/d926f8ea-1fdc-441c-9fd9-8abbc5e13fdf" ;
         } ;
     outputs =
@@ -38,7 +36,7 @@
                                                             factory-name = target ;
                                                             hash-length = primary.hash-length ;
                                                             generator = cat.lib.generator ;
-                                                            generator-name = target ;
+                                                            generator-name = "cat" ;
                                                             generation-parameters =
                                                                 {
                                                                     mapping = { "${ target }" = builtins.toString value ; } ;
