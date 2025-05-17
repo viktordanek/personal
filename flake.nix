@@ -28,7 +28,7 @@
                                     cat-lambda =
                                         target : path : value :
                                             builtins.trace "HI" (
-                                            stash-factory.lib.${ system }.generator
+                                            stash-factory.lib.${ system }.generator ( builtins.trace "130e5a63-19dc-46c0-9032-9bb9b75ca72c" (
                                                 {
                                                     factory-name = target ;
                                                     hash-length = primary.hash-length ;
@@ -45,7 +45,7 @@
                                                     stash-directory = stash-directory ;
                                                     targets = builtins.trace "target" [ target ] ;
                                                     time-mask = primary.time-mask ;
-                                                } ) ;
+                                                } ) ) ) ;
                                     in
                                         {
                                             description =
