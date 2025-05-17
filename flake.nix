@@ -27,6 +27,7 @@
                                 let
                                     cat-lambda =
                                         target : path : value :
+                                            builtins.trace "HI" (
                                             stash-factory.lib.${ system }.generator
                                                 {
                                                     factory-name = target ;
@@ -44,7 +45,7 @@
                                                     stash-directory = stash-directory ;
                                                     targets = builtins.trace "target" [ target ] ;
                                                     time-mask = primary.time-mask ;
-                                                } ;
+                                                } ) ;
                                     in
                                         {
                                             description =
@@ -64,7 +65,7 @@
                                                     {
                                                         path = path : value : builtins.throw "CAUGHT path" ;
                                                         string = path : value : builtins.throw "CAUGHT string" ;
-                                                        set = path : set : builtins.mapAttrs ( name : value : ( builtins.import nixpkgs { system = system ; } ).writeShellScriptBin "WTF" "echo" ) set ;
+                                                        set = path : set : builtins.mapAttrs ( name : value : cat-lambda "identity" path set ) set ;
                                                     }
                                                     identity ;
                                             known-hosts =
