@@ -2,11 +2,12 @@
     inputs =
         {
             cat.url = "github:viktordanek/cat/scratch/a1b4e29f-d775-48f9-a8c8-2642edd842aa" ;
+            config.url = "/tmp/40f02ce89b8b52c0172a848c655343b3c4fd111173d52d6f17e94b3479658e4f/config" ;
 	        stash-factory.url = "github:viktordanek/stash-factory/scratch/0c5117fc-0bcb-41d6-9eb3-196f60aa34e3" ;
 	        visitor.url = "github:viktordanek/visitor/scratch/d926f8ea-1fdc-441c-9fd9-8abbc5e13fdf" ;
         } ;
     outputs =
-        { cat , self , stash-factory , visitor } :
+        { cat , config , self , stash-factory , visitor } :
             {
                 lib =
                     {
@@ -15,13 +16,12 @@
                         dot-ssh ? null ,
                         hash-length ? 16 ,
                         identity ? null ,
-                        known-hosts ? null ,
+                        known-host ? null ,
                         name ,
                         nixpkgs ,
                         password ,
                         stash ? "stash" ,
                         system ,
-                        time-mask ? "%Y-%m-%d" ,
                         timestamp ? null
                     } :
                         let
@@ -65,6 +65,58 @@
                                                         string = path : value : value ;
                                                     }
                                                     description ;
+                                            dot-ssh =
+                                                visitor.lib.implementation
+                                                    {
+                                                        lambda =
+                                                            path : value :
+                                                                let
+                                                                    point =
+                                                                        let
+                                                                            identity =
+                                                                                {
+                                                                                    host ,
+                                                                                    host-name ,
+                                                                                    identity ,
+                                                                                    known-host ,
+                                                                                    port ,
+                                                                                    user
+                                                                                } :
+                                                                                    {
+                                                                                        host = host ;
+                                                                                        host-name = host-name ;
+                                                                                        identity = identity ;
+                                                                                        known-host = known-host ;
+                                                                                        port = port ;
+                                                                                        user = user ;
+                                                                                    } ;
+                                                                            in identity ( value { identity = primary.identity ; known-host = primary.known-host ; } ) ;
+                                                                    in
+                                                                        stash-factory.lib.generator
+                                                                            {
+                                                                                factory-name = "dot-ssh" ;
+                                                                                hash-length = primary.hash-length ;
+                                                                                generator = config.lib.generator ;
+                                                                                generator-name = "config" ;
+                                                                                generation-parameters =
+                                                                                    {
+                                                                                        host = point.host ;
+                                                                                        host-name = point.host-name ;
+                                                                                        identity = point.identity ;
+                                                                                        known-host = point.known-host ;
+                                                                                        nixpkgs = nixpkgs ;
+                                                                                        port = point.port ;
+                                                                                        system = system ;
+                                                                                        user = point.user ;
+                                                                                    } ;
+                                                                                nixpkgs = nixpkgs ;
+                                                                                path = [ primary.commit-hash primary.timestamp "config" path ] ;
+                                                                                stash-directory = stash-directory ;
+                                                                                system = primary.system ;
+                                                                                targets = [ "/target" ] ;
+                                                                            } ;
+                                                    }
+                                                    dot-ssh ;
                                             hash-length =
                                                 visitor.lib.implementation
                                                     {
@@ -78,12 +130,13 @@
                                                         string = path : value : cat-lambda "identity" path value ;
                                                     }
                                                     identity ;
-                                            known-hosts =
+                                            known-host =
                                                 visitor.lib.implementation
                                                     {
-                                                        path = path : value : cat-lambda "known-hosts" path value ;
-                                                        string = path : value : cat-lambda "known-hosts" path value ;
-                                                    } ;
+                                                        path = path : value : cat-lambda "known-host" path value ;
+                                                        string = path : value : cat-lambda "known-host" path value ;
+                                                    }
+                                                    identity ;
                                             name =
                                                 visitor.lib.implementation
                                                     {
@@ -114,12 +167,6 @@
                                                         string = path : value : value ;
                                                     }
                                                     system ;
-                                            time-mask =
-                                                visitor.lib.implementation
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    time-mask ;
                                             timestamp =
                                                 visitor.lib.implementation
                                                     {
@@ -351,16 +398,8 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                (
-                                                                    pkgs.writeShellScriptBin
-                                                                        "test-it"
-                                                                        ''
-                                                                            echo ${ let x = "" ; in builtins.trace "BEFORE" x }
-                                                                            echo ${ let x = primary.identity.boot ; in builtins.trace x x }
-                                                                            echo ${ let x = "" ; in builtins.trace "AFTER" x }
-
-                                                                        ''
-                                                                )
+                                                                primary.dot-ssh.boot
+                                                                primary.identity.boot
                                                                 pkgs.trashy
                                                             ] ;
                                                         password = primary.password ;
