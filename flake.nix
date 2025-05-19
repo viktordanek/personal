@@ -210,23 +210,17 @@
                                                                                                         {
                                                                                                             demotion =
                                                                                                                 let
-                                                                                                                    script =
+                                                                                                                    application =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "demotion" ;
                                                                                                                                 runtimeInputs = [ pkgs.gnused ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        sed -Ei.bak "
-                                                                                                                                        s#cat\.url = \"github:[^\"]+\";#cat.url = \"$( ${ primary.repository.boot.cat } )\";#
-                                                                                                                                        s#config\.url = \"github:[^\"]+\";#config.url = \"$( ${ primary.repository.boot.dot-ssh } )\";#
-                                                                                                                                        s#git\.url = \"github:[^\"]+\";#git.url = \"$( ${ primary.repository.boot.git } )\";#
-                                                                                                                                        s#stash-factory\.url = \"github:[^\"]+\";#stash-factory.url = \"$( ${ primary.repository.boot.stash-factory } )\";#
-                                                                                                                                        s#visitor\.url = \"github:[^\"]+\";#visitor.url = \"$( ${ primary.repository.boot.visitor } )\";#
-                                                                                                                                        " flake.nix
-
+                                                                                                                                        sed --regexp-extended --in-place "s#($1) = \".*\";#\1 = \"$2\" ;#" flake.nix
                                                                                                                                     '' ;
                                                                                                                             } ;
+                                                                                                                    in "${ application }/bin/demotion" ;
                                                                                                             dot-ssh =
                                                                                                                 visitor.lib.implementation
                                                                                                                     {
