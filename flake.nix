@@ -230,18 +230,36 @@
                                                                                                                     let
                                                                                                                         application =
                                                                                                                             pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "post-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            while ! git push ${ remote } HEAD
+                                                                                                                                            do
+                                                                                                                                                sleep
+                                                                                                                                            done
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in "${ application }/bin/post-install" ;
+                                                                                                            pre-commit =
+                                                                                                                let
+                                                                                                                    application =
+                                                                                                                        pkgs.writeShellApplication
                                                                                                                             {
-                                                                                                                                name = "post-commit" ;
-                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                                name = "pre-commit" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        while ! git push ${ remote } HEAD
-                                                                                                                                        do
-                                                                                                                                            sleep
-                                                                                                                                        done
+                                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                                        if [ -z "$BRANCH" ]
+                                                                                                                                        then
+                                                                                                                                            BRANCH="scratch/$( uuidgen )"
+                                                                                                                                            git checkout -b "$BRANCH" 2> /dev/null
+                                                                                                                                        fi
                                                                                                                                     '' ;
                                                                                                                             } ;
-                                                                                                                        in "${ application }/bin/post-install" ;
+                                                                                                                    in "${ application }/bin/pre-commit"
                                                                                                         }
                                                                                             )
                                                                                     ) ;
