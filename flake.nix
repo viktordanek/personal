@@ -260,6 +260,18 @@
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     in "${ application }/bin/pre-commit" ;
+                                                                                                            scratch =
+                                                                                                                let
+                                                                                                                    application =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "scratch" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        git checkout -b scratch/$( uuidgen )
+                                                                                                                                    '' ;
+                                                                                                                            } ;
                                                                                                         }
                                                                                             )
                                                                                     ) ;
