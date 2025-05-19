@@ -4,7 +4,7 @@
             cat.url = "github:viktordanek/cat/scratch/a1b4e29f-d775-48f9-a8c8-2642edd842aa" ;
             config.url = "github:viktordanek/config/scratch/3c7895f3-309b-452f-a0fd-bbe3c94d05d7" ;
             git.url = "github:viktordanek/git/88d65d4fa09b6c630b008f67be80c4aa135100da" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/scratch/c4c8cf5e-8971-4c33-9e0f-526defeb86a2" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/scratch/fe259910-5e0e-404c-a032-5b5b0d91538f" ;
 	        visitor.url = "github:viktordanek/visitor/scratch/d926f8ea-1fdc-441c-9fd9-8abbc5e13fdf" ;
         } ;
     outputs =
@@ -259,7 +259,7 @@
                                                                                                                                         fi
                                                                                                                                     '' ;
                                                                                                                             } ;
-                                                                                                                    in "${ application }/bin/pre-commit"
+                                                                                                                    in "${ application }/bin/pre-commit" ;
                                                                                                         }
                                                                                             )
                                                                                     ) ;
