@@ -490,7 +490,7 @@
                                                                     {
                                                                         timerConfig =
                                                                             {
-                                                                                OnBootSec = "5min" ;
+                                                                                OnBootSec = "0min" ;
                                                                                 OnCalendar = "daily" ;
                                                                                 Persistent = true ;
                                                                             } ;
