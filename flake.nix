@@ -273,6 +273,67 @@
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     in "${ application }/bin/pre-commit" ;
+                                                                                                            pre-commit-private =
+                                                                                                                let
+                                                                                                                    application =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "pre-commit-private" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.gnugrep pkgs.libuuid ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                                        if [ -z "$BRANCH" ]
+                                                                                                                                        then
+                                                                                                                                            BRANCH="scratch/$( uuidgen )"
+                                                                                                                                            git checkout -b "$BRANCH" 2> /dev/null
+                                                                                                                                        fi
+                                                                                                                                        REFS=$( grep -oP 'url\s*=\s*".*?/((scratch|sub|issue|milestone)/[^"]*)"' flake.nix | grep -oP '(scratch|sub|issue|milestone)' | sort -u )
+                                                                                                                                        has_ref() {
+                                                                                                                                            local ref=$1
+                                                                                                                                            echo "$REFS" | grep -q "^$ref$"
+                                                                                                                                        }
+                                                                                                                                        fail() {
+                                                                                                                                            echo "ERROR: $1" >&2
+                                                                                                                                            exit 1
+                                                                                                                                        }
+                                                                                                                                        case "$BRANCH" in
+                                                                                                                                            scratch/*)
+                                                                                                                                                exit 0
+                                                                                                                                            ;;
+                                                                                                                                        sub/*)
+                                                                                                                                            if has_ref "scratch"; then
+                                                                                                                                                fail "Branch 'sub/*' cannot have 'scratch' refs in flake inputs."
+                                                                                                                                            fi
+                                                                                                                                            ;;
+                                                                                                                                        issue/*)
+                                                                                                                                            if ! has_ref "scratch" && ! has_ref "sub"; then
+                                                                                                                                                fail "Branch 'issue/*' requires at least 'scratch' or 'sub' refs in flake inputs."
+                                                                                                                                            fi
+                                                                                                                                            ;;
+                                                                                                                                        milestone/*)
+                                                                                                                                            if has_ref "scratch" || has_ref "sub" || has_ref "issue"; then
+                                                                                                                                                fail "Branch 'milestone/*' cannot have 'scratch', 'sub', or 'issue' refs in flake inputs."
+                                                                                                                                            fi
+                                                                                                                                            ;;
+                                                                                                                                        development)
+                                                                                                                                            if has_ref "scratch" || has_ref "sub" || has_ref "issue" || has_ref "milestone"; then
+                                                                                                                                                fail "Branch 'development' cannot have 'scratch', 'sub', 'issue', or 'milestone' refs in flake inputs."
+                                                                                                                                            fi
+                                                                                                                                            ;;
+                                                                                                                                        main)
+                                                                                                                                            if [ -n "$refs" ]; then
+                                                                                                                                                fail "Branch 'main' commits cannot have 'scratch', 'sub', 'issue', or 'milestone' refs in flake inputs."
+                                                                                                                                            fi
+                                                                                                                                            ;;
+                                                                                                                                        *)
+                                                                                                                                            # For any other branch, you can either allow or disallow commits
+                                                                                                                                            echo "Warning: Branch '$BRANCH' does not match known patterns. Commit allowed."
+                                                                                                                                            ;;
+                                                                                                                                        esac
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                    in "${ application }/bin/pre-commit-private" ;
                                                                                                             scratch =
                                                                                                                 let
                                                                                                                     application =
