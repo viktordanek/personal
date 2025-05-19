@@ -2,16 +2,18 @@
     inputs =
         {
             cat.url = "github:viktordanek/cat/scratch/a1b4e29f-d775-48f9-a8c8-2642edd842aa" ;
-            config.url = "/tmp/40f02ce89b8b52c0172a848c655343b3c4fd111173d52d6f17e94b3479658e4f/config" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/scratch/0c5117fc-0bcb-41d6-9eb3-196f60aa34e3" ;
+            config.url = "github:viktordanek/config/scratch/3c7895f3-309b-452f-a0fd-bbe3c94d05d7" ;
+            git.url = "github:viktordanek/git/88d65d4fa09b6c630b008f67be80c4aa135100da" ;
+	        stash-factory.url = "github:viktordanek/stash-factory/scratch/c4c8cf5e-8971-4c33-9e0f-526defeb86a2" ;
 	        visitor.url = "github:viktordanek/visitor/scratch/d926f8ea-1fdc-441c-9fd9-8abbc5e13fdf" ;
         } ;
     outputs =
-        { cat , config , self , stash-factory , visitor } :
+        { cat , config , git , self , stash-factory , visitor } :
             {
                 lib =
                     {
                         commit-hash ? null ,
+                        current-time ? null ,
                         description ,
                         dot-ssh ? null ,
                         hash-length ? 16 ,
@@ -20,36 +22,34 @@
                         name ,
                         nixpkgs ,
                         password ,
+                        repository ? null ,
                         stash ? "stash" ,
-                        system ,
-                        timestamp ? null
+                        system
                     } :
                         let
                             primary =
                                 let
                                     cat-lambda =
                                         target : path : value :
-                                            builtins.toString
-                                                (
-                                                    stash-factory.lib.generator
+                                            shell-application
+                                                target
+                                                {
+                                                    factory-name = target ;
+                                                    hash-length = primary.hash-length ;
+                                                    generator = cat.lib.generator ;
+                                                    generator-name = "cat" ;
+                                                    generation-parameters =
                                                         {
-                                                            factory-name = target ;
-                                                            hash-length = primary.hash-length ;
-                                                            generator = cat.lib.generator ;
-                                                            generator-name = "cat" ;
-                                                            generation-parameters =
-                                                                {
-                                                                    mapping = { "${ target }" = builtins.toString value ; } ;
-                                                                    nixpkgs = nixpkgs ;
-                                                                    system = system ;
-                                                                } ;
+                                                            mapping = { "${ target }" = builtins.toString value ; } ;
                                                             nixpkgs = nixpkgs ;
-                                                            path = [ primary.commit-hash primary.timestamp "cat" target path ] ;
-                                                            stash-directory = stash-directory ;
-                                                            system = primary.system ;
-                                                            targets = [ target ] ;
-                                                        }
-                                                ) ;
+                                                            system = system ;
+                                                        } ;
+                                                    nixpkgs = nixpkgs ;
+                                                    path = [ primary.commit-hash primary.current-time "cat" target path ] ;
+                                                    stash-directory = stash-directory ;
+                                                    system = primary.system ;
+                                                    targets = [ target ] ;
+                                                } ;
                                     in
                                         {
                                             commit-hash =
@@ -59,6 +59,17 @@
                                                         string = path : value : value ;
                                                     }
                                                     commit-hash ;
+                                            current-time =
+                                                visitor.lib.implementation
+                                                    {
+                                                        bool = path : value : value ;
+                                                        float = path : value : value ;
+                                                        int = path : value : value ;
+                                                        null = path : value : value ;
+                                                        path = path : value : value ;
+                                                        string = path : value : value ;
+                                                    }
+                                                    current-time ;
                                             description =
                                                 visitor.lib.implementation
                                                     {
@@ -85,19 +96,30 @@
                                                                                     {
                                                                                         host = host ;
                                                                                         host-name = host-name ;
-                                                                                        identity = identity ;
-                                                                                        known-host = known-host ;
+                                                                                        identity =
+                                                                                            visitor.lib.implementation
+                                                                                                {
+                                                                                                    lambda = path : value : "$( ${ value true } )/identity" ;
+                                                                                                }
+                                                                                                identity ;
+                                                                                        known-host =
+                                                                                            visitor.lib.implementation
+                                                                                                {
+                                                                                                    lambda = path : value : "$( ${ value true } )/known-host" ;
+                                                                                                }
+                                                                                                known-host ;
                                                                                         port = port ;
                                                                                         user = user ;
                                                                                     } ;
                                                                             in identity ( value { identity = primary.identity ; known-host = primary.known-host ; } ) ;
                                                                     in
-                                                                        stash-factory.lib.generator
+                                                                        shell-application
+                                                                            "dot-ssh"
                                                                             {
                                                                                 factory-name = "dot-ssh" ;
                                                                                 hash-length = primary.hash-length ;
                                                                                 generator = config.lib.generator ;
-                                                                                generator-name = "config" ;
+                                                                                generator-name = "dot-ssh" ;
                                                                                 generation-parameters =
                                                                                     {
                                                                                         host = point.host ;
@@ -110,10 +132,10 @@
                                                                                         user = point.user ;
                                                                                     } ;
                                                                                 nixpkgs = nixpkgs ;
-                                                                                path = [ primary.commit-hash primary.timestamp "config" path ] ;
+                                                                                path = [ primary.commit-hash primary.current-time "config" path ] ;
                                                                                 stash-directory = stash-directory ;
                                                                                 system = primary.system ;
-                                                                                targets = [ "/target" ] ;
+                                                                                targets = [ "target" ] ;
                                                                             } ;
                                                     }
                                                     dot-ssh ;
@@ -123,6 +145,7 @@
                                                         int = path : value : value ;
                                                     }
                                                     hash-length ;
+
                                             identity =
                                                 visitor.lib.implementation
                                                     {
@@ -136,7 +159,7 @@
                                                         path = path : value : cat-lambda "known-host" path value ;
                                                         string = path : value : cat-lambda "known-host" path value ;
                                                     }
-                                                    identity ;
+                                                    known-host ;
                                             name =
                                                 visitor.lib.implementation
                                                     {
@@ -155,6 +178,98 @@
                                                         string = path : value : value ;
                                                     }
                                                     password ;
+                                            repository =
+                                                visitor.lib.implementation
+                                                    {
+                                                        lambda =
+                                                            path : value :
+                                                                let
+                                                                    point =
+                                                                        let
+                                                                            identity =
+                                                                                {
+                                                                                    config ,
+                                                                                    hooks ,
+                                                                                    init ,
+                                                                                    remote
+                                                                                } :
+                                                                                    {
+                                                                                        config = config ;
+                                                                                        hooks = hooks ;
+                                                                                        init = init ;
+                                                                                        remote = remote ;
+                                                                                    } ;
+                                                                            in
+                                                                                identity
+                                                                                    (
+                                                                                        value
+                                                                                            (
+                                                                                                let
+                                                                                                    pkgs = nixpkgs.legacyPackages.${ primary.system } ;
+                                                                                                    in
+                                                                                                        {
+                                                                                                            dot-ssh =
+                                                                                                                visitor.lib.implementation
+                                                                                                                    {
+                                                                                                                        lambda = path : value : "${ pkgs.openssh }/bin/ssh -F $( ${ value true } )/target" ;
+                                                                                                                    }
+                                                                                                                    primary.dot-ssh ;
+                                                                                                            fetch =
+                                                                                                                remote : branch :
+                                                                                                                    ''
+                                                                                                                        if git fetch ${ remote } ${ branch } 2>&1
+                                                                                                                        then
+                                                                                                                            git checkout ${ remote }/${ branch } 2>&1
+                                                                                                                        else
+                                                                                                                            git checkout -b ${ branch }
+                                                                                                                        fi
+                                                                                                                        git fetch ${ remote } 2>&1
+                                                                                                                    '' ;
+                                                                                                            post-commit =
+                                                                                                                remote :
+                                                                                                                    let
+                                                                                                                        application =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "post-commit" ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        while ! git push ${ remote } HEAD
+                                                                                                                                        do
+                                                                                                                                            sleep
+                                                                                                                                        done
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                        in "${ application }/bin/post-install" ;
+                                                                                                        }
+                                                                                            )
+                                                                                    ) ;
+                                                                    in
+                                                                        shell-application
+                                                                            "repository"
+                                                                            {
+                                                                                factory-name = "repository" ;
+                                                                                hash-length = primary.hash-length ;
+                                                                                generator = git.lib.generator ;
+                                                                                generator-name = "repository" ;
+                                                                                generation-parameters =
+                                                                                    {
+                                                                                        config = point.config ;
+                                                                                        hooks = point.hooks ;
+                                                                                        init = point.init ;
+                                                                                        nixpkgs = nixpkgs ;
+                                                                                        remote = point.remote ;
+                                                                                        system = system ;
+                                                                                    } ;
+                                                                                nixpkgs = nixpkgs ;
+                                                                                path = [ primary.commit-hash primary.current-time "repository" path ] ;
+                                                                                stash-directory = stash-directory ;
+                                                                                system = primary.system ;
+                                                                                targets = [ "git" "work-tree" ] ;
+                                                                            } ;
+                                                    }
+                                                    repository ;
                                             stash =
                                                 visitor.lib.implementation
                                                     {
@@ -167,19 +282,13 @@
                                                         string = path : value : value ;
                                                     }
                                                     system ;
-                                            timestamp =
-                                                visitor.lib.implementation
-                                                    {
-                                                        bool = path : value : value ;
-                                                        float = path : value : value ;
-                                                        int = path : value : value ;
-                                                        null = path : value : value ;
-                                                        path = path : value : value ;
-                                                        string = path : value : value ;
-                                                    }
-                                                    timestamp ;
                                         } ;
-                                    stash-directory = "/home/${ primary.name }/${ primary.stash }" ;
+                            shell-application =
+                                name : set : direct :
+                                let
+                                    derivation = stash-factory.lib.generator set ;
+                                    in if direct then "${ derivation }/bin/${ name }" else builtins.toString derivation ;
+                            stash-directory = "/home/${ primary.name }/${ primary.stash }" ;
                             in
                                 { config , lib , pkgs , ... } :
                                     {
@@ -327,11 +436,13 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             set -euo pipefail
+                                                                                                            ARCHIVE=$( mktemp --dry-run )
                                                                                                             find ${ stash-directory } -mindepth 1 -maxdepth 1 -type d | while read -r DIRECTORY
                                                                                                             do
-                                                                                                                if ( ! find "$DIRECTORY" -atype -31 -quit ) && ( ! find "$DIRECTORY" -ctype -31 -quit ) && ( ! find "$DIRECTORY" -mtype -31 -quit )
+                                                                                                                mkdir --parents "$ARCHIVE"
+                                                                                                                if ( ! find "$DIRECTORY" -atype -7 -quit ) && ( ! find "$DIRECTORY" -ctype -7 -quit ) && ( ! find "$DIRECTORY" -mtype -7 -quit )
                                                                                                                 then
-                                                                                                                    rm --recursive --force "$DIRECTORY"
+                                                                                                                    mv "$DIRECTORY" "$ARCHIVE"
                                                                                                                 fi
                                                                                                             done
                                                                                                         '' ;
@@ -341,28 +452,6 @@
                                                                                 User = primary.name ;
                                                                             } ;
                                                                         wants = [ "network-online.target" ] ;
-                                                                    } ;
-                                                                trashy =
-                                                                    {
-                                                                        after = [ "network.target" ] ;
-                                                                        serviceConfig =
-                                                                            {
-                                                                                ExecStart =
-                                                                                    let
-                                                                                        application =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "ExecStart" ;
-                                                                                                    runtimeInputs = [ pkgs.trashy ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            trashy remove
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                                in "${ application }/bin/ExecStart" ;
-                                                                                User = primary.name ;
-                                                                            } ;
-                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
                                                             } ;
                                                         timers =
@@ -377,15 +466,6 @@
                                                                             } ;
                                                                         wantedBy = [ "timers.target" ] ;
                                                                     } ;
-                                                                trashy =
-                                                                    {
-                                                                        timerConfig =
-                                                                            {
-                                                                                OnBootSec = "5min" ;
-                                                                                OnCalendar = "weekly" ;
-                                                                                Persistent = true ;
-                                                                            } ;
-                                                                    } ;
                                                             } ;
                                                     } ;
                                                 system.stateVersion = "23.05" ;
@@ -397,11 +477,48 @@
                                                         isNormalUser = true ;
                                                         name = primary.name ;
                                                         packages =
-                                                            [
-                                                                primary.dot-ssh.boot
-                                                                primary.identity.boot
-                                                                pkgs.trashy
-                                                            ] ;
+                                                            builtins.concatLists
+                                                                [
+                                                                    (
+                                                                        visitor.lib.implementation
+                                                                            {
+                                                                                lambda =
+                                                                                    path : value :
+                                                                                        let
+                                                                                            reducer = previous : current : if builtins.typeOf current == "int" then builtins.elemAt previous current else if builtins.typeOf current == "string" then builtins.getAttr current previous else builtins.throw "This should not happen." ;
+                                                                                            root = builtins.foldl' reducer config.personal.studio path ;
+                                                                                            in
+                                                                                                if root.enable then
+                                                                                                    [
+                                                                                                        (
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name =
+                                                                                                                        if builtins.typeOf root.name == "string" then root.name
+                                                                                                                        else if builtins.length path > 0 then
+                                                                                                                            let name = builtins.elemAt path ( ( builtins.length path ) - 1 ) ;
+                                                                                                                            in if builtins.typeOf name == "string" then name else builtins.throw "The repository is numbered ${ builtins.toString name } not named."
+                                                                                                                        else builtins.throw "The repository is not named because it is root." ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            ROOT=$( ${ value true } )
+                                                                                                                            GIT_DIR="$ROOT/git"
+                                                                                                                            export GIT_DIR
+                                                                                                                            GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                                            export GIT_WORK_TREE
+                                                                                                                            idea-community "$GIT_WORK_TREE"
+                                                                                                                        '' ;
+                                                                                                                }
+                                                                                                        )
+                                                                                                    ]
+                                                                                                else [ ] ;
+                                                                                list = path : list : builtins.concatLists list ;
+                                                                                set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                            }
+                                                                            primary.repository
+                                                                    )
+                                                                ] ;
                                                         password = primary.password ;
                                                     } ;
                                             } ;
@@ -409,6 +526,17 @@
                                             {
                                                 personal =
                                                     {
+                                                        studio =
+                                                            visitor.lib.implementation
+                                                                {
+                                                                    lambda =
+                                                                        path : value :
+                                                                            {
+                                                                                enable = lib.mkOption { default = false ; type = lib.types.bool ; } ;
+                                                                                name = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
+                                                                            } ;
+                                                                }
+                                                                primary.repository ;
                                                         wifi =
                                                             lib.mkOption
                                                                 {
