@@ -269,9 +269,10 @@
                                                                                                                                 runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        git checkout -b scratch/$( uuidgen )
+                                                                                                                                        git checkout -b "scratch/$( uuidgen )"
                                                                                                                                     '' ;
                                                                                                                             } ;
+                                                                                                                    in "${ application }/bin/scratch" ;
                                                                                                         }
                                                                                             )
                                                                                     ) ;
@@ -535,7 +536,7 @@
                                                                                                                             ROOT=$( ${ value true } )
                                                                                                                             GIT_DIR="$ROOT/git"
                                                                                                                             GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                            env GIT_DIR="${GIT_DIR}" GIT_WORK_TREE="$GIT_WORK_TREE" idea-community "$GIT_WORK_TREE"
+                                                                                                                            env GIT_DIR="$GIT_DIR" GIT_WORK_TREE="$GIT_WORK_TREE" idea-community "$GIT_WORK_TREE"
                                                                                                                         '' ;
                                                                                                                 }
                                                                                                         )
