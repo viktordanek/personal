@@ -534,10 +534,8 @@
                                                                                                                         ''
                                                                                                                             ROOT=$( ${ value true } )
                                                                                                                             GIT_DIR="$ROOT/git"
-                                                                                                                            export GIT_DIR
                                                                                                                             GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                            export GIT_WORK_TREE
-                                                                                                                            idea-community "$GIT_WORK_TREE"
+                                                                                                                            env GIT_DIR="${GIT_DIR}" GIT_WORK_TREE="$GIT_WORK_TREE" idea-community "$GIT_WORK_TREE"
                                                                                                                         '' ;
                                                                                                                 }
                                                                                                         )
