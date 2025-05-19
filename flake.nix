@@ -241,7 +241,7 @@
                                                                                                                                             done
                                                                                                                                         '' ;
                                                                                                                                 } ;
-                                                                                                                        in "${ application }/bin/post-install" ;
+                                                                                                                        in "${ application }/bin/post-commit" ;
                                                                                                             pre-commit =
                                                                                                                 let
                                                                                                                     application =
