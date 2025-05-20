@@ -440,6 +440,17 @@
                                                                         }
                                                                 )
                                                                 ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private }" )
+                                                                (
+                                                                    pkgs.writeShellApplication
+                                                                        {
+                                                                            name = "portfolio" ;
+                                                                            runtimeInputs = [ pkgs.findutils ] ;
+                                                                            text =
+                                                                                ''
+                                                                                    find ${ derivation pkgs } -mindepth 1 -exec {} \;
+                                                                                '' ;
+                                                                        }
+                                                                )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
