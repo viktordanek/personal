@@ -243,7 +243,7 @@
                                                                                                     )
                                                                                                 ] ;
                                                                                         list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
-                                                                                        set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
+                                                                                        set = path : set : builtins.trace "16a2d609-eada-4ad0-9a46-f9c03295a582" ( builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ) ;
                                                                                     }
                                                                                     configuration ;
                                                                             in builtins.concatStringsSep "\n" ( commands ) ;
