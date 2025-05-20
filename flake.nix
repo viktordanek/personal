@@ -123,6 +123,26 @@
                                                                                                                                                 string = string ;
                                                                                                                                             }
                                                                                                                                             value ;
+                                                                                                                        mkdir =
+                                                                                                                            let
+                                                                                                                                application =
+                                                                                                                                    pkgs.writeShellApplication
+                                                                                                                                        {
+                                                                                                                                            name = "echo" ;
+                                                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                            text =
+                                                                                                                                                ''
+                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                                    OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                                    then
+                                                                                                                                                        mkdir --parents "$OUTPUT_FILE"
+                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                                    fi
+                                                                                                                                                    echo "$OUTPUT_FILE"
+                                                                                                                                                '' ;
+                                                                                                                                        } ;
+                                                                                                                                in "${ application }/bin/echo" ;
                                                                                                                         stash =
                                                                                                                             value :
                                                                                                                                 let
@@ -350,7 +370,7 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                ( pkgs.writeShellScriptBin "test-it" "${ ( primary.configuration pkgs ).dot-ssh.config }" )
+                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private.worktree }" )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
