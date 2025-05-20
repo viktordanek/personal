@@ -43,6 +43,54 @@
                                                                                                             point =
                                                                                                                 value
                                                                                                                     {
+                                                                                                                        apply =
+                                                                                                                            value :
+                                                                                                                                let
+                                                                                                                                    string =
+                                                                                                                                        path_ : value :
+                                                                                                                                            let
+                                                                                                                                                application =
+                                                                                                                                                    pkgs.writeShellApplication
+                                                                                                                                                        {
+                                                                                                                                                            name = "apply" ;
+                                                                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.openssh ] ;
+                                                                                                                                                            text =
+                                                                                                                                                                ''
+                                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                                                    export OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                                                    then
+                                                                                                                                                                        OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                                                        mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                                                        ${ pkgs.writeShellApplication { name = "apply" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/apply
+                                                                                                                                                                        chmod 0400 "$OUTPUT_FILE"
+                                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                                                    fi
+                                                                                                                                                                    echo "$OUTPUT_FILE"
+                                                                                                                                                                '' ;
+                                                                                                                                                        } ;
+                                                                                                                                                stash =
+                                                                                                                                                    visitor.lib.implementation
+                                                                                                                                                        {
+                                                                                                                                                            lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
+                                                                                                                                                            null = unimplemented ;
+                                                                                                                                                        }
+                                                                                                                                                    configuration ;
+                                                                                                                                                in "${ application }/bin/apply" ;
+                                                                                                                                    in
+                                                                                                                                        visitor.lib.implementation
+                                                                                                                                            {
+                                                                                                                                                bool = unimplemented ;
+                                                                                                                                                float = unimplemented ;
+                                                                                                                                                int = unimplemented ;
+                                                                                                                                                lambda = string ;
+                                                                                                                                                list = unimplemented ;
+                                                                                                                                                null = unimplemented ;
+                                                                                                                                                path = unimplemented ;
+                                                                                                                                                set = unimplemented ;
+                                                                                                                                                string = unimplemented ;
+                                                                                                                                            }
+                                                                                                                                            value ;
                                                                                                                         cat =
                                                                                                                             value :
                                                                                                                                 let
@@ -281,7 +329,8 @@
                                                 programs =
                                                     {
                                                         bash.interactiveShellInit = "" ;
-                                                        dconf.enable = true;
+                                                        dconf.enable = true ;
+                                                        direnv.enable = true ;
                                                         gnupg.agent.enable = true ;
                                                     } ;
                                                 security =
@@ -370,7 +419,7 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private.worktree }" )
+                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private }" )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
