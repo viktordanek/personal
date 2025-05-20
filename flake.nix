@@ -430,6 +430,7 @@
                                                                                     commands =
                                                                                         visitor.lib.implementation
                                                                                             {
+                                                                                                lambda = name : value : [ ] ;
                                                                                                 list = name : list : builtins.concatLists list ;
                                                                                                 set = name : set : builtins.concatLists ( builtins.attrValues set ) ;
                                                                                                 string = name : value : [ value ] ;
