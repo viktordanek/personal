@@ -423,7 +423,7 @@
                                                         packages =
                                                             [
                                                                 pkgs.git
-                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.personal }" )
+                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).dot-ssh.boot.config }" )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
