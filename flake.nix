@@ -443,7 +443,7 @@
                                                                 (
                                                                     pkgs.writeShellApplication
                                                                         {
-                                                                            name = "portfolio" ;
+                                                                            # name = "portfolio" ;
                                                                             runtimeInputs = [ pkgs.findutils ] ;
                                                                             text =
                                                                                 ''
