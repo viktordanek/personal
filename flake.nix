@@ -350,7 +350,7 @@
                                                         name = primary.name ;
                                                         packages =
                                                             [
-                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).dot-ssh.identity }" )
+                                                                ( pkgs.writeShellScriptBin "test-it" "${ ( primary.configuration pkgs ).dot-ssh.config }" )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
