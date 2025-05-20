@@ -19,233 +19,233 @@
                         system
                     } :
                         let
+                            derivation =
+                                pkgs :
+                                    pkgs.stdenv.mkDerivation
+                                        {
+                                            installPhase =
+                                                let
+                                                    commands =
+                                                        visitor.lib.implementation
+                                                            {
+                                                                lambda =
+                                                                    path : value :
+                                                                        [
+                                                                            (
+                                                                                let
+                                                                                    point =
+                                                                                        value
+                                                                                            {
+                                                                                                apply =
+                                                                                                    value :
+                                                                                                        let
+                                                                                                            string =
+                                                                                                                path_ : value :
+                                                                                                                    let
+                                                                                                                        application =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "apply" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.openssh ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            export OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                            then
+                                                                                                                                                OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                                mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                                ${ pkgs.writeShellApplication { name = "apply" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/apply
+                                                                                                                                                mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                            fi
+                                                                                                                                            echo "$OUTPUT_FILE"
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        stash =
+                                                                                                                            visitor.lib.implementation
+                                                                                                                                {
+                                                                                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
+                                                                                                                                    null = unimplemented ;
+                                                                                                                                }
+                                                                                                                            configuration ;
+                                                                                                                        in "${ application }/bin/apply" ;
+                                                                                                            in
+                                                                                                                visitor.lib.implementation
+                                                                                                                    {
+                                                                                                                        bool = unimplemented ;
+                                                                                                                        float = unimplemented ;
+                                                                                                                        int = unimplemented ;
+                                                                                                                        lambda = string ;
+                                                                                                                        list = unimplemented ;
+                                                                                                                        null = unimplemented ;
+                                                                                                                        path = unimplemented ;
+                                                                                                                        set = unimplemented ;
+                                                                                                                        string = unimplemented ;
+                                                                                                                    }
+                                                                                                                    value ;
+                                                                                                cat =
+                                                                                                    value :
+                                                                                                        let
+                                                                                                            string =
+                                                                                                                path_ : value :
+                                                                                                                    let
+                                                                                                                        application =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "cat" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                            then
+                                                                                                                                                OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                                mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                                cat ${ value } > "$OUTPUT_FILE"
+                                                                                                                                                chmod 0400 "$OUTPUT_FILE"
+                                                                                                                                                mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                            fi
+                                                                                                                                            echo "$OUTPUT_FILE"
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in "${ application }/bin/cat" ;
+                                                                                                            in
+                                                                                                                visitor.lib.implementation
+                                                                                                                    {
+                                                                                                                        bool = unimplemented ;
+                                                                                                                        float = unimplemented ;
+                                                                                                                        int = unimplemented ;
+                                                                                                                        list = unimplemented ;
+                                                                                                                        null = unimplemented ;
+                                                                                                                        path = string ;
+                                                                                                                        set = unimplemented ;
+                                                                                                                        string = string ;
+                                                                                                                    }
+                                                                                                                    value ;
+                                                                                                echo =
+                                                                                                    value :
+                                                                                                        let
+                                                                                                            string =
+                                                                                                                path_ : value :
+                                                                                                                    let
+                                                                                                                        application =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "echo" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                            then
+                                                                                                                                                OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                                mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                                cat ${ builtins.toFile "value" ( builtins.toString value ) } > "$OUTPUT_FILE"
+                                                                                                                                                chmod 0400 "$OUTPUT_FILE"
+                                                                                                                                                mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                            fi
+                                                                                                                                            echo "$OUTPUT_FILE"
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in "${ application }/bin/echo" ;
+                                                                                                            in
+                                                                                                                visitor.lib.implementation
+                                                                                                                    {
+                                                                                                                        bool = string ;
+                                                                                                                        float = string ;
+                                                                                                                        int = string ;
+                                                                                                                        list = unimplemented ;
+                                                                                                                        null = string ;
+                                                                                                                        path = string ;
+                                                                                                                        set = unimplemented ;
+                                                                                                                        string = string ;
+                                                                                                                    }
+                                                                                                                    value ;
+                                                                                                mkdir =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "echo" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                            OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                            if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                            then
+                                                                                                                                mkdir --parents "$OUTPUT_FILE"
+                                                                                                                                mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                            fi
+                                                                                                                            echo "$OUTPUT_FILE"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/echo" ;
+                                                                                                stash =
+                                                                                                    value :
+                                                                                                        let
+                                                                                                            string =
+                                                                                                                path_ : value :
+                                                                                                                    let
+                                                                                                                        application =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "stash" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                            if [ ! -d "$FLAG_DIRECTORY" ]
+                                                                                                                                            then
+                                                                                                                                                OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                                mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                                ${ pkgs.writeShellApplication { name = "stash" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/stash > "$OUTPUT_FILE"
+                                                                                                                                                chmod 0400 "$OUTPUT_FILE"
+                                                                                                                                                mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                            fi
+                                                                                                                                            echo "$OUTPUT_FILE"
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        stash =
+                                                                                                                            visitor.lib.implementation
+                                                                                                                                {
+                                                                                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
+                                                                                                                                    null = unimplemented ;
+                                                                                                                                }
+                                                                                                                            configuration ;
+                                                                                                                        in "${ application }/bin/stash" ;
+                                                                                                            in
+                                                                                                                visitor.lib.implementation
+                                                                                                                    {
+                                                                                                                        bool = unimplemented ;
+                                                                                                                        float = unimplemented ;
+                                                                                                                        int = unimplemented ;
+                                                                                                                        lambda = string ;
+                                                                                                                        list = unimplemented ;
+                                                                                                                        null = unimplemented ;
+                                                                                                                        path = unimplemented ;
+                                                                                                                        set = unimplemented ;
+                                                                                                                        string = unimplemented ;
+                                                                                                                    }
+                                                                                                                    value ;
+                                                                                            } ;
+                                                                                    in "makeWrapper ${ point } ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out"
+                                                                            )
+                                                                        ] ;
+                                                                list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
+                                                                set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
+                                                            }
+                                                            configuration ;
+                                                    in builtins.concatStringsSep "\n" ( commands ) ;
+                                            name = "derivation" ;
+                                            nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                            src = ./. ;
+                                        } ;
                             primary =
                                 let
-                                    derivation =
-                                        pkgs :
-                                            pkgs.stdenv.mkDerivation
-                                                {
-                                                    installPhase =
-                                                        let
-                                                            commands =
-                                                                visitor.lib.implementation
-                                                                    {
-                                                                        lambda =
-                                                                            path : value :
-                                                                                [
-                                                                                    (
-                                                                                        let
-                                                                                            point =
-                                                                                                value
-                                                                                                    {
-                                                                                                        apply =
-                                                                                                            value :
-                                                                                                                let
-                                                                                                                    string =
-                                                                                                                        path_ : value :
-                                                                                                                            let
-                                                                                                                                application =
-                                                                                                                                    pkgs.writeShellApplication
-                                                                                                                                        {
-                                                                                                                                            name = "apply" ;
-                                                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.openssh ] ;
-                                                                                                                                            text =
-                                                                                                                                                ''
-                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    export OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
-                                                                                                                                                    then
-                                                                                                                                                        OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
-                                                                                                                                                        mkdir --parents "$OUTPUT_DIRECTORY"
-                                                                                                                                                        ${ pkgs.writeShellApplication { name = "apply" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/apply
-                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
-                                                                                                                                                    fi
-                                                                                                                                                    echo "$OUTPUT_FILE"
-                                                                                                                                                '' ;
-                                                                                                                                        } ;
-                                                                                                                                stash =
-                                                                                                                                    visitor.lib.implementation
-                                                                                                                                        {
-                                                                                                                                            lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
-                                                                                                                                            null = unimplemented ;
-                                                                                                                                        }
-                                                                                                                                    configuration ;
-                                                                                                                                in "${ application }/bin/apply" ;
-                                                                                                                    in
-                                                                                                                        visitor.lib.implementation
-                                                                                                                            {
-                                                                                                                                bool = unimplemented ;
-                                                                                                                                float = unimplemented ;
-                                                                                                                                int = unimplemented ;
-                                                                                                                                lambda = string ;
-                                                                                                                                list = unimplemented ;
-                                                                                                                                null = unimplemented ;
-                                                                                                                                path = unimplemented ;
-                                                                                                                                set = unimplemented ;
-                                                                                                                                string = unimplemented ;
-                                                                                                                            }
-                                                                                                                            value ;
-                                                                                                        cat =
-                                                                                                            value :
-                                                                                                                let
-                                                                                                                    string =
-                                                                                                                        path_ : value :
-                                                                                                                            let
-                                                                                                                                application =
-                                                                                                                                    pkgs.writeShellApplication
-                                                                                                                                        {
-                                                                                                                                            name = "cat" ;
-                                                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                                                            text =
-                                                                                                                                                ''
-                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
-                                                                                                                                                    then
-                                                                                                                                                        OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
-                                                                                                                                                        mkdir --parents "$OUTPUT_DIRECTORY"
-                                                                                                                                                        cat ${ value } > "$OUTPUT_FILE"
-                                                                                                                                                        chmod 0400 "$OUTPUT_FILE"
-                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
-                                                                                                                                                    fi
-                                                                                                                                                    echo "$OUTPUT_FILE"
-                                                                                                                                                '' ;
-                                                                                                                                        } ;
-                                                                                                                                in "${ application }/bin/cat" ;
-                                                                                                                    in
-                                                                                                                        visitor.lib.implementation
-                                                                                                                            {
-                                                                                                                                bool = unimplemented ;
-                                                                                                                                float = unimplemented ;
-                                                                                                                                int = unimplemented ;
-                                                                                                                                list = unimplemented ;
-                                                                                                                                null = unimplemented ;
-                                                                                                                                path = string ;
-                                                                                                                                set = unimplemented ;
-                                                                                                                                string = string ;
-                                                                                                                            }
-                                                                                                                            value ;
-                                                                                                        echo =
-                                                                                                            value :
-                                                                                                                let
-                                                                                                                    string =
-                                                                                                                        path_ : value :
-                                                                                                                            let
-                                                                                                                                application =
-                                                                                                                                    pkgs.writeShellApplication
-                                                                                                                                        {
-                                                                                                                                            name = "echo" ;
-                                                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                                                            text =
-                                                                                                                                                ''
-                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
-                                                                                                                                                    then
-                                                                                                                                                        OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
-                                                                                                                                                        mkdir --parents "$OUTPUT_DIRECTORY"
-                                                                                                                                                        cat ${ builtins.toFile "value" ( builtins.toString value ) } > "$OUTPUT_FILE"
-                                                                                                                                                        chmod 0400 "$OUTPUT_FILE"
-                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
-                                                                                                                                                    fi
-                                                                                                                                                    echo "$OUTPUT_FILE"
-                                                                                                                                                '' ;
-                                                                                                                                        } ;
-                                                                                                                                in "${ application }/bin/echo" ;
-                                                                                                                    in
-                                                                                                                        visitor.lib.implementation
-                                                                                                                            {
-                                                                                                                                bool = string ;
-                                                                                                                                float = string ;
-                                                                                                                                int = string ;
-                                                                                                                                list = unimplemented ;
-                                                                                                                                null = string ;
-                                                                                                                                path = string ;
-                                                                                                                                set = unimplemented ;
-                                                                                                                                string = string ;
-                                                                                                                            }
-                                                                                                                            value ;
-                                                                                                        mkdir =
-                                                                                                            let
-                                                                                                                application =
-                                                                                                                    pkgs.writeShellApplication
-                                                                                                                        {
-                                                                                                                            name = "echo" ;
-                                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                                            text =
-                                                                                                                                ''
-                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                    OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
-                                                                                                                                    then
-                                                                                                                                        mkdir --parents "$OUTPUT_FILE"
-                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
-                                                                                                                                    fi
-                                                                                                                                    echo "$OUTPUT_FILE"
-                                                                                                                                '' ;
-                                                                                                                        } ;
-                                                                                                                in "${ application }/bin/echo" ;
-                                                                                                        stash =
-                                                                                                            value :
-                                                                                                                let
-                                                                                                                    string =
-                                                                                                                        path_ : value :
-                                                                                                                            let
-                                                                                                                                application =
-                                                                                                                                    pkgs.writeShellApplication
-                                                                                                                                        {
-                                                                                                                                            name = "stash" ;
-                                                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                                                            text =
-                                                                                                                                                ''
-                                                                                                                                                    FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                                    if [ ! -d "$FLAG_DIRECTORY" ]
-                                                                                                                                                    then
-                                                                                                                                                        OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
-                                                                                                                                                        mkdir --parents "$OUTPUT_DIRECTORY"
-                                                                                                                                                        ${ pkgs.writeShellApplication { name = "stash" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/stash > "$OUTPUT_FILE"
-                                                                                                                                                        chmod 0400 "$OUTPUT_FILE"
-                                                                                                                                                        mkdir --parents "$FLAG_DIRECTORY"
-                                                                                                                                                    fi
-                                                                                                                                                    echo "$OUTPUT_FILE"
-                                                                                                                                                '' ;
-                                                                                                                                        } ;
-                                                                                                                                stash =
-                                                                                                                                    visitor.lib.implementation
-                                                                                                                                        {
-                                                                                                                                            lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
-                                                                                                                                            null = unimplemented ;
-                                                                                                                                        }
-                                                                                                                                    configuration ;
-                                                                                                                                in "${ application }/bin/stash" ;
-                                                                                                                    in
-                                                                                                                        visitor.lib.implementation
-                                                                                                                            {
-                                                                                                                                bool = unimplemented ;
-                                                                                                                                float = unimplemented ;
-                                                                                                                                int = unimplemented ;
-                                                                                                                                lambda = string ;
-                                                                                                                                list = unimplemented ;
-                                                                                                                                null = unimplemented ;
-                                                                                                                                path = unimplemented ;
-                                                                                                                                set = unimplemented ;
-                                                                                                                                string = unimplemented ;
-                                                                                                                            }
-                                                                                                                            value ;
-                                                                                                    } ;
-                                                                                            in "makeWrapper ${ point } ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out"
-                                                                                    )
-                                                                                ] ;
-                                                                        list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
-                                                                        set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
-                                                                    }
-                                                                    configuration ;
-                                                            in builtins.concatStringsSep "\n" ( commands ) ;
-                                                    name = "derivation" ;
-                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
-                                                    src = ./. ;
-                                                } ;
                                     unimplemented = path : value : builtins.throw "Unimplemented type ${ builtins.typeOf value } for path ${ builtins.toJSON path }." ;
                                     in
                                         {
