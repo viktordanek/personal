@@ -152,7 +152,7 @@
                                                                                                                                                 stash =
                                                                                                                                                     visitor.lib.implementation
                                                                                                                                                         {
-                                                                                                                                                            lambda = path : value : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ;
+                                                                                                                                                            lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
                                                                                                                                                             null = unimplemented ;
                                                                                                                                                         }
                                                                                                                                                     configuration ;
@@ -188,7 +188,7 @@
                                                         in
                                                             visitor.lib.implementation
                                                                 {
-                                                                    lambda = path : value : builtins.concatStringsSep "/" ( builtins.concatLists [ [ derivation ] ( builtins.map builtins.toJSON path ) ] ) ;
+                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ derivation ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
                                                                     null = path : value : unimplemented ;
                                                                 }
                                                                 configuration ;
