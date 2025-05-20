@@ -254,7 +254,7 @@
                                                         in
                                                             visitor.lib.implementation
                                                                 {
-                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ ( builtins.trace "8bcd185a-f6dc-4cf2-93b5-e34d70b5edd1" derivation ) ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
+                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ derivation ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
                                                                 }
                                                                 configuration ;
                                             description = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } description ;
