@@ -243,7 +243,6 @@
                                                                                                     )
                                                                                                 ] ;
                                                                                         list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
-                                                                                        null = path : list : [ ] ;
                                                                                         set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$out\"" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
                                                                                     }
                                                                                     configuration ;
@@ -255,8 +254,7 @@
                                                         in
                                                             visitor.lib.implementation
                                                                 {
-                                                                    lambda = path : value : builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ derivation ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ;
-                                                                    null = path : value : unimplemented ;
+                                                                    lambda = path : value : builtins.trace "2818754a-9411-4521-af9c-9e87013639e2" ( builtins.concatStringsSep " " [ "$(" ( builtins.concatStringsSep "/" ( builtins.concatLists [ [ derivation ] ( builtins.map builtins.toJSON path ) ] ) ) ")" ] ) ;
                                                                 }
                                                                 configuration ;
                                             description = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } description ;
@@ -423,7 +421,7 @@
                                                         packages =
                                                             [
                                                                 pkgs.git
-                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).dot-ssh.boot.identity null }" )
+                                                                ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private }" )
                                                             ] ;
                                                         password = primary.password ;
                                                     } ;
