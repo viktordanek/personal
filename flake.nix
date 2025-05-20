@@ -63,7 +63,6 @@
                                                                                                                                                                         OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
                                                                                                                                                                         mkdir --parents "$OUTPUT_DIRECTORY"
                                                                                                                                                                         ${ pkgs.writeShellApplication { name = "apply" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/apply
-                                                                                                                                                                        chmod 0400 "$OUTPUT_FILE"
                                                                                                                                                                         mkdir --parents "$FLAG_DIRECTORY"
                                                                                                                                                                     fi
                                                                                                                                                                     echo "$OUTPUT_FILE"
