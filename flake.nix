@@ -142,25 +142,33 @@
                                                                                                                                                                     then
                                                                                                                                                                         OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
                                                                                                                                                                         mkdir --parents "$OUTPUT_DIRECTORY"
-                                                                                                                                                                        ${ pkgs.writeShellApplication { name = "stash" ; runtimeInputs = [ pkgs.coreutils ] ; text = value ; } }/bin/stash > "$OUTPUT_FILE"
+                                                                                                                                                                        ${ pkgs.writeShellApplication { name = "stash" ; runtimeInputs = [ pkgs.coreutils ] ; text = value stash ; } }/bin/stash > "$OUTPUT_FILE"
                                                                                                                                                                         chmod 0400 "$OUTPUT_FILE"
                                                                                                                                                                         mkdir --parents "$FLAG_DIRECTORY"
                                                                                                                                                                     fi
                                                                                                                                                                     echo "$OUTPUT_FILE"
                                                                                                                                                                 '' ;
                                                                                                                                                         } ;
+                                                                                                                                                stash =
+                                                                                                                                                    visitor.lib.implementation
+                                                                                                                                                        {
+                                                                                                                                                            lambda = path : value : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "\"$OUT\"" ] ( builtins.map builtins.toJSON path ) ] ) ;
+                                                                                                                                                            null = unimplemented ;
+                                                                                                                                                        }
+                                                                                                                                                    configuration ;
                                                                                                                                                 in "${ application }/bin/stash" ;
                                                                                                                                     in
                                                                                                                                         visitor.lib.implementation
                                                                                                                                             {
-                                                                                                                                                bool = string ;
-                                                                                                                                                float = string ;
-                                                                                                                                                int = string ;
+                                                                                                                                                bool = unimplemented ;
+                                                                                                                                                float = unimplemented ;
+                                                                                                                                                int = unimplemented ;
+                                                                                                                                                lambda = string ;
                                                                                                                                                 list = unimplemented ;
-                                                                                                                                                null = string ;
-                                                                                                                                                path = string ;
+                                                                                                                                                null = unimplemented ;
+                                                                                                                                                path = unimplemented ;
                                                                                                                                                 set = unimplemented ;
-                                                                                                                                                string = string ;
+                                                                                                                                                string = unimplemented ;
                                                                                                                                             }
                                                                                                                                             value ;
                                                                                                                     } ;
