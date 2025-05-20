@@ -1,399 +1,125 @@
 {
     inputs =
         {
-            cat.url = "github:viktordanek/cat/scratch/a1b4e29f-d775-48f9-a8c8-2642edd842aa" ;
-            config.url = "github:viktordanek/config/scratch/3c7895f3-309b-452f-a0fd-bbe3c94d05d7" ;
-            git.url = "github:viktordanek/git/88d65d4fa09b6c630b008f67be80c4aa135100da" ;
-	        stash-factory.url = "github:viktordanek/stash-factory/scratch/bda97546-03c5-4ce5-8451-77e5d0f31b06" ;
 	        visitor.url = "github:viktordanek/visitor/scratch/d926f8ea-1fdc-441c-9fd9-8abbc5e13fdf" ;
         } ;
     outputs =
-        { cat , config , git , self , stash-factory , visitor } :
+        { self , visitor } :
             {
                 lib =
                     {
-                        commit-hash ? null ,
-                        current-time ? null ,
+                        configuration ? null ,
                         description ,
-                        dot-ssh ? null ,
                         hash-length ? 16 ,
-                        identity ? null ,
-                        known-host ? null ,
                         name ,
                         nixpkgs ,
                         password ,
-                        repository ? null ,
+                        seed ? null ,
                         stash ? "stash" ,
                         system
                     } :
                         let
                             primary =
                                 let
-                                    cat-lambda =
-                                        target : path : value :
-                                            shell-application
-                                                target
-                                                {
-                                                    factory-name = target ;
-                                                    hash-length = primary.hash-length ;
-                                                    generator = cat.lib.generator ;
-                                                    generator-name = "cat" ;
-                                                    generation-parameters =
-                                                        {
-                                                            mapping = { "${ target }" = builtins.toString value ; } ;
-                                                            nixpkgs = nixpkgs ;
-                                                            system = system ;
-                                                        } ;
-                                                    nixpkgs = nixpkgs ;
-                                                    path = [ primary.commit-hash primary.current-time "cat" target path ] ;
-                                                    stash-directory = stash-directory ;
-                                                    system = primary.system ;
-                                                    targets = [ target ] ;
-                                                } ;
+                                    unimplemented = path : value : builtins.throw "Unimplemented type ${ builtins.typeOf value } for path ${ builtins.toJSON path }." ;
                                     in
                                         {
-                                            commit-hash =
-                                                visitor.lib.implementation
-                                                    {
-                                                        null = path : value : "" ;
-                                                        string = path : value : value ;
-                                                    }
-                                                    commit-hash ;
-                                            current-time =
-                                                visitor.lib.implementation
-                                                    {
-                                                        bool = path : value : value ;
-                                                        float = path : value : value ;
-                                                        int = path : value : value ;
-                                                        null = path : value : value ;
-                                                        path = path : value : value ;
-                                                        string = path : value : value ;
-                                                    }
-                                                    current-time ;
-                                            description =
-                                                visitor.lib.implementation
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    description ;
-                                            dot-ssh =
-                                                visitor.lib.implementation
-                                                    {
-                                                        lambda =
-                                                            path : value :
-                                                                let
-                                                                    point =
-                                                                        let
-                                                                            identity =
-                                                                                {
-                                                                                    host ,
-                                                                                    host-name ,
-                                                                                    identity ,
-                                                                                    known-host ,
-                                                                                    port ,
-                                                                                    user
-                                                                                } :
-                                                                                    {
-                                                                                        host = host ;
-                                                                                        host-name = host-name ;
-                                                                                        identity =
-                                                                                            visitor.lib.implementation
-                                                                                                {
-                                                                                                    lambda = path : value : "$( ${ value true } )/identity" ;
-                                                                                                }
-                                                                                                identity ;
-                                                                                        known-host =
-                                                                                            visitor.lib.implementation
-                                                                                                {
-                                                                                                    lambda = path : value : "$( ${ value true } )/known-host" ;
-                                                                                                }
-                                                                                                known-host ;
-                                                                                        port = port ;
-                                                                                        user = user ;
-                                                                                    } ;
-                                                                            in identity ( value { identity = primary.identity ; known-host = primary.known-host ; } ) ;
-                                                                    in
-                                                                        shell-application
-                                                                            "dot-ssh"
-                                                                            {
-                                                                                factory-name = "dot-ssh" ;
-                                                                                hash-length = primary.hash-length ;
-                                                                                generator = config.lib.generator ;
-                                                                                generator-name = "dot-ssh" ;
-                                                                                generation-parameters =
-                                                                                    {
-                                                                                        host = point.host ;
-                                                                                        host-name = point.host-name ;
-                                                                                        identity = point.identity ;
-                                                                                        known-host = point.known-host ;
-                                                                                        nixpkgs = nixpkgs ;
-                                                                                        port = point.port ;
-                                                                                        system = system ;
-                                                                                        user = point.user ;
-                                                                                    } ;
-                                                                                nixpkgs = nixpkgs ;
-                                                                                path = [ primary.commit-hash primary.current-time "config" path ] ;
-                                                                                stash-directory = stash-directory ;
-                                                                                system = primary.system ;
-                                                                                targets = [ "target" ] ;
-                                                                            } ;
-                                                    }
-                                                    dot-ssh ;
-                                            hash-length =
-                                                visitor.lib.implementation
-                                                    {
-                                                        int = path : value : value ;
-                                                    }
-                                                    hash-length ;
-
-                                            identity =
-                                                visitor.lib.implementation
-                                                    {
-                                                        path = path : value : cat-lambda "identity" path value ;
-                                                        string = path : value : cat-lambda "identity" path value ;
-                                                    }
-                                                    identity ;
-                                            known-host =
-                                                visitor.lib.implementation
-                                                    {
-                                                        path = path : value : cat-lambda "known-host" path value ;
-                                                        string = path : value : cat-lambda "known-host" path value ;
-                                                    }
-                                                    known-host ;
-                                            name =
-                                                visitor.lib.implementation
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    name ;
-                                            nixpkgs =
-                                                visitor.lib.implementation
-                                                    {
-                                                        set = path : set : set ;
-                                                    }
-                                                    nixpkgs ;
-                                            password =
-                                                visitor.lib.implementation
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    password ;
-                                            repository =
-                                                visitor.lib.implementation
-                                                    {
-                                                        lambda =
-                                                            path : value :
-                                                                let
-                                                                    point =
-                                                                        let
-                                                                            identity =
-                                                                                {
-                                                                                    config ,
-                                                                                    hooks ,
-                                                                                    init ,
-                                                                                    remote
-                                                                                } :
-                                                                                    {
-                                                                                        config = config ;
-                                                                                        hooks = hooks ;
-                                                                                        init = init ;
-                                                                                        remote = remote ;
-                                                                                    } ;
-                                                                            in
-                                                                                identity
-                                                                                    (
-                                                                                        value
-                                                                                            (
-                                                                                                let
-                                                                                                    pkgs = nixpkgs.legacyPackages.${ primary.system } ;
-                                                                                                    in
-                                                                                                        {
-                                                                                                            demotion =
+                                            configuration =
+                                                pkgs :
+                                                    visitor.lib.implementation
+                                                        {
+                                                            lambda =
+                                                                path : value :
+                                                                    [
+                                                                        (
+                                                                            let
+                                                                                point =
+                                                                                    value
+                                                                                        {
+                                                                                            echo =
+                                                                                                value :
+                                                                                                    let
+                                                                                                        string =
+                                                                                                            path : value :
                                                                                                                 let
                                                                                                                     application =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
-                                                                                                                                name = "demotion" ;
-                                                                                                                                runtimeInputs = [ pkgs.gnused ] ;
+                                                                                                                                name = "echo" ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        sed --regexp-extended --in-place "s#($1) = \".*\";#\1 = \"$2\" ;#" flake.nix
-                                                                                                                                    '' ;
-                                                                                                                            } ;
-                                                                                                                    in "${ application }/bin/demotion" ;
-                                                                                                            dot-ssh =
-                                                                                                                visitor.lib.implementation
-                                                                                                                    {
-                                                                                                                        lambda = path : value : "${ pkgs.openssh }/bin/ssh -F $( ${ value true } )/target" ;
-                                                                                                                    }
-                                                                                                                    primary.dot-ssh ;
-                                                                                                            fetch =
-                                                                                                                remote : branch :
-                                                                                                                    ''
-                                                                                                                        if git fetch ${ remote } ${ branch } 2>&1
-                                                                                                                        then
-                                                                                                                            git checkout ${ remote }/${ branch } 2>&1
-                                                                                                                        else
-                                                                                                                            git checkout -b ${ branch }
-                                                                                                                        fi
-                                                                                                                        git fetch ${ remote } 2>&1
-                                                                                                                    '' ;
-                                                                                                            post-commit =
-                                                                                                                remote :
-                                                                                                                    let
-                                                                                                                        application =
-                                                                                                                            pkgs.writeShellApplication
-                                                                                                                                {
-                                                                                                                                    name = "post-commit" ;
-                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                                                    text =
-                                                                                                                                        ''
-                                                                                                                                            while ! git push ${ remote } HEAD
-                                                                                                                                            do
-                                                                                                                                                sleep
-                                                                                                                                            done
-                                                                                                                                        '' ;
-                                                                                                                                } ;
-                                                                                                                        in "${ application }/bin/post-commit" ;
-                                                                                                            pre-commit =
-                                                                                                                let
-                                                                                                                    application =
-                                                                                                                        pkgs.writeShellApplication
-                                                                                                                            {
-                                                                                                                                name = "pre-commit" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
-                                                                                                                                text =
-                                                                                                                                    ''
-                                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                                                        if [ -z "$BRANCH" ]
+                                                                                                                                        FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "home" primary.name primary.stash "flag" ] ( builtins.map builtins.toJSON path ) ]
+                                                                                                                                        OUTPUT_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "home" primary.name primary.stash "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                        if [ ! -d "${FLAG_DIRECTORY}" ]
                                                                                                                                         then
-                                                                                                                                            BRANCH="scratch/$( uuidgen )"
-                                                                                                                                            git checkout -b "$BRANCH" 2> /dev/null
+                                                                                                                                            OUTPUT_DIRECTORY="$( dirname "$OUTPUT_FILE" )"
+                                                                                                                                            mkdir --parents "$OUTPUT_DIRECTORY"
+                                                                                                                                            cat ${ builtins.toFile "value" ( builtins.toString value ) } > "$OUTPUT_FILE"
+                                                                                                                                            chmod 0400 "$OUTPUT_FILE"
+                                                                                                                                            mkdir --parents "${FLAG_DIRECTORY}"
                                                                                                                                         fi
+                                                                                                                                        echo "$OUTPUT_FILE"
                                                                                                                                     '' ;
                                                                                                                             } ;
-                                                                                                                    in "${ application }/bin/pre-commit" ;
-                                                                                                            pre-commit-private =
-                                                                                                                let
-                                                                                                                    application =
-                                                                                                                        pkgs.writeShellApplication
-                                                                                                                            {
-                                                                                                                                name = "pre-commit-private" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.gnugrep pkgs.libuuid ] ;
-                                                                                                                                text =
-                                                                                                                                    ''
-                                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                                                        if [ -z "$BRANCH" ]
-                                                                                                                                        then
-                                                                                                                                            BRANCH="scratch/$( uuidgen )"
-                                                                                                                                            git checkout -b "$BRANCH" 2> /dev/null
-                                                                                                                                        fi
-                                                                                                                                        REFS=$( grep -oP 'url\s*=\s*".*?/((scratch|sub|issue|milestone)/[^"]*)"' flake.nix | grep -oP '(scratch|sub|issue|milestone)' | sort -u )
-                                                                                                                                        has_ref() {
-                                                                                                                                            local ref=$1
-                                                                                                                                            echo "$REFS" | grep -q "^$ref$"
-                                                                                                                                        }
-                                                                                                                                        fail() {
-                                                                                                                                            echo "ERROR: $1" >&2
-                                                                                                                                            exit 1
-                                                                                                                                        }
-                                                                                                                                        case "$BRANCH" in
-                                                                                                                                            scratch/*)
-                                                                                                                                                exit 0
-                                                                                                                                            ;;
-                                                                                                                                        sub/*)
-                                                                                                                                            if has_ref "scratch"; then
-                                                                                                                                                fail "Branch 'sub/*' cannot have 'scratch' refs in flake inputs."
-                                                                                                                                            fi
-                                                                                                                                            ;;
-                                                                                                                                        issue/*)
-                                                                                                                                            if ! has_ref "scratch" && ! has_ref "sub"; then
-                                                                                                                                                fail "Branch 'issue/*' requires at least 'scratch' or 'sub' refs in flake inputs."
-                                                                                                                                            fi
-                                                                                                                                            ;;
-                                                                                                                                        milestone/*)
-                                                                                                                                            if has_ref "scratch" || has_ref "sub" || has_ref "issue"; then
-                                                                                                                                                fail "Branch 'milestone/*' cannot have 'scratch', 'sub', or 'issue' refs in flake inputs."
-                                                                                                                                            fi
-                                                                                                                                            ;;
-                                                                                                                                        development)
-                                                                                                                                            if has_ref "scratch" || has_ref "sub" || has_ref "issue" || has_ref "milestone"; then
-                                                                                                                                                fail "Branch 'development' cannot have 'scratch', 'sub', 'issue', or 'milestone' refs in flake inputs."
-                                                                                                                                            fi
-                                                                                                                                            ;;
-                                                                                                                                        main)
-                                                                                                                                            if [ -n "$refs" ]; then
-                                                                                                                                                fail "Branch 'main' commits cannot have 'scratch', 'sub', 'issue', or 'milestone' refs in flake inputs."
-                                                                                                                                            fi
-                                                                                                                                            ;;
-                                                                                                                                        *)
-                                                                                                                                            # For any other branch, you can either allow or disallow commits
-                                                                                                                                            echo "Warning: Branch '$BRANCH' does not match known patterns. Commit allowed."
-                                                                                                                                            ;;
-                                                                                                                                        esac
-                                                                                                                                    '' ;
-                                                                                                                            } ;
-                                                                                                                    in "${ application }/bin/pre-commit-private" ;
-                                                                                                            scratch =
-                                                                                                                let
-                                                                                                                    application =
-                                                                                                                        pkgs.writeShellApplication
-                                                                                                                            {
-                                                                                                                                name = "scratch" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
-                                                                                                                                text =
-                                                                                                                                    ''
-                                                                                                                                        git checkout -b "scratch/$( uuidgen )"
-                                                                                                                                    '' ;
-                                                                                                                            } ;
-                                                                                                                    in "${ application }/bin/scratch" ;
-                                                                                                        }
-                                                                                            )
-                                                                                    ) ;
-                                                                    in
-                                                                        shell-application
-                                                                            "repository"
-                                                                            {
-                                                                                factory-name = "repository" ;
-                                                                                hash-length = primary.hash-length ;
-                                                                                generator = git.lib.generator ;
-                                                                                generator-name = "repository" ;
-                                                                                generation-parameters =
-                                                                                    {
-                                                                                        config = point.config ;
-                                                                                        hooks = point.hooks ;
-                                                                                        init = point.init ;
-                                                                                        nixpkgs = nixpkgs ;
-                                                                                        remote = point.remote ;
-                                                                                        system = system ;
-                                                                                    } ;
-                                                                                nixpkgs = nixpkgs ;
-                                                                                path = [ primary.commit-hash primary.current-time "repository" path ] ;
-                                                                                stash-directory = stash-directory ;
-                                                                                system = primary.system ;
-                                                                                targets = [ "git" "work-tree" ] ;
-                                                                            } ;
-                                                    }
-                                                    repository ;
-                                            stash =
+                                                                                                                    in "${ application }/bin/echo" ;
+                                                                                                        in
+                                                                                                            visitor.lib.implementation
+                                                                                                                {
+                                                                                                                    bool = string ;
+                                                                                                                    float = string ;
+                                                                                                                    int = string ;
+                                                                                                                    list = unimplemented ;
+                                                                                                                    null = string ;
+                                                                                                                    path = string ;
+                                                                                                                    set = unimplemented ;
+                                                                                                                    string = string ;
+                                                                                                                }
+                                                                                                                value ;
+                                                                                        } ;
+                                                                                in "ln --symbolic ${ point } ${ builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path value ) }"
+                                                                        )
+                                                                    ] ;
+                                                            list =
+                                                                path : list :
+                                                                    builtins.concatLists
+                                                                        [
+                                                                            [
+                                                                                "mkdir ${ builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path value ) }"
+                                                                            ]
+                                                                            ( builtins.concatLists list )
+                                                                        ] ;
+                                                            set =
+                                                                path : set :
+                                                                    builtins.concatLists
+                                                                        [
+                                                                            [
+                                                                                "mkdir ${ builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path value ) }"
+                                                                            ]
+                                                                            ( builtins.concatLists ( builtins.attrValues set ) )
+                                                                        ] ;
+                                                        }
+                                                        configuration ;
+                                            description = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } description ;
+                                            hash-length = visitor.lib.implementation { list = unimplemented ; int = path : value : value ; set = unimplemented ; } hash-length ;
+                                            name = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } name ;
+                                            password = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } password ;
+                                            seed =
                                                 visitor.lib.implementation
                                                     {
-                                                        string = path : value : value ;
+                                                        bool = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        float = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        int = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        lambda = path : value : { type = builtins.typeOf value ; value = null ; } ;
+                                                        list = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        null = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        path = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        set = path : value : { type = builtins.typeOf value ; value = value ; } ;
+                                                        string = path : value : { type = builtins.typeOf value ; value = value ; } ;
                                                     }
-                                                    stash ;
-                                            system =
-                                                visitor.lib.implementation
-                                                    {
-                                                        string = path : value : value ;
-                                                    }
-                                                    system ;
+                                                    seed ;
+                                            stash = visitor.lib.implementation { list = unimplemented ; set = unimplemented ; string = path : value : value ; } stash ;
                                         } ;
-                            shell-application =
-                                name : set : direct :
-                                let
-                                    derivation = stash-factory.lib.generator set ;
-                                    in if direct then "${ derivation }/bin/${ name }" else builtins.toString derivation ;
-                            stash-directory = "/home/${ primary.name }/${ primary.stash }" ;
                             in
                                 { config , lib , pkgs , ... } :
                                     {
@@ -582,46 +308,32 @@
                                                         isNormalUser = true ;
                                                         name = primary.name ;
                                                         packages =
-                                                            builtins.concatLists
-                                                                [
-                                                                    (
-                                                                        visitor.lib.implementation
-                                                                            {
-                                                                                lambda =
-                                                                                    path : value :
-                                                                                        let
-                                                                                            reducer = previous : current : if builtins.typeOf current == "int" then builtins.elemAt previous current else if builtins.typeOf current == "string" then builtins.getAttr current previous else builtins.throw "This should not happen." ;
-                                                                                            root = builtins.foldl' reducer config.personal.studio path ;
-                                                                                            in
-                                                                                                if root.enable then
-                                                                                                    [
-                                                                                                        (
-                                                                                                            pkgs.writeShellApplication
-                                                                                                                {
-                                                                                                                    name =
-                                                                                                                        if builtins.typeOf root.name == "string" then root.name
-                                                                                                                        else if builtins.length path > 0 then
-                                                                                                                            let name = builtins.elemAt path ( ( builtins.length path ) - 1 ) ;
-                                                                                                                            in if builtins.typeOf name == "string" then name else builtins.throw "The repository is numbered ${ builtins.toString name } not named."
-                                                                                                                        else builtins.throw "The repository is not named because it is root." ;
-                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
-                                                                                                                    text =
-                                                                                                                        ''
-                                                                                                                            ROOT=$( ${ value true } )
-                                                                                                                            GIT_DIR="$ROOT/git"
-                                                                                                                            GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                            env GIT_DIR="$GIT_DIR" GIT_WORK_TREE="$GIT_WORK_TREE" idea-community "$GIT_WORK_TREE"
-                                                                                                                        '' ;
-                                                                                                                }
-                                                                                                        )
-                                                                                                    ]
-                                                                                                else [ ] ;
-                                                                                list = path : list : builtins.concatLists list ;
-                                                                                set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
-                                                                            }
-                                                                            primary.repository
-                                                                    )
-                                                                ] ;
+                                                            [
+                                                                (
+                                                                    pkgs.stdenv.mkDerivation
+                                                                        {
+                                                                            installPhase =
+                                                                                let
+                                                                                    application =
+                                                                                        pkgs.writeShellApplication
+                                                                                            {
+                                                                                                name = "install" ;
+                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                text =
+                                                                                                    ''
+                                                                                                        export OUT=$out
+                                                                                                        mkdir $OUT
+                                                                                                        mkdir $OUT/scripts
+                                                                                                        cd $OUT/scripts
+                                                                                                        ${ prime.configuration }
+                                                                                                    '' ;
+                                                                                            } ;
+                                                                                    in "${ application }/bin/install" ;
+                                                                            name = "derivation" ;
+                                                                            src = ./. ;
+                                                                        } ;
+                                                                )
+                                                            ]
                                                         password = primary.password ;
                                                     } ;
                                             } ;
@@ -629,33 +341,6 @@
                                             {
                                                 personal =
                                                     {
-                                                        studio =
-                                                            visitor.lib.implementation
-                                                                {
-                                                                    lambda =
-                                                                        path : value :
-                                                                            {
-                                                                                enable = lib.mkOption { default = false ; type = lib.types.bool ; } ;
-                                                                                name = lib.mkOption { default = null ; type = lib.types.nullOr lib.types.str ; } ;
-                                                                            } ;
-                                                                }
-                                                                primary.repository ;
-                                                        wifi =
-                                                            lib.mkOption
-                                                                {
-                                                                    default = { } ;
-                                                                    type =
-                                                                        let
-                                                                            config =
-                                                                                lib.types.submodule
-                                                                                    {
-                                                                                        options =
-                                                                                            {
-                                                                                                psk = lib.mkOption { type = lib.types.str ; } ;
-                                                                                            } ;
-                                                                                    } ;
-                                                                            in lib.types.attrsOf config ;
-                                                                } ;
                                                     } ;
                                             } ;
                                     } ;
