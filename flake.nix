@@ -328,9 +328,13 @@
                                                     } ;
                                                 programs =
                                                     {
-                                                        bash.interactiveShellInit = "" ;
+                                                        bash.interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
                                                         dconf.enable = true ;
-                                                        direnv.enable = true ;
+                                                        direnv =
+                                                            {
+                                                                nix-direnv.enable = true ;
+                                                                enable = true ;
+                                                            } ;
                                                         gnupg.agent.enable = true ;
                                                     } ;
                                                 security =
