@@ -421,6 +421,24 @@
                                                         packages =
                                                             [
                                                                 pkgs.git
+                                                                (
+                                                                    pkgs.writeShellApplication
+                                                                        {
+                                                                            name = "portfolio" ;
+                                                                            text =
+                                                                                let
+                                                                                    commands =
+                                                                                        visitor.lib.implementation
+                                                                                            {
+                                                                                                list = name : list : builtins.concatLists list ;
+                                                                                                set = name : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                                                string = name : value : [ value ] ;
+                                                                                            }
+                                                                                            primary.configuration ;
+                                                                                    in builtins.concatStringsSep "\n" commands ;
+
+                                                                        }
+                                                                )
                                                                 ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ ( primary.configuration pkgs ).repositories.private }" )
                                                             ] ;
                                                         password = primary.password ;
