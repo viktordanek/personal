@@ -444,10 +444,10 @@
                                                                     pkgs.writeShellApplication
                                                                         {
                                                                             name = "portfolio" ;
-                                                                            runtimeInputs = [ pkgs.findutils ] ;
+                                                                            runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
                                                                             text =
                                                                                 ''
-                                                                                    # find ${ derivation pkgs } -mindepth 1 -exec echo {} \;
+                                                                                    # find ${ derivation pkgs }
                                                                                 '' ;
                                                                         }
                                                                 )
