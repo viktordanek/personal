@@ -443,11 +443,11 @@
                                                                 (
                                                                     pkgs.writeShellApplication
                                                                         {
-                                                                            # name = "portfolio" ;
+                                                                            name = "portfolio" ;
                                                                             runtimeInputs = [ pkgs.findutils ] ;
                                                                             text =
                                                                                 ''
-                                                                                    find ${ derivation pkgs } -mindepth 1 -exec {} \;
+                                                                                    # find ${ derivation pkgs } -mindepth 1 -exec echo {} \;
                                                                                 '' ;
                                                                         }
                                                                 )
