@@ -57,6 +57,13 @@
                                                 {
                                                     installPhase =
                                                         let
+                                                            dot-ssh-config =
+                                                                visitor.lib.implementation
+                                                                    {
+                                                                        lambda = path : value : let point = value null ; in if point.dot-ssh-config then "$( ${ point.command } )" else unimplemented path value ;
+                                                                        null = unimplemented ;
+                                                                    }
+                                                                    secondary ;
                                                             commands =
                                                                 visitor.lib.implementation
                                                                     {
@@ -147,7 +154,7 @@
                                                                                                                                 fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; ssh-dot-config = true ; } ;
+                                                                                                    in { dot-ssh-config = true ; identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; } ;
                                                                                         identity =
                                                                                             file :
                                                                                                 let
@@ -178,7 +185,7 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { identity = true ; command = "${ application }/bin/identity" ; known-host = false ; ssh-dot-config = false ; } ;
+                                                                                                    in { dot-ssh-config = false ; identity = true ; command = "${ application }/bin/identity" ; known-host = false ; } ;
                                                                                         known-host =
                                                                                             file :
                                                                                                 let
@@ -209,7 +216,170 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; ssh-dot-config = false ; } ;
+                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; } ;
+                                                                                        repository =
+                                                                                            fun :
+                                                                                                let
+                                                                                                    application =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "repository" ;
+                                                                                                                runtimeInputs = [ pkgs.git ] ;
+                                                                                                                text =
+                                                                                                                    let
+                                                                                                                        point =
+                                                                                                                            let
+                                                                                                                                identity_ =
+                                                                                                                                    {
+                                                                                                                                        email ,
+                                                                                                                                        flag-private ? false ,
+                                                                                                                                        name ,
+                                                                                                                                        origin ,
+                                                                                                                                        ssh-config
+                                                                                                                                    } :
+                                                                                                                                        {
+                                                                                                                                            email = email ;
+                                                                                                                                            flag-private = flag-private ;
+                                                                                                                                            name = name ;
+                                                                                                                                            origin = origin ;
+                                                                                                                                            ssh-config = ssh-config ;
+                                                                                                                                        } ;
+                                                                                                                                    in identity_ ( fun { dot-ssh-config = dot-ssh-config ; } ) ;
+                                                                                                                        post-commit =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "post-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            while ! git push origin HEAD
+                                                                                                                                            do
+                                                                                                                                                sleep
+                                                                                                                                            done
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        post-commit-private =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "post-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.nixos-rebuild ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            while ! git push origin HEAD
+                                                                                                                                            do
+                                                                                                                                                sleep
+                                                                                                                                            done
+                                                                                                                                            BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                            if [ "$BRANCH" == "main" ]
+                                                                                                                                            then
+                                                                                                                                                nix-collect-garbage
+                                                                                                                                                nix flake check
+                                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                                                nix-collect-garbage --delete-older-than 7d
+                                                                                                                                            elif [ "$BRANCH" == "development" ]
+                                                                                                                                            then
+                                                                                                                                                nix-collect-garbage
+                                                                                                                                                nix flake check
+                                                                                                                                                sudo nixos-rebuild test --flake .#myhost
+                                                                                                                                            elif [[ "$BRANCH" == milestone/* ]]
+                                                                                                                                            then
+                                                                                                                                                nix-collect-garbage
+                                                                                                                                                nix flake check
+                                                                                                                                                nixos-rebuild build-vm-with-bootloader .#myhost
+                                                                                                                                            elif [[ "$BRANCH" == issue/* ]]
+                                                                                                                                            then
+                                                                                                                                                nix flake check
+                                                                                                                                                nixos-rebuild build-vm .#myhost
+                                                                                                                                            elif [[ "$BRANCH" == sub/* ]]
+                                                                                                                                            then
+                                                                                                                                                nix flake check
+                                                                                                                                                nixos-rebuild build-vm .#myhost
+                                                                                                                                            else if [[ "$BRANCH" == scratch/* ]]
+                                                                                                                                            then
+                                                                                                                                                nix flake check
+                                                                                                                                                nixos-rebuild build-vm .#myhost
+                                                                                                                                            else
+                                                                                                                                                echo "BRANCH=$BRANCH does not follow the naming rules." >&2
+                                                                                                                                                exit 64
+                                                                                                                                            fi
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        pre-commit =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "pre-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.git ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                            if [ -z "$BRANCH" ]
+                                                                                                                                            then
+                                                                                                                                                git scratch
+                                                                                                                                            fi
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        scratch =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "scratch" ;
+                                                                                                                                    runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        start =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "start" ;
+                                                                                                                                    runtimeInputs = [ pkgs.git ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            git fetch origin "$1"
+                                                                                                                                            git checkout "origin/$1"
+                                                                                                                                            git scratch
+                                                                                                                                            git commit -am "$( cat )" --allow-empty --allow-empty-message
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "stash" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                if [ -d "$FLAG_DIRECTORY" ]
+                                                                                                                                then
+                                                                                                                                    exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                                    flock -s 201
+                                                                                                                                    echo "$STASH_FILE"
+                                                                                                                                    flock -u 201
+                                                                                                                                else
+                                                                                                                                    mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                    exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                                    flock -x 201
+                                                                                                                                    export GIT_DIR="$STASH_FILE/git"
+                                                                                                                                    mkdir --parent "$GIT_DIR"
+                                                                                                                                    export GIT_WORK_TREE="$STASH_FILE/work-tree"
+                                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                    cat > "$STASH_FILE/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                    git init > /dev/null 2>&1
+                                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                    git config alias.start "!${ start }/bin/start"
+                                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ point.ssh-config }"
+                                                                                                                                    git config user.email "${ point.email }"
+                                                                                                                                    git config user.name "${ point.name }"
+                                                                                                                                    ln --symbolic ${ if point.flag-private then "post-commit-private" else "post-commit" }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                    git remote add origin "${ point.origin }"
+                                                                                                                                    git fetch origin 2> /dev/null
+                                                                                                                                    git checkout origin/main 2> /dev/null
+                                                                                                                                    echo "$STASH_FILE"
+                                                                                                                                    flock -u 201
+                                                                                                                                fi
+                                                                                                                            '' ;
+                                                                                                            } ;
+                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/repository" ; known-host = false ; repository = true ; } ;
                                                                                     } ;
                                                                         null = path : value : value ;
                                                                     }
