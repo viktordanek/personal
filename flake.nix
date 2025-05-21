@@ -19,6 +19,7 @@
                         system
                     } :
                         let
+                                    unimplemented = path : value : builtins.throw "Unimplemented type ${ builtins.typeOf value } for path ${ builtins.toJSON path }." ;
                             derivation =
                                 pkgs :
                                     pkgs.stdenv.mkDerivation
@@ -246,7 +247,6 @@
                                         } ;
                             primary =
                                 let
-                                    unimplemented = path : value : builtins.throw "Unimplemented type ${ builtins.typeOf value } for path ${ builtins.toJSON path }." ;
                                     in
                                         {
                                             configuration =
