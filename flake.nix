@@ -574,6 +574,18 @@
                                                                 name = primary.name ;
                                                                 packages =
                                                                     [
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "studio" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.jetbrains.idea-community ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            find ${ derivation } -mindepth 1 -type f -exec {} ;
+                                                                                            idea /home/${ primary.name }/${ primary.stash }/${ builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON primary.seed ) ) }
+                                                                                        '' ;
+                                                                                }
+                                                                        )
                                                                         pkgs.git
                                                                         ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ derivation }" )
                                                                     ] ;
