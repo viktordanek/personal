@@ -87,6 +87,13 @@
                                                                         null = unimplemented ;
                                                                     }
                                                                     secondary ;
+                                                            repositories =
+                                                                visitor.lib.implementation
+                                                                    {
+                                                                        lambda = path : value : let point = value null ; in if point.repository then "$( ${ point.command } )" else unimplemented path value ;
+                                                                        null = unimplemented ;
+                                                                    }
+                                                                    secondary ;
                                                             secondary =
                                                                 visitor.lib.implementation
                                                                     {
@@ -154,7 +161,7 @@
                                                                                                                                 fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = true ; identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; } ;
+                                                                                                    in { dot-ssh-config = true ; identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; repository = false ; } ;
                                                                                         identity =
                                                                                             file :
                                                                                                 let
@@ -185,7 +192,7 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = false ; identity = true ; command = "${ application }/bin/identity" ; known-host = false ; } ;
+                                                                                                    in { dot-ssh-config = false ; identity = true ; command = "${ application }/bin/identity" ; known-host = false ; repository = false ; } ;
                                                                                         known-host =
                                                                                             file :
                                                                                                 let
@@ -216,7 +223,7 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; } ;
+                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; repository = false ; } ;
                                                                                         repository =
                                                                                             fun :
                                                                                                 let
@@ -232,91 +239,123 @@
                                                                                                                                 identity_ =
                                                                                                                                     {
                                                                                                                                         email ,
-                                                                                                                                        flag-private ? false ,
+                                                                                                                                        inputs ? { } ,
                                                                                                                                         name ,
                                                                                                                                         origin ,
                                                                                                                                         ssh-config
                                                                                                                                     } :
                                                                                                                                         {
                                                                                                                                             email = email ;
-                                                                                                                                            flag-private = flag-private ;
+                                                                                                                                            inputs = inputs ;
                                                                                                                                             name = name ;
                                                                                                                                             origin = origin ;
                                                                                                                                             ssh-config = ssh-config ;
                                                                                                                                         } ;
-                                                                                                                                    in identity_ ( fun { dot-ssh-config = dot-ssh-config ; } ) ;
+                                                                                                                                    in identity_ ( fun { dot-ssh-config = dot-ssh-config ; repositories = repositories ; } ) ;
                                                                                                                         post-commit =
-                                                                                                                            pkgs.writeShellApplication
-                                                                                                                                {
-                                                                                                                                    name = "post-commit" ;
-                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                                                    text =
-                                                                                                                                        ''
-                                                                                                                                            while ! git push origin HEAD
-                                                                                                                                            do
-                                                                                                                                                sleep
-                                                                                                                                            done
-                                                                                                                                        '' ;
-                                                                                                                                } ;
-                                                                                                                        post-commit-private =
                                                                                                                             pkgs.writeShellApplication
                                                                                                                                 {
                                                                                                                                     name = "post-commit" ;
                                                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.nixos-rebuild ] ;
                                                                                                                                     text =
-                                                                                                                                        ''
-                                                                                                                                            while ! git push origin HEAD
-                                                                                                                                            do
-                                                                                                                                                sleep
-                                                                                                                                            done
-                                                                                                                                            BRANCH=$( git rev-parse --abbrev-ref HEAD )
-                                                                                                                                            if [ "$BRANCH" == "main" ]
-                                                                                                                                            then
-                                                                                                                                                nix-collect-garbage
-                                                                                                                                                nix flake check
-                                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
-                                                                                                                                                nix-collect-garbage --delete-older-than 7d
-                                                                                                                                            elif [ "$BRANCH" == "development" ]
-                                                                                                                                            then
-                                                                                                                                                nix-collect-garbage
-                                                                                                                                                nix flake check
-                                                                                                                                                sudo nixos-rebuild test --flake .#myhost
-                                                                                                                                            elif [[ "$BRANCH" == milestone/* ]]
-                                                                                                                                            then
-                                                                                                                                                nix-collect-garbage
-                                                                                                                                                nix flake check
-                                                                                                                                                nixos-rebuild build-vm-with-bootloader .#myhost
-                                                                                                                                            elif [[ "$BRANCH" == issue/* ]]
-                                                                                                                                            then
-                                                                                                                                                nix flake check
-                                                                                                                                                nixos-rebuild build-vm .#myhost
-                                                                                                                                            elif [[ "$BRANCH" == sub/* ]]
-                                                                                                                                            then
-                                                                                                                                                nix flake check
-                                                                                                                                                nixos-rebuild build-vm .#myhost
-                                                                                                                                            else if [[ "$BRANCH" == scratch/* ]]
-                                                                                                                                            then
-                                                                                                                                                nix flake check
-                                                                                                                                                nixos-rebuild build-vm .#myhost
-                                                                                                                                            else
-                                                                                                                                                echo "BRANCH=$BRANCH does not follow the naming rules." >&2
-                                                                                                                                                exit 64
-                                                                                                                                            fi
-                                                                                                                                        '' ;
+                                                                                                                                        if point.origin == "mobile:private"
+                                                                                                                                        then
+                                                                                                                                            ''
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    sleep
+                                                                                                                                                done
+                                                                                                                                                BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                                if [ "$BRANCH" == "main" ]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                    sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                                                    nix-collect-garbage --delete-older-than 7d
+                                                                                                                                                elif [ "$BRANCH" == "development" ]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                    sudo nixos-rebuild test --flake .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == milestone/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix-collect-garbage
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm-with-bootloader .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == issue/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == sub/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == scratch/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }"'' ) point.inputs ) ) }
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }"'' ) point.inputs ) ) }
+                                                                                                                                                else
+                                                                                                                                                    echo "BRANCH=$BRANCH does not follow the naming rules." >&2
+                                                                                                                                                    exit 64
+                                                                                                                                                fi
+                                                                                                                                            ''
+                                                                                                                                        else if point.origin == "git@github.com:viktordanek/personal.git" || point.origin == "git@github.com:viktordanek/visitor.git" then
+                                                                                                                                            ''
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    sleep
+                                                                                                                                                done
+                                                                                                                                                nix flake check ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }"'' ) point.inputs ) ) }
+                                                                                                                                            ''
+                                                                                                                                        else
+                                                                                                                                            ''
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    sleep
+                                                                                                                                                done
+                                                                                                                                            '' ;
                                                                                                                                 } ;
                                                                                                                         pre-commit =
                                                                                                                             pkgs.writeShellApplication
                                                                                                                                 {
                                                                                                                                     name = "pre-commit" ;
-                                                                                                                                    runtimeInputs = [ pkgs.git ] ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.nixos-rebuild ] ;
                                                                                                                                     text =
-                                                                                                                                        ''
-                                                                                                                                            BRANCH=$( git rev-parse --abbrev-ref HEAD )
-                                                                                                                                            if [ -z "$BRANCH" ]
-                                                                                                                                            then
-                                                                                                                                                git scratch
-                                                                                                                                            fi
-                                                                                                                                        '' ;
+                                                                                                                                        if point.origin == "mobile:private" then
+                                                                                                                                            ''
+                                                                                                                                                BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                                if [ "$BRANCH" == "main" ]
+                                                                                                                                                then
+                                                                                                                                                    date +%s > current-time.nix
+                                                                                                                                                    nix-collect-garbage
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                                elif [ "$BRANCH" == "development" ]
+                                                                                                                                                then
+                                                                                                                                                    date +%s > current-time.nix
+                                                                                                                                                    nix-collect-garbage
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == milestone/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix-collect-garbage
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == issue/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                    nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                                elif [[ "$BRANCH" == sub/* ]]
+                                                                                                                                                then
+                                                                                                                                                    nix flake check
+                                                                                                                                                fi
+                                                                                                                                            ''
+                                                                                                                                        else
+                                                                                                                                            ''
+                                                                                                                                                BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                                if [ -z "$BRANCH" ] || [[ "$BRANCH" != scratch/* ]]
+                                                                                                                                                then
+                                                                                                                                                    git scratch
+                                                                                                                                                fi
+                                                                                                                                            '' ;
                                                                                                                                 } ;
                                                                                                                         scratch =
                                                                                                                             pkgs.writeShellApplication
@@ -364,12 +403,13 @@
                                                                                                                                 export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                                 EOF
                                                                                                                                     git init > /dev/null 2>&1
+                                                                                                                                    git config alias.nix "!${ pkgs.nix }/bin/nix"
                                                                                                                                     git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                                     git config alias.start "!${ start }/bin/start"
                                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ point.ssh-config }"
                                                                                                                                     git config user.email "${ point.email }"
                                                                                                                                     git config user.name "${ point.name }"
-                                                                                                                                    ln --symbolic ${ if point.flag-private then "post-commit-private" else "post-commit" }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                     ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                                     git remote add origin "${ point.origin }"
                                                                                                                                     git fetch origin 2> /dev/null
