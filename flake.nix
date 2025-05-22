@@ -101,6 +101,39 @@
                                                                             path : value : ignore :
                                                                                 value
                                                                                     {
+                                                                                        dot-gnupg-config =
+                                                                                            { ownertrust , secret-keys } :
+                                                                                                let
+                                                                                                    application =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "identity" ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "stash" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                        FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                        if [ -d "$FLAG_DIRECTORY" ]
+                                                                                                                        then
+                                                                                                                            exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                            flock -s 201
+                                                                                                                            echo "$STASH_FILE"
+                                                                                                                            flock -u 201
+                                                                                                                        else
+                                                                                                                            mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                            exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                            flock -x 201
+                                                                                                                            export GNUPGHOME="$STASH_FILE"
+                                                                                                                            mkdir --parents $GNUPGHOME
+                                                                                                                            chmod 0700 "$STASH_FILE"
+                                                                                                                            gpg --batch --home "$GNUPGHOME" --import ${ secret-keys } 2> /dev/null
+                                                                                                                            gpg --home "$GNUPGHOME" --import-ownertrust ${ ownertrust } 2> /dev/null
+                                                                                                                            gpg --home "$GNUPGHOME" --update-trustdb 2> /dev/null
+                                                                                                                            echo "$STASH_FILE"
+                                                                                                                            flock -u 201
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    in { dot-gnupg = true ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/identity" ; known-host = false ; repository = false ; } ;
                                                                                         dot-ssh-config =
                                                                                             fun :
                                                                                                 let
@@ -161,7 +194,7 @@
                                                                                                                                 fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = true ; identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; repository = false ; } ;
+                                                                                                    in { dot-gnupg = false ; dot-ssh-config = true ; identity = false ; command = "${ application }/bin/dot-ssh-config" ; known-host = false ; repository = false ; } ;
                                                                                         identity =
                                                                                             file :
                                                                                                 let
@@ -192,7 +225,7 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = false ; identity = true ; command = "${ application }/bin/identity" ; known-host = false ; repository = false ; } ;
+                                                                                                    in { dot-gnupg = false ; dot-ssh-config = false ; identity = true ; command = "${ application }/bin/identity" ; known-host = false ; repository = false ; } ;
                                                                                         known-host =
                                                                                             file :
                                                                                                 let
@@ -223,7 +256,7 @@
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; repository = false ; } ;
+                                                                                                    in { dot-gnupg = false ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/known-host" ; known-host = true ; repository = false ; } ;
                                                                                         repository =
                                                                                             fun :
                                                                                                 let
@@ -422,7 +455,7 @@
                                                                                                                                 fi
                                                                                                                             '' ;
                                                                                                             } ;
-                                                                                                    in { dot-ssh-config = false ; identity = false ; command = "${ application }/bin/repository" ; known-host = false ; repository = true ; } ;
+                                                                                                    in { dot-gnupg = false ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/repository" ; known-host = false ; repository = true ; } ;
                                                                                     } ;
                                                                         null = path : value : value ;
                                                                     }
@@ -574,6 +607,18 @@
                                                                 name = primary.name ;
                                                                 packages =
                                                                     [
+                                                                        pkgs.git
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "portfolio" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            find ${ derivation } -mindepth 1 -type f -exec {} \;
+                                                                                        '' ;
+                                                                                }
+                                                                        )
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
@@ -586,8 +631,6 @@
                                                                                         '' ;
                                                                                 }
                                                                         )
-                                                                        pkgs.git
-                                                                        ( pkgs.writeShellScriptBin "test-it" "${ pkgs.coreutils }/bin/echo ${ derivation }" )
                                                                     ] ;
                                                                 password = primary.password ;
                                                             } ;
