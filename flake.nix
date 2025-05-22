@@ -292,6 +292,7 @@
                                                                                                                                                 then
                                                                                                                                                     nix flake check  ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
                                                                                                                                                     nixos-rebuild build-vm --flake .#myhost ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
+                                                                                                                                                    mv result ..
                                                                                                                                                 else
                                                                                                                                                     echo "BRANCH=$BRANCH does not follow the naming rules." >&2
                                                                                                                                                     exit 64
