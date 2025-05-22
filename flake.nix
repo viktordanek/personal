@@ -263,7 +263,7 @@
                                                                                                                                             ''
                                                                                                                                                 while ! git push origin HEAD
                                                                                                                                                 do
-                                                                                                                                                    sleep
+                                                                                                                                                    sleep 1
                                                                                                                                                 done
                                                                                                                                                 BRANCH=$( git rev-parse --abbrev-ref HEAD )
                                                                                                                                                 if [ "$BRANCH" == "main" ]
@@ -301,7 +301,7 @@
                                                                                                                                             ''
                                                                                                                                                 while ! git push origin HEAD
                                                                                                                                                 do
-                                                                                                                                                    sleep
+                                                                                                                                                    sleep 1
                                                                                                                                                 done
                                                                                                                                                 nix flake check ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
                                                                                                                                             ''
@@ -309,7 +309,7 @@
                                                                                                                                             ''
                                                                                                                                                 while ! git push origin HEAD
                                                                                                                                                 do
-                                                                                                                                                    sleep
+                                                                                                                                                    sleep 1
                                                                                                                                                 done
                                                                                                                                             '' ;
                                                                                                                                 } ;
@@ -325,12 +325,14 @@
                                                                                                                                                 if [ "$BRANCH" == "main" ]
                                                                                                                                                 then
                                                                                                                                                     date +%s > current-time.nix
+                                                                                                                                                    git add current-time.nix
                                                                                                                                                     nix-collect-garbage
                                                                                                                                                     nix flake check
                                                                                                                                                     nixos-rebuild build-vm --flake .#myhost
                                                                                                                                                 elif [ "$BRANCH" == "development" ]
                                                                                                                                                 then
                                                                                                                                                     date +%s > current-time.nix
+                                                                                                                                                    git add current-time.nix
                                                                                                                                                     nix-collect-garbage
                                                                                                                                                     nix flake check
                                                                                                                                                     nixos-rebuild build-vm --flake .#myhost
