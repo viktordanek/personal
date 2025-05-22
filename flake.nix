@@ -279,6 +279,41 @@
                                                                                                                                 {
                                                                                                                                     installPhase =
                                                                                                                                         let
+                                                                                                                                            expiry =
+                                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "expiry" ;
+                                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                GIT_DIR="${ point.repository }/git"
+                                                                                                                                                                export GIT_DIR
+                                                                                                                                                                GIT_WORK_TREE="${ point.repository }/work-tree"
+                                                                                                                                                                export GIT_WORK_TREE
+                                                                                                                                                                # Constants
+                                                                                                                                                                YEAR_SECONDS=$((366 * 86400))
+                                                                                                                                                                TIMESTAMP=$(date +%s)
+
+                                                                                                                                                                # Get a list of all password keys tracked by Git
+                                                                                                                                                                git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                                                                                  # Skip non-.gpg files
+                                                                                                                                                                  [[ "$file" != *.gpg ]] && continue
+
+                                                                                                                                                                  # Get the last commit timestamp for the file
+                                                                                                                                                                  last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
+
+                                                                                                                                                                  # Compute the age
+                                                                                                                                                                  age=$((TIMESTAMP - last_commit_ts))
+
+                                                                                                                                                                  if (( age >= YEAR_SECONDS )); then
+                                                                                                                                                                    # Strip ".gpg" and print
+                                                                                                                                                                    key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
+                                                                                                                                                                    echo "$key"
+                                                                                                                                                                  fi
+                                                                                                                                                                done
+
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;
                                                                                                                                             phonetic =
                                                                                                                                                 pkgs.writeShellApplication
                                                                                                                                                     {
@@ -369,6 +404,7 @@
                                                                                                                                             in
                                                                                                                                                 ''
                                                                                                                                                     ${ pkgs.coreutils }/bin/mkdir $out
+                                                                                                                                                    makeWrapper ${ expiry }/bin/expiry $out/expiry.bash
                                                                                                                                                     makeWrapper ${ phonetic }/bin/phonetic $out/phonetic.bash
                                                                                                                                                 '' ;
                                                                                                                                     name = "extensions-dir" ;
