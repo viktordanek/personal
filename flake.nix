@@ -283,11 +283,9 @@
                                                                                                                                                 pkgs.writeShellApplication
                                                                                                                                                     {
                                                                                                                                                         name = "phonetic" ;
-                                                                                                                                                        runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
                                                                                                                                                         text =
                                                                                                                                                             ''
-                                                                                                                                                                set -euo pipefail
-
                                                                                                                                                                 declare -A NATO=(
                                                                                                                                                                   [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
                                                                                                                                                                   [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
@@ -310,12 +308,16 @@
                                                                                                                                                                 )
 
                                                                                                                                                                 declare -A SYMBOLS=(
-                                                                                                                                                                  [@]=At [#]=Hash [$]=Dollar [%]=Percent [&]=Ampersand
-                                                                                                                                                                  [*]=Asterisk [_]=Underscore [-]=Dash [=]=Equal [+]=Plus
-                                                                                                                                                                  [^]=Caret [~]=Tilde [|]=Pipe [:]=Colon [;]=Semicolon
-                                                                                                                                                                  [,]=Comma [.]=Dot [/]=Slash [\\]=Backslash [']=Quote
-                                                                                                                                                                  [\"]='Doublequote' [`]=Backtick [<]=Less [>]=Greater
-                                                                                                                                                                  [?]=Question [\(]=Lparen [\)]=Rparen
+                                                                                                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                                                                                  ["\\"]=BackwardSlash
+                                                                                                                                                                  ["\'"]=SingleQuote
+                                                                                                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
                                                                                                                                                                 )
 
                                                                                                                                                                 declare -A CONTROL=(
@@ -338,35 +340,40 @@
                                                                                                                                                                   ascii=$(printf "%d" "'$char")
 
                                                                                                                                                                   if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                                                                                                                    raw="${ builtins.concatStrings "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                                                                                                                    transformed="${ builtins.concatStrings "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStrings "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
                                                                                                                                                                     output+=("$transformed")
 
-                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
-                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
 
-                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
-                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
 
-                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
-                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
 
-                                                                                                                                                                  elif [[ -n "${ builtins.concatStrings "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }]]; then
-                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+                                                                                                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
 
                                                                                                                                                                   else
-                                                                                                                                                                    output+=("Unknown")
+                                                                                                                                                                    output+=("Unknown($ascii)")
                                                                                                                                                                   fi
-                                                                                                                                                                done
+                                                                                                                                                                done < <( pass show "$@" )
 
-                                                                                                                                                                printf "%s\n" "${ builtins.concatStrings "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                                                                echo OPEN
+                                                                                                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                                                                echo CLOSE
                                                                                                                                                             '' ;
                                                                                                                                                     } ;
                                                                                                                                             in
                                                                                                                                                 ''
                                                                                                                                                     ${ pkgs.coreutils }/bin/mkdir $out
-                                                                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
+                                                                                                                                                    makeWrapper ${ phonetic }/bin/phonetic $out/phonetic.bash
                                                                                                                                                 '' ;
+                                                                                                                                    name = "extensions-dir" ;
+                                                                                                                                    nativeBuildInputs = [ pkgs.makeWrapper ] ;
+                                                                                                                                    src = ./. ;
                                                                                                                                 } ;
                                                                                                                         point =
                                                                                                                             let
