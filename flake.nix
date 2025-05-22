@@ -274,6 +274,100 @@
                                                                                                                 runtimeInputs = [ pkgs.pass ] ;
                                                                                                                 text =
                                                                                                                     let
+                                                                                                                        extension-dir =
+                                                                                                                            pkgs.stdenv.mkDerivation
+                                                                                                                                {
+                                                                                                                                    installPhase =
+                                                                                                                                        let
+                                                                                                                                            phonetic =
+                                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "phonetic" ;
+                                                                                                                                                        runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                set -euo pipefail
+
+                                                                                                                                                                declare -A NATO=(
+                                                                                                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                                                                                  [Y]=YANKEE [Z]=ZULU
+                                                                                                                                                                )
+
+                                                                                                                                                                declare -A PHONETIC_LOWER=(
+                                                                                                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                                                                                  [y]=yam [z]=zucchini
+                                                                                                                                                                )
+
+                                                                                                                                                                declare -A DIGITS=(
+                                                                                                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                                                                                )
+
+                                                                                                                                                                declare -A SYMBOLS=(
+                                                                                                                                                                  [@]=At [#]=Hash [$]=Dollar [%]=Percent [&]=Ampersand
+                                                                                                                                                                  [*]=Asterisk [_]=Underscore [-]=Dash [=]=Equal [+]=Plus
+                                                                                                                                                                  [^]=Caret [~]=Tilde [|]=Pipe [:]=Colon [;]=Semicolon
+                                                                                                                                                                  [,]=Comma [.]=Dot [/]=Slash [\\]=Backslash [']=Quote
+                                                                                                                                                                  [\"]='Doublequote' [`]=Backtick [<]=Less [>]=Greater
+                                                                                                                                                                  [?]=Question [\(]=Lparen [\)]=Rparen
+                                                                                                                                                                )
+
+                                                                                                                                                                declare -A CONTROL=(
+                                                                                                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                                                                                  [127]=DELETE
+                                                                                                                                                                )
+
+                                                                                                                                                                output=()
+
+                                                                                                                                                                while IFS= read -r -n1 char; do
+                                                                                                                                                                  [[ -z "$char" ]] && continue
+                                                                                                                                                                  ascii=$(printf "%d" "'$char")
+
+                                                                                                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                                                                                    raw="${ builtins.concatStrings "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                                                                    transformed="${ builtins.concatStrings "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStrings "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                                                                    output+=("$transformed")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStrings "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                                                                                  elif [[ -n "${ builtins.concatStrings "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStrings "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                                                                                  else
+                                                                                                                                                                    output+=("Unknown")
+                                                                                                                                                                  fi
+                                                                                                                                                                done
+
+                                                                                                                                                                printf "%s\n" "${ builtins.concatStrings "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;
+                                                                                                                                            in
+                                                                                                                                                ''
+                                                                                                                                                    ${ pkgs.coreutils }/bin/mkdir $out
+                                                                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
+                                                                                                                                                '' ;
+                                                                                                                                } ;
                                                                                                                         point =
                                                                                                                             let
                                                                                                                                 identity =
@@ -314,6 +408,8 @@
                                                                                                                                 export PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS=${ point.character-set-no-symbols }
                                                                                                                                 export PASSWORD_STORE_GENERATED_LENGTH="${ point.generated-length }"
                                                                                                                                 export PASSWORD_STORE_DIR="\${ point.repository }/work-tree"
+                                                                                                                                export PASSWORD_STORE_ENABLE_EXTENSIONS=true;
+                                                                                                                                export PASSWORD_STORE_EXTENSIONS_DIR=${ extension-dir }
                                                                                                                                 export PASSWORD_STORE_GPG_OPTS="--homedir \${ point.dot-gnupg }"
                                                                                                                                 EOF
                                                                                                                                     echo "$STASH_FILE"
@@ -336,6 +432,7 @@
                                                                                                                             let
                                                                                                                                 identity_ =
                                                                                                                                     {
+                                                                                                                                        branch ? "main" ,
                                                                                                                                         email ,
                                                                                                                                         inputs ? { } ,
                                                                                                                                         name ,
@@ -343,6 +440,7 @@
                                                                                                                                         ssh-config
                                                                                                                                     } :
                                                                                                                                         {
+                                                                                                                                            branch = branch ;
                                                                                                                                             email = email ;
                                                                                                                                             inputs = inputs ;
                                                                                                                                             name = name ;
@@ -513,8 +611,8 @@
                                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                     ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                                     git remote add origin "${ point.origin }"
-                                                                                                                                    git fetch origin 2> /dev/null
-                                                                                                                                    git checkout origin/main 2> /dev/null
+                                                                                                                                    git fetch origin ${ point.branch } 2> /dev/null
+                                                                                                                                    git checkout origin/${ point.branch } 2> /dev/null
                                                                                                                                     echo "$STASH_FILE"
                                                                                                                                     flock -u 201
                                                                                                                                 fi
