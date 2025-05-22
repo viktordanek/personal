@@ -290,7 +290,7 @@
                                                                                                                                                     nixos-rebuild build-vm .#myhost
                                                                                                                                                 elif [[ "$BRANCH" == scratch/* ]]
                                                                                                                                                 then
-                                                                                                                                                    nix flake check ./work-tree ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
+                                                                                                                                                    nix flake check  ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
                                                                                                                                                     nixos-rebuild build-vm --flake ./work-tree#myhost ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
                                                                                                                                                 else
                                                                                                                                                     echo "BRANCH=$BRANCH does not follow the naming rules." >&2
@@ -303,7 +303,7 @@
                                                                                                                                                 do
                                                                                                                                                     sleep
                                                                                                                                                 done
-                                                                                                                                                nix flake check ./work-tree ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
+                                                                                                                                                nix flake check ${ builtins.concatStringsSep " " ( builtins.attrValues ( builtins.mapAttrs ( name : value : ''--override-input ${ name } "${ value }/work-tree"'' ) point.inputs ) ) }
                                                                                                                                             ''
                                                                                                                                         else
                                                                                                                                             ''
