@@ -108,18 +108,153 @@
                                                                             path : value : ignore :
                                                                                 value
                                                                                     {
+                                                                                        crypt =
+                                                                                            fun :
+                                                                                                let
+                                                                                                    application =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "crypt" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.jq pkgs.yq ] ;
+                                                                                                                text =
+                                                                                                                    let
+                                                                                                                        point =
+                                                                                                                            let
+                                                                                                                                identity_ =
+                                                                                                                                    {
+                                                                                                                                        branch ? "main" ,
+                                                                                                                                        dot-gnupg ,
+                                                                                                                                        email ,
+                                                                                                                                        inputs ? { } ,
+                                                                                                                                        name ,
+                                                                                                                                        origin ,
+                                                                                                                                        ssh-config
+                                                                                                                                    } :
+                                                                                                                                        {
+                                                                                                                                            branch = branch ;
+                                                                                                                                            dot-gnupg = dot-gnupg ;
+                                                                                                                                            email = email ;
+                                                                                                                                            inputs = inputs ;
+                                                                                                                                            name = name ;
+                                                                                                                                            origin = origin ;
+                                                                                                                                            ssh-config = ssh-config ;
+                                                                                                                                        } ;
+                                                                                                                                    in identity_ ( fun { dot-gnupg-config = dot-gnupg-config ; dot-ssh-config = dot-ssh-config ; repositories = repositories ; } ) ;
+                                                                                                                        post-commit =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "post-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.nixos-rebuild ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            while ! git push origin HEAD
+                                                                                                                                            do
+                                                                                                                                                sleep 1
+                                                                                                                                            done
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        pre-commit =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "pre-commit" ;
+                                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.nixos-rebuild ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            BRANCH=$( git rev-parse --abbrev-ref HEAD )
+                                                                                                                                            if [ -z "$BRANCH" ] || [[ "$BRANCH" != scratch/* ]]
+                                                                                                                                            then
+                                                                                                                                                git scratch
+                                                                                                                                            fi
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "stash" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                if [ -d "$FLAG_DIRECTORY" ] && [ -f "$FLAG_DIRECTORY/error.yaml" ]
+                                                                                                                                then
+                                                                                                                                    exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                                    flock -s 201
+                                                                                                                                    yq --yaml-output "$FLAG_DIRECTORY/error.yaml" >&2
+                                                                                                                                    flock -u 201
+                                                                                                                                    exit 64
+                                                                                                                                elif [ -d "$FLAG_DIRECTORY" ]
+                                                                                                                                then
+                                                                                                                                    exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                                    flock -s 201
+                                                                                                                                    echo "$STASH_FILE"
+                                                                                                                                    flock -u 201
+                                                                                                                                else
+                                                                                                                                    mkdir --parents "$FLAG_DIRECTORY"
+                                                                                                                                    exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                                    flock -x 201
+                                                                                                                                    if
+                                                                                                                                        (
+                                                                                                                                            export GIT_DIR="$STASH_FILE/git"
+                                                                                                                                            mkdir --parent "$GIT_DIR"
+                                                                                                                                            export GIT_WORK_TREE="$STASH_FILE/work-tree"
+                                                                                                                                            mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                            GNUPGHOME=${ point.dot-gnupg }
+                                                                                                                                            export GNUPGHOME
+                                                                                                                                            cat > "$STASH_FILE/.envrc" <<EOF
+                                                                                                                                export GNUPGHOME="$GNUPGHOME"
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                            git init > /dev/null 2>&1
+                                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ point.ssh-config }"
+                                                                                                                                            git config user.email "${ point.email }"
+                                                                                                                                            git config user.name "${ point.name }"
+                                                                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                            ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                            git remote add origin "${ point.origin }"
+                                                                                                                                            if git fetch origin ${ point.branch } > /dev/null 2>&1
+                                                                                                                                            then
+                                                                                                                                                git checkout ${ point.branch } > /dev/null 2>&1
+                                                                                                                                            else
+                                                                                                                                                git checkout -b ${ point.branch } > /dev/null 2>&1
+                                                                                                                                                git commit --no-verify --allow-empty --allow-empty-message -m "" > /dev/null 2>&1
+                                                                                                                                            fi
+                                                                                                                                        ) > "$FLAG_DIRECTORY/standard-output" 2> "$FLAG_DIRECTORY/standard-error"
+                                                                                                                                    then
+                                                                                                                                        STATUS="$?"
+                                                                                                                                    else
+                                                                                                                                        STATUS="$?"
+                                                                                                                                    fi
+                                                                                                                                    if [ "$STATUS" == "0" ] && [ ! -s "$FLAG_DIRECTORY/standard-error" ]
+                                                                                                                                    then
+                                                                                                                                        echo "$STASH_FILE"
+                                                                                                                                        flock -u 201
+                                                                                                                                    else
+                                                                                                                                        jq --null-input --arg STANDARD_ERROR "$( cat "$FLAG_DIRECTORY/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$FLAG_DIRECTORY/standard-output" )" --arg STATUS "$STATUS" '{ "standard-error": $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$FLAG_DIRECTORY/error.yaml"
+                                                                                                                                        yq --yaml-output "$FLAG_DIRECTORY/error.yaml" >&2
+                                                                                                                                        flock -u 201
+                                                                                                                                        exit 64
+                                                                                                                                    fi
+                                                                                                                                fi
+                                                                                                                            '' ;
+                                                                                                            } ;
+                                                                                                    in { crypt = true ; dot-gnupg-config = false ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/crypt" ; known-host = false ; pass = false ; repository = false ; } ;
                                                                                         dot-gnupg-config =
                                                                                             { ownertrust , secret-keys } :
                                                                                                 let
                                                                                                     application =
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
-                                                                                                                name = "identity" ;
+                                                                                                                name = "dot-gnupg-config" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.gnupg pkgs.jq pkgs.yq ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "stash" ] ( builtins.map builtins.toJSON path ) ] ) }
                                                                                                                         FLAG_DIRECTORY=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" primary.name primary.stash ( builtins.substring 0 primary.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( primary.seed ) ) ) ) "flag" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                        if [ -d "$FLAG_DIRECTORY" ]
+                                                                                                                        if [ -d "$FLAG_DIRECTORY" ] && [ -f "$FLAG_DIRECTORY/error.yaml" ]
+                                                                                                                        then
+                                                                                                                            exec 201> "$FLAG_DIRECTORY/lock"
+                                                                                                                            flock -s 201
+                                                                                                                            yq --yaml-output "$FLAG_DIRECTORY/error.yaml" >&2
+                                                                                                                            flock -u 201
+                                                                                                                            exit 64
+                                                                                                                        elif [ -d "$FLAG_DIRECTORY" ] && [ -f "$FLAG_DIRECTORY/error.yaml" ]
                                                                                                                         then
                                                                                                                             exec 201> "$FLAG_DIRECTORY/lock"
                                                                                                                             flock -s 201
@@ -129,18 +264,31 @@
                                                                                                                             mkdir --parents "$FLAG_DIRECTORY"
                                                                                                                             exec 201> "$FLAG_DIRECTORY/lock"
                                                                                                                             flock -x 201
-                                                                                                                            export GNUPGHOME="$STASH_FILE"
-                                                                                                                            mkdir --parents $GNUPGHOME
-                                                                                                                            chmod 0700 "$STASH_FILE"
-                                                                                                                            gpg --batch --home "$GNUPGHOME" --import ${ secret-keys } 2> /dev/null
-                                                                                                                            gpg --home "$GNUPGHOME" --import-ownertrust ${ ownertrust } 2> /dev/null
-                                                                                                                            gpg --home "$GNUPGHOME" --update-trustdb 2> /dev/null
-                                                                                                                            echo "$STASH_FILE"
+                                                                                                                            if
+                                                                                                                                (
+                                                                                                                                    export GNUPGHOME="$STASH_FILE"
+                                                                                                                                    mkdir --parents $GNUPGHOME
+                                                                                                                                    chmod 0700 "$GNUPGHOME"
+                                                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import ${ secret-keys } 2>&1
+                                                                                                                                    gpg --home "$GNUPGHOME" --import-ownertrust ${ ownertrust } 2>&1
+                                                                                                                                    gpg --home "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                                                    ) > "$FLAG_DIRECTORY/standard-output" 2> "$FLAG_DIRECTORY/standard-error"
+                                                                                                                            then
+                                                                                                                                STATUS="$?"
+                                                                                                                            else
+                                                                                                                                STATUS="$?"
+                                                                                                                            fi
+                                                                                                                            if [ "$STATUS" == "0" ] && [ ! -s "$FLAG_DIRECTORY/standard-error" ]
+                                                                                                                            then
+                                                                                                                                echo "$STASH_FILE"
+                                                                                                                            else
+                                                                                                                                jq --null-input --arg STANDARD_ERROR "$( cat "$FLAG_DIRECTORY/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$FLAG_DIRECTORY/standard-output" )" --arg STATUS "$STATUS" '{ "standard-error": $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$FLAG_DIRECTORY/error.yaml"
+                                                                                                                            fi
                                                                                                                             flock -u 201
                                                                                                                         fi
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                    in { dot-gnupg-config = true ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/identity" ; known-host = false ; pass = false ; repository = false ; } ;
+                                                                                                    in { dot-gnupg-config = true ; dot-ssh-config = false ; identity = false ; command = "${ application }/bin/dot-gnupg-config" ; known-host = false ; pass = false ; repository = false ; } ;
                                                                                         dot-ssh-config =
                                                                                             fun :
                                                                                                 let
@@ -654,8 +802,13 @@
                                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                     ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                                     git remote add origin "${ point.origin }"
-                                                                                                                                    git fetch origin ${ point.branch } 2> /dev/null
-                                                                                                                                    git checkout origin/${ point.branch } 2> /dev/null
+                                                                                                                                    if git fetch origin ${ point.branch } > /dev/null 2>&1
+                                                                                                                                    then
+                                                                                                                                        git checkout ${ point.branch } > /dev/null 2>&1
+                                                                                                                                    else
+                                                                                                                                        git checkout -b ${ point.branch } > /dev/null 2>&1
+                                                                                                                                        git commit --no-verify --allow-empty --allow-empty-message -m "" > /dev/null 2>&1
+                                                                                                                                    fi
                                                                                                                                     echo "$STASH_FILE"
                                                                                                                                     flock -u 201
                                                                                                                                 fi
@@ -816,6 +969,8 @@
                                                                         [
                                                                             [
                                                                                 pkgs.git
+                                                                                pkgs.git-crypt
+                                                                                pkgs.gnupg
                                                                                 pkgs.pass
                                                                                 (
                                                                                     pkgs.writeShellApplication
