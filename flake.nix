@@ -136,6 +136,25 @@
                                                                                                         '' ;
                                                                                                 } ;
                                                                                     } ;
+                                                                                pass =
+                                                                                    {
+                                                                                        pass-archive =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            mkdir "$1"
+                                                                                                            cat > "$1/.envrc" <<EOF
+                                                                                                            GIT_ROOT="$( "$2/boot/repository/secrets-archive" )"
+                                                                                                            export GIT_DIR="$GIT_ROOT/work-tree"
+                                                                                                            export GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                            export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg" )"
+                                                                                                            EOF
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                    } ;
                                                                                 repository =
                                                                                     {
                                                                                         private =
@@ -162,7 +181,7 @@
                                                                                                             git checkout origin/main 2>&1
                                                                                                         '' ;
                                                                                                 } ;
-                                                                                        secrets =
+                                                                                        secrets-archive =
                                                                                             ignore :
                                                                                                 {
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
