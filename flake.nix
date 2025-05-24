@@ -8,8 +8,8 @@
             {
                 lib =
                     {
+                        agenix ,
                         nixpkgs ,
-                        seed ? null ,
                         system
                     } :
                         let
@@ -370,6 +370,7 @@
                                                                 password = config.personal.password ;
                                                             } ;
                                                     } ;
+                                                imports = [ agenix.nixosModules.default ] ;
                                                 options =
                                                     {
                                                         personal =
