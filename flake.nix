@@ -215,10 +215,46 @@
                                             {
                                                 config =
                                                     {
+                                                        age =
+                                                            {
+                                                                identityPaths = [ "/etc/agenix/age.key" ] ;
+                                                                secrets =
+                                                                    {
+                                                                        dot-ssh =
+                                                                            {
+                                                                                identity =
+                                                                                    {
+                                                                                        file = ./secrets/dot-ssh/identity.asc.age ;
+                                                                                        mode = "0400" ;
+                                                                                        owner = "root" ;
+                                                                                    } ;
+                                                                                known-hosts =
+                                                                                    {
+                                                                                    } ;
+                                                                            } ;
+                                                                        my-secret =
+                                                                            {
+                                                                                file = ./secrets/my-secret.age ;
+                                                                                mode = "0400" ;
+                                                                                owner = "root" ;
+                                                                            } ;
+                                                                    } ;
+                                                            } ;
                                                         boot.loader =
                                                             {
                                                                 efi.canTouchEfiVariables = true ;
                                                                 systemd-boot.enable = true ;
+                                                            } ;
+                                                        environment =
+                                                            {
+                                                                etc =
+                                                                    {
+                                                                        "agenix/age.key".text = builtins.readFile config.personal.agenix ;
+                                                                    } ;
+                                                                variables =
+                                                                    {
+                                                                        "MY_SECRET" = builtins.readFile "/run/agenix/my-secret" ;
+                                                                    } ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
@@ -375,6 +411,7 @@
                                                     {
                                                         personal =
                                                             {
+                                                                agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
