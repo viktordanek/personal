@@ -30,8 +30,8 @@
                                                                                 let
                                                                                     stash =
                                                                                         ''
-                                                                                            export STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "output" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                            STATUS_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "status" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                            export STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                            STATUS_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) "status" ] ( builtins.map builtins.toJSON path ) ] ) }
                                                                                             mkdir --parents "$STATUS_DIR"
                                                                                             exec 201> "$STATUS_DIR/lock"
                                                                                             flock -x 201
@@ -76,22 +76,19 @@
                                                                         boot =
                                                                             {
                                                                                 dot-gnupg =
-                                                                                    {
-                                                                                        config =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.gnupg ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            export GNUPGHOME="$1"
-                                                                                                            mkdir --parents "$GNUPGHOME"
-                                                                                                            chmod 0700 "$GNUPGHOME"
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import ${ config.personal.secret-keys } 2>&1
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust ${ config.personal.ownertrust } 2>&1
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                    } ;
+                                                                                    ignore :
+                                                                                        {
+                                                                                            runtimeInputs = [ pkgs.gnupg ] ;
+                                                                                            text =
+                                                                                                ''
+                                                                                                    export GNUPGHOME="$1"
+                                                                                                    mkdir --parents "$GNUPGHOME"
+                                                                                                    chmod 0700 "$GNUPGHOME"
+                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import ${ config.personal.secret-keys } 2>&1
+                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust ${ config.personal.ownertrust } 2>&1
+                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                '' ;
+                                                                                        } ;
                                                                                 dot-ssh =
                                                                                     {
                                                                                         config =
@@ -138,17 +135,18 @@
                                                                                     } ;
                                                                                 pass =
                                                                                     {
-                                                                                        pass-archive =
+                                                                                        archive =
                                                                                             ignore :
                                                                                                 {
                                                                                                     runtimeInputs = [ ] ;
                                                                                                     text =
                                                                                                         ''
                                                                                                             mkdir "$1"
-                                                                                                            cat > "$1/.envrc" <<EOF
                                                                                                             GIT_ROOT="$( "$2/boot/repository/secrets-archive" )"
+                                                                                                            GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                            cat > "$1/.envrc" <<EOF
                                                                                                             export GIT_DIR="$GIT_ROOT/work-tree"
-                                                                                                            export GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                             export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                             export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg" )"
                                                                                                             EOF
@@ -356,6 +354,7 @@
                                                                 packages =
                                                                     [
                                                                         pkgs.git
+                                                                        pkgs.pass
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
