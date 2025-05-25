@@ -98,8 +98,8 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             cat > "$1" <<EOF
-                                                                                                            IdentityFile $( "$2/boot/dot-ssh/identity" )
-                                                                                                            UserKnownHostsFile $( "$2/boot/dot-ssh/known-hosts" )
+                                                                                                            IdentityFile /run/agenix.d/1/identity.asc
+                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts.asc
                                                                                                             StrictHostKeyChecking yes
 
                                                                                                             Host github.com
@@ -217,20 +217,20 @@
                                                     {
                                                         age =
                                                             {
-                                                                identityPaths = [ "/etc/agenix/age.key" ] ;
+                                                                identityPaths = [ config.personal.agenix ] ;
                                                                 secrets =
                                                                     {
-                                                                        dot-ssh =
+                                                                         "identity.asc" =
                                                                             {
-                                                                                identity =
-                                                                                    {
-                                                                                        file = ./secrets/dot-ssh/identity.asc.age ;
-                                                                                        mode = "0400" ;
-                                                                                        owner = "root" ;
-                                                                                    } ;
-                                                                                known-hosts =
-                                                                                    {
-                                                                                    } ;
+                                                                                file = ./secrets/identity.asc.age ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
+                                                                            } ;
+                                                                        "known-hosts.asc" =
+                                                                            {
+                                                                                file = ./secrets/known-hosts.asc.age ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
                                                                             } ;
                                                                         my-secret =
                                                                             {
@@ -249,11 +249,13 @@
                                                             {
                                                                 etc =
                                                                     {
-                                                                        "agenix/age.key".text = builtins.readFile config.personal.agenix ;
-                                                                    } ;
-                                                                variables =
-                                                                    {
-                                                                        "MY_SECRET" = builtins.readFile "/run/agenix/my-secret" ;
+                                                                        "agenix/age.key" =
+                                                                            {
+                                                                                source = config.personal.agenix ;
+                                                                                mode = "0400" ;
+                                                                                # owner = "root" ;
+                                                                                group = "root" ;
+                                                                            } ;
                                                                     } ;
                                                             } ;
                                                         hardware.pulseaudio =
@@ -406,7 +408,6 @@
                                                                 password = config.personal.password ;
                                                             } ;
                                                     } ;
-                                                imports = [ agenix.nixosModules.default ] ;
                                                 options =
                                                     {
                                                         personal =
