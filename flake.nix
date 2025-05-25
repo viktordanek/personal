@@ -10,6 +10,7 @@
                     {
                         agenix ,
                         nixpkgs ,
+                        secrets ,
                         system
                     } :
                         let
@@ -84,8 +85,8 @@
                                                                                                     export GNUPGHOME="$1"
                                                                                                     mkdir --parents "$GNUPGHOME"
                                                                                                     chmod 0700 "$GNUPGHOME"
-                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import ${ config.personal.secret-keys } 2>&1
-                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust ${ config.personal.ownertrust } 2>&1
+                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import /run/agenix.d/1/secret-keys.asc 2>&1
+                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust /run/agenix.d/1/ownertrust.asc 2>&1
                                                                                                     gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
                                                                                                 '' ;
                                                                                         } ;
@@ -109,26 +110,6 @@
                                                                                                             HostName 192.168.1.202
                                                                                                             Port 8022
                                                                                                             EOF
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        identity =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat ${ config.personal.identity } > "$1"
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        known-hosts =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat ${ config.personal.known-hosts } > "$1"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
@@ -220,15 +201,21 @@
                                                                 identityPaths = [ config.personal.agenix ] ;
                                                                 secrets =
                                                                     {
-                                                                         "identity.asc" =
+                                                                        "hashed-password.asc" =
                                                                             {
-                                                                                file = ./secrets/identity.asc.age ;
+                                                                                file = secrets + "/ hashed-password.asc.age" ;
+                                                                                mode = "0400" ;
+                                                                                owner = "root" ;
+                                                                            } ;
+                                                                        "identity.asc" =
+                                                                            {
+                                                                                file = secrets + "/identity.asc.age" ;
                                                                                 mode = "0400" ;
                                                                                 owner = config.personal.name ;
                                                                             } ;
                                                                         "known-hosts.asc" =
                                                                             {
-                                                                                file = ./secrets/known-hosts.asc.age ;
+                                                                                file = secrets + "/known-hosts.asc.age" ;
                                                                                 mode = "0400" ;
                                                                                 owner = config.personal.name ;
                                                                             } ;
@@ -237,6 +224,18 @@
                                                                                 file = ./secrets/my-secret.age ;
                                                                                 mode = "0400" ;
                                                                                 owner = "root" ;
+                                                                            } ;
+                                                                        "ownertrust.asc" =
+                                                                            {
+                                                                                file = secrets + "/ownertrust.asc.age" ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
+                                                                            } ;
+                                                                        "secret-keys.asc" =
+                                                                            {
+                                                                                file = secrets + "/secret-keys.asc.age" ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
                                                                             } ;
                                                                     } ;
                                                             } ;
@@ -253,7 +252,6 @@
                                                                             {
                                                                                 source = config.personal.agenix ;
                                                                                 mode = "0400" ;
-                                                                                # owner = "root" ;
                                                                                 group = "root" ;
                                                                             } ;
                                                                     } ;
@@ -383,6 +381,14 @@
                                                             } ;
                                                         system.stateVersion = "23.05" ;
                                                         time.timeZone = "America/New_York" ;
+                                                        users.users.backup =
+                                                            {
+                                                                description = "delete me" ;
+                                                                name = "backup" ;
+                                                                isNormalUser = true ;
+                                                                password = "password" ;
+                                                                extraGroups = [ "wheel" ] ;
+                                                            } ;
                                                         users.users.user =
                                                             {
                                                                 description = config.personal.description ;
@@ -405,7 +411,7 @@
                                                                                 }
                                                                         )
                                                                     ] ;
-                                                                password = config.personal.password ;
+                                                                hashedPasswordFile = "/run/agenix.1/hashed-password.asc" ;
                                                             } ;
                                                     } ;
                                                 options =
@@ -417,12 +423,7 @@
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
-                                                                identity = lib.mkOption { type = lib.types.path ; } ;
-                                                                known-hosts = lib.mkOption { type = lib.types.path ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
-                                                                ownertrust = lib.mkOption { type = lib.types.path ; } ;
-                                                                password = lib.mkOption { type = lib.types.str ; } ;
-                                                                secret-keys = lib.mkOption { type = lib.types.path ; } ;
                                                                 stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
                                                                 wifi =
                                                                     lib.mkOption
