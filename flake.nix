@@ -98,8 +98,8 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             cat > "$1" <<EOF
-                                                                                                            IdentityFile $( "$2/boot/dot-ssh/identity" )
-                                                                                                            UserKnownHostsFile $( "$2/boot/dot-ssh/known-hosts" )
+                                                                                                            IdentityFile /run/agenix/identity
+                                                                                                            UserKnownHostsFile /run/agenix/known-hosts
                                                                                                             StrictHostKeyChecking yes
 
                                                                                                             Host github.com
@@ -109,26 +109,6 @@
                                                                                                             HostName 192.168.1.202
                                                                                                             Port 8022
                                                                                                             EOF
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        identity =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat ${ config.personal.identity } > "$1"
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        known-hosts =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat ${ config.personal.known-hosts } > "$1"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
@@ -220,21 +200,15 @@
                                                                 identityPaths = [ "/etc/agenix/age.key" ] ;
                                                                 secrets =
                                                                     {
-                                                                        dot-ssh =
+                                                                        identity =
                                                                             {
-                                                                                identity =
-                                                                                    {
-                                                                                        file = ./secrets/dot-ssh/identity.asc.age ;
-                                                                                        mode = "0400" ;
-                                                                                        owner = "root" ;
-                                                                                    } ;
-                                                                                known-hosts =
-                                                                                    {
-                                                                                    } ;
+                                                                                file = ./secrets/dot-ssh/identity.asc.age ;
+                                                                                mode = "0400" ;
+                                                                                owner = "root" ;
                                                                             } ;
-                                                                        my-secret =
+                                                                        known-hosts =
                                                                             {
-                                                                                file = ./secrets/my-secret.age ;
+                                                                                file = ./secrets/dot-ssh/known-hosts.asc.age ;
                                                                                 mode = "0400" ;
                                                                                 owner = "root" ;
                                                                             } ;
@@ -250,10 +224,7 @@
                                                                 etc =
                                                                     {
                                                                         "agenix/age.key".text = builtins.readFile config.personal.agenix ;
-                                                                    } ;
-                                                                variables =
-                                                                    {
-                                                                        "MY_SECRET" = builtins.readFile "/run/agenix/my-secret" ;
+                                                                        "MY_SECRET".source = config.age.secrets.identity.path;
                                                                     } ;
                                                             } ;
                                                         hardware.pulseaudio =
