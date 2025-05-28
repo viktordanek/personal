@@ -92,6 +92,29 @@
                                                                                         } ;
                                                                                 dot-ssh =
                                                                                     {
+                                                                                        files =
+                                                                                            {
+                                                                                                identity =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/identity.asc.age" }
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                known-hosts =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/known-hosts.asc.age" }
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                            } ;
                                                                                         boot =
                                                                                             ignore :
                                                                                                 {
@@ -99,8 +122,8 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             cat > "$1" <<EOF
-                                                                                                            IdentityFile /run/agenix.d/1/identity-boot.asc
-                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts-boot.asc
+                                                                                                            IdentityFile "$( "$2/boot/dot-ssh/files/identity" )"
+                                                                                                            UserKnownHostsFile "$( "$2/boot/dot-ssh/files/known-hosts" )"
                                                                                                             StrictHostKeyChecking yes
 
                                                                                                             Host github.com
