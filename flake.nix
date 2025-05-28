@@ -61,7 +61,7 @@
                                                                                                     flock -u 201
                                                                                                     exit 0
                                                                                                 else
-                                                                                                    jq --null-input --arg SCRIPT ${ pkgs.writeShellApplication ( ( value null ) // { name = "initial" ; } ) }/bin/initial --arg OUT "$OUT" --arg STANDARD_ERROR "$( cat "$STATUS_DIR/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STATUS_DIR/standard-output" )" --arg STASH_FILE "$STASH_FILE}" --arg STATUS "$STATUS" '{ "out" : $OUT , "script" : $SCRIPT , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "stash-file" : $STASH_FILE , "status" : $STATUS }' > "$STATUS_DIR/failure.yaml"
+                                                                                                    jq --null-input --arg SCRIPT ${ pkgs.writeShellApplication ( ( value null ) // { name = "initial" ; } ) }/bin/initial --arg OUT "$OUT" --arg STANDARD_ERROR "$( cat "$STATUS_DIR/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STATUS_DIR/standard-output" )" --arg STASH_FILE "$STASH_FILE}" --arg STATUS "$STATUS" '{ "out" : $OUT , "script" : $SCRIPT , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "stash-file" : $STASH_FILE , "status" : $STATUS }' | yq --yaml-output "." > "$STATUS_DIR/failure.yaml"
                                                                                                     cat "$STATUS_DIR/failure.yaml" | yq --yaml-output
                                                                                                     flock -u 201
                                                                                                     exit 64
@@ -92,15 +92,15 @@
                                                                                         } ;
                                                                                 dot-ssh =
                                                                                     {
-                                                                                        config =
+                                                                                        boot =
                                                                                             ignore :
                                                                                                 {
                                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                     text =
                                                                                                         ''
                                                                                                             cat > "$1" <<EOF
-                                                                                                            IdentityFile /run/agenix.d/1/identity.asc
-                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts.asc
+                                                                                                            IdentityFile /run/agenix.d/1/identity-boot.asc
+                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts-boot.asc
                                                                                                             StrictHostKeyChecking yes
 
                                                                                                             Host github.com
@@ -109,6 +109,22 @@
                                                                                                             Host mobile
                                                                                                             HostName 192.168.1.202
                                                                                                             Port 8022
+                                                                                                            EOF
+                                                                                                            chmod 0400 "$1"
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        viktor =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            cat > "$1" <<EOF
+                                                                                                            IdentityFile /run/agenix.d/1/identity-viktor.asc
+                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts-viktor.asc
+                                                                                                            StrictHostKeyChecking yes
+                                                                                                            Host github.com
+                                                                                                            HostName github.com
                                                                                                             EOF
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
@@ -123,7 +139,7 @@
                                                                                                     text =
                                                                                                         ''
                                                                                                             mkdir "$1"
-                                                                                                            GIT_ROOT="$( "$2/boot/repository/secrets-archive" )"
+                                                                                                            GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
                                                                                                             GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                             cat > "$1/.envrc" <<EOF
                                                                                                             export GIT_DIR="$GIT_ROOT/work-tree"
@@ -135,56 +151,219 @@
                                                                                                 } ;
                                                                                     } ;
                                                                                 repository =
-                                                                                    {
-                                                                                        private =
-                                                                                            ignore :
+                                                                                    let
+                                                                                        post-commit =
+                                                                                            pkgs.writeShellApplication
                                                                                                 {
+                                                                                                    name = "post-commit" ;
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            export GIT_DIR="$1/git"
-                                                                                                            export GIT_WORK_TREE="$1/work-tree"
-                                                                                                            mkdir --parents "$1"
-                                                                                                            mkdir --parents "$GIT_DIR"
-                                                                                                            mkdir --parents "$GIT_WORK_TREE"
-                                                                                                            cat > "$1/.envrc" <<EOF
-                                                                                                            export GIT_DIR="$GIT_DIR"
-                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                            EOF
-                                                                                                            git init 2>&1
-                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/config" )"
-                                                                                                            git config user.name "${ config.personal.description }"
-                                                                                                            git config user.email "${ config.personal.email }"
-                                                                                                            git remote add origin mobile:private
-                                                                                                            git fetch origin 2>&1
-                                                                                                            git checkout origin/main 2>&1
+                                                                                                            while ! git push origin HEAD
+                                                                                                            do
+                                                                                                                sleep 1
+                                                                                                            done
                                                                                                         '' ;
                                                                                                 } ;
-                                                                                        secrets-archive =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            export GIT_DIR="$1/git"
-                                                                                                            export GIT_WORK_TREE="$1/work-tree"
-                                                                                                            mkdir --parents "$1"
-                                                                                                            mkdir --parents "$GIT_DIR"
-                                                                                                            mkdir --parents "$GIT_WORK_TREE"
-                                                                                                            cat > "$1/.envrc" <<EOF
-                                                                                                            export GIT_DIR="$GIT_DIR"
-                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                            EOF
-                                                                                                            git init 2>&1
-                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/config" )"
-                                                                                                            git config user.name "${ config.personal.description }"
-                                                                                                            git config user.email "${ config.personal.email }"
-                                                                                                            git remote add origin git@github.com:nextmoose/secrets.git
-                                                                                                            git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                                            git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                    } ;
+                                                                                            post-commit-private =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "post-commit" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                while ! git push origin HEAD
+                                                                                                                do
+                                                                                                                    sleep 1
+                                                                                                                done
+                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                if [[ "$BRANCH" == scratch/* ]]
+                                                                                                                then
+                                                                                                                    nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/scripts/repository/personal" )/work-tree" --override-input "$( "$OUT/scripts/repository/secrets" )/work-tree" --override-input visitor "$( "$OUT/scripts/repository/visitor" )/work-tree"
+                                                                                                                    mv "$GIT_WORK_TREE/result" result
+                                                                                                                elif [ "$BRANCH" == "development" ]
+                                                                                                                then
+                                                                                                                    sudo nixos-rebuild test --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                elif [ "$BRANCH" == "main" ]
+                                                                                                                then
+                                                                                                                    sudo nixos-rebuild switch --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                fi
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            pre-commit =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "pre-commit" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                if [[ "$BRANCH" != scratch/* ]]
+                                                                                                                then
+                                                                                                                    git checkout -b "scratch/$( uuidgen )"
+                                                                                                                fi
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            pre-commit-private =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "pre-commit" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                if [ -z "$BRANCH" ]
+                                                                                                                then
+                                                                                                                    BRANCH="scratch/$( uuidgen )"
+                                                                                                                    git checkout -b "$BRANCH"
+                                                                                                                elif [[ "$BRANCH" == scratch/* ]]
+                                                                                                                then
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/personal" )/git GIT_WORK_TREE="$( "$OUT/scripts/personal" )/work-tree git commit --allow-empty --allow-empty-message --message ""
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/personal" )/git GIT_WORK_TREE="$( "$OUT/scripts/personal" )/work-tree git rev-parse HEAD > work-tree/personal.inputs.asc
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/secrets" )/git GIT_WORK_TREE="$( "$OUT/scripts/secrets" )/work-tree git commit --allow-empty --allow-empty-message --message ""
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/secrets" )/git GIT_WORK_TREE="$( "$OUT/scripts/secrets" )/work-tree git rev-parse HEAD > work-tree/personal.secrets.asc
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/visitor" )/git GIT_WORK_TREE="$( "$OUT/scripts/visitor" )/work-tree git commit --allow-empty --allow-empty-message --message ""
+                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/visitor" )/git GIT_WORK_TREE="$( "$OUT/scripts/visitor" )/work-tree git rev-parse HEAD > work-tree/personal.visitor.asc
+                                                                                                                    git add inputs.asc
+                                                                                                                fi
+                                                                                                                date +%s > "$GIT_WORK_TREE/current-time.nix"
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                        in
+                                                                                            {
+                                                                                                age-secrets =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GIT_DIR="$1/git"
+                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    mkdir --parents "$1"
+                                                                                                                    mkdir --parents "$GIT_DIR"
+                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                    cat > "$1/.envrc" <<EOF
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    EOF
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config user.name "${ config.personal.description }"
+                                                                                                                    git config user.email "${ config.personal.email }"
+                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                    git remote add origin ${ config.personal.repository.age-secrets.remote }
+                                                                                                                    git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                    git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                pass-secrets =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GIT_DIR="$1/git"
+                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    mkdir --parents "$1"
+                                                                                                                    mkdir --parents "$GIT_DIR"
+                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                    cat > "$1/.envrc" <<EOF
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    EOF
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config user.name "${ config.personal.description }"
+                                                                                                                    git config user.email "${ config.personal.email }"
+                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                    git remote add origin ${ config.personal.repository.pass-secrets.remote }
+                                                                                                                    git fetch origin ${ config.personal.repository.pass-secrets.branch } 2>&1
+                                                                                                                    git checkout ${ config.personal.repository.pass-secrets.branch } 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                personal =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GIT_DIR="$1/git"
+                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    mkdir --parents "$1"
+                                                                                                                    cat > "$1/.envrc" <<EOF
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    EOF
+                                                                                                                    mkdir "$GIT_DIR"
+                                                                                                                    mkdir "$GIT_WORK_TREE"
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor" )"
+                                                                                                                    git config user.name "Victor Danek"
+                                                                                                                    git config user.email "viktordanek10@gmail.com"
+                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                    git remote add origin git@github.com:viktordanek/personal.git
+                                                                                                                    git fetch origin main 2>&1
+                                                                                                                    git checkout origin/main 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                private =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GIT_DIR="$1/git"
+                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    mkdir --parents "$1"
+                                                                                                                    cat > "$1/.envrc" <<EOF
+                                                                                                                    export OUT="$2
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    EOF
+                                                                                                                    mkdir --parents "$GIT_DIR"
+                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config user.name "${ config.personal.description }"
+                                                                                                                    git config user.email "${ config.personal.email }"
+                                                                                                                    ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
+                                                                                                                    ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                    git remote add origin mobile:private
+                                                                                                                    git fetch origin 2>&1
+                                                                                                                    git checkout origin/main 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                visitor =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GIT_DIR="$1/git"
+                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    mkdir --parents "$1"
+                                                                                                                    cat > "$1/.envrc" <<EOF
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    EOF
+                                                                                                                    mkdir "$GIT_DIR"
+                                                                                                                    mkdir "$GIT_WORK_TREE"
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor" )"
+                                                                                                                    git config user.name "Victor Danek"
+                                                                                                                    git config user.email "viktordanek10@gmail.com"
+                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                    git remote add origin git@github.com:viktordanek/visitor.git
+                                                                                                                    git fetch origin main 2>&1
+                                                                                                                    git checkout origin/main 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                            } ;
                                                                             } ;
                                                                     } ;
                                                             in builtins.concatStringsSep "\n" commands ;
@@ -201,21 +380,27 @@
                                                                 identityPaths = [ config.personal.agenix ] ;
                                                                 secrets =
                                                                     {
-                                                                        "hashed-password.asc" =
+                                                                        "identity-boot.asc" =
                                                                             {
-                                                                                file = secrets + "/ hashed-password.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = "root" ;
-                                                                            } ;
-                                                                        "identity.asc" =
-                                                                            {
-                                                                                file = secrets + "/identity.asc.age" ;
+                                                                                file = secrets + "/dot-ssh/boot/identity.asc.age" ;
                                                                                 mode = "0400" ;
                                                                                 owner = config.personal.name ;
                                                                             } ;
-                                                                        "known-hosts.asc" =
+                                                                        "identity-viktor.asc" =
                                                                             {
-                                                                                file = secrets + "/known-hosts.asc.age" ;
+                                                                                file = secrets + "/dot-ssh/viktor/identity.asc.age" ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
+                                                                            } ;
+                                                                        "known-hosts-boot.asc" =
+                                                                            {
+                                                                                file = secrets + "/dot-ssh/boot/known-hosts.asc.age" ;
+                                                                                mode = "0400" ;
+                                                                                owner = config.personal.name ;
+                                                                            } ;
+                                                                        "known-hosts-viktor.asc" =
+                                                                            {
+                                                                                file = secrets + "/dot-ssh/viktor/known-hosts.asc.age" ;
                                                                                 mode = "0400" ;
                                                                                 owner = config.personal.name ;
                                                                             } ;
@@ -411,7 +596,7 @@
                                                                                 }
                                                                         )
                                                                     ] ;
-                                                                hashedPasswordFile = "/run/agenix.1/hashed-password.asc" ;
+                                                                password = config.personal.password ;
                                                             } ;
                                                     } ;
                                                 options =
@@ -424,6 +609,30 @@
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
+                                                                password = lib.mkOption { type = lib.types.str ; } ;
+                                                                repository =
+                                                                    {
+                                                                        age-secrets =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b" ; type = lib.types.str ; } ;
+                                                                           } ;
+                                                                        pass-secrets =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "scratch/8060776f-fa8d-443e-9902-118cf4634d9e" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:nextmoose/secrets.git" ; type = lib.types.str ; } ;
+                                                                            } ;
+                                                                        personal =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:viktordanek/personal.git" ; type = lib.types.str ; } ;
+                                                                            } ;
+                                                                        private =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "mobile:private" ; type = lib.types.str ; } ;
+                                                                            } ;
+                                                                    } ;
                                                                 stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
                                                                 wifi =
                                                                     lib.mkOption
