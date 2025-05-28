@@ -261,7 +261,7 @@
                                                                                                             BRANCH="$( git rev-parse --abbrev-ref HEAD )"
                                                                                                             if [[ "$BRANCH" == scratch/* ]]
                                                                                                             then
-                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                 mv result ..
                                                                                                             if [[ "$BRANCH" == sub/* ]]
                                                                                                             then
