@@ -221,6 +221,19 @@
                                                                                     } ;
                                                                                 repository =
                                                                                     let
+                                                                                        post-checkout =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "post-checkout" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            if [ -d "$GIT_DIR/rebase-apply" ] || [ -d "$GIT_DIR/rebase-merge" ]
+                                                                                                            then
+                                                                                                                exec $( dirname "$0" )/post-commit
+                                                                                                            fi
+                                                                                                        '' ;
+                                                                                                } ;
                                                                                         post-commit =
                                                                                             pkgs.writeShellApplication
                                                                                                 {
