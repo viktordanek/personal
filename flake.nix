@@ -267,7 +267,7 @@
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
                                                                                                                 mv result ..
-                                                                                                            if [[ "$BRANCH" == issue/* ]]
+                                                                                                            elif [[ "$BRANCH" == issue/* ]]
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm --flake .#myhost
                                                                                                                 mv result ..
