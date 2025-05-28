@@ -254,7 +254,6 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            source ../.envrc
                                                                                                             while ! git push origin HEAD
                                                                                                             do
                                                                                                                 sleep 1
@@ -424,7 +423,7 @@
                                                                                                 private =
                                                                                                     ignore :
                                                                                                         {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.makeWrapper ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     export GIT_DIR="$1/git"
@@ -442,7 +441,7 @@
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
-                                                                                                                    ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                    makeWrapper ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit" --set OUT "$2"
                                                                                                                     ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
                                                                                                                     ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                     git remote add origin mobile:private
