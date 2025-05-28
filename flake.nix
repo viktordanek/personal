@@ -294,7 +294,7 @@
                                                                                                                         "git add work-tree/inputs.$2.commit"
                                                                                                                     }
                                                                                                                     fun "$OUT/boot/repository/personal" personal
-                                                                                                                    fun "$OUT/boot/repository/secrets" secrets
+                                                                                                                    fun "$OUT/boot/repository/age-secrets" secrets
                                                                                                                     fun "$OUT/boot/repository/visitor" visitor
                                                                                                                 )
                                                                                                             fi
