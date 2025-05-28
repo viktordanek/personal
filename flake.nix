@@ -213,6 +213,7 @@
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                                         text =
                                                                                                                             ''
+                                                                                                                                source .envrc
                                                                                                                                 # Constants
                                                                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                                                                 TIMESTAMP=$(date +%s)
