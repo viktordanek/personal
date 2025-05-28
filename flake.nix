@@ -349,7 +349,7 @@
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
-                                                                                                                    export PASSWORD_STORE_ENABLE_EXTENIONS=true
+                                                                                                                    export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR=${ extensions-dir }
                                                                                                                     EOF
                                                                                                                 '' ;
