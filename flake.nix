@@ -288,14 +288,15 @@
                                                                                                             elif [[ "$BRANCH" == scratch/* ]]
                                                                                                             then
                                                                                                                 (
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/personal" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/personal" )/work-tree" git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/personal" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/personal" )/work-tree" git rev-parse HEAD > work-tree/personal.inputs.asc
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/secrets" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/secrets" )/work-tree" git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/secrets" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/secrets" )/work-tree" git rev-parse HEAD > work-tree/personal.secrets.asc
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/visitor" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/visitor" )/work-tree" git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/boot/repository/visitor" )/git" GIT_WORK_TREE="$( "$OUT/boot/repository/visitor" )/work-tree" git rev-parse HEAD > work-tree/personal.visitor.asc
+                                                                                                                    fun() {
+                                                                                                                        GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message
+                                                                                                                        GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "work-tree/inputs.$2.commit"
+                                                                                                                        "git add work-tree/inputs.$2.commit"
+                                                                                                                    }
+                                                                                                                    fun "$OUT/boot/repository/personal" personal
+                                                                                                                    fun "$OUT/boot/repository/secrets" secrets
+                                                                                                                    fun "$OUT/boot/repository/visitor" visitor
                                                                                                                 )
-                                                                                                                git add inputs.asc
                                                                                                             fi
                                                                                                             date +%s > "$GIT_WORK_TREE/current-time.nix"
                                                                                                         '' ;
