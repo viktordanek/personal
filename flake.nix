@@ -77,19 +77,42 @@
                                                                         boot =
                                                                             {
                                                                                 dot-gnupg =
-                                                                                    ignore :
-                                                                                        {
-                                                                                            runtimeInputs = [ pkgs.gnupg ] ;
-                                                                                            text =
-                                                                                                ''
-                                                                                                    export GNUPGHOME="$1"
-                                                                                                    mkdir --parents "$GNUPGHOME"
-                                                                                                    chmod 0700 "$GNUPGHOME"
-                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import /run/agenix.d/1/secret-keys.asc 2>&1
-                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust /run/agenix.d/1/ownertrust.asc 2>&1
-                                                                                                    gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
-                                                                                                '' ;
-                                                                                        } ;
+                                                                                    {
+                                                                                        config =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ pkgs.gnupg ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            export GNUPGHOME="$1"
+                                                                                                            mkdir --parents "$GNUPGHOME"
+                                                                                                            chmod 0700 "$GNUPGHOME"
+                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import "$( "$2/boot/dot-gnupg/secret-keys" )" 2>&1
+                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust "$( "$2/boot/dot-gnupg/ownertrust" )" 2>&1
+                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        ownertrust =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/ownertrust.asc.age" }
+                                                                                                            chmod 0400 "$1"
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        secret-keys =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/secret-keys.asc.age" }
+                                                                                                            chmod 0400 "$1"
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                    } ;
                                                                                 dot-ssh =
                                                                                     {
                                                                                         boot =
@@ -137,21 +160,44 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                         viktor =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat > "$1" <<EOF
-                                                                                                            IdentityFile /run/agenix.d/1/identity-viktor.asc
-                                                                                                            UserKnownHostsFile /run/agenix.d/1/known-hosts-viktor.asc
-                                                                                                            StrictHostKeyChecking yes
-                                                                                                            Host github.com
-                                                                                                            HostName github.com
-                                                                                                            EOF
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
+                                                                                            {
+                                                                                                config =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    cat > "$1" <<EOF
+                                                                                                                    IdentityFile "$( "$2/boot/dot-ssh/viktor/identity" )"
+                                                                                                                    UserKnownHostsFile "$( "$2/boot/dot-ssh/viktor/known-hosts" )"
+                                                                                                                    StrictHostKeyChecking yes
+                                                                                                                    Host github.com
+                                                                                                                    HostName github.com
+                                                                                                                    EOF
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                identity =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/identity.asc.age" }
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                known-hosts =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/known-hosts.asc.age" }
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                            } ;
                                                                                     } ;
                                                                                 pass =
                                                                                     {
@@ -168,7 +214,7 @@
                                                                                                             export GIT_DIR="$GIT_ROOT/work-tree"
                                                                                                             export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                             export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
-                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg" )"
+                                                                                                            export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
                                                                                                             EOF
                                                                                                         '' ;
                                                                                                 } ;
@@ -322,7 +368,7 @@
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor" )"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
                                                                                                                     git config user.name "Victor Danek"
                                                                                                                     git config user.email "viktordanek10@gmail.com"
                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -376,7 +422,7 @@
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor" )"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
                                                                                                                     git config user.name "Victor Danek"
                                                                                                                     git config user.email "viktordanek10@gmail.com"
                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -403,35 +449,11 @@
                                                                 identityPaths = [ config.personal.agenix ] ;
                                                                 secrets =
                                                                     {
-                                                                        "identity-viktor.asc" =
-                                                                            {
-                                                                                file = secrets + "/dot-ssh/viktor/identity.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
-                                                                            } ;
-                                                                        "known-hosts-viktor.asc" =
-                                                                            {
-                                                                                file = secrets + "/dot-ssh/viktor/known-hosts.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
-                                                                            } ;
                                                                         my-secret =
                                                                             {
                                                                                 file = ./secrets/my-secret.age ;
                                                                                 mode = "0400" ;
                                                                                 owner = "root" ;
-                                                                            } ;
-                                                                        "ownertrust.asc" =
-                                                                            {
-                                                                                file = secrets + "/ownertrust.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
-                                                                            } ;
-                                                                        "secret-keys.asc" =
-                                                                            {
-                                                                                file = secrets + "/secret-keys.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
                                                                             } ;
                                                                     } ;
                                                             } ;
