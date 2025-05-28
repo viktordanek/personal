@@ -444,19 +444,6 @@
                                             {
                                                 config =
                                                     {
-                                                        age =
-                                                            {
-                                                                identityPaths = [ config.personal.agenix ] ;
-                                                                secrets =
-                                                                    {
-                                                                        my-secret =
-                                                                            {
-                                                                                file = ./secrets/my-secret.age ;
-                                                                                mode = "0400" ;
-                                                                                owner = "root" ;
-                                                                            } ;
-                                                                    } ;
-                                                            } ;
                                                         boot.loader =
                                                             {
                                                                 efi.canTouchEfiVariables = true ;
