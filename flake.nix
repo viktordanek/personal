@@ -773,7 +773,7 @@
                                                                                     text =
                                                                                         ''
                                                                                             find ${ derivation } -mindepth 1 -type f -exec {} \;
-                                                                                            idea ${ config.personal.name }/${ config.personal.stash }/( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) }
+                                                                                            idea /home/${ config.personal.name }/${ config.personal.stash }
                                                                                         '' ;
                                                                                 }
                                                                         )
