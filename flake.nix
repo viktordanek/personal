@@ -403,21 +403,9 @@
                                                                 identityPaths = [ config.personal.agenix ] ;
                                                                 secrets =
                                                                     {
-                                                                        "identity-boot.asc" =
-                                                                            {
-                                                                                file = secrets + "/dot-ssh/boot/identity.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
-                                                                            } ;
                                                                         "identity-viktor.asc" =
                                                                             {
                                                                                 file = secrets + "/dot-ssh/viktor/identity.asc.age" ;
-                                                                                mode = "0400" ;
-                                                                                owner = config.personal.name ;
-                                                                            } ;
-                                                                        "known-hosts-boot.asc" =
-                                                                            {
-                                                                                file = secrets + "/dot-ssh/boot/known-hosts.asc.age" ;
                                                                                 mode = "0400" ;
                                                                                 owner = config.personal.name ;
                                                                             } ;
