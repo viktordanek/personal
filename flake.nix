@@ -316,7 +316,7 @@
                                                                                                                     fun() {
                                                                                                                         env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$( "$1" )/git" GIT_WORK_TREE="$( "$1" )/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
                                                                                                                         env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$( "$1" )/git" GIT_WORK_TREE="$( "$1" )/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
-                                                                                                                        "git add inputs.$2.commit"
+                                                                                                                        git add "inputs.$2.commit"
                                                                                                                     }
                                                                                                                     fun "$OUT/boot/repository/personal" personal
                                                                                                                     fun "$OUT/boot/repository/age-secrets" secrets
