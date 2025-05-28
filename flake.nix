@@ -234,68 +234,82 @@
                                                                                                             done
                                                                                                         '' ;
                                                                                                 } ;
-                                                                                            post-commit-private =
+                                                                                        post-commit-private =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "post-commit" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            while ! git push origin HEAD
+                                                                                                            do
+                                                                                                                sleep 1
+                                                                                                            done
+                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                            if [[ "$BRANCH" == scratch/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                mv "$GIT_WORK_TREE/result" result
+                                                                                                            elif [ "$BRANCH" == "development" ]
+                                                                                                            then
+                                                                                                                sudo nixos-rebuild test --flake "$GIT_WORK_TREE#myhost"
+                                                                                                            elif [ "$BRANCH" == "main" ]
+                                                                                                            then
+                                                                                                                sudo nixos-rebuild switch --flake "$GIT_WORK_TREE#myhost"
+                                                                                                            fi
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        pre-commit =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "pre-commit" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                            if [[ "$BRANCH" != scratch/* ]]
+                                                                                                            then
+                                                                                                                git checkout -b "scratch/$( uuidgen )"
+                                                                                                            fi
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        pre-commit-private =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "pre-commit" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                            if [ -z "$BRANCH" ]
+                                                                                                            then
+                                                                                                                BRANCH="scratch/$( uuidgen )"
+                                                                                                                git checkout -b "$BRANCH"
+                                                                                                            elif [[ "$BRANCH" == scratch/* ]]
+                                                                                                            then
+                                                                                                                (
+                                                                                                                    fun() {
+                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                        env -i HOME="$HOME" PATH="$PATH"GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                        "git add work-tree/inputs.$2.commit"
+                                                                                                                    }
+                                                                                                                    fun "$OUT/boot/repository/personal" personal
+                                                                                                                    fun "$OUT/boot/repository/age-secrets" secrets
+                                                                                                                    fun "$OUT/boot/repository/visitor" visitor
+                                                                                                                )
+                                                                                                            fi
+                                                                                                            date +%s > "$GIT_WORK_TREE/current-time.nix"
+                                                                                                            git add "$GIT_WORK_TREE/current-time.nix"
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                            scratch =
                                                                                                 pkgs.writeShellApplication
                                                                                                     {
-                                                                                                        name = "post-commit" ;
-                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                        name = "scratch" ;
+                                                                                                        runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                while ! git push origin HEAD
-                                                                                                                do
-                                                                                                                    sleep 1
-                                                                                                                done
-                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                                if [[ "$BRANCH" == scratch/* ]]
-                                                                                                                then
-                                                                                                                    nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/scripts/repository/personal" )/work-tree" --override-input "$( "$OUT/scripts/repository/secrets" )/work-tree" --override-input visitor "$( "$OUT/scripts/repository/visitor" )/work-tree"
-                                                                                                                    mv "$GIT_WORK_TREE/result" result
-                                                                                                                elif [ "$BRANCH" == "development" ]
-                                                                                                                then
-                                                                                                                    sudo nixos-rebuild test --flake "$GIT_WORK_TREE#myhost"
-                                                                                                                elif [ "$BRANCH" == "main" ]
-                                                                                                                then
-                                                                                                                    sudo nixos-rebuild switch --flake "$GIT_WORK_TREE#myhost"
-                                                                                                                fi
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                            pre-commit =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "pre-commit" ;
-                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                                if [[ "$BRANCH" != scratch/* ]]
-                                                                                                                then
-                                                                                                                    git checkout -b "scratch/$( uuidgen )"
-                                                                                                                fi
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                            pre-commit-private =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "pre-commit" ;
-                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                                if [ -z "$BRANCH" ]
-                                                                                                                then
-                                                                                                                    BRANCH="scratch/$( uuidgen )"
-                                                                                                                    git checkout -b "$BRANCH"
-                                                                                                                elif [[ "$BRANCH" == scratch/* ]]
-                                                                                                                then
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/personal" )/git GIT_WORK_TREE="$( "$OUT/scripts/personal" )/work-tree git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/personal" )/git GIT_WORK_TREE="$( "$OUT/scripts/personal" )/work-tree git rev-parse HEAD > work-tree/personal.inputs.asc
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/secrets" )/git GIT_WORK_TREE="$( "$OUT/scripts/secrets" )/work-tree git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/secrets" )/git GIT_WORK_TREE="$( "$OUT/scripts/secrets" )/work-tree git rev-parse HEAD > work-tree/personal.secrets.asc
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/visitor" )/git GIT_WORK_TREE="$( "$OUT/scripts/visitor" )/work-tree git commit --allow-empty --allow-empty-message --message ""
-                                                                                                                    GIT_DIR="$( "$OUT/scripts/repository/visitor" )/git GIT_WORK_TREE="$( "$OUT/scripts/visitor" )/work-tree git rev-parse HEAD > work-tree/personal.visitor.asc
-                                                                                                                    git add inputs.asc
-                                                                                                                fi
-                                                                                                                date +%s > "$GIT_WORK_TREE/current-time.nix"
+                                                                                                                git checkout -b scratch/$( uuidgen )
                                                                                                             '' ;
                                                                                                     } ;
                                                                                         in
@@ -316,6 +330,7 @@
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     EOF
                                                                                                                     git init 2>&1
+                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
@@ -342,6 +357,7 @@
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     EOF
                                                                                                                     git init 2>&1
+                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
@@ -368,6 +384,7 @@
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
+                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
                                                                                                                     git config user.name "Victor Danek"
                                                                                                                     git config user.email "viktordanek10@gmail.com"
@@ -388,13 +405,14 @@
                                                                                                                     export GIT_WORK_TREE="$1/work-tree"
                                                                                                                     mkdir --parents "$1"
                                                                                                                     cat > "$1/.envrc" <<EOF
-                                                                                                                    export OUT="$2
+                                                                                                                    export OUT="$2"
                                                                                                                     export GIT_DIR="$GIT_DIR"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     EOF
                                                                                                                     mkdir --parents "$GIT_DIR"
                                                                                                                     mkdir --parents "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
+                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
@@ -422,6 +440,7 @@
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
+                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
                                                                                                                     git config user.name "Victor Danek"
                                                                                                                     git config user.email "viktordanek10@gmail.com"
