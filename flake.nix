@@ -261,14 +261,26 @@
                                                                                                             BRANCH="$( git rev-parse --abbrev-ref HEAD )"
                                                                                                             if [[ "$BRANCH" == scratch/* ]]
                                                                                                             then
-                                                                                                                nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
-                                                                                                                mv "$GIT_WORK_TREE/result" result
+                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                mv result ..
+                                                                                                            if [[ "$BRANCH" == sub/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                mv result ..
+                                                                                                            if [[ "$BRANCH" == issue/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                mv result ..
+                                                                                                            if [[ "$BRANCH" == milestone/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                mv result ..
                                                                                                             elif [ "$BRANCH" == "development" ]
                                                                                                             then
-                                                                                                                sudo nixos-rebuild test --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                sudo nixos-rebuild test --flake .#myhost
                                                                                                             elif [ "$BRANCH" == "main" ]
                                                                                                             then
-                                                                                                                sudo nixos-rebuild switch --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                sudo nixos-rebuild switch --flake .#myhost
                                                                                                             fi
                                                                                                         '' ;
                                                                                                 } ;
