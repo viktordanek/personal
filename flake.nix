@@ -248,7 +248,7 @@
                                                                                                             BRANCH="$( git rev-parse --abbrev-ref HEAD )"
                                                                                                             if [[ "$BRANCH" == scratch/* ]]
                                                                                                             then
-                                                                                                                nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/scripts/repository/personal" )/work-tree" --override-input "$( "$OUT/scripts/repository/secrets" )/work-tree" --override-input visitor "$( "$OUT/scripts/repository/visitor" )/work-tree"
+                                                                                                                nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                 mv "$GIT_WORK_TREE/result" result
                                                                                                             elif [ "$BRANCH" == "development" ]
                                                                                                             then
