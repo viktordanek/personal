@@ -254,6 +254,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                     text =
                                                                                                         ''
+                                                                                                            OUT=$( git config --get application.url )
                                                                                                             while ! git push origin HEAD
                                                                                                             do
                                                                                                                 sleep 1
@@ -261,14 +262,26 @@
                                                                                                             BRANCH="$( git rev-parse --abbrev-ref HEAD )"
                                                                                                             if [[ "$BRANCH" == scratch/* ]]
                                                                                                             then
-                                                                                                                nixos-rebuild build-vm --flake "$GIT_WORK_TREE#myhost" --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
-                                                                                                                mv "$GIT_WORK_TREE/result" result
+                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                mv result ..
+                                                                                                            elif [[ "$BRANCH" == sub/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                mv result ..
+                                                                                                            elif [[ "$BRANCH" == issue/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                mv result ..
+                                                                                                            elif [[ "$BRANCH" == milestone/* ]]
+                                                                                                            then
+                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                mv result ..
                                                                                                             elif [ "$BRANCH" == "development" ]
                                                                                                             then
-                                                                                                                sudo nixos-rebuild test --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                sudo nixos-rebuild test --flake .#myhost
                                                                                                             elif [ "$BRANCH" == "main" ]
                                                                                                             then
-                                                                                                                sudo nixos-rebuild switch --flake "$GIT_WORK_TREE#myhost"
+                                                                                                                sudo nixos-rebuild switch --flake .#myhost
                                                                                                             fi
                                                                                                         '' ;
                                                                                                 } ;
@@ -302,9 +315,9 @@
                                                                                                             then
                                                                                                                 (
                                                                                                                     fun() {
-                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
-                                                                                                                        "git add work-tree/inputs.$2.commit"
+                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$( "$1" )/git" GIT_WORK_TREE="$( "$1" )/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$( "$1" )/git" GIT_WORK_TREE="$( "$1" )/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                        git add "inputs.$2.commit"
                                                                                                                     }
                                                                                                                     fun "$OUT/boot/repository/personal" personal
                                                                                                                     fun "$OUT/boot/repository/age-secrets" secrets
@@ -429,6 +442,7 @@
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
+                                                                                                                    git config application.url "$2"
                                                                                                                     ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                     ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
                                                                                                                     ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
