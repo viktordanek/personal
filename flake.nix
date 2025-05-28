@@ -92,8 +92,29 @@
                                                                                         } ;
                                                                                 dot-ssh =
                                                                                     {
-                                                                                        files =
+                                                                                        boot =
                                                                                             {
+                                                                                                config =
+                                                                                                    ignore :
+                                                                                                        {
+                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    cat > "$1" <<EOF
+                                                                                                                    IdentityFile "$( "$2/boot/dot-ssh/boot/identity" )"
+                                                                                                                    UserKnownHostsFile "$( "$2/boot/dot-ssh/boot/known-hosts" )"
+                                                                                                                    StrictHostKeyChecking yes
+
+                                                                                                                    Host github.com
+                                                                                                                    HostName github.com
+
+                                                                                                                    Host mobile
+                                                                                                                    HostName 192.168.1.202
+                                                                                                                    Port 8022
+                                                                                                                    EOF
+                                                                                                                    chmod 0400 "$1"
+                                                                                                                '' ;
+                                                                                                        } ;
                                                                                                 identity =
                                                                                                     ignore :
                                                                                                         {
@@ -115,27 +136,6 @@
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
-                                                                                        boot =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            cat > "$1" <<EOF
-                                                                                                            IdentityFile "$( "$2/boot/dot-ssh/files/identity" )"
-                                                                                                            UserKnownHostsFile "$( "$2/boot/dot-ssh/files/known-hosts" )"
-                                                                                                            StrictHostKeyChecking yes
-
-                                                                                                            Host github.com
-                                                                                                            HostName github.com
-
-                                                                                                            Host mobile
-                                                                                                            HostName 192.168.1.202
-                                                                                                            Port 8022
-                                                                                                            EOF
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
                                                                                         viktor =
                                                                                             ignore :
                                                                                                 {
@@ -270,7 +270,7 @@
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     EOF
                                                                                                                     git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -296,7 +296,7 @@
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     EOF
                                                                                                                     git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -349,7 +349,7 @@
                                                                                                                     mkdir --parents "$GIT_DIR"
                                                                                                                     mkdir --parents "$GIT_WORK_TREE"
                                                                                                                     git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
