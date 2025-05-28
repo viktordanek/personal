@@ -254,7 +254,6 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            OUT=${ outer-derivation }
                                                                                                             while ! git push origin HEAD
                                                                                                             do
                                                                                                                 sleep 1
