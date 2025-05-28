@@ -218,12 +218,12 @@
                                                                                                                                 TIMESTAMP=$(date +%s)
 
                                                                                                                                 # Get a list of all password keys tracked by Git
-                                                                                                                                git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                                                pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
                                                                                                                                   # Skip non-.gpg files
                                                                                                                                   [[ "$file" != *.gpg ]] && continue
 
                                                                                                                                   # Get the last commit timestamp for the file
-                                                                                                                                  last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                                                                  last_commit_ts=$(pass git log -1 --format="%at" -- "$file" || echo 0)
 
                                                                                                                                   # Compute the age
                                                                                                                                   age=$((TIMESTAMP - last_commit_ts))
@@ -231,7 +231,7 @@
                                                                                                                                   if (( age >= YEAR_SECONDS )); then
                                                                                                                                     # Strip ".gpg" and print
                                                                                                                                     key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
-                                                                                                                                    echo "$key"
+                                                                                                                                    echoYEAR_SECOND "$key"
                                                                                                                                   fi
                                                                                                                                 done
 
