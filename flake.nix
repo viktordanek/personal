@@ -254,6 +254,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                     text =
                                                                                                         ''
+                                                                                                            OUT=${ outer-derivation }
                                                                                                             while ! git push origin HEAD
                                                                                                             do
                                                                                                                 sleep 1
@@ -441,6 +442,7 @@
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git config user.email "${ config.personal.email }"
+                                                                                                                    source ${ pkgs.makeWrapper }/
                                                                                                                     makeWrapper ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit" --set OUT "$2"
                                                                                                                     ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
                                                                                                                     ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
