@@ -213,10 +213,6 @@
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                                         text =
                                                                                                                             ''
-                                                                                                                                GIT_DIR="${ point.repository }/git"
-                                                                                                                                export GIT_DIR
-                                                                                                                                GIT_WORK_TREE="${ point.repository }/work-tree"
-                                                                                                                                export GIT_WORK_TREE
                                                                                                                                 # Constants
                                                                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                                                                 TIMESTAMP=$(date +%s)
