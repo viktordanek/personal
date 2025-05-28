@@ -299,6 +299,7 @@
                                                                                                                 )
                                                                                                             fi
                                                                                                             date +%s > "$GIT_WORK_TREE/current-time.nix"
+                                                                                                            git add "$GIT_WORK_TREE/current-time.nix"
                                                                                                         '' ;
                                                                                                 } ;
                                                                                             scratch =
