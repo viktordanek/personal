@@ -264,7 +264,7 @@
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                 mv result ..
-                                                                                                            if [[ "$BRANCH" == sub/* ]]
+                                                                                                            elif [[ "$BRANCH" == sub/* ]]
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
                                                                                                                 mv result ..
@@ -272,7 +272,7 @@
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm --flake .#myhost
                                                                                                                 mv result ..
-                                                                                                            if [[ "$BRANCH" == milestone/* ]]
+                                                                                                            elif [[ "$BRANCH" == milestone/* ]]
                                                                                                             then
                                                                                                                 nixos-rebuild build-vm-with-bootloader --flake .#myhost
                                                                                                                 mv result ..
