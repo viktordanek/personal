@@ -254,7 +254,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            export OUT=wrong
+                                                                                                            source ../.envrc
                                                                                                             while ! git push origin HEAD
                                                                                                             do
                                                                                                                 sleep 1
