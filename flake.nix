@@ -221,6 +221,19 @@
                                                                                     } ;
                                                                                 repository =
                                                                                     let
+                                                                                        post-checkout =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "post-checkout" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            if [ -d "$GIT_DIR/rebase-apply" ] || [ -d "$GIT_DIR/rebase-merge" ]
+                                                                                                            then
+                                                                                                                exec $( dirname "$0" )/post-commit
+                                                                                                            fi
+                                                                                                        '' ;
+                                                                                                } ;
                                                                                         post-commit =
                                                                                             pkgs.writeShellApplication
                                                                                                 {
@@ -290,7 +303,7 @@
                                                                                                                 (
                                                                                                                     fun() {
                                                                                                                         env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                        env -i HOME="$HOME" PATH="$PATH"GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                         "git add work-tree/inputs.$2.commit"
                                                                                                                     }
                                                                                                                     fun "$OUT/boot/repository/personal" personal
@@ -309,7 +322,7 @@
                                                                                                         runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                git checkout -b scratch/$( uuidgen )
+                                                                                                                git checkout -b "scratch/$( uuidgen )"
                                                                                                             '' ;
                                                                                                     } ;
                                                                                         in
