@@ -351,7 +351,7 @@
                                                                                                                     fi
 
                                                                                                                     echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                                                                    printf '  %s\n' "${LONG_KEY_IDS[@]}" >&2
+                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
 
                                                                                                                     # Convert long key IDs to full fingerprints
                                                                                                                     mapfile -t ENCRYPTION_FPRS < <(
