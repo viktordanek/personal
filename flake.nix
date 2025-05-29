@@ -214,7 +214,6 @@
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 source $( dirname "$0" )/.envrc
-                                                                                                                                REPOSITORY="$( ${ repository } )"
                                                                                                                                 GIT_DIR="$REPOSITORY/git"
                                                                                                                                 GIT_WORK_TREE="$REPOSITORY/work-tree"
                                                                                                                                 PASSWORD_STORE_DIR="$REPOSITORY/work-tree"
