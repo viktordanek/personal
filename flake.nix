@@ -405,7 +405,7 @@
                                                                                                                     GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
                                                                                                                     GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                                     cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_ROOT/git"
+                                                                                                                    export GIT_DIR="$GIT_ROOT/work-tree/.git"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
@@ -630,8 +630,8 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    export GIT_DIR="$1/git"
                                                                                                                     export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    export GIT_DIR="$GIT_WORK_TREE/.git"
                                                                                                                     mkdir --parents "$1"
                                                                                                                     mkdir --parents "$GIT_DIR"
                                                                                                                     mkdir --parents "$GIT_WORK_TREE"
