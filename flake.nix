@@ -343,7 +343,7 @@
                                                                                                                     CURRENT_KEYS=($(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }'))
                                                                                                                     # Check if all encryption keys are among the current keys
                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
-                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] } | grep -qFx "$enc_key"; then
+                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
                                                                                                                         echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
                                                                                                                       fi
                                                                                                                     done
