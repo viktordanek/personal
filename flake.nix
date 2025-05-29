@@ -500,8 +500,8 @@
                                                                                                                                         in
                                                                                                                                             ''
                                                                                                                                                 gpg --batch --generate-key ${ gpg-key-conf }
-                                                                                                                                                gpg --export-secret-keys --armor | age --recipient "$( age-keygen -y --identity ${ config.personal.agenix } )" --output dot-gnupg/secret-keys.asc.age
-                                                                                                                                                gpg --export-ownertrust --armor | age --receipient "$( age-keygen -y --identity ${ config.personal.agenix } )" --output dot-gnupg/ownertrust.asc.age
+                                                                                                                                                gpg --export-secret-keys --armor | age --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output dot-gnupg/secret-keys.asc.age
+                                                                                                                                                gpg --export-ownertrust --armor | age --receipient "$( age-keygen -y < ${ config.personal.agenix } )" --output dot-gnupg/ownertrust.asc.age
                                                                                                                                             '' ;
                                                                                                                             } ;
                                                                                                                     in
