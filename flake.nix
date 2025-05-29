@@ -355,7 +355,7 @@
 
                                                                                                                     # Convert long key IDs to full fingerprints
                                                                                                                     mapfile -t ENCRYPTION_FPRS < <(
-                                                                                                                      for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]}" "}" ] }"; do
+                                                                                                                      for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
                                                                                                                         gpg --with-colons --fingerprint "$longid" 2>/dev/null \
                                                                                                                         | awk -F: '/^fpr:/ { print $10; exit }'
                                                                                                                       done
