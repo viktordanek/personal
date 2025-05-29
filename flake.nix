@@ -516,7 +516,7 @@
                                                                                                                             export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                             EOF
                                                                                                                             git init 2>&1
-                                                                                                                            git config alias.gnupg-gen-key "!{ gnupg-gen-key }/bin/gnupg-gen-key"
+                                                                                                                            git config alias.gnupg-gen-key "!${ gnupg-gen-key }/bin/gnupg-gen-key"
                                                                                                                             git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                             git config user.name "${ config.personal.description }"
