@@ -201,138 +201,248 @@
                                                                                     } ;
                                                                                 pass =
                                                                                     let
-                                                                                        extensions-dir =
-                                                                                            pkgs.stdenv.mkDerivation
+                                                                                        expiry =
+                                                                                            pkgs.writeShellApplication
                                                                                                 {
-                                                                                                    installPhase =
-                                                                                                        let
-                                                                                                            expiry =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "expiry" ;
-                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
-                                                                                                                        text =
-                                                                                                                            ''
+                                                                                                    name = "expiry" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            GIT_DIR="${ point.repository }/git"
+                                                                                                            export GIT_DIR
+                                                                                                            GIT_WORK_TREE="${ point.repository }/work-tree"
+                                                                                                            export GIT_WORK_TREE
+                                                                                                            # Constants
+                                                                                                            YEAR_SECONDS=$((366 * 86400))
+                                                                                                            TIMESTAMP=$(date +%s)
 
-                                                                                                                                # Constants
-                                                                                                                                YEAR_SECONDS=$((366 * 86400))
-                                                                                                                                TIMESTAMP=$(date +%s)
+                                                                                                            # Get a list of all password keys tracked by Git
+                                                                                                            git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                              # Skip non-.gpg files
+                                                                                                              [[ "$file" != *.gpg ]] && continue
 
-                                                                                                                                # Get a list of all password keys tracked by Git
-                                                                                                                                pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
-                                                                                                                                  # Skip non-.gpg files
-                                                                                                                                  [[ "$file" != *.gpg ]] && continue
+                                                                                                              # Get the last commit timestamp for the file
+                                                                                                              last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
 
-                                                                                                                                  # Get the last commit timestamp for the file
-                                                                                                                                  last_commit_ts=$(pass git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                                              # Compute the age
+                                                                                                              age=$((TIMESTAMP - last_commit_ts))
 
-                                                                                                                                  # Compute the age
-                                                                                                                                  age=$((TIMESTAMP - last_commit_ts))
+                                                                                                              if (( age >= YEAR_SECONDS )); then
+                                                                                                                # Strip ".gpg" and print
+                                                                                                                key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
+                                                                                                                echo "$key"
+                                                                                                              fi
+                                                                                                            done
 
-                                                                                                                                  if (( age >= YEAR_SECONDS )); then
-                                                                                                                                    # Strip ".gpg" and print
-                                                                                                                                    key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
-                                                                                                                                    echoYEAR_SECOND "$key"
-                                                                                                                                  fi
-                                                                                                                                done
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        phonetic =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "phonetic" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            declare -A NATO=(
+                                                                                                              [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                              [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                              [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                              [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                              [Y]=YANKEE [Z]=ZULU
+                                                                                                            )
 
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            phonetic =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "phonetic" ;
-                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
-                                                                                                                        text =
-                                                                                                                            ''
-                                                                                                                                declare -A NATO=(
-                                                                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
-                                                                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
-                                                                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
-                                                                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
-                                                                                                                                  [Y]=YANKEE [Z]=ZULU
-                                                                                                                                )
+                                                                                                            declare -A PHONETIC_LOWER=(
+                                                                                                              [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                              [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                              [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                              [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                              [y]=yam [z]=zucchini
+                                                                                                            )
 
-                                                                                                                                declare -A PHONETIC_LOWER=(
-                                                                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
-                                                                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
-                                                                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
-                                                                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
-                                                                                                                                  [y]=yam [z]=zucchini
-                                                                                                                                )
+                                                                                                            declare -A DIGITS=(
+                                                                                                              [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                              [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                            )
 
-                                                                                                                                declare -A DIGITS=(
-                                                                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
-                                                                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
-                                                                                                                                )
+                                                                                                            declare -A SYMBOLS=(
+                                                                                                              ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                              ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                              ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                              [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                              ["\\"]=BackwardSlash
+                                                                                                              ["\'"]=SingleQuote
+                                                                                                              ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                              ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                              ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                              ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                            )
 
-                                                                                                                                declare -A SYMBOLS=(
-                                                                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
-                                                                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
-                                                                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
-                                                                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
-                                                                                                                                  ["\\"]=BackwardSlash
-                                                                                                                                  ["\'"]=SingleQuote
-                                                                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
-                                                                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
-                                                                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
-                                                                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
-                                                                                                                                )
+                                                                                                            declare -A CONTROL=(
+                                                                                                              [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                              [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                              [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                              [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                              [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                              [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                              [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                              [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                                                                                                     expiry =
+                                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "expiry" ;
+                                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                GIT_DIR="${ point.repository }/git"
+                                                                                                                                                                export GIT_DIR
+                                                                                                                                                                GIT_WORK_TREE="${ point.repository }/work-tree"
+                                                                                                                                                                export GIT_WORK_TREE
+                                                                                                                                                                # Constants
+                                                                                                                                                                YEAR_SECONDS=$((366 * 86400))
+                                                                                                                                                                TIMESTAMP=$(date +%s)
 
-                                                                                                                                declare -A CONTROL=(
-                                                                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
-                                                                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
-                                                                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
-                                                                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
-                                                                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
-                                                                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
-                                                                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
-                                                                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
-                                                                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
-                                                                                                                                  [127]=DELETE
-                                                                                                                                )
+                                                                                                                                                                # Get a list of all password keys tracked by Git
+                                                                                                                                                                git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                                                                                  # Skip non-.gpg files
+                                                                                                                                                                  [[ "$file" != *.gpg ]] && continue
 
-                                                                                                                                output=()
+                                                                                                                                                                  # Get the last commit timestamp for the file
+                                                                                                                                                                  last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
 
-                                                                                                                                while IFS= read -r -n1 char; do
-                                                                                                                                  [[ -z "$char" ]] && continue
-                                                                                                                                  ascii=$(printf "%d" "'$char")
+                                                                                                                                                                  # Compute the age
+                                                                                                                                                                  age=$((TIMESTAMP - last_commit_ts))
 
-                                                                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
-                                                                                                                                    output+=("$transformed")
+                                                                                                                                                                  if (( age >= YEAR_SECONDS )); then
+                                                                                                                                                                    # Strip ".gpg" and print
+                                                                                                                                                                    key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
+                                                                                                                                                                    echo "$key"
+                                                                                                                                                                  fi
+                                                                                                                                                                done
 
-                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
-                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;
+                                                                                                                                            phonetic =
+                                                                                                                                                pkgs.writeShellApplication
+                                                                                                                                                    {
+                                                                                                                                                        name = "phonetic" ;
+                                                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                                                                                                        text =
+                                                                                                                                                            ''
+                                                                                                                                                                declare -A NATO=(
+                                                                                                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                                                                                  [Y]=YANKEE [Z]=ZULU
+                                                                                                                                                                )
 
-                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
-                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+                                                                                                                                                                declare -A PHONETIC_LOWER=(
+                                                                                                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                                                                                  [y]=yam [z]=zucchini
+                                                                                                                                                                )
 
-                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
-                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+                                                                                                                                                                declare -A DIGITS=(
+                                                                                                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                                                                                )
 
-                                                                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
-                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+                                                                                                                                                                declare -A SYMBOLS=(
+                                                                                                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                                                                                  ["\\"]=BackwardSlash
+                                                                                                                                                                  ["\'"]=SingleQuote
+                                                                                                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                                                                                )
 
-                                                                                                                                  else
-                                                                                                                                    output+=("Unknown($ascii)")
-                                                                                                                                  fi
-                                                                                                                                done < <( pass show "$@" )
+                                                                                                                                                                declare -A CONTROL=(
+                                                                                                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                                                                                  [127]=DELETE
+                                                                                                                                                                )
 
-                                                                                                                                echo OPEN
-                                                                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
-                                                                                                                                echo CLOSE
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            in
-                                                                                                                ''
-                                                                                                                    ${ pkgs.coreutils }/bin/mkdir $out
-                                                                                                                    ${ pkgs.coreutils }/bin/ln ${ expiry }/bin/expiry $out/expiry.bash
-                                                                                                                    ${ pkgs.coreutils }/bin/ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
-                                                                                                                '' ;
-                                                                                                    name = "extensions-dir" ;
-                                                                                                    src = ./. ;
+                                                                                                                                                                output=()
+
+                                                                                                                                                                while IFS= read -r -n1 char; do
+                                                                                                                                                                  [[ -z "$char" ]] && continue
+                                                                                                                                                                  ascii=$(printf "%d" "'$char")
+
+                                                                                                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                                                                    output+=("$transformed")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                                                                                  else
+                                                                                                                                                                    output+=("Unknown($ascii)")
+                                                                                                                                                                  fi
+                                                                                                                                                                done < <( pass show "$@" )
+
+                                                                                                                                                                echo OPEN
+                                                                                                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                                                                echo CLOSE
+                                                                                                                                                            '' ;
+                                                                                                                                                    } ;                     [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                              [127]=DELETE
+                                                                                                            )
+
+                                                                                                            output=()
+
+                                                                                                            while IFS= read -r -n1 char; do
+                                                                                                              [[ -z "$char" ]] && continue
+                                                                                                              ascii=$(printf "%d" "'$char")
+
+                                                                                                              if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                                raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                output+=("$transformed")
+
+                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                              elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                              else
+                                                                                                                output+=("Unknown($ascii)")
+                                                                                                              fi
+                                                                                                            done < <( pass show "$@" )
+
+                                                                                                            echo OPEN
+                                                                                                            printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                            echo CLOSE
+                                                                                                        '' ;
                                                                                                 } ;
                                                                                         in
                                                                                             {
@@ -352,10 +462,8 @@
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
                                                                                                                     export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR="$1"
-                                                                                                                    cat "$1/.envrc" >> "$1/expiry.bash"
-                                                                                                                    # cat ${ extensions-dir }/expiry.bash >> "$1/expiry.bash"
-                                                                                                                    chmod 0500 "$1/expiry.bash"
-                                                                                                                    ln --symbolic ${ extensions-dir }/phonetic.bash "$1"
+                                                                                                                    ln --symbolic ${ expiry }/bin/expiry "$1/expiry.bash"
+                                                                                                                    ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
                                                                                                                     EOF
                                                                                                                 '' ;
                                                                                                         } ;
