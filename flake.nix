@@ -506,7 +506,7 @@
                                                                                                                             } ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            export GNUPGHOME="$( "$2"/boot/gnupg-home/conf )
+                                                                                                                            export GNUPGHOME="$( "$2"/boot/gnupg-home/conf )"
                                                                                                                             export GIT_DIR="$1/git"
                                                                                                                             export GIT_WORK_TREE="$1/work-tree"
                                                                                                                             mkdir --parents "$1"
