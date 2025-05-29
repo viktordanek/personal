@@ -362,7 +362,7 @@
                                                                                                                     )
 
                                                                                                                     echo "Corresponding full fingerprints:" >&2
-                                                                                                                    printf '  %s\n' "${ENCRYPTION_FPRS[@]}" >&2
+                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
 
                                                                                                                     # Get current trusted key full fingerprints
                                                                                                                     mapfile -t CURRENT_FPRS < <(
