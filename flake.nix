@@ -328,7 +328,7 @@
                                                                                                     pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "warn" ;
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gpg ] ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
