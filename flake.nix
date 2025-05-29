@@ -405,7 +405,7 @@
                                                                                                                     GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
                                                                                                                     GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                                     cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_ROOT/work-tree"
+                                                                                                                    export GIT_DIR="$GIT_ROOT/git"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
