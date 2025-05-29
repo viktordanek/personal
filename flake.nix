@@ -353,8 +353,8 @@
                                                                                                                     )
 
                                                                                                                     # Debug output
-                                                                                                                    echo "Encryption keys for $ENTRY: ${ builtins.concatStringsSep " " [ "$" "{" "ENCRYPTION_KEYS[*]" "}" ] }" >&2
-                                                                                                                    echo "Current keys: ${ builtins.concatStringsSep " " [ "$" "{" "CURRENT_KEYS[*]" "}" ] }" >&2
+                                                                                                                    echo "Encryption keys for $ENTRY: ${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[*]" "}" ] }" >&2
+                                                                                                                    echo "Current keys: ${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[*]" "}" ] }" >&2
 
                                                                                                                     # Check if encryption keys are among current keys
                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
