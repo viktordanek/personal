@@ -235,9 +235,95 @@
                                                                                                                 echo "$key"
                                                                                                               fi
                                                                                                             done
-
                                                                                                         '' ;
                                                                                                 } ;
+                                                                                            phonetic =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "phonetic" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                declare -A NATO=(
+                                                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                                  [Y]=YANKEE [Z]=ZULU
+                                                                                                                )
+
+                                                                                                                declare -A PHONETIC_LOWER=(
+                                                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                                  [y]=yam [z]=zucchini
+                                                                                                                )
+
+                                                                                                                declare -A DIGITS=(
+                                                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                                )
+
+                                                                                                                declare -A SYMBOLS=(
+                                                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                                  ["\\"]=BackwardSlash
+                                                                                                                  ["\'"]=SingleQuote
+                                                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                                )
+
+                                                                                                                declare -A CONTROL=(
+                                                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                                  [127]=DELETE
+                                                                                                                )
+
+                                                                                                                output=()
+
+                                                                                                                while IFS= read -r -n1 char; do
+                                                                                                                  [[ -z "$char" ]] && continue
+                                                                                                                  ascii=$(printf "%d" "'$char")
+
+                                                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                    output+=("$transformed")
+
+                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                                  else
+                                                                                                                    output+=("Unknown($ascii)")
+                                                                                                                  fi
+                                                                                                                done < <( pass show "$@" )
+
+                                                                                                                echo OPEN
+                                                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                echo CLOSE
+                                                                                                            '' ;
+                                                                                                    } ;
                                                                                         in
                                                                                             {
                                                                                                 archive =
@@ -259,6 +345,7 @@
                                                                                                                     EOF
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
+                                                                                                                    ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
