@@ -331,6 +331,7 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
+                                                                                                                    export GNUPGHOME="$GNUPGHOME"
                                                                                                                     ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ]}
                                                                                                                     FILE=${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ]}/${ builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }.gpg
 
@@ -412,7 +413,8 @@
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
-                                                                                                                    ln --symbolic ${ warn }/bin/warn "$1/warn.bash"
+                                                                                                                    sed -e "s#\$GNUPG_HOME#\$( "$2/boot/dot-gnupg/config" )#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                    chmod 0500 "$1/warn.bash"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
