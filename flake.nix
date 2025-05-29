@@ -371,7 +371,7 @@
                                                                                                                     )
 
                                                                                                                     echo "Current trusted key fingerprints:" >&2
-                                                                                                                    printf '  %s\n' "${CURRENT_FPRS[@]}" >&2
+                                                                                                                    printf '  %s\n' ""${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
 
                                                                                                                     # Check if all encryption fingerprints are in current trusted keys
                                                                                                                     WARNING=0
