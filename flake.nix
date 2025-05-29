@@ -357,9 +357,9 @@
                                                                                                                     echo "Current keys: ${ builtins.concatStringsSep " " [ "$" "{" "CURRENT_KEYS[*]" "}" ] }" >&2
 
                                                                                                                     # Check if encryption keys are among current keys
-                                                                                                                    for enc_key in "${ builtins.concatStringsSep " " [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                    for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
                                                                                                                       found=false
-                                                                                                                      for curr_key in "${ builtins.concatStringsSep " " [ "$" "{" "CURRENT_KEYS[@]" "}" ] }"; do
+                                                                                                                      for curr_key in "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }"; do
                                                                                                                         if [[ "$enc_key" == "$curr_key" ]]; then
                                                                                                                           found=true
                                                                                                                           break
