@@ -506,7 +506,7 @@
                                                                                                                             } ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            GNUPGHOME="$( "$2"/boot/gnupg-home/conf )"
+                                                                                                                            GNUPGHOME="$( "$2"/boot/gnupg-home/config )"
                                                                                                                             export GNUPGHOME
                                                                                                                             export GIT_DIR="$1/git"
                                                                                                                             export GIT_WORK_TREE="$1/work-tree"
