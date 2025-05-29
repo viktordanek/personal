@@ -324,6 +324,33 @@
                                                                                                                 echo CLOSE
                                                                                                             '' ;
                                                                                                     } ;
+                                                                                                warn =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "warn" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gpg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
+                                                                                                                    FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                      echo "Usage: pass warn <entry>" >&2
+                                                                                                                      exit 1
+                                                                                                                    fi
+                                                                                                                    # Get GPG key(s) used to encrypt the entry
+                                                                                                                    ENCRYPTION_KEYS=($(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }'))
+                                                                                                                    # Get preferred/new key ID(s)
+                                                                                                                    CURRENT_KEYS=($(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }'))
+                                                                                                                    # Check if all encryption keys are among the current keys
+                                                                                                                    for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] } | grep -qFx "$enc_key"; then
+                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
+                                                                                                                      fi
+                                                                                                                    done
+                                                                                                                    # Show the password
+                                                                                                                    pass show "$ENTRY"
+                                                                                                                '' ;
+                                                                                                        } ;
                                                                                         in
                                                                                             {
                                                                                                 archive =
@@ -346,6 +373,7 @@
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
+                                                                                                                    ln --symbolic ${ warn }/bin/warn "$1/warn.bash"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
@@ -509,6 +537,7 @@
                                                                                                                                                 gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
                                                                                                                                                 git add secret-keys.asc.age ownertrust.asc.age
                                                                                                                                                 git commit -am "CHORE:  Generated a new GNUPG KEY"
+                                                                                                                                                git push origin HEAD
                                                                                                                                             '' ;
                                                                                                                             } ;
                                                                                                                         passphrase =
