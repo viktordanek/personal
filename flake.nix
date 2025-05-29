@@ -332,7 +332,7 @@
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
-                                                                                                                    FILE="${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ] }/${ENTRY}.gpg"
+                                                                                                                    FILE="${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ] }/$ENTRY.gpg"
 
                                                                                                                     if [[ -z "${ENTRY}" || ! -f "${FILE}" ]]; then
                                                                                                                       echo "Usage: pass warn <entry>" >&2
