@@ -338,9 +338,8 @@
                                                                                                                       exit 1
                                                                                                                     fi
                                                                                                                     # Get GPG key(s) used to encrypt the entry
-                                                                                                                    ENCRYPTION_KEYS=($(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }'))
-                                                                                                                    # Get preferred/new key ID(s)
-                                                                                                                    CURRENT_KEYS=($(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }'))
+                                                                                                                    mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
+                                                                                                                    mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }')
                                                                                                                     # Check if all encryption keys are among the current keys
                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
                                                                                                                       if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
