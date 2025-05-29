@@ -493,7 +493,7 @@
                                                                                                                                                     Subkey-Length: 4096
                                                                                                                                                     Name-Real: ${ config.personal.description }
                                                                                                                                                     Name-Email: ${ config.personal.email }
-                                                                                                                                                    Name-Comment:  Key Created ${ config.personal.current-time }
+                                                                                                                                                    Name-Comment:  Key Created ${ builtins.readFile config.personal.current-time }
                                                                                                                                                     Expire-Date: 6m
                                                                                                                                                     %commit
                                                                                                                                                 '' ;
@@ -504,6 +504,16 @@
                                                                                                                                                 gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
                                                                                                                                             '' ;
                                                                                                                             } ;
+                                                                                                                        passphrase =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "passphrase" ;
+                                                                                                                                    runtimeInputs = [ pkgs.openssh ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            ${ pkgs.openssh }/bin/ssh -F "$DOT_SSH"  mobile cat passphrase
+                                                                                                                                        '' ;
+                                                                                                                                } ;
                                                                                                                     in
                                                                                                                         ''
                                                                                                                             export GIT_DIR="$1/git"
@@ -512,7 +522,9 @@
                                                                                                                             mkdir --parents "$GIT_DIR"
                                                                                                                             mkdir --parents "$GIT_WORK_TREE"
                                                                                                                             cat > "$1/.envrc" <<EOF
-                                                                                                                            GNUPGHOME="\$( "$2"/boot/dot-gnupg/config )"
+                                                                                                                            SSH_CONFIG=\"$( "$2/boot/dot-ssh/boot/config" )
+                                                                                                                            export MOBILE_SSH_CONFIG
+                                                                                                                            GNUPGHOME="\$( "$2/boot/dot-gnupg/config" )"
                                                                                                                             export GNUPGHOME
                                                                                                                             export GIT_DIR="$GIT_DIR"
                                                                                                                             export GIT_WORK_TREE="$GIT_WORK_TREE"
