@@ -371,7 +371,7 @@
                                                                                                                     done
 
                                                                                                                     # Show the password
-                                                                                                                    pass show "${ENTRY}"
+                                                                                                                    pass show "$ENTRY"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                         in
