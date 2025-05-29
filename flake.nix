@@ -208,10 +208,12 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            GIT_DIR="${ point.repository }/git"
+                                                                                                            GIT_DIR="$GIT_ROOT/git"
                                                                                                             export GIT_DIR
-                                                                                                            GIT_WORK_TREE="${ point.repository }/work-tree"
+                                                                                                            GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                             export GIT_WORK_TREE
+                                                                                                            PASSWORD_STORE_DIR="$GIT_ROOT/work-tree"
+                                                                                                            export PASSWORD_STORE_DIR
                                                                                                             # Constants
                                                                                                             YEAR_SECONDS=$((366 * 86400))
                                                                                                             TIMESTAMP=$(date +%s)
@@ -241,7 +243,7 @@
                                                                                                 archive =
                                                                                                     ignore :
                                                                                                         {
-                                                                                                            runtimeInputs = [ ] ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     mkdir "$1"
@@ -255,7 +257,8 @@
                                                                                                                     export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR="$1"
                                                                                                                     EOF
-                                                                                                                    ln --symbolic ${ expiry }/bin/expiry "$1/expiry.bash"
+                                                                                                                    sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "$1/expiry.bash" ${ expiry }/bin/expiry
+                                                                                                                    chmod 0500 "$1/expiry.bash"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
