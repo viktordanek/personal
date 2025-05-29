@@ -500,6 +500,11 @@
                                                                                                                                         in
                                                                                                                                             ''
                                                                                                                                                 gpg --batch --generate-key ${ gpg-key-conf }
+                                                                                                                                                readarray -t KEYS < <(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5, $7 }' | sort -k2 | awk '{ print $1 }')
+                                                                                                                                                TARGET_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-1]" "}" ] }"
+                                                                                                                                                SIGNING_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-2}" ] }"
+                                                                                                                                                gpg --local-user $SIGNING_KEY_ID" --sign-key "$TARGET_KEY_ID"
+                                                                                                                                                gpg --check-sign "$TARGET_KEY_ID"
                                                                                                                                                 gpg --export-secret-keys --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
                                                                                                                                                 gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
                                                                                                                                             '' ;
@@ -531,6 +536,7 @@
                                                                                                                             EOF
                                                                                                                             git init 2>&1
                                                                                                                             git config alias.gnupg-generate-key "!${ gnupg-generate-key }/bin/gnupg-generate-key"
+                                                                                                                            git config alias.passphrase "!${ passphrase }/bin/passphrase"
                                                                                                                             git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                             git config user.name "${ config.personal.description }"
