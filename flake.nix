@@ -208,7 +208,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            GIT_DIR="$GIT_ROOT/git"
+                                                                                                            GIT_DIR="$GIT_ROOT/work-tree/.git"
                                                                                                             export GIT_DIR
                                                                                                             GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                             export GIT_WORK_TREE
