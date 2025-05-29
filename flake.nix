@@ -370,7 +370,7 @@
                                                                                                                     #   gpg --with-colons --list-keys 2>/dev/null \
                                                                                                                     #   | awk -F: '/^fpr:/ { print $10 }'
                                                                                                                     # )
-                                                                                                                    mapfile -t EXPECTED_FPRS < "$GPG_ID_FILE"
+                                                                                                                    mapfile -t EXPECTED_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
 
 
                                                                                                                     echo "Current trusted key fingerprints:" >&2
@@ -415,7 +415,7 @@
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
-                                                                                                                    sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                    sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
                                                                                                                     chmod 0500 "$1/warn.bash"
                                                                                                                 '' ;
                                                                                                         } ;
