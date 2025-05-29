@@ -572,7 +572,6 @@
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             git config user.email "${ config.personal.email }"
                                                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                            ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                             git remote add origin ${ config.personal.repository.age-secrets.remote }
                                                                                                                             git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
                                                                                                                             git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
