@@ -257,7 +257,7 @@
                                                                                                                     export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR="$1"
                                                                                                                     EOF
-                                                                                                                    sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "$1/expiry.bash" ${ expiry }/bin/expiry
+                                                                                                                    sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                 '' ;
                                                                                                         } ;
