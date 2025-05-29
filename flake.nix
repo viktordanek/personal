@@ -370,7 +370,7 @@
                                                                                                                     #   gpg --with-colons --list-keys 2>/dev/null \
                                                                                                                     #   | awk -F: '/^fpr:/ { print $10 }'
                                                                                                                     # )
-                                                                                                                    mapfile -t EXPECTED_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
+                                                                                                                    mapfile -t CURRENT_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
 
 
                                                                                                                     echo "Current trusted key fingerprints:" >&2
