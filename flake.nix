@@ -516,7 +516,7 @@
                                                                                                                                     runtimeInputs = [ pkgs.openssh ] ;
                                                                                                                                     text =
                                                                                                                                         ''
-                                                                                                                                            ${ pkgs.openssh }/bin/ssh -F "$DOT_SSH"  mobile cat passphrase
+                                                                                                                                            ${ pkgs.openssh }/bin/ssh -F "$DOT_SSH" mobile cat passphrase
                                                                                                                                         '' ;
                                                                                                                                 } ;
                                                                                                                     in
@@ -527,7 +527,7 @@
                                                                                                                             mkdir --parents "$GIT_DIR"
                                                                                                                             mkdir --parents "$GIT_WORK_TREE"
                                                                                                                             cat > "$1/.envrc" <<EOF
-                                                                                                                            DOT_SSH=\"$( "$2/boot/dot-ssh/boot/config" )
+                                                                                                                            DOT_SSH="\$( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                             export DOT_SSH
                                                                                                                             GNUPGHOME="\$( "$2/boot/dot-gnupg/config" )"
                                                                                                                             export GNUPGHOME
