@@ -98,7 +98,7 @@
                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/ownertrust.asc.age" }
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/ownertrust.asc.age"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
@@ -108,7 +108,7 @@
                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/secret-keys.asc.age" }
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/secret-keys.asc.age"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
