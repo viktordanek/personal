@@ -213,7 +213,7 @@
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                                         text =
                                                                                                                             ''
-                                                                                                                                source "$( dirname "$0" )/.envrc"
+
                                                                                                                                 # Constants
                                                                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                                                                 TIMESTAMP=$(date +%s)
@@ -352,7 +352,9 @@
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
                                                                                                                     export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR="$1"
-                                                                                                                    ln --symbolic ${ extensions-dir }/expiry.bash "$1"
+                                                                                                                    cp "$1/.envrc" "$1/expiry.bash"
+                                                                                                                    cat ${ extensions-dir }/expiry.bash >> "$1/expiry.bash"
+                                                                                                                    chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ extensions-dir }/phonetic.bash "$1"
                                                                                                                     EOF
                                                                                                                 '' ;
