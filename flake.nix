@@ -413,7 +413,7 @@
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
-                                                                                                                    sed -e "s#\$GNUPG_HOME#\$( "$2/boot/dot-gnupg/config" )#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                    sed -e "s#\$GNUPG_HOME#$( "$2/boot/dot-gnupg/config" )#" -e "w$1/warn.bash" ${ warn }/bin/warn
                                                                                                                     chmod 0500 "$1/warn.bash"
                                                                                                                 '' ;
                                                                                                         } ;
