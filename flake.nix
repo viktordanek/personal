@@ -476,7 +476,7 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 let
-                                                                                                                    gnupg-gen-key =
+                                                                                                                    gnupg-generate-key =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "gnupg-generate-key" ;
