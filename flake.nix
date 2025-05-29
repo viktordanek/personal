@@ -507,6 +507,8 @@
                                                                                                                                                 gpg --check-sigs "$TARGET_KEY_ID"
                                                                                                                                                 gpg --export-secret-keys --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
                                                                                                                                                 gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
+                                                                                                                                                git add secret-keys.asc.age ownertrust.asc.age
+                                                                                                                                                git commit -am "CHORE:  Generated a new GNUPG KEY"
                                                                                                                                             '' ;
                                                                                                                             } ;
                                                                                                                         passphrase =
