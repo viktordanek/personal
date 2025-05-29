@@ -523,7 +523,7 @@
                                                                                                                             mkdir --parents "$GIT_WORK_TREE"
                                                                                                                             cat > "$1/.envrc" <<EOF
                                                                                                                             DOT_SSH=\"$( "$2/boot/dot-ssh/boot/config" )
-                                                                                                                            export MOBILE_SSH_CONFIG
+                                                                                                                            export DOT_SSH
                                                                                                                             GNUPGHOME="\$( "$2/boot/dot-gnupg/config" )"
                                                                                                                             export GNUPGHOME
                                                                                                                             export GIT_DIR="$GIT_DIR"
