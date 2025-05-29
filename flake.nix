@@ -506,14 +506,14 @@
                                                                                                                             } ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            GNUPGHOME="$( "$2"/boot/dot-gnupg/config )"
-                                                                                                                            export GNUPGHOME
                                                                                                                             export GIT_DIR="$1/git"
                                                                                                                             export GIT_WORK_TREE="$1/work-tree"
                                                                                                                             mkdir --parents "$1"
                                                                                                                             mkdir --parents "$GIT_DIR"
                                                                                                                             mkdir --parents "$GIT_WORK_TREE"
                                                                                                                             cat > "$1/.envrc" <<EOF
+                                                                                                                            GNUPGHOME="\$( "$2"/boot/dot-gnupg/config )"
+                                                                                                                            export GNUPGHOME
                                                                                                                             export GIT_DIR="$GIT_DIR"
                                                                                                                             export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                             EOF
