@@ -331,47 +331,33 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
-                                                                                                                    FILE="${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ] }/$ENTRY.gpg"
+                                                                                                                     ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
+                                                                                                                     FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
 
-                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                                                                      echo "Usage: pass warn <entry>" >&2
-                                                                                                                      exit 1
-                                                                                                                    fi
+                                                                                                                     if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                       echo "Usage: pass warn <entry>" >&2
+                                                                                                                       exit 1
+                                                                                                                     fi
 
-                                                                                                                    # Get key IDs used to encrypt the entry (normalized to long format)
-                                                                                                                    mapfile -t ENCRYPTION_KEYS < <(
-                                                                                                                      gpg --list-packets "$FILE" 2>/dev/null |
-                                                                                                                      awk '/^:pubkey enc packet:/ { print $NF }' | while read -r keyid; do
-                                                                                                                        gpg --list-keys --with-colons "$keyid" | awk -F: '/^pub/ { print $5 }'
-                                                                                                                      done
-                                                                                                                    )
+                                                                                                                     # Get GPG key(s) used to encrypt the entry
+                                                                                                                     mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
 
-                                                                                                                    # Get all current long key IDs
-                                                                                                                    mapfile -t CURRENT_KEYS < <(
-                                                                                                                      gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }'
-                                                                                                                    )
+                                                                                                                     # Get full list of keygrip IDs in your keyring (public + secret)
+                                                                                                                     mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-public-keys | awk -F: '/^pub/ { print $5 }')
 
-                                                                                                                    # Debug output
-                                                                                                                    echo "Encryption keys for $ENTRY: ${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[*]" "}" ] }" >&2
-                                                                                                                    echo "Current keys: ${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[*]" "}" ] }" >&2
+                                                                                                                     WARNED=0
+                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                       if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
+                                                                                                                         echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
+                                                                                                                         WARNED=1
+                                                                                                                       fi
+                                                                                                                     done
 
-                                                                                                                    # Check if encryption keys are among current keys
-                                                                                                                    for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
-                                                                                                                      found=false
-                                                                                                                      for curr_key in "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }"; do
-                                                                                                                        if [[ "$enc_key" == "$curr_key" ]]; then
-                                                                                                                          found=true
-                                                                                                                          break
-                                                                                                                        fi
-                                                                                                                      done
-                                                                                                                      if ! $found; then
-                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
-                                                                                                                      fi
-                                                                                                                    done
+                                                                                                                     # Show the password
+                                                                                                                     pass show "$ENTRY"
+                                                                                                                     exit "$WARNED"
 
-                                                                                                                    # Show the password
-                                                                                                                    pass show "$ENTRY"
+
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                         in
