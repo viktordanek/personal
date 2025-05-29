@@ -331,32 +331,30 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                     ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
-                                                                                                                     FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+                                                                                                                    ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
+                                                                                                                    FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
 
-                                                                                                                     if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                                                                       echo "Usage: pass warn <entry>" >&2
-                                                                                                                       exit 1
-                                                                                                                     fi
+                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                      echo "Usage: pass warn <entry>" >&2
+                                                                                                                      exit 1
+                                                                                                                    fi
 
-                                                                                                                     # Get GPG key(s) used to encrypt the entry
-                                                                                                                     mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
+                                                                                                                    # Extract key IDs from the encrypted file
+                                                                                                                    mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
 
-                                                                                                                     # Get full list of keygrip IDs in your keyring (public + secret)
-                                                                                                                     mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-public-keys | awk -F: '/^pub/ { print $5 }')
+                                                                                                                    # Extract key IDs from your current keyring (expected keys)
+                                                                                                                    mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }')
 
-                                                                                                                     WARNED=0
-                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
-                                                                                                                       if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
-                                                                                                                         echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
-                                                                                                                         WARNED=1
-                                                                                                                       fi
-                                                                                                                     done
+                                                                                                                    # Compare
+                                                                                                                    for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]}" ] }" | grep -qx "$enc_key"; then
+                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or outdated GPG key: $enc_key"
+                                                                                                                        break
+                                                                                                                      fi
+                                                                                                                    done
 
-                                                                                                                     # Show the password
-                                                                                                                     pass show "$ENTRY"
-                                                                                                                     exit "$WARNED"
-
+                                                                                                                    # Optional: Show the password
+                                                                                                                    pass show "$ENTRY"
 
                                                                                                                 '' ;
                                                                                                         } ;
