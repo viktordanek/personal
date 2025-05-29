@@ -342,7 +342,15 @@
                                                                                                                     mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }')
                                                                                                                     # Check if all encryption keys are among the current keys
                                                                                                                     for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
-                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
+                                                                                                                      found=false
+                                                                                                                      for curr_key in "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }"; do
+                                                                                                                        if [[ "$enc_key" == "$curr_key" ]]
+                                                                                                                        then
+                                                                                                                            found=true
+                                                                                                                            break
+                                                                                                                        fi
+                                                                                                                      done
+                                                                                                                      if ! "$found"; then
                                                                                                                         echo "⚠️  Warning: $ENTRY was encrypted with an old or unknown GPG key: $enc_key" >&2
                                                                                                                       fi
                                                                                                                     done
