@@ -366,10 +366,12 @@
                                                                                                                     printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
 
                                                                                                                     # Get current trusted key full fingerprints
-                                                                                                                    mapfile -t CURRENT_FPRS < <(
-                                                                                                                      gpg --with-colons --list-keys 2>/dev/null \
-                                                                                                                      | awk -F: '/^fpr:/ { print $10 }'
-                                                                                                                    )
+                                                                                                                    # mapfile -t CURRENT_FPRS < <(
+                                                                                                                    #   gpg --with-colons --list-keys 2>/dev/null \
+                                                                                                                    #   | awk -F: '/^fpr:/ { print $10 }'
+                                                                                                                    # )
+                                                                                                                    mapfile -t EXPECTED_FPRS < "$GPG_ID_FILE"
+
 
                                                                                                                     echo "Current trusted key fingerprints:" >&2
                                                                                                                     printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
