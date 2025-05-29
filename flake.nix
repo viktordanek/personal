@@ -475,27 +475,58 @@
                                                                                                         {
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
-                                                                                                                ''
-                                                                                                                    export GIT_DIR="$1/git"
-                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                    mkdir --parents "$1"
-                                                                                                                    mkdir --parents "$GIT_DIR"
-                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    EOF
-                                                                                                                    git init 2>&1
-                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                    git remote add origin ${ config.personal.repository.age-secrets.remote }
-                                                                                                                    git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
-                                                                                                                    git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
-                                                                                                                '' ;
+                                                                                                                let
+                                                                                                                    gnupg-gen-key =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "gnupg-gen-key" ;
+                                                                                                                                runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                                text =
+                                                                                                                                    let
+                                                                                                                                        gpg-key-conf =
+                                                                                                                                            builtins.toFile
+                                                                                                                                                "gpg-key.conf"
+                                                                                                                                                ''
+                                                                                                                                                    Key-Type: RSA
+                                                                                                                                                    Key-Length: 4096
+                                                                                                                                                    Subkey-Type: RSA
+                                                                                                                                                    Subkey-Length: 4096
+                                                                                                                                                    Name-Real: ${ config.personal.description }
+                                                                                                                                                    Name-Email: ${ config.personal.email }
+                                                                                                                                                    Name-Comment:  Key Created ${ config.personal.current-time }
+                                                                                                                                                    Expire-Date: 6m
+                                                                                                                                                    %commit
+                                                                                                                                                '' ;
+                                                                                                                                        in
+                                                                                                                                            ''
+                                                                                                                                                gpg --batch --generate-key ${ gpg-key-conf }
+                                                                                                                                                gpg --export-secret-keys --armor | age --recipient "$( age-keygen -y --identity ${ config.personal.agenix } )" --output dot-gnupg/secret-keys.asc.age
+                                                                                                                                                gpg --export-ownertrust --armor | age --receipient "$( age-keygen -y --identity ${ config.personal.agenix } )" --output dot-gnupg/ownertrust.asc.age
+                                                                                                                                            '' ;
+                                                                                                                            } ;
+                                                                                                                    in
+                                                                                                                        ''
+                                                                                                                            export GIT_DIR="$1/git"
+                                                                                                                            export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                            mkdir --parents "$1"
+                                                                                                                            mkdir --parents "$GIT_DIR"
+                                                                                                                            mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                            cat > "$1/.envrc" <<EOF
+                                                                                                                            export GIT_DIR="$GIT_DIR"
+                                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                            EOF
+                                                                                                                            git init 2>&1
+                                                                                                                            git config alias.gnupg-gen-key "!{ gnupg-gen-key }/bin/gnupg-gen-key"
+                                                                                                                            git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            git config user.email "${ config.personal.email }"
+                                                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                            ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                            git remote add origin ${ config.personal.repository.age-secrets.remote }
+                                                                                                                            git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                            git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                        '' ;
                                                                                                         } ;
                                                                                                 pass-secrets =
                                                                                                     ignore :
