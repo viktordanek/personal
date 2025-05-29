@@ -98,7 +98,7 @@
                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/ownertrust.asc.age" }
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/ownertrust.asc.age"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
@@ -108,7 +108,7 @@
                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/secret-keys.asc.age" }
+                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/secret-keys.asc.age"
                                                                                                             chmod 0400 "$1"
                                                                                                         '' ;
                                                                                                 } ;
@@ -208,7 +208,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            GIT_DIR="$GIT_ROOT/git"
+                                                                                                            GIT_DIR="$GIT_ROOT/work-tree/.git"
                                                                                                             export GIT_DIR
                                                                                                             GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                             export GIT_WORK_TREE
@@ -324,6 +324,75 @@
                                                                                                                 echo CLOSE
                                                                                                             '' ;
                                                                                                     } ;
+                                                                                                warn =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "warn" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GNUPGHOME="$GNUPGHOME"
+                                                                                                                    ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ]}
+                                                                                                                    FILE=${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ]}/${ builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }.gpg
+
+                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                      echo "Usage: pass warn <entry>" >&2
+                                                                                                                      exit 1
+                                                                                                                    fi
+
+                                                                                                                    # Extract long key IDs from the encrypted file
+                                                                                                                    mapfile -t LONG_KEY_IDS < <(
+                                                                                                                      gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                                      | awk '/^:pubkey enc packet:/ { print $NF }'
+                                                                                                                    )
+
+                                                                                                                    if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                                                                      echo "No encryption keys found in $FILE" >&2
+                                                                                                                      exit 1
+                                                                                                                    fi
+
+                                                                                                                    echo "Encryption Long Key IDs found in $ENTRY:" >&2
+                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
+
+                                                                                                                    # Convert long key IDs to full fingerprints
+                                                                                                                    mapfile -t ENCRYPTION_FPRS < <(
+                                                                                                                      for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                                                                        gpg --with-colons --fingerprint "$longid" 2>/dev/null \
+                                                                                                                        | awk -F: '/^fpr:/ { print $10; exit }'
+                                                                                                                      done
+                                                                                                                    )
+
+                                                                                                                    echo "Corresponding full fingerprints:" >&2
+                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
+
+                                                                                                                    # Get current trusted key full fingerprints
+                                                                                                                    # mapfile -t CURRENT_FPRS < <(
+                                                                                                                    #   gpg --with-colons --list-keys 2>/dev/null \
+                                                                                                                    #   | awk -F: '/^fpr:/ { print $10 }'
+                                                                                                                    # )
+                                                                                                                    mapfile -t CURRENT_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
+
+
+                                                                                                                    echo "Current trusted key fingerprints:" >&2
+                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
+
+                                                                                                                    # Check if all encryption fingerprints are in current trusted keys
+                                                                                                                    WARNING=0
+                                                                                                                    for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
+                                                                                                                      if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
+                                                                                                                        echo "   $fpr" >&2
+                                                                                                                        WARNING=1
+                                                                                                                      fi
+                                                                                                                    done
+
+                                                                                                                    # Finally, show the password
+                                                                                                                    pass show "$ENTRY"
+
+                                                                                                                    exit $WARNING
+
+                                                                                                                '' ;
+                                                                                                        } ;
                                                                                         in
                                                                                             {
                                                                                                 archive =
@@ -336,7 +405,7 @@
                                                                                                                     GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
                                                                                                                     GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                                     cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_ROOT/work-tree"
+                                                                                                                    export GIT_DIR="$GIT_ROOT/work-tree/.git"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                     export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
@@ -346,6 +415,8 @@
                                                                                                                     sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
+                                                                                                                    sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                    chmod 0500 "$1/warn.bash"
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                             } ;
@@ -505,10 +576,14 @@
                                                                                                                                                 SIGNING_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-2]" "}" ] }"
                                                                                                                                                 gpg --local-user "$SIGNING_KEY_ID" --sign-key "$TARGET_KEY_ID"
                                                                                                                                                 gpg --check-sigs "$TARGET_KEY_ID"
-                                                                                                                                                gpg --export-secret-keys --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
+                                                                                                                                                gpg --update-trustdb
+                                                                                                                                                gpg --list-secret-keys --with-subkey-fingerprint
+                                                                                                                                                # shellcheck disable=SC2046
+                                                                                                                                                gpg --export-secret-keys --armor $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/ { print $5 }') | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
                                                                                                                                                 gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
                                                                                                                                                 git add secret-keys.asc.age ownertrust.asc.age
                                                                                                                                                 git commit -am "CHORE:  Generated a new GNUPG KEY"
+                                                                                                                                                git push origin HEAD
                                                                                                                                             '' ;
                                                                                                                             } ;
                                                                                                                         passphrase =
@@ -544,7 +619,6 @@
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             git config user.email "${ config.personal.email }"
                                                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                            ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
                                                                                                                             git remote add origin ${ config.personal.repository.age-secrets.remote }
                                                                                                                             git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
                                                                                                                             git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
@@ -556,8 +630,8 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    export GIT_DIR="$1/git"
                                                                                                                     export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                    export GIT_DIR="$GIT_WORK_TREE/.git"
                                                                                                                     mkdir --parents "$1"
                                                                                                                     mkdir --parents "$GIT_DIR"
                                                                                                                     mkdir --parents "$GIT_WORK_TREE"
