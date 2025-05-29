@@ -353,7 +353,7 @@
                                                                                                                     export PASSWORD_STORE_ENABLE_EXTENSIONS=true
                                                                                                                     export PASSWORD_STORE_EXTENSIONS_DIR="$1"
                                                                                                                     cat "$1/.envrc" >> "$1/expiry.bash"
-                                                                                                                    cat ${ extensions-dir }/expiry.bash >> "$1/expiry.bash"
+                                                                                                                    # cat ${ extensions-dir }/expiry.bash >> "$1/expiry.bash"
                                                                                                                     chmod 0500 "$1/expiry.bash"
                                                                                                                     ln --symbolic ${ extensions-dir }/phonetic.bash "$1"
                                                                                                                     EOF
