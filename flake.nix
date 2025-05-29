@@ -331,30 +331,40 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    ENTRY="${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
-                                                                                                                    FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+                                                                                                                    ENTRY="${builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }"
+                                                                                                                    FILE="${builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ]}/$ENTRY.gpg"
 
-                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                    if [[ -z "${builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }" || ! -f "${builtins.concatStringsSep "" [ "$" "{" "FILE" "}" ] }" ]]; then
                                                                                                                       echo "Usage: pass warn <entry>" >&2
                                                                                                                       exit 1
                                                                                                                     fi
 
-                                                                                                                    # Extract key IDs from the encrypted file
-                                                                                                                    mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "$FILE" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
+                                                                                                                    # Get encryption key IDs from the GPG packet metadata
+                                                                                                                    mapfile -t ENCRYPTION_KEYS < <(gpg --list-packets "${builtins.concatStringsSep "" [ "$" "{" "FILE" "}" ] }" 2>/dev/null | awk '/^:pubkey enc packet:/ { print $NF }')
 
-                                                                                                                    # Extract key IDs from your current keyring (expected keys)
-                                                                                                                    mapfile -t CURRENT_KEYS < <(gpg --with-colons --list-keys | awk -F: '/^pub/ { print $5 }')
+                                                                                                                    # Get your local GPG secret key IDs
+                                                                                                                    mapfile -t CURRENT_KEYS < <(gpg --list-secret-keys --with-colons | awk -F: '/^sec/ { print $5 }')
 
-                                                                                                                    # Compare
-                                                                                                                    for enc_key in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
-                                                                                                                      if ! printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]}" ] }" | grep -qx "$enc_key"; then
-                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or outdated GPG key: $enc_key"
-                                                                                                                        break
+                                                                                                                    # Print debugging info
+                                                                                                                    echo "🔐 Encrypted GPG Key IDs for $ENTRY:" >&2
+                                                                                                                    for k in "${builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                      echo " - $k" >&2
+                                                                                                                    done
+
+                                                                                                                    echo "💾 Local Secret GPG Key IDs:" >&2
+                                                                                                                    for k in "${builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }"; do
+                                                                                                                      echo " - $k" >&2
+                                                                                                                    done
+
+                                                                                                                    # Check if each encryption key is present in current secret keys
+                                                                                                                    for enc_key in "${builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_KEYS[@]" "}" ] }"; do
+                                                                                                                      if ! printf "%s\n" "${builtins.concatStringsSep "" [ "$" "{" "CURRENT_KEYS[@]" "}" ] }" | grep -qFx "$enc_key"; then
+                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or missing GPG key: $enc_key" >&2
                                                                                                                       fi
                                                                                                                     done
 
-                                                                                                                    # Optional: Show the password
-                                                                                                                    pass show "$ENTRY"
+                                                                                                                    # Show the password
+                                                                                                                    pass show "${builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }"
 
                                                                                                                 '' ;
                                                                                                         } ;
