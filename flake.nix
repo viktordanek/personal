@@ -362,7 +362,7 @@
                                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
                                                                                                                                 firefox --no-remote --new-instance
                                                                                                                                 rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
-                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" profile
+                                                                                                                                tar --preserve-permissions --atime-preserve=replace -cf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" profile
                                                                                                                                 git add profile.tar
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
@@ -411,7 +411,7 @@
                                                                                                                     !profile.tar
                                                                                                                     EOF
                                                                                                                     git add .gitignore
-                                                                                                                    if ! tar -xzf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" 2>&1
+                                                                                                                    if ! tar -xf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" 2>&1
                                                                                                                     then
                                                                                                                         mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     fi
