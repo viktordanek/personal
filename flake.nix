@@ -406,13 +406,13 @@
                                                                                                                     else
                                                                                                                         git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     fi
-                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                    if [ ! -f "$GIT_WORK_TREE/.gitattributes" ]
+                                                                                                                    then
+                                                                                                                        cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                                                     "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
-                                                                                                                    git add .gitattributes
-                                                                                                                    if git commit -am "set .gitattributes"
-                                                                                                                    then
-                                                                                                                        echo new repository
+                                                                                                                        git add .gitattributes
+                                                                                                                        git commit -am "set .gitattributes"
                                                                                                                     fi
                                                                                                                 '' ;
                                                                                                 } ;
