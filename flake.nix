@@ -347,8 +347,7 @@
                                                                                         emory =
                                                                                             ignore :
                                                                                                 {
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
-                                                                                                    text =
+                                                                                                    runtimeInputs =
                                                                                                         let
                                                                                                             firefox =
                                                                                                                 pkgs.writeShellApplication
@@ -374,6 +373,9 @@
                                                                                                                                 flock -u 201
                                                                                                                             '' ;
                                                                                                                     } ;
+                                                                                                        in [ firefox pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
+                                                                                                    text =
+                                                                                                        let
                                                                                                             in
                                                                                                                 ''
                                                                                                                     ROOT="$1"
@@ -387,7 +389,7 @@
                                                                                                                     export GNUPGHOME="$GNUPGHOME"
                                                                                                                     export GIT_DIR="$GIT_DIR"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ firefox }/bin:${ pkgs.git }/bin
+                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ firefox }/bin:${ pkgs.git }/bin:${ pkgs.less }/bin:${ pkgs.git-crypt }/bin
                                                                                                                     EOF
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
