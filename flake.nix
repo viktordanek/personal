@@ -161,7 +161,7 @@
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
                                                                                                                         name = "chromium" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.chromium ] ;
+                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git pkgs.git-crypt ] ;
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
