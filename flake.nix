@@ -415,6 +415,8 @@
                                                                                                                         git commit -am "set .gitattributes"
                                                                                                                         git-crypt init 2>&1
                                                                                                                         git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                        git commit -m "Add new GPG user for decryption"
+                                                                                                                        git push origin HEAD
                                                                                                                     fi
                                                                                                                 '' ;
                                                                                                 } ;
