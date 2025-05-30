@@ -349,6 +349,9 @@
                                                                                                 {
                                                                                                     runtimeInputs =
                                                                                                         let
+                                                                                                            in [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
+                                                                                                    text =
+                                                                                                        let
                                                                                                             firefox =
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
@@ -373,9 +376,6 @@
                                                                                                                                 flock -u 201
                                                                                                                             '' ;
                                                                                                                     } ;
-                                                                                                        in [ firefox pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
-                                                                                                    text =
-                                                                                                        let
                                                                                                             in
                                                                                                                 ''
                                                                                                                     ROOT="$1"
