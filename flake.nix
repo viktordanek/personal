@@ -134,11 +134,11 @@
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                    if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                    if git fetch origin 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
                                                                                                                     then
-                                                                                                                        git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                        git checkout 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
                                                                                                                     else
-                                                                                                                        git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                        git checkout -b 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
                                                                                                                     fi
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
