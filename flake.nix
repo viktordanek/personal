@@ -224,7 +224,7 @@
                                                                                                             mkdir "$GIT_DIR"
                                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                                             git init 2>&1
-                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( $2/boot/dot-ssh/boot )"
+                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot" )"
                                                                                                             git config user.email "${ config.personal.email }"
                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                             git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
