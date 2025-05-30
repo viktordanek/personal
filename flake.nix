@@ -235,7 +235,7 @@
                                                                                                                 git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                             fi
                                                                                                             git-crypt init
-                                                                                                            git-crypt add B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                            git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                                             "config/**" filter=git-crypt diff=git-crypt
                                                                                                             "data/**" filter=git-crypt diff=git-crypt
