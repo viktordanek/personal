@@ -397,10 +397,10 @@
                                                                                                                     git init 2>&1
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                    git-crypt unlock
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     git config user.name "${ config.personal.description }"
+                                                                                                                    git-crypt unlock 2>&1
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
                                                                                                                     if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     then
