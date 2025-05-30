@@ -31,6 +31,10 @@
                                                                                 let
                                                                                     stash =
                                                                                         ''
+                                                                                            ROOT_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) ] ] ) }
+                                                                                            mkdir --parents "$ROOT_DIR"
+                                                                                            exec 200> "$ROOT_DIR/lock"
+                                                                                            flock -s 200
                                                                                             export STASH_FILE=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
                                                                                             STATUS_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) "status" ] ( builtins.map builtins.toJSON path ) ] ) }
                                                                                             mkdir --parents "$STATUS_DIR"
@@ -967,11 +971,11 @@
                                                                             pkgs.writeShellApplication
                                                                                 {
                                                                                     name = "studio" ;
-                                                                                    runtimeInputs = [ pkgs.findutils pkgs.jetbrains.idea-community ] ;
+                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community ] ;
                                                                                     text =
                                                                                         ''
                                                                                             find ${ derivation } -mindepth 1 -type f -exec {} \;
-                                                                                            idea /home/${ config.personal.name }/${ config.personal.stash }
+                                                                                            idea-community /home/${ config.personal.name }/${ config.personal.stash }
                                                                                         '' ;
                                                                                 }
                                                                         )
