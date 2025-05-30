@@ -360,10 +360,9 @@
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
                                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                                git-crypt unlock
                                                                                                                                 firefox --no-remote --new-instance
-                                                                                                                                rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
-                                                                                                                                tar --preserve-permissions --atime-preserve=replace -cf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" profile
-                                                                                                                                git add profile.tar
+                                                                                                                                git add profile
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
@@ -400,7 +399,6 @@
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                    git-crypt unlock 2>&1
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
                                                                                                                     if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     then
@@ -408,18 +406,8 @@
                                                                                                                     else
                                                                                                                         git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     fi
-                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                    cat > "$GIT_WORK_TREE/.gitignore" <<EOF
-                                                                                                                    profile/**
-                                                                                                                    !profile.tar
-                                                                                                                    EOF
-                                                                                                                    git add .gitignore
-                                                                                                                    if ! tar -xf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" 2>&1
-                                                                                                                    then
-                                                                                                                        mkdir --parents "$GIT_WORK_TREE/profile"
-                                                                                                                    fi
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "profile.tar" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                     git add .gitattributes
                                                                                                                 '' ;
