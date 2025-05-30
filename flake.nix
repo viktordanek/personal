@@ -199,6 +199,40 @@
                                                                                                         } ;
                                                                                             } ;
                                                                                     } ;
+                                                                                firefox =
+                                                                                    {
+                                                                                        emory =
+                                                                                            ignore :
+                                                                                                {
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            GIT_DIR="$1/git"
+                                                                                                            GIT_WORK_TREE="$1/work-tree"
+                                                                                                            XDG_CONFIG_HOME="$GIT_WORK_TREE/config"
+                                                                                                            XDG_DATA_HOME="$GIT_WORK_TREE/data"
+                                                                                                            GNUPGHOME="$( "$2/boot/gnupg/config" )"
+                                                                                                            mkdir "$1"
+                                                                                                            cat > "$1/.envrc" <<EOF
+                                                                                                            export GNUPGHOME="$GNUPGHOME"
+                                                                                                            export GIT_DIR="$GIT_DIR"
+                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                            export XDG_CONFIG_HOME="$XDG_CONFIG_HOME"
+                                                                                                            export XDG_DATA_HOME="$XDG_DATA_HOME"
+                                                                                                            export PATH=${ pkgs.firefox }/bin:${ pkgs.git }/bin
+                                                                                                            EOF
+                                                                                                            mkdir "$GIT_DIR"
+                                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                                            git init
+                                                                                                            git-crypt init
+                                                                                                            git-crypt add B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                            "config/**" filter=git-crypt diff=git-crypt
+                                                                                                            "data/**" filter=git-crypt diff=git-crypt
+                                                                                                            EOF
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                    } ;
                                                                                 pass =
                                                                                     let
                                                                                         expiry =
