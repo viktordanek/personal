@@ -80,7 +80,7 @@
                                                                     (
                                                                         let
                                                                             crypt =
-                                                                                branch : commit-message : runtimeInputs : runtimeText : ignore :
+                                                                                branch : commit-message : run-inputs : run-text : ignore :
                                                                                     {
                                                                                         runtimeInputs = [ ] ;
                                                                                         text =
@@ -89,7 +89,7 @@
                                                                                                     pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "application" ;
-                                                                                                            runtimeInputs = [ ] ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.flock pkgs.git pkgs.git-crypt ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     exec 201> "$ROOT/lock"
