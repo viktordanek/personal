@@ -211,7 +211,7 @@
                                                                                                             GIT_WORK_TREE="$1/work-tree"
                                                                                                             XDG_CONFIG_HOME="$GIT_WORK_TREE/config"
                                                                                                             XDG_DATA_HOME="$GIT_WORK_TREE/data"
-                                                                                                            GNUPGHOME="$( "$2/boot/gnupg/config" )"
+                                                                                                            GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
                                                                                                             mkdir "$1"
                                                                                                             cat > "$1/.envrc" <<EOF
                                                                                                             export GNUPGHOME="$GNUPGHOME"
@@ -223,7 +223,17 @@
                                                                                                             EOF
                                                                                                             mkdir "$GIT_DIR"
                                                                                                             mkdir "$GIT_WORK_TREE"
-                                                                                                            git init
+                                                                                                            git init 2>&1
+                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( $2/boot/dot-ssh/boot )"
+                                                                                                            git config user.email "${ config.personal.email }"
+                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                            git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                            if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                            then
+                                                                                                                git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                            else
+                                                                                                                git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                            fi
                                                                                                             git-crypt init
                                                                                                             git-crypt add B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
