@@ -250,6 +250,8 @@
                                                                                                                     EOF
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
+                                                                                                                    export GIT_DIR
+                                                                                                                    export GIT_WORK_TREE
                                                                                                                     git init 2>&1
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.email "${ config.personal.email }"
