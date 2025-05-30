@@ -221,6 +221,15 @@
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
                                                                                                                                 firefox --profile "$GIT_WORK_TREE"
+                                                                                                                                git add .
+                                                                                                                                if git commit -message "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
+                                                                                                                                then
+                                                                                                                                    while ! git push origin HEAD
+                                                                                                                                    do
+                                                                                                                                        echo there was a problem pushing >&2
+                                                                                                                                        sleep 1
+                                                                                                                                    done
+                                                                                                                                fi
                                                                                                                                 flock -u 201
                                                                                                                             '' ;
                                                                                                                     } ;
@@ -237,7 +246,7 @@
                                                                                                                     export GNUPGHOME="$GNUPGHOME"
                                                                                                                     export GIT_DIR="$GIT_DIR"
                                                                                                                     export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }:bin:/${ firefox }/bin:${ pkgs.git }/bin
+                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ firefox }/bin:${ pkgs.git }/bin
                                                                                                                     EOF
                                                                                                                     mkdir "$GIT_DIR"
                                                                                                                     mkdir "$GIT_WORK_TREE"
