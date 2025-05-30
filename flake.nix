@@ -409,10 +409,13 @@
                                                                                                                     if [ ! -f "$GIT_WORK_TREE/.gitattributes" ]
                                                                                                                     then
                                                                                                                         cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                    "flag" filter=git-crypt diff=git-crypt
                                                                                                                     "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                         git add .gitattributes
                                                                                                                         git-crypt init 2>&1
+                                                                                                                        date +%s > "$GIT_WORK_TREE/flag"
+                                                                                                                        git add "$GIT_WORK_TREE/flag"
                                                                                                                         git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                         git commit -am "Add new GPG user for decryption"
                                                                                                                         git push origin HEAD
