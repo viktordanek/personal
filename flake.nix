@@ -156,7 +156,12 @@
                                                                                         {
                                                                                             brave =
                                                                                                 {
-                                                                                                    emory = crypt "ee9af81a-425b-4229-a79b-4984cb7041b8" [ pkgs.brave ] ''HOME="$GIT_WORK_TREE/profile" BRAVE_USER_DATA_DIR="$HOME/.config/BraveSoftware/BraveBrowser" brave'' "brave session ${ config.personal.current-time }" ;
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            "ee9af81a-425b-4229-a79b-4984cb7041b8"
+                                                                                                            "brave session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.brave ]
+                                                                                                            ''HOME="$GIT_WORK_TREE/profile" BRAVE_USER_DATA_DIR="$HOME/.config/BraveSoftware/BraveBrowser" brave'' ;
                                                                                                 } ;
                                                                                             chromium =
                                                                                                 {
