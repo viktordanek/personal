@@ -222,7 +222,7 @@
                                                                                                                                 flock -x 201
                                                                                                                                 firefox --profile "$GIT_WORK_TREE"
                                                                                                                                 git add .
-                                                                                                                                if git commit -message "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
+                                                                                                                                if git commit -a -message "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
                                                                                                                                     do
