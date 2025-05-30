@@ -418,7 +418,7 @@
                                                                                                                         git add "$GIT_WORK_TREE/flag"
                                                                                                                         git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                         git commit -am "Add new GPG user for decryption"
-                                                                                                                        git push origin HEAD
+                                                                                                                        git push origin HEAD 2>&1
                                                                                                                     fi
                                                                                                                 '' ;
                                                                                                 } ;
