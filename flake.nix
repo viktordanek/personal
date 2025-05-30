@@ -416,12 +416,6 @@
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-
-                                                                                                                    if [ ! -f "$GIT_WORK_TREE/.gitattributes" ]
-                                                                                                                    then
-
-                                                                                                                        git push origin HEAD 2>&1
-                                                                                                                    fi
                                                                                                                 '' ;
                                                                                                 } ;
                                                                                     } ;
