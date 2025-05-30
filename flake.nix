@@ -212,8 +212,7 @@
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "config/**" filter=git-crypt diff=git-crypt
-                                                                                                                    "data/**" filter=git-crypt diff=git-crypt
+                                                                                                                    "**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                 '' ;
                                                                                                 } ;
@@ -404,8 +403,7 @@
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "config/**" filter=git-crypt diff=git-crypt
-                                                                                                                    "data/**" filter=git-crypt diff=git-crypt
+                                                                                                                    "**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                 '' ;
                                                                                                 } ;
