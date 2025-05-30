@@ -88,7 +88,7 @@
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
                                                                                                     text =
                                                                                                         let
-                                                                                                            firefox =
+                                                                                                            chromium =
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
                                                                                                                         name = "chromium" ;
