@@ -396,6 +396,7 @@
                                                                                                                     export GIT_WORK_TREE
                                                                                                                     git init 2>&1
                                                                                                                     git-crypt init 2>&1
+                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     git-crypt unlock
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                     git config user.email "${ config.personal.email }"
@@ -417,7 +418,6 @@
                                                                                                                     then
                                                                                                                         mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     fi
-                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                                                     "profile.tar" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
