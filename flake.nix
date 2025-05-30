@@ -362,8 +362,8 @@
                                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
                                                                                                                                 firefox --no-remote --new-instance
                                                                                                                                 rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
-                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf "$GIT_WORK_TREE/profile.tar.gz" -C "$GIT_WORK_TREE" profile
-                                                                                                                                git add profile.tar.gz
+                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" profile
+                                                                                                                                git add profile.tar
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
@@ -408,17 +408,17 @@
                                                                                                                     mkdir --parents "$GIT_WORK_TREE"
                                                                                                                     cat > "$GIT_WORK_TREE/.gitignore" <<EOF
                                                                                                                     profile/**
-                                                                                                                    !profile.tar.gz
+                                                                                                                    !profile.tar
                                                                                                                     EOF
                                                                                                                     git add .gitignore
-                                                                                                                    if ! tar -xzf "$GIT_WORK_TREE/profile.tar.gz" -C "$GIT_WORK_TREE" 2>&1
+                                                                                                                    if ! tar -xzf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" 2>&1
                                                                                                                     then
                                                                                                                         mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     fi
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "profile.tar.gz" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile.tar" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                     git add .gitattributes
                                                                                                                 '' ;
