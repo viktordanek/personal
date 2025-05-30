@@ -352,7 +352,7 @@
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
                                                                                                                         name = "firefox" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox ] ;
+                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox pkgs.git-crypt ] ;
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
