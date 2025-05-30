@@ -79,79 +79,84 @@
                                                                     }
                                                                     (
                                                                         let
-                                                                            crypt = null ;
+                                                                            crypt =
+                                                                                branch : commit-message : runtimeInputs : runtimeText : ignore :
+                                                                                    {
+                                                                                        runtimeInputs = [ ] ;
+                                                                                        text =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    exec 201> "$ROOT/lock"
+                                                                                                                    flock -x 201
+                                                                                                                    if git fetch origin ${ branch } 2>&1
+                                                                                                                    then
+                                                                                                                        git checkout ${ branch } 2>&1
+                                                                                                                        git-crypt unlock
+                                                                                                                    else
+                                                                                                                        git checkout -b ${ branch } 2>&1
+                                                                                                                        git-crypt init 2>&1
+                                                                                                                        git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                        git-crypt unlock
+                                                                                                                        cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                    "flag" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
+                                                                                                                    EOF
+                                                                                                                        git add .gitattributes
+                                                                                                                        date +%s > "$GIT_WORK_TREE/flag"
+                                                                                                                        git commit -am "Initialized Branch"
+                                                                                                                    fi
+                                                                                                                    ${ pkgs.writeShellApplication { name = "run" ; runtimeInputs = run-inputs ; text = run-text ; } }/bin/run
+                                                                                                                    git add profile
+                                                                                                                    if git commit -am ${ commit-message }"
+                                                                                                                    then
+                                                                                                                        while ! git push origin HEAD
+                                                                                                                        do
+                                                                                                                            echo there was a problem pushing >&2
+                                                                                                                            sleep 1
+                                                                                                                        done
+                                                                                                                    fi
+                                                                                                                    flock -u 201
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        ROOT="$1"
+                                                                                                        GIT_DIR="$ROOT/git"
+                                                                                                        GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                        GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                        export GNUPGHOME
+                                                                                                        mkdir "$ROOT"
+                                                                                                        cat > "$ROOT/.envrc" <<EOF
+                                                                                                        export ROOT="$ROOT"
+                                                                                                        export GNUPGHOME="$GNUPGHOME"
+                                                                                                        export GIT_DIR="$GIT_DIR"
+                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                        EOF
+                                                                                                        mkdir "$GIT_DIR"
+                                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                                        export GIT_DIR
+                                                                                                        export GIT_WORK_TREE
+                                                                                                        git init 2>&1
+                                                                                                        git config alias.application "!${ application }/bin/application"
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                        git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                    '' ;
+                                                                                    } ;
                                                                             in
                                                                                 {
                                                                                     boot =
                                                                                         {
                                                                                             brave =
                                                                                                 {
-                                                                                                    emory =
-                                                                                                        ignore :
-                                                                                                            {
-                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
-                                                                                                                text =
-                                                                                                                    let
-                                                                                                                        brave =
-                                                                                                                            pkgs.writeShellApplication
-                                                                                                                                {
-                                                                                                                                    name = "brave" ;
-                                                                                                                                    runtimeInputs = [ pkgs.brave pkgs.flock ] ;
-                                                                                                                                    text =
-                                                                                                                                        ''
-                                                                                                                                            exec 201> "$ROOT/lock"
-                                                                                                                                            flock -x 201
-                                                                                                                                            brave --user-data-dir "$GIT_WORK_TREE"
-                                                                                                                                            git add .
-                                                                                                                                            if git commit -am "brave session:  ${ config.personal.name } ${ config.personal.current-time }"
-                                                                                                                                            then
-                                                                                                                                                while ! git push origin HEAD
-                                                                                                                                                do
-                                                                                                                                                    echo there was a problem pushing >&2
-                                                                                                                                                    sleep 1
-                                                                                                                                                done
-                                                                                                                                            fi
-                                                                                                                                            flock -u 201
-                                                                                                                                        '' ;
-                                                                                                                                } ;
-                                                                                                                        in
-                                                                                                                            ''
-                                                                                                                                ROOT="$1"
-                                                                                                                                GIT_DIR="$ROOT/git"
-                                                                                                                                GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                                GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                                export GNUPGHOME
-                                                                                                                                mkdir "$ROOT"
-                                                                                                                                cat > "$ROOT/.envrc" <<EOF
-                                                                                                                                export ROOT="$ROOT"
-                                                                                                                                export GNUPGHOME="$GNUPGHOME"
-                                                                                                                                export GIT_DIR="$GIT_DIR"
-                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                                export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ brave }/bin:${ pkgs.git }/bin
-                                                                                                                                EOF
-                                                                                                                                mkdir "$GIT_DIR"
-                                                                                                                                mkdir "$GIT_WORK_TREE"
-                                                                                                                                export GIT_DIR
-                                                                                                                                export GIT_WORK_TREE
-                                                                                                                                git init 2>&1
-                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                                git config user.email "${ config.personal.email }"
-                                                                                                                                git config user.name "${ config.personal.description }"
-                                                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                                if git fetch origin 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                                then
-                                                                                                                                    git checkout 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                                else
-                                                                                                                                    git checkout -b 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                                fi
-                                                                                                                                git-crypt init 2>&1
-                                                                                                                                git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                                cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                                "config/**" filter=git-crypt diff=git-crypt
-                                                                                                                                "data/**" filter=git-crypt diff=git-crypt
-                                                                                                                                EOF
-                                                                                                                            '' ;
-                                                                                                            } ;
+                                                                                                    emory = crypt "ee9af81a-425b-4229-a79b-4984cb7041b8" [ pkgs.brave ] ''HOME="$GIT_WORK_TREE/profile" BRAVE_USER_DATA_DIR="$HOME/.config/BraveSoftware/BraveBrowser" brave'' "brave session ${ config.personal.current-time }" ;
                                                                                                 } ;
                                                                                             chromium =
                                                                                                 {
