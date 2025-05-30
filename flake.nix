@@ -361,8 +361,8 @@
                                                                                                                                 flock -x 201
                                                                                                                                 firefox --no-remote --new-instance --profile "$GIT_WORK_TREE/profile"
                                                                                                                                 rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
-                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf firefox-profile.tar.gz -C "$GIT_WORK_TREE" profile
-                                                                                                                                git add firefox-profile.tar.gz
+                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf profile.tar.gz -C "$GIT_WORK_TREE" profile
+                                                                                                                                git add profile.tar.gz
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
