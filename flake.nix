@@ -161,13 +161,13 @@
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
                                                                                                                         name = "chromium" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git pkgs.git-crypt ] ;
+                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git-crypt ] ;
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
-                                                                                                                                chromium --user-data-dir "$GIT_WORK_TREE"
-                                                                                                                                git add .
+                                                                                                                                chromium --user-data-dir "$GIT_WORK_TREE/profile"
+                                                                                                                                git add profile
                                                                                                                                 if git commit -am "chromium session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
@@ -203,20 +203,21 @@
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                    if git fetch origin 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
+                                                                                                                    if git fetch origin 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
                                                                                                                     then
-                                                                                                                        git checkout 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
+                                                                                                                        git checkout 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
                                                                                                                     else
-                                                                                                                        git checkout -b 0c77524c-a046-4d9b-833e-8dca0e868518 2>&1
+                                                                                                                        git checkout -b 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
                                                                                                                     fi
+                                                                                                                    mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "**" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
+                                                                                                                    git add .gitattributes
                                                                                                                 '' ;
                                                                                                 } ;
-                                                                                    } ;
                                                                                 dot-gnupg =
                                                                                     {
                                                                                         config =
