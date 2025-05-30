@@ -224,7 +224,7 @@
                                                                                                             export GIT_WORK_TREE="$GIT_WORK_TREE"
                                                                                                             export XDG_CONFIG_HOME="$XDG_CONFIG_HOME"
                                                                                                             export XDG_DATA_HOME="$XDG_DATA_HOME"
-                                                                                                            export PATH=${ pkgs.firefox }/bin:${ pkgs.git }/bin
+                                                                                                            export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }:bin/${ pkgs.firefox }/bin:${ pkgs.git }/bin
                                                                                                             EOF
                                                                                                             mkdir "$GIT_DIR"
                                                                                                             mkdir "$GIT_WORK_TREE"
