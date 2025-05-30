@@ -361,8 +361,24 @@
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
+                                                                                                                                if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                then
+                                                                                                                                    git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                    git-crypt unlock
+                                                                                                                                else
+                                                                                                                                    git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                    git-crypt init 2>&1
+                                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                                    git-crypt unlock
+                                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                                "flag" filter=git-crypt diff=git-crypt
+                                                                                                                                "profile/**" filter=git-crypt diff=git-crypt
+                                                                                                                                EOF
+                                                                                                                                    git add .gitattributes
+                                                                                                                                    date +%s > "$GIT_WORK_TREE/flag"
+                                                                                                                                    git commit -am "Initialized Branch"
+                                                                                                                                fi
                                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
-                                                                                                                                git-crypt unlock
                                                                                                                                 firefox --no-remote --new-instance
                                                                                                                                 git add profile
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
@@ -400,24 +416,10 @@
                                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                                     git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                    if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                    then
-                                                                                                                        git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                    else
-                                                                                                                        git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                    fi
+
                                                                                                                     if [ ! -f "$GIT_WORK_TREE/.gitattributes" ]
                                                                                                                     then
-                                                                                                                        git-crypt init 2>&1
-                                                                                                                        git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                        cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "flag" filter=git-crypt diff=git-crypt
-                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
-                                                                                                                    EOF
-                                                                                                                        git-crypt unlock
-                                                                                                                        git add .gitattributes
-                                                                                                                        date +%s > "$GIT_WORK_TREE/flag"
-                                                                                                                        git commit -am "Add new GPG user for decryption"
+
                                                                                                                         git push origin HEAD 2>&1
                                                                                                                     fi
                                                                                                                 '' ;
