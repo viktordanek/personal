@@ -347,14 +347,14 @@
                                                                                         emory =
                                                                                             ignore :
                                                                                                 {
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar ] ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
                                                                                                     text =
                                                                                                         let
                                                                                                             firefox =
                                                                                                                 pkgs.writeShellApplication
                                                                                                                     {
                                                                                                                         name = "firefox" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox pkgs.git-crypt pkgs.gnutar ] ;
+                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
