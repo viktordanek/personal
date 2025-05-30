@@ -357,8 +357,8 @@
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
-                                                                                                                                firefox --profile "$GIT_WORK_TREE"
-                                                                                                                                git add .
+                                                                                                                                firefox --profile "$GIT_WORK_TREE/profile"
+                                                                                                                                git add profile
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
@@ -400,11 +400,13 @@
                                                                                                                     else
                                                                                                                         git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     fi
+                                                                                                                    mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "**" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
+                                                                                                                    git add .gitattributes
                                                                                                                 '' ;
                                                                                                 } ;
                                                                                     } ;
