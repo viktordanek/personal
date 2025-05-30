@@ -361,8 +361,8 @@
                                                                                                                                 flock -x 201
                                                                                                                                 firefox --no-remote --new-instance --profile "$GIT_WORK_TREE/profile"
                                                                                                                                 rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
-                                                                                                                                tar --preserve-permissions --atime-preserve=replace -cf "$GIT_WORK_TREE/profile.tar" -C "$GIT_WORK_TREE" profile
-                                                                                                                                git add profile.tar
+                                                                                                                                tar --preserve-permissions --atime-preserve=replace -czf "$GIT_WORK_TREE/profile.tar.gz" -C "$GIT_WORK_TREE" profile
+                                                                                                                                git add profile.tar.gz
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
                                                                                                                                     while ! git push origin HEAD
@@ -410,14 +410,14 @@
                                                                                                                     !profile.tar.gz
                                                                                                                     EOF
                                                                                                                     git add .gitignore
-                                                                                                                    if ! tar -xf profile.tar -C "$GIT_WORK_TREE" 2>&1
+                                                                                                                    if ! tar -xzf profile.tar -C "$GIT_WORK_TREE" 2>&1
                                                                                                                     then
                                                                                                                         mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     fi
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                     cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "profile.tar" filter=git-crypt diff=git-crypt
+                                                                                                                    "profile.tar.gz" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                     git add .gitattributes
                                                                                                                 '' ;
