@@ -360,6 +360,7 @@
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
                                                                                                                                 firefox --no-remote --new-instance --profile "$GIT_WORK_TREE/profile"
+                                                                                                                                rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
                                                                                                                                 git add profile
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
@@ -402,6 +403,7 @@
                                                                                                                     else
                                                                                                                         git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
                                                                                                                     fi
+                                                                                                                    rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
                                                                                                                     mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     git-crypt init 2>&1
                                                                                                                     git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
