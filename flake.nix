@@ -212,6 +212,7 @@
                                                                                                             XDG_CONFIG_HOME="$GIT_WORK_TREE/config"
                                                                                                             XDG_DATA_HOME="$GIT_WORK_TREE/data"
                                                                                                             GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                            export GNUPGHOME
                                                                                                             mkdir "$1"
                                                                                                             cat > "$1/.envrc" <<EOF
                                                                                                             export GNUPGHOME="$GNUPGHOME"
