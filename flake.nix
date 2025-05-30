@@ -210,42 +210,55 @@
                                                                                                 {
                                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
                                                                                                     text =
-                                                                                                        ''
-                                                                                                            GIT_DIR="$1/git"
-                                                                                                            GIT_WORK_TREE="$1/work-tree"
-                                                                                                            XDG_CONFIG_HOME="$GIT_WORK_TREE/config"
-                                                                                                            XDG_DATA_HOME="$GIT_WORK_TREE/data"
-                                                                                                            GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                            export GNUPGHOME
-                                                                                                            mkdir "$1"
-                                                                                                            cat > "$1/.envrc" <<EOF
-                                                                                                            export GNUPGHOME="$GNUPGHOME"
-                                                                                                            export GIT_DIR="$GIT_DIR"
-                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                            export XDG_CONFIG_HOME="$XDG_CONFIG_HOME"
-                                                                                                            export XDG_DATA_HOME="$XDG_DATA_HOME"
-                                                                                                            export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }:bin/${ pkgs.firefox }/bin:${ pkgs.git }/bin
-                                                                                                            EOF
-                                                                                                            mkdir "$GIT_DIR"
-                                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                                            git init 2>&1
-                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                            git config user.email "${ config.personal.email }"
-                                                                                                            git config user.name "${ config.personal.description }"
-                                                                                                            git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                            if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                            then
-                                                                                                                git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                            else
-                                                                                                                git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                            fi
-                                                                                                            git-crypt init 2>&1
-                                                                                                            git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                            "config/**" filter=git-crypt diff=git-crypt
-                                                                                                            "data/**" filter=git-crypt diff=git-crypt
-                                                                                                            EOF
-                                                                                                        '' ;
+                                                                                                        let
+                                                                                                            firefox =
+                                                                                                                pkgs.writeShellApplication
+                                                                                                                    {
+                                                                                                                        name = "firefox" ;
+                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                exec 201> "$ROOT/lock"
+                                                                                                                                flock -x 201
+                                                                                                                                firefox --profile "$GIT_WORK_TREE"
+                                                                                                                                flock -u 201
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            in
+                                                                                                                ''
+                                                                                                                    ROOT="$1"
+                                                                                                                    GIT_DIR="$ROOT/git"
+                                                                                                                    GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                                    GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                                    export GNUPGHOME
+                                                                                                                    mkdir "$ROOT"
+                                                                                                                    cat > "$ROOT/.envrc" <<EOF
+                                                                                                                    export ROOT="$ROOT"
+                                                                                                                    export GNUPGHOME="$GNUPGHOME"
+                                                                                                                    export GIT_DIR="$GIT_DIR"
+                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }:bin:/${ firefox }/bin:${ pkgs.git }/bin
+                                                                                                                    EOF
+                                                                                                                    mkdir "$GIT_DIR"
+                                                                                                                    mkdir "$GIT_WORK_TREE"
+                                                                                                                    git init 2>&1
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                    git config user.email "${ config.personal.email }"
+                                                                                                                    git config user.name "${ config.personal.description }"
+                                                                                                                    git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                                    if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                    then
+                                                                                                                        git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                    else
+                                                                                                                        git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                    fi
+                                                                                                                    git-crypt init 2>&1
+                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                    "config/**" filter=git-crypt diff=git-crypt
+                                                                                                                    "data/**" filter=git-crypt diff=git-crypt
+                                                                                                                    EOF
+                                                                                                                '' ;
                                                                                                 } ;
                                                                                     } ;
                                                                                 pass =
