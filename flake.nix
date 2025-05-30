@@ -410,6 +410,10 @@
                                                                                                                     "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
                                                                                                                     git add .gitattributes
+                                                                                                                    if git commit -am "set .gitattributes"
+                                                                                                                    then
+                                                                                                                        echo new repository
+                                                                                                                    fi
                                                                                                                 '' ;
                                                                                                 } ;
                                                                                     } ;
