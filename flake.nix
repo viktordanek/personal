@@ -359,7 +359,8 @@
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
-                                                                                                                                firefox --no-remote --new-instance --profile "$GIT_WORK_TREE/profile"
+                                                                                                                                export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                                firefox --no-remote --new-instance
                                                                                                                                 rm --force "$GIT_WORK_TREE/profile/parent.lock" "$GIT_WORK_TREE/profile/.startup-incomplete"
                                                                                                                                 tar --preserve-permissions --atime-preserve=replace -czf "$GIT_WORK_TREE/profile.tar.gz" -C "$GIT_WORK_TREE" profile
                                                                                                                                 git add profile.tar.gz
