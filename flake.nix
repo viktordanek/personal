@@ -410,7 +410,7 @@
                                                                                                                     !profile.tar.gz
                                                                                                                     EOF
                                                                                                                     git add .gitignore
-                                                                                                                    if ! tar -xzf profile.tar.gz -C "$GIT_WORK_TREE"
+                                                                                                                    if ! tar -xzf profile.tar.gz -C "$GIT_WORK_TREE" 2>&1
                                                                                                                     then
                                                                                                                         mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                     fi
