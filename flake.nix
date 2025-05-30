@@ -359,7 +359,7 @@
                                                                                                                             ''
                                                                                                                                 exec 201> "$ROOT/lock"
                                                                                                                                 flock -x 201
-                                                                                                                                firefox --profile "$GIT_WORK_TREE/profile"
+                                                                                                                                firefox --no-remote --new-instance --profile "$GIT_WORK_TREE/profile"
                                                                                                                                 git add profile
                                                                                                                                 if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
                                                                                                                                 then
