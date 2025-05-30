@@ -414,6 +414,7 @@
                                                                                                                     "flag" filter=git-crypt diff=git-crypt
                                                                                                                     "profile/**" filter=git-crypt diff=git-crypt
                                                                                                                     EOF
+                                                                                                                        git-crypt unlock
                                                                                                                         git add .gitattributes
                                                                                                                         date +%s > "$GIT_WORK_TREE/flag"
                                                                                                                         git commit -am "Add new GPG user for decryption"
