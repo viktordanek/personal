@@ -77,887 +77,892 @@
                                                                         null = path : value : [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ;
                                                                         set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
                                                                     }
-                                                                    {
-                                                                        boot =
-                                                                            {
-                                                                                brave =
-                                                                                    {
-                                                                                        emory =
-                                                                                            ignore :
+                                                                    (
+                                                                        let
+                                                                            crypt = null ;
+                                                                            in
+                                                                                {
+                                                                                    boot =
+                                                                                        {
+                                                                                            brave =
                                                                                                 {
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
-                                                                                                    text =
-                                                                                                        let
-                                                                                                            brave =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "brave" ;
-                                                                                                                        runtimeInputs = [ pkgs.brave pkgs.flock ] ;
-                                                                                                                        text =
-                                                                                                                            ''
-                                                                                                                                exec 201> "$ROOT/lock"
-                                                                                                                                flock -x 201
-                                                                                                                                brave --user-data-dir "$GIT_WORK_TREE"
-                                                                                                                                git add .
-                                                                                                                                if git commit -am "brave session:  ${ config.personal.name } ${ config.personal.current-time }"
-                                                                                                                                then
-                                                                                                                                    while ! git push origin HEAD
-                                                                                                                                    do
-                                                                                                                                        echo there was a problem pushing >&2
-                                                                                                                                        sleep 1
-                                                                                                                                    done
-                                                                                                                                fi
-                                                                                                                                flock -u 201
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            in
-                                                                                                                ''
-                                                                                                                    ROOT="$1"
-                                                                                                                    GIT_DIR="$ROOT/git"
-                                                                                                                    GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                    GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                    export GNUPGHOME
-                                                                                                                    mkdir "$ROOT"
-                                                                                                                    cat > "$ROOT/.envrc" <<EOF
-                                                                                                                    export ROOT="$ROOT"
-                                                                                                                    export GNUPGHOME="$GNUPGHOME"
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ brave }/bin:${ pkgs.git }/bin
-                                                                                                                    EOF
-                                                                                                                    mkdir "$GIT_DIR"
-                                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                                    export GIT_DIR
-                                                                                                                    export GIT_WORK_TREE
-                                                                                                                    git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                    if git fetch origin 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                    then
-                                                                                                                        git checkout 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                    else
-                                                                                                                        git checkout -b 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
-                                                                                                                    fi
-                                                                                                                    git-crypt init 2>&1
-                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "config/**" filter=git-crypt diff=git-crypt
-                                                                                                                    "data/**" filter=git-crypt diff=git-crypt
-                                                                                                                    EOF
-                                                                                                                '' ;
-                                                                                                } ;
-                                                                                    } ;
-                                                                                chromium =
-                                                                                    {
-                                                                                        emory =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
-                                                                                                    text =
-                                                                                                        let
-                                                                                                            chromium =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "chromium" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git-crypt ] ;
-                                                                                                                        text =
-                                                                                                                            ''
-                                                                                                                                exec 201> "$ROOT/lock"
-                                                                                                                                flock -x 201
-                                                                                                                                chromium --user-data-dir "$GIT_WORK_TREE/profile"
-                                                                                                                                git add profile
-                                                                                                                                if git commit -am "chromium session:  ${ config.personal.name } ${ config.personal.current-time }"
-                                                                                                                                then
-                                                                                                                                    while ! git push origin HEAD
-                                                                                                                                    do
-                                                                                                                                        echo there was a problem pushing >&2
-                                                                                                                                        sleep 1
-                                                                                                                                    done
-                                                                                                                                fi
-                                                                                                                                flock -u 201
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            in
-                                                                                                                ''
-                                                                                                                    ROOT="$1"
-                                                                                                                    GIT_DIR="$ROOT/git"
-                                                                                                                    GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                    GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                    export GNUPGHOME
-                                                                                                                    mkdir "$ROOT"
-                                                                                                                    cat > "$ROOT/.envrc" <<EOF
-                                                                                                                    export ROOT="$ROOT"
-                                                                                                                    export GNUPGHOME="$GNUPGHOME"
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ chromium }/bin:${ pkgs.git }/bin
-                                                                                                                    EOF
-                                                                                                                    mkdir "$GIT_DIR"
-                                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                                    export GIT_DIR
-                                                                                                                    export GIT_WORK_TREE
-                                                                                                                    git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                    if git fetch origin 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                    then
-                                                                                                                        git checkout 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                    else
-                                                                                                                        git checkout -b 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                    fi
-                                                                                                                    mkdir --parents "$GIT_WORK_TREE/profile"
-                                                                                                                    git-crypt init 2>&1
-                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                    "profile/**" filter=git-crypt diff=git-crypt
-                                                                                                                    EOF
-                                                                                                                    git add .gitattributes
-                                                                                                                '' ;
-                                                                                                } ;
-                                                                                    } ;
-                                                                                dot-gnupg =
-                                                                                    {
-                                                                                        config =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.gnupg ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            export GNUPGHOME="$1"
-                                                                                                            mkdir --parents "$GNUPGHOME"
-                                                                                                            chmod 0700 "$GNUPGHOME"
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import "$( "$2/boot/dot-gnupg/secret-keys" )" 2>&1
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust "$( "$2/boot/dot-gnupg/ownertrust" )" 2>&1
-                                                                                                            gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        ownertrust =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/ownertrust.asc.age"
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        secret-keys =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/secret-keys.asc.age"
-                                                                                                            chmod 0400 "$1"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                    } ;
-                                                                                dot-ssh =
-                                                                                    {
-                                                                                        boot =
-                                                                                            {
-                                                                                                config =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    cat > "$1" <<EOF
-                                                                                                                    IdentityFile "$( "$2/boot/dot-ssh/boot/identity" )"
-                                                                                                                    UserKnownHostsFile "$( "$2/boot/dot-ssh/boot/known-hosts" )"
-                                                                                                                    StrictHostKeyChecking yes
-
-                                                                                                                    Host github.com
-                                                                                                                    HostName github.com
-
-                                                                                                                    Host mobile
-                                                                                                                    HostName 192.168.1.202
-                                                                                                                    Port 8022
-                                                                                                                    EOF
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                identity =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/identity.asc.age" }
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                known-hosts =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/known-hosts.asc.age" }
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                            } ;
-                                                                                        viktor =
-                                                                                            {
-                                                                                                config =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    cat > "$1" <<EOF
-                                                                                                                    IdentityFile "$( "$2/boot/dot-ssh/viktor/identity" )"
-                                                                                                                    UserKnownHostsFile "$( "$2/boot/dot-ssh/viktor/known-hosts" )"
-                                                                                                                    StrictHostKeyChecking yes
-                                                                                                                    Host github.com
-                                                                                                                    HostName github.com
-                                                                                                                    EOF
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                identity =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/identity.asc.age" }
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                known-hosts =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/known-hosts.asc.age" }
-                                                                                                                    chmod 0400 "$1"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                            } ;
-                                                                                    } ;
-                                                                                firefox =
-                                                                                    {
-                                                                                        emory =
-                                                                                            ignore :
-                                                                                                {
-                                                                                                    runtimeInputs =
-                                                                                                        let
-                                                                                                            in [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
-                                                                                                    text =
-                                                                                                        let
-                                                                                                            firefox =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "firefox" ;
-                                                                                                                        runtimeInputs = [ pkgs.flock pkgs.firefox pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
-                                                                                                                        text =
-                                                                                                                            ''
-                                                                                                                                exec 201> "$ROOT/lock"
-                                                                                                                                flock -x 201
-                                                                                                                                if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                                then
-                                                                                                                                    git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                                    git-crypt unlock
-                                                                                                                                else
-                                                                                                                                    git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
-                                                                                                                                    git-crypt init 2>&1
-                                                                                                                                    git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                                    git-crypt unlock
-                                                                                                                                    cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                                "flag" filter=git-crypt diff=git-crypt
-                                                                                                                                "profile/**" filter=git-crypt diff=git-crypt
-                                                                                                                                EOF
-                                                                                                                                    git add .gitattributes
-                                                                                                                                    date +%s > "$GIT_WORK_TREE/flag"
-                                                                                                                                    git commit -am "Initialized Branch"
-                                                                                                                                fi
-                                                                                                                                export HOME="$GIT_WORK_TREE/profile"
-                                                                                                                                firefox --no-remote --new-instance
-                                                                                                                                git add profile
-                                                                                                                                if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
-                                                                                                                                then
-                                                                                                                                    while ! git push origin HEAD
-                                                                                                                                    do
-                                                                                                                                        echo there was a problem pushing >&2
-                                                                                                                                        sleep 1
-                                                                                                                                    done
-                                                                                                                                fi
-                                                                                                                                flock -u 201
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            in
-                                                                                                                ''
-                                                                                                                    ROOT="$1"
-                                                                                                                    GIT_DIR="$ROOT/git"
-                                                                                                                    GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                    GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                    export GNUPGHOME
-                                                                                                                    mkdir "$ROOT"
-                                                                                                                    cat > "$ROOT/.envrc" <<EOF
-                                                                                                                    export ROOT="$ROOT"
-                                                                                                                    export GNUPGHOME="$GNUPGHOME"
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ firefox }/bin:${ pkgs.git }/bin:${ pkgs.less }/bin:${ pkgs.git-crypt }/bin
-                                                                                                                    EOF
-                                                                                                                    mkdir "$GIT_DIR"
-                                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                                    export GIT_DIR
-                                                                                                                    export GIT_WORK_TREE
-                                                                                                                    git init 2>&1
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                '' ;
-                                                                                                } ;
-                                                                                    } ;
-                                                                                pass =
-                                                                                    let
-                                                                                        expiry =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "expiry" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            GIT_DIR="$GIT_ROOT/work-tree/.git"
-                                                                                                            export GIT_DIR
-                                                                                                            GIT_WORK_TREE="$GIT_ROOT/work-tree"
-                                                                                                            export GIT_WORK_TREE
-                                                                                                            PASSWORD_STORE_DIR="$GIT_ROOT/work-tree"
-                                                                                                            export PASSWORD_STORE_DIR
-                                                                                                            # Constants
-                                                                                                            YEAR_SECONDS=$((366 * 86400))
-                                                                                                            TIMESTAMP=$(date +%s)
-
-                                                                                                            # Get a list of all password keys tracked by Git
-                                                                                                            git ls-tree -r --name-only HEAD | while IFS= read -r file; do
-                                                                                                              # Skip non-.gpg files
-                                                                                                              [[ "$file" != *.gpg ]] && continue
-
-                                                                                                              # Get the last commit timestamp for the file
-                                                                                                              last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
-
-                                                                                                              # Compute the age
-                                                                                                              age=$((TIMESTAMP - last_commit_ts))
-
-                                                                                                              if (( age >= YEAR_SECONDS )); then
-                                                                                                                # Strip ".gpg" and print
-                                                                                                                key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
-                                                                                                                echo "$key"
-                                                                                                              fi
-                                                                                                            done
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                            phonetic =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "phonetic" ;
-                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                declare -A NATO=(
-                                                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
-                                                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
-                                                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
-                                                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
-                                                                                                                  [Y]=YANKEE [Z]=ZULU
-                                                                                                                )
-
-                                                                                                                declare -A PHONETIC_LOWER=(
-                                                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
-                                                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
-                                                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
-                                                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
-                                                                                                                  [y]=yam [z]=zucchini
-                                                                                                                )
-
-                                                                                                                declare -A DIGITS=(
-                                                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
-                                                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
-                                                                                                                )
-
-                                                                                                                declare -A SYMBOLS=(
-                                                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
-                                                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
-                                                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
-                                                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
-                                                                                                                  ["\\"]=BackwardSlash
-                                                                                                                  ["\'"]=SingleQuote
-                                                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
-                                                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
-                                                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
-                                                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
-                                                                                                                )
-
-                                                                                                                declare -A CONTROL=(
-                                                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
-                                                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
-                                                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
-                                                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
-                                                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
-                                                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
-                                                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
-                                                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
-                                                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
-                                                                                                                  [127]=DELETE
-                                                                                                                )
-
-                                                                                                                output=()
-
-                                                                                                                while IFS= read -r -n1 char; do
-                                                                                                                  [[ -z "$char" ]] && continue
-                                                                                                                  ascii=$(printf "%d" "'$char")
-
-                                                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
-                                                                                                                    output+=("$transformed")
-
-                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
-                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
-
-                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
-                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
-
-                                                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
-                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
-
-                                                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
-                                                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
-
-                                                                                                                  else
-                                                                                                                    output+=("Unknown($ascii)")
-                                                                                                                  fi
-                                                                                                                done < <( pass show "$@" )
-
-                                                                                                                echo OPEN
-                                                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
-                                                                                                                echo CLOSE
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                                warn =
-                                                                                                    pkgs.writeShellApplication
-                                                                                                        {
-                                                                                                            name = "warn" ;
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    export GNUPGHOME="$GNUPGHOME"
-                                                                                                                    ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ]}
-                                                                                                                    FILE=${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ]}/${ builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }.gpg
-
-                                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                                                                      echo "Usage: pass warn <entry>" >&2
-                                                                                                                      exit 1
-                                                                                                                    fi
-
-                                                                                                                    # Extract long key IDs from the encrypted file
-                                                                                                                    mapfile -t LONG_KEY_IDS < <(
-                                                                                                                      gpg --list-packets "$FILE" 2>/dev/null \
-                                                                                                                      | awk '/^:pubkey enc packet:/ { print $NF }'
-                                                                                                                    )
-
-                                                                                                                    if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
-                                                                                                                      echo "No encryption keys found in $FILE" >&2
-                                                                                                                      exit 1
-                                                                                                                    fi
-
-                                                                                                                    echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
-
-                                                                                                                    # Convert long key IDs to full fingerprints
-                                                                                                                    mapfile -t ENCRYPTION_FPRS < <(
-                                                                                                                      for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
-                                                                                                                        gpg --with-colons --fingerprint "$longid" 2>/dev/null \
-                                                                                                                        | awk -F: '/^fpr:/ { print $10; exit }'
-                                                                                                                      done
-                                                                                                                    )
-
-                                                                                                                    echo "Corresponding full fingerprints:" >&2
-                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
-
-                                                                                                                    # Get current trusted key full fingerprints
-                                                                                                                    # mapfile -t CURRENT_FPRS < <(
-                                                                                                                    #   gpg --with-colons --list-keys 2>/dev/null \
-                                                                                                                    #   | awk -F: '/^fpr:/ { print $10 }'
-                                                                                                                    # )
-                                                                                                                    mapfile -t CURRENT_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
-
-
-                                                                                                                    echo "Current trusted key fingerprints:" >&2
-                                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
-
-                                                                                                                    # Check if all encryption fingerprints are in current trusted keys
-                                                                                                                    WARNING=0
-                                                                                                                    for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                                                                      if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
-                                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
-                                                                                                                        echo "   $fpr" >&2
-                                                                                                                        WARNING=1
-                                                                                                                      fi
-                                                                                                                    done
-
-                                                                                                                    # Finally, show the password
-                                                                                                                    pass show "$ENTRY"
-
-                                                                                                                    exit $WARNING
-
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                        in
-                                                                                            {
-                                                                                                archive =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    mkdir "$1"
-                                                                                                                    GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
-                                                                                                                    GIT_WORK_TREE="$GIT_ROOT/work-tree"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_ROOT/work-tree/.git"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
-                                                                                                                    export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
-                                                                                                                    export PASSWORD_STORE_ENABLE_EXTENSIONS=true
-                                                                                                                    export PASSWORD_STORE_EXTENSIONS_DIR="$1"
-                                                                                                                    EOF
-                                                                                                                    sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
-                                                                                                                    chmod 0500 "$1/expiry.bash"
-                                                                                                                    ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
-                                                                                                                    sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
-                                                                                                                    chmod 0500 "$1/warn.bash"
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                            } ;
-                                                                                repository =
-                                                                                    let
-                                                                                        post-checkout =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "post-checkout" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            if [ -d "$GIT_DIR/rebase-apply" ] || [ -d "$GIT_DIR/rebase-merge" ]
-                                                                                                            then
-                                                                                                                exec $( dirname "$0" )/post-commit
-                                                                                                            fi
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        post-commit =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "post-commit" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            while ! git push origin HEAD
-                                                                                                            do
-                                                                                                                sleep 1
-                                                                                                            done
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        post-commit-private =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "post-commit" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            OUT=$( git config --get application.url )
-                                                                                                            while ! git push origin HEAD
-                                                                                                            do
-                                                                                                                sleep 1
-                                                                                                            done
-                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                            if [[ "$BRANCH" == scratch/* ]]
-                                                                                                            then
-                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
-                                                                                                                mv result ..
-                                                                                                            elif [[ "$BRANCH" == sub/* ]]
-                                                                                                            then
-                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
-                                                                                                                mv result ..
-                                                                                                            elif [[ "$BRANCH" == issue/* ]]
-                                                                                                            then
-                                                                                                                nixos-rebuild build-vm --flake .#myhost
-                                                                                                                mv result ..
-                                                                                                            elif [[ "$BRANCH" == milestone/* ]]
-                                                                                                            then
-                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
-                                                                                                                mv result ..
-                                                                                                            elif [ "$BRANCH" == "development" ]
-                                                                                                            then
-                                                                                                                sudo nixos-rebuild test --flake .#myhost
-                                                                                                            elif [ "$BRANCH" == "main" ]
-                                                                                                            then
-                                                                                                                sudo nixos-rebuild switch --flake .#myhost
-                                                                                                            fi
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        pre-commit =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "pre-commit" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                            if [[ "$BRANCH" != scratch/* ]]
-                                                                                                            then
-                                                                                                                git checkout -b "scratch/$( uuidgen )"
-                                                                                                            fi
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        pre-commit-private =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "pre-commit" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            BRANCH="$( git rev-parse --abbrev-ref HEAD )"
-                                                                                                            if [ -z "$BRANCH" ]
-                                                                                                            then
-                                                                                                                BRANCH="scratch/$( uuidgen )"
-                                                                                                                git checkout -b "$BRANCH"
-                                                                                                            elif [[ "$BRANCH" == scratch/* ]]
-                                                                                                            then
-                                                                                                                (
-                                                                                                                    fun() {
-                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                        env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
-                                                                                                                        git add "inputs.$2.commit"
-                                                                                                                    }
-                                                                                                                    fun "$( "$OUT/boot/repository/personal" )" personal
-                                                                                                                    fun "$( "$OUT/boot/repository/age-secrets" )" secrets
-                                                                                                                    fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                )
-                                                                                                            fi
-                                                                                                            date +%s > "$GIT_WORK_TREE/current-time.nix"
-                                                                                                            git add "$GIT_WORK_TREE/current-time.nix"
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                            scratch =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "scratch" ;
-                                                                                                        runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                git checkout -b "scratch/$( uuidgen )"
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                        in
-                                                                                            {
-                                                                                                age-secrets =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                            text =
-                                                                                                                let
-                                                                                                                    gnupg-generate-key =
-                                                                                                                        pkgs.writeShellApplication
-                                                                                                                            {
-                                                                                                                                name = "gnupg-generate-key" ;
-                                                                                                                                runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
-                                                                                                                                text =
-                                                                                                                                    let
-                                                                                                                                        gpg-key-conf =
-                                                                                                                                            builtins.toFile
-                                                                                                                                                "gpg-key.conf"
-                                                                                                                                                ''
-                                                                                                                                                    Key-Type: RSA
-                                                                                                                                                    Key-Length: 4096
-                                                                                                                                                    Subkey-Type: RSA
-                                                                                                                                                    Subkey-Length: 4096
-                                                                                                                                                    Name-Real: ${ config.personal.description }
-                                                                                                                                                    Name-Email: ${ config.personal.email }
-                                                                                                                                                    Name-Comment:  Key Created ${ builtins.readFile config.personal.current-time }
-                                                                                                                                                    Expire-Date: 6m
-                                                                                                                                                    %commit
-                                                                                                                                                '' ;
-                                                                                                                                        in
-                                                                                                                                            ''
-                                                                                                                                                gpg --batch --generate-key ${ gpg-key-conf }
-                                                                                                                                                readarray -t KEYS < <(gpg --with-colons --fixed-list-mode --list-keys | awk -F: '/^pub/ { print $5, $7 }' | sort -k2 | awk '{ print $1 }')
-                                                                                                                                                TARGET_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-1]" "}" ] }"
-                                                                                                                                                SIGNING_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-2]" "}" ] }"
-                                                                                                                                                gpg --local-user "$SIGNING_KEY_ID" --sign-key "$TARGET_KEY_ID"
-                                                                                                                                                gpg --check-sigs "$TARGET_KEY_ID"
-                                                                                                                                                gpg --update-trustdb
-                                                                                                                                                gpg --list-secret-keys --with-subkey-fingerprint
-                                                                                                                                                # shellcheck disable=SC2046
-                                                                                                                                                gpg --export-secret-keys --armor $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/ { print $5 }') | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
-                                                                                                                                                gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
-                                                                                                                                                git add secret-keys.asc.age ownertrust.asc.age
-                                                                                                                                                git commit -am "CHORE:  Generated a new GNUPG KEY"
-                                                                                                                                                git push origin HEAD
-                                                                                                                                            '' ;
-                                                                                                                            } ;
-                                                                                                                        passphrase =
+                                                                                                    emory =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
+                                                                                                                text =
+                                                                                                                    let
+                                                                                                                        brave =
                                                                                                                             pkgs.writeShellApplication
                                                                                                                                 {
-                                                                                                                                    name = "passphrase" ;
-                                                                                                                                    runtimeInputs = [ pkgs.openssh ] ;
+                                                                                                                                    name = "brave" ;
+                                                                                                                                    runtimeInputs = [ pkgs.brave pkgs.flock ] ;
                                                                                                                                     text =
                                                                                                                                         ''
-                                                                                                                                            ${ pkgs.openssh }/bin/ssh -F "$DOT_SSH" mobile cat passphrase
+                                                                                                                                            exec 201> "$ROOT/lock"
+                                                                                                                                            flock -x 201
+                                                                                                                                            brave --user-data-dir "$GIT_WORK_TREE"
+                                                                                                                                            git add .
+                                                                                                                                            if git commit -am "brave session:  ${ config.personal.name } ${ config.personal.current-time }"
+                                                                                                                                            then
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    echo there was a problem pushing >&2
+                                                                                                                                                    sleep 1
+                                                                                                                                                done
+                                                                                                                                            fi
+                                                                                                                                            flock -u 201
                                                                                                                                         '' ;
                                                                                                                                 } ;
-                                                                                                                    in
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                ROOT="$1"
+                                                                                                                                GIT_DIR="$ROOT/git"
+                                                                                                                                GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                                                GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export GNUPGHOME
+                                                                                                                                mkdir "$ROOT"
+                                                                                                                                cat > "$ROOT/.envrc" <<EOF
+                                                                                                                                export ROOT="$ROOT"
+                                                                                                                                export GNUPGHOME="$GNUPGHOME"
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ brave }/bin:${ pkgs.git }/bin
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                export GIT_DIR
+                                                                                                                                export GIT_WORK_TREE
+                                                                                                                                git init 2>&1
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                                                if git fetch origin 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
+                                                                                                                                then
+                                                                                                                                    git checkout 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
+                                                                                                                                else
+                                                                                                                                    git checkout -b 432dc3d6-6a1b-485b-b560-910119dfb02b 2>&1
+                                                                                                                                fi
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                                cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                                "config/**" filter=git-crypt diff=git-crypt
+                                                                                                                                "data/**" filter=git-crypt diff=git-crypt
+                                                                                                                                EOF
+                                                                                                                            '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                            chromium =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
+                                                                                                                text =
+                                                                                                                    let
+                                                                                                                        chromium =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "chromium" ;
+                                                                                                                                    runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git-crypt ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            exec 201> "$ROOT/lock"
+                                                                                                                                            flock -x 201
+                                                                                                                                            chromium --user-data-dir "$GIT_WORK_TREE/profile"
+                                                                                                                                            git add profile
+                                                                                                                                            if git commit -am "chromium session:  ${ config.personal.name } ${ config.personal.current-time }"
+                                                                                                                                            then
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    echo there was a problem pushing >&2
+                                                                                                                                                    sleep 1
+                                                                                                                                                done
+                                                                                                                                            fi
+                                                                                                                                            flock -u 201
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                ROOT="$1"
+                                                                                                                                GIT_DIR="$ROOT/git"
+                                                                                                                                GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                                                GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export GNUPGHOME
+                                                                                                                                mkdir "$ROOT"
+                                                                                                                                cat > "$ROOT/.envrc" <<EOF
+                                                                                                                                export ROOT="$ROOT"
+                                                                                                                                export GNUPGHOME="$GNUPGHOME"
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ chromium }/bin:${ pkgs.git }/bin
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                export GIT_DIR
+                                                                                                                                export GIT_WORK_TREE
+                                                                                                                                git init 2>&1
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                                                if git fetch origin 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
+                                                                                                                                then
+                                                                                                                                    git checkout 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
+                                                                                                                                else
+                                                                                                                                    git checkout -b 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
+                                                                                                                                fi
+                                                                                                                                mkdir --parents "$GIT_WORK_TREE/profile"
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                                cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                                "profile/**" filter=git-crypt diff=git-crypt
+                                                                                                                                EOF
+                                                                                                                                git add .gitattributes
+                                                                                                                            '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                            dot-gnupg =
+                                                                                                {
+                                                                                                    config =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.gnupg ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        export GNUPGHOME="$1"
+                                                                                                                        mkdir --parents "$GNUPGHOME"
+                                                                                                                        chmod 0700 "$GNUPGHOME"
+                                                                                                                        gpg --batch --yes --home "$GNUPGHOME" --import "$( "$2/boot/dot-gnupg/secret-keys" )" 2>&1
+                                                                                                                        gpg --batch --yes --home "$GNUPGHOME" --import-ownertrust "$( "$2/boot/dot-gnupg/ownertrust" )" 2>&1
+                                                                                                                        gpg --batch --yes --home "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    ownertrust =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/ownertrust.asc.age"
+                                                                                                                        chmod 0400 "$1"
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    secret-keys =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        age --decrypt --identity ${ config.personal.agenix } --output "$1" "${ secrets.outPath }/secret-keys.asc.age"
+                                                                                                                        chmod 0400 "$1"
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                            dot-ssh =
+                                                                                                {
+                                                                                                    boot =
+                                                                                                        {
+                                                                                                            config =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                cat > "$1" <<EOF
+                                                                                                                                IdentityFile "$( "$2/boot/dot-ssh/boot/identity" )"
+                                                                                                                                UserKnownHostsFile "$( "$2/boot/dot-ssh/boot/known-hosts" )"
+                                                                                                                                StrictHostKeyChecking yes
+
+                                                                                                                                Host github.com
+                                                                                                                                HostName github.com
+
+                                                                                                                                Host mobile
+                                                                                                                                HostName 192.168.1.202
+                                                                                                                                Port 8022
+                                                                                                                                EOF
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            identity =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/identity.asc.age" }
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            known-hosts =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/boot/known-hosts.asc.age" }
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                        } ;
+                                                                                                    viktor =
+                                                                                                        {
+                                                                                                            config =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                cat > "$1" <<EOF
+                                                                                                                                IdentityFile "$( "$2/boot/dot-ssh/viktor/identity" )"
+                                                                                                                                UserKnownHostsFile "$( "$2/boot/dot-ssh/viktor/known-hosts" )"
+                                                                                                                                StrictHostKeyChecking yes
+                                                                                                                                Host github.com
+                                                                                                                                HostName github.com
+                                                                                                                                EOF
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            identity =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/identity.asc.age" }
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            known-hosts =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.age pkgs.coreutils ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                age --decrypt --identity ${ config.personal.agenix } --output "$1" ${ secrets + "/dot-ssh/viktor/known-hosts.asc.age" }
+                                                                                                                                chmod 0400 "$1"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                        } ;
+                                                                                                } ;
+                                                                                            firefox =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs =
+                                                                                                                    let
+                                                                                                                        in [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
+                                                                                                                text =
+                                                                                                                    let
+                                                                                                                        firefox =
+                                                                                                                            pkgs.writeShellApplication
+                                                                                                                                {
+                                                                                                                                    name = "firefox" ;
+                                                                                                                                    runtimeInputs = [ pkgs.flock pkgs.firefox pkgs.git-crypt pkgs.gnutar pkgs.gzip ] ;
+                                                                                                                                    text =
+                                                                                                                                        ''
+                                                                                                                                            exec 201> "$ROOT/lock"
+                                                                                                                                            flock -x 201
+                                                                                                                                            if git fetch origin 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                            then
+                                                                                                                                                git checkout 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                                git-crypt unlock
+                                                                                                                                            else
+                                                                                                                                                git checkout -b 987a51ac-74a8-4886-9099-08bc8597fc01 2>&1
+                                                                                                                                                git-crypt init 2>&1
+                                                                                                                                                git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                                                git-crypt unlock
+                                                                                                                                                cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                                                                            "flag" filter=git-crypt diff=git-crypt
+                                                                                                                                            "profile/**" filter=git-crypt diff=git-crypt
+                                                                                                                                            EOF
+                                                                                                                                                git add .gitattributes
+                                                                                                                                                date +%s > "$GIT_WORK_TREE/flag"
+                                                                                                                                                git commit -am "Initialized Branch"
+                                                                                                                                            fi
+                                                                                                                                            export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                                            firefox --no-remote --new-instance
+                                                                                                                                            git add profile
+                                                                                                                                            if git commit -am "firefox session:  ${ config.personal.name } ${ config.personal.current-time }"
+                                                                                                                                            then
+                                                                                                                                                while ! git push origin HEAD
+                                                                                                                                                do
+                                                                                                                                                    echo there was a problem pushing >&2
+                                                                                                                                                    sleep 1
+                                                                                                                                                done
+                                                                                                                                            fi
+                                                                                                                                            flock -u 201
+                                                                                                                                        '' ;
+                                                                                                                                } ;
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                ROOT="$1"
+                                                                                                                                GIT_DIR="$ROOT/git"
+                                                                                                                                GIT_WORK_TREE="$ROOT/work-tree"
+                                                                                                                                GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export GNUPGHOME
+                                                                                                                                mkdir "$ROOT"
+                                                                                                                                cat > "$ROOT/.envrc" <<EOF
+                                                                                                                                export ROOT="$ROOT"
+                                                                                                                                export GNUPGHOME="$GNUPGHOME"
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ firefox }/bin:${ pkgs.git }/bin:${ pkgs.less }/bin:${ pkgs.git-crypt }/bin
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                export GIT_DIR
+                                                                                                                                export GIT_WORK_TREE
+                                                                                                                                git init 2>&1
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                                            '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                            pass =
+                                                                                                let
+                                                                                                    expiry =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "expiry" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        GIT_DIR="$GIT_ROOT/work-tree/.git"
+                                                                                                                        export GIT_DIR
+                                                                                                                        GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                                        export GIT_WORK_TREE
+                                                                                                                        PASSWORD_STORE_DIR="$GIT_ROOT/work-tree"
+                                                                                                                        export PASSWORD_STORE_DIR
+                                                                                                                        # Constants
+                                                                                                                        YEAR_SECONDS=$((366 * 86400))
+                                                                                                                        TIMESTAMP=$(date +%s)
+
+                                                                                                                        # Get a list of all password keys tracked by Git
+                                                                                                                        git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                                          # Skip non-.gpg files
+                                                                                                                          [[ "$file" != *.gpg ]] && continue
+
+                                                                                                                          # Get the last commit timestamp for the file
+                                                                                                                          last_commit_ts=$(git log -1 --format="%at" -- "$file" || echo 0)
+
+                                                                                                                          # Compute the age
+                                                                                                                          age=$((TIMESTAMP - last_commit_ts))
+
+                                                                                                                          if (( age >= YEAR_SECONDS )); then
+                                                                                                                            # Strip ".gpg" and print
+                                                                                                                            key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
+                                                                                                                            echo "$key"
+                                                                                                                          fi
+                                                                                                                        done
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                        phonetic =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "phonetic" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                                                                    text =
                                                                                                                         ''
-                                                                                                                            export GIT_DIR="$1/git"
-                                                                                                                            export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                            mkdir --parents "$1"
-                                                                                                                            mkdir --parents "$GIT_DIR"
-                                                                                                                            mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                            cat > "$1/.envrc" <<EOF
-                                                                                                                            DOT_SSH="\$( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                            export DOT_SSH
-                                                                                                                            GNUPGHOME="\$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                            export GNUPGHOME
-                                                                                                                            export GIT_DIR="$GIT_DIR"
-                                                                                                                            export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                            EOF
-                                                                                                                            git init 2>&1
-                                                                                                                            git config alias.gnupg-generate-key "!${ gnupg-generate-key }/bin/gnupg-generate-key"
-                                                                                                                            git config alias.passphrase "!${ passphrase }/bin/passphrase"
-                                                                                                                            git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                            git config user.name "${ config.personal.description }"
-                                                                                                                            git config user.email "${ config.personal.email }"
-                                                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                            git remote add origin ${ config.personal.repository.age-secrets.remote }
-                                                                                                                            git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
-                                                                                                                            git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                            declare -A NATO=(
+                                                                                                                              [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                                              [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                                              [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                                              [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                                              [Y]=YANKEE [Z]=ZULU
+                                                                                                                            )
+
+                                                                                                                            declare -A PHONETIC_LOWER=(
+                                                                                                                              [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                                              [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                                              [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                                              [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                                              [y]=yam [z]=zucchini
+                                                                                                                            )
+
+                                                                                                                            declare -A DIGITS=(
+                                                                                                                              [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                                              [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                                            )
+
+                                                                                                                            declare -A SYMBOLS=(
+                                                                                                                              ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                                              ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                                              ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                                              [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                                              ["\\"]=BackwardSlash
+                                                                                                                              ["\'"]=SingleQuote
+                                                                                                                              ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                                              ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                                              ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                                              ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                                            )
+
+                                                                                                                            declare -A CONTROL=(
+                                                                                                                              [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                                              [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                                              [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                                              [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                                              [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                                              [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                                              [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                                              [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                                              [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                                              [127]=DELETE
+                                                                                                                            )
+
+                                                                                                                            output=()
+
+                                                                                                                            while IFS= read -r -n1 char; do
+                                                                                                                              [[ -z "$char" ]] && continue
+                                                                                                                              ascii=$(printf "%d" "'$char")
+
+                                                                                                                              if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                                                raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                                                transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                                                output+=("$transformed")
+
+                                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                                              elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                                              elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                                                output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                                              else
+                                                                                                                                output+=("Unknown($ascii)")
+                                                                                                                              fi
+                                                                                                                            done < <( pass show "$@" )
+
+                                                                                                                            echo OPEN
+                                                                                                                            printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                                            echo CLOSE
                                                                                                                         '' ;
-                                                                                                        } ;
-                                                                                                pass-secrets =
-                                                                                                    ignore :
+                                                                                                                } ;
+                                                                                                            warn =
+                                                                                                                pkgs.writeShellApplication
+                                                                                                                    {
+                                                                                                                        name = "warn" ;
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GNUPGHOME="$GNUPGHOME"
+                                                                                                                                ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ]}
+                                                                                                                                FILE=${ builtins.concatStringsSep "" [ "$" "{" "PASSWORD_STORE_DIR" "}" ]}/${ builtins.concatStringsSep "" [ "$" "{" "ENTRY" "}" ] }.gpg
+
+                                                                                                                                if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                                                  echo "Usage: pass warn <entry>" >&2
+                                                                                                                                  exit 1
+                                                                                                                                fi
+
+                                                                                                                                # Extract long key IDs from the encrypted file
+                                                                                                                                mapfile -t LONG_KEY_IDS < <(
+                                                                                                                                  gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                                                  | awk '/^:pubkey enc packet:/ { print $NF }'
+                                                                                                                                )
+
+                                                                                                                                if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                                                                                  echo "No encryption keys found in $FILE" >&2
+                                                                                                                                  exit 1
+                                                                                                                                fi
+
+                                                                                                                                echo "Encryption Long Key IDs found in $ENTRY:" >&2
+                                                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
+
+                                                                                                                                # Convert long key IDs to full fingerprints
+                                                                                                                                mapfile -t ENCRYPTION_FPRS < <(
+                                                                                                                                  for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                                                                                    gpg --with-colons --fingerprint "$longid" 2>/dev/null \
+                                                                                                                                    | awk -F: '/^fpr:/ { print $10; exit }'
+                                                                                                                                  done
+                                                                                                                                )
+
+                                                                                                                                echo "Corresponding full fingerprints:" >&2
+                                                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
+
+                                                                                                                                # Get current trusted key full fingerprints
+                                                                                                                                # mapfile -t CURRENT_FPRS < <(
+                                                                                                                                #   gpg --with-colons --list-keys 2>/dev/null \
+                                                                                                                                #   | awk -F: '/^fpr:/ { print $10 }'
+                                                                                                                                # )
+                                                                                                                                mapfile -t CURRENT_FPRS < "$PASSWORD_STORE_DIR/.gpg-id"
+
+
+                                                                                                                                echo "Current trusted key fingerprints:" >&2
+                                                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
+
+                                                                                                                                # Check if all encryption fingerprints are in current trusted keys
+                                                                                                                                WARNING=0
+                                                                                                                                for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
+                                                                                                                                  if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                                                                                    echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
+                                                                                                                                    echo "   $fpr" >&2
+                                                                                                                                    WARNING=1
+                                                                                                                                  fi
+                                                                                                                                done
+
+                                                                                                                                # Finally, show the password
+                                                                                                                                pass show "$ENTRY"
+
+                                                                                                                                exit $WARNING
+
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                    in
                                                                                                         {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                    export GIT_DIR="$GIT_WORK_TREE/.git"
-                                                                                                                    mkdir --parents "$1"
-                                                                                                                    mkdir --parents "$GIT_DIR"
-                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    EOF
-                                                                                                                    git init 2>&1
-                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                    git remote add origin ${ config.personal.repository.pass-secrets.remote }
-                                                                                                                    git fetch origin ${ config.personal.repository.pass-secrets.branch } 2>&1
-                                                                                                                    git checkout ${ config.personal.repository.pass-secrets.branch } 2>&1
-                                                                                                                '' ;
+                                                                                                            archive =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                mkdir "$1"
+                                                                                                                                GIT_ROOT="$( "$2/boot/repository/pass-secrets" )"
+                                                                                                                                GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_ROOT/work-tree/.git"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+                                                                                                                                export PASSWORD_STORE_EXTENSIONS_DIR="$1"
+                                                                                                                                EOF
+                                                                                                                                sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
+                                                                                                                                chmod 0500 "$1/expiry.bash"
+                                                                                                                                ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
+                                                                                                                                sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                                chmod 0500 "$1/warn.bash"
+                                                                                                                            '' ;
+                                                                                                                    } ;
                                                                                                         } ;
-                                                                                                personal =
-                                                                                                    ignore :
+                                                                                            repository =
+                                                                                                let
+                                                                                                    post-checkout =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "post-checkout" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        if [ -d "$GIT_DIR/rebase-apply" ] || [ -d "$GIT_DIR/rebase-merge" ]
+                                                                                                                        then
+                                                                                                                            exec $( dirname "$0" )/post-commit
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    post-commit =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "post-commit" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        while ! git push origin HEAD
+                                                                                                                        do
+                                                                                                                            sleep 1
+                                                                                                                        done
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    post-commit-private =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "post-commit" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        OUT=$( git config --get application.url )
+                                                                                                                        while ! git push origin HEAD
+                                                                                                                        do
+                                                                                                                            sleep 1
+                                                                                                                        done
+                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                        if [[ "$BRANCH" == scratch/* ]]
+                                                                                                                        then
+                                                                                                                            nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                            mv result ..
+                                                                                                                        elif [[ "$BRANCH" == sub/* ]]
+                                                                                                                        then
+                                                                                                                            nixos-rebuild build-vm --flake .#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                            mv result ..
+                                                                                                                        elif [[ "$BRANCH" == issue/* ]]
+                                                                                                                        then
+                                                                                                                            nixos-rebuild build-vm --flake .#myhost
+                                                                                                                            mv result ..
+                                                                                                                        elif [[ "$BRANCH" == milestone/* ]]
+                                                                                                                        then
+                                                                                                                            nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                            mv result ..
+                                                                                                                        elif [ "$BRANCH" == "development" ]
+                                                                                                                        then
+                                                                                                                            sudo nixos-rebuild test --flake .#myhost
+                                                                                                                        elif [ "$BRANCH" == "main" ]
+                                                                                                                        then
+                                                                                                                            sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    pre-commit =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "pre-commit" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                        if [[ "$BRANCH" != scratch/* ]]
+                                                                                                                        then
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    pre-commit-private =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "pre-commit" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        BRANCH="$( git rev-parse --abbrev-ref HEAD )"
+                                                                                                                        if [ -z "$BRANCH" ]
+                                                                                                                        then
+                                                                                                                            BRANCH="scratch/$( uuidgen )"
+                                                                                                                            git checkout -b "$BRANCH"
+                                                                                                                        elif [[ "$BRANCH" == scratch/* ]]
+                                                                                                                        then
+                                                                                                                            (
+                                                                                                                                fun() {
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                    git add "inputs.$2.commit"
+                                                                                                                                }
+                                                                                                                                fun "$( "$OUT/boot/repository/personal" )" personal
+                                                                                                                                fun "$( "$OUT/boot/repository/age-secrets" )" secrets
+                                                                                                                                fun "$( "$OUT/boot/repository/visitor" )" visitor
+                                                                                                                            )
+                                                                                                                        fi
+                                                                                                                        date +%s > "$GIT_WORK_TREE/current-time.nix"
+                                                                                                                        git add "$GIT_WORK_TREE/current-time.nix"
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                        scratch =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "scratch" ;
+                                                                                                                    runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                    in
                                                                                                         {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    export GIT_DIR="$1/git"
-                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                    mkdir --parents "$1"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    EOF
-                                                                                                                    mkdir "$GIT_DIR"
-                                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                                    git init 2>&1
-                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
-                                                                                                                    git config user.name "Victor Danek"
-                                                                                                                    git config user.email "viktordanek10@gmail.com"
-                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                    git remote add origin git@github.com:viktordanek/personal.git
-                                                                                                                    git fetch origin main 2>&1
-                                                                                                                    git checkout origin/main 2>&1
-                                                                                                                '' ;
+                                                                                                            age-secrets =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            let
+                                                                                                                                gnupg-generate-key =
+                                                                                                                                    pkgs.writeShellApplication
+                                                                                                                                        {
+                                                                                                                                            name = "gnupg-generate-key" ;
+                                                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                                            text =
+                                                                                                                                                let
+                                                                                                                                                    gpg-key-conf =
+                                                                                                                                                        builtins.toFile
+                                                                                                                                                            "gpg-key.conf"
+                                                                                                                                                            ''
+                                                                                                                                                                Key-Type: RSA
+                                                                                                                                                                Key-Length: 4096
+                                                                                                                                                                Subkey-Type: RSA
+                                                                                                                                                                Subkey-Length: 4096
+                                                                                                                                                                Name-Real: ${ config.personal.description }
+                                                                                                                                                                Name-Email: ${ config.personal.email }
+                                                                                                                                                                Name-Comment:  Key Created ${ builtins.readFile config.personal.current-time }
+                                                                                                                                                                Expire-Date: 6m
+                                                                                                                                                                %commit
+                                                                                                                                                            '' ;
+                                                                                                                                                    in
+                                                                                                                                                        ''
+                                                                                                                                                            gpg --batch --generate-key ${ gpg-key-conf }
+                                                                                                                                                            readarray -t KEYS < <(gpg --with-colons --fixed-list-mode --list-keys | awk -F: '/^pub/ { print $5, $7 }' | sort -k2 | awk '{ print $1 }')
+                                                                                                                                                            TARGET_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-1]" "}" ] }"
+                                                                                                                                                            SIGNING_KEY_ID="${ builtins.concatStringsSep "" [ "$" "{" "KEYS[-2]" "}" ] }"
+                                                                                                                                                            gpg --local-user "$SIGNING_KEY_ID" --sign-key "$TARGET_KEY_ID"
+                                                                                                                                                            gpg --check-sigs "$TARGET_KEY_ID"
+                                                                                                                                                            gpg --update-trustdb
+                                                                                                                                                            gpg --list-secret-keys --with-subkey-fingerprint
+                                                                                                                                                            # shellcheck disable=SC2046
+                                                                                                                                                            gpg --export-secret-keys --armor $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/ { print $5 }') | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/secret-keys.asc.age
+                                                                                                                                                            gpg --export-ownertrust --armor | age --armor --recipient "$( age-keygen -y < ${ config.personal.agenix } )" --output work-tree/ownertrust.asc.age
+                                                                                                                                                            git add secret-keys.asc.age ownertrust.asc.age
+                                                                                                                                                            git commit -am "CHORE:  Generated a new GNUPG KEY"
+                                                                                                                                                            git push origin HEAD
+                                                                                                                                                        '' ;
+                                                                                                                                        } ;
+                                                                                                                                    passphrase =
+                                                                                                                                        pkgs.writeShellApplication
+                                                                                                                                            {
+                                                                                                                                                name = "passphrase" ;
+                                                                                                                                                runtimeInputs = [ pkgs.openssh ] ;
+                                                                                                                                                text =
+                                                                                                                                                    ''
+                                                                                                                                                        ${ pkgs.openssh }/bin/ssh -F "$DOT_SSH" mobile cat passphrase
+                                                                                                                                                    '' ;
+                                                                                                                                            } ;
+                                                                                                                                in
+                                                                                                                                    ''
+                                                                                                                                        export GIT_DIR="$1/git"
+                                                                                                                                        export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                        mkdir --parents "$1"
+                                                                                                                                        mkdir --parents "$GIT_DIR"
+                                                                                                                                        mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                        cat > "$1/.envrc" <<EOF
+                                                                                                                                        DOT_SSH="\$( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                        export DOT_SSH
+                                                                                                                                        GNUPGHOME="\$( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                        export GNUPGHOME
+                                                                                                                                        export GIT_DIR="$GIT_DIR"
+                                                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                        EOF
+                                                                                                                                        git init 2>&1
+                                                                                                                                        git config alias.gnupg-generate-key "!${ gnupg-generate-key }/bin/gnupg-generate-key"
+                                                                                                                                        git config alias.passphrase "!${ passphrase }/bin/passphrase"
+                                                                                                                                        git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                        git remote add origin ${ config.personal.repository.age-secrets.remote }
+                                                                                                                                        git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                                        git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
+                                                                                                                                    '' ;
+                                                                                                                    } ;
+                                                                                                            pass-secrets =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                export GIT_DIR="$GIT_WORK_TREE/.git"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                mkdir --parents "$GIT_DIR"
+                                                                                                                                mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin ${ config.personal.repository.pass-secrets.remote }
+                                                                                                                                git fetch origin ${ config.personal.repository.pass-secrets.branch } 2>&1
+                                                                                                                                git checkout ${ config.personal.repository.pass-secrets.branch } 2>&1
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            personal =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_DIR="$1/git"
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
+                                                                                                                                git config user.name "Victor Danek"
+                                                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin git@github.com:viktordanek/personal.git
+                                                                                                                                git fetch origin main 2>&1
+                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            private =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_DIR="$1/git"
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export OUT="$2"
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                mkdir --parents "$GIT_DIR"
+                                                                                                                                mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                git config application.url "$2"
+                                                                                                                                ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
+                                                                                                                                ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin mobile:private
+                                                                                                                                git fetch origin 2>&1
+                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                            visitor =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_DIR="$1/git"
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
+                                                                                                                                git config user.name "Victor Danek"
+                                                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin git@github.com:viktordanek/visitor.git
+                                                                                                                                git fetch origin main 2>&1
+                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                            '' ;
+                                                                                                                    } ;
                                                                                                         } ;
-                                                                                                private =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    export GIT_DIR="$1/git"
-                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                    mkdir --parents "$1"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export OUT="$2"
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    EOF
-                                                                                                                    mkdir --parents "$GIT_DIR"
-                                                                                                                    mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                    git init 2>&1
-                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                                    git config application.url "$2"
-                                                                                                                    ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                    ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
-                                                                                                                    ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                    git remote add origin mobile:private
-                                                                                                                    git fetch origin 2>&1
-                                                                                                                    git checkout origin/main 2>&1
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                visitor =
-                                                                                                    ignore :
-                                                                                                        {
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    export GIT_DIR="$1/git"
-                                                                                                                    export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                    mkdir --parents "$1"
-                                                                                                                    cat > "$1/.envrc" <<EOF
-                                                                                                                    export GIT_DIR="$GIT_DIR"
-                                                                                                                    export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                    EOF
-                                                                                                                    mkdir "$GIT_DIR"
-                                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                                    git init 2>&1
-                                                                                                                    git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
-                                                                                                                    git config user.name "Victor Danek"
-                                                                                                                    git config user.email "viktordanek10@gmail.com"
-                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                    ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                    git remote add origin git@github.com:viktordanek/visitor.git
-                                                                                                                    git fetch origin main 2>&1
-                                                                                                                    git checkout origin/main 2>&1
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                            } ;
-                                                                            } ;
-                                                                    } ;
+                                                                                        } ;
+                                                                                }
+                                                                    ) ;
                                                             in builtins.concatStringsSep "\n" commands ;
                                                     name = "derivation" ;
                                                     nativeBuildInputs = [ pkgs.makeWrapper ] ;
