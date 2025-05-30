@@ -218,6 +218,7 @@
                                                                                                                     git add .gitattributes
                                                                                                                 '' ;
                                                                                                 } ;
+                                                                                    } ;
                                                                                 dot-gnupg =
                                                                                     {
                                                                                         config =
