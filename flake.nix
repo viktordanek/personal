@@ -957,6 +957,7 @@
                                                                                                                         export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                         export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
                                                                                                                         export PASSWORD_STORE_ENABLE_EXTENSIONS=false
+                                                                                                                        EOF
                                                                                                                     '' ;
                                                                                                             } ;
                                                                                                 } ;
