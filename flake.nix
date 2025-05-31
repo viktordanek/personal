@@ -813,7 +813,7 @@
                                                                                                                                 git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                                                 git config user.email "${ config.personal.email }"
-                                                                                                                                # ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                 git remote add origin ${ config.personal.repository.pass-secrets.remote }
                                                                                                                                 if git fetch origin 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
                                                                                                                                 then
