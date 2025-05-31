@@ -323,7 +323,7 @@
                                                                                                             [ pkgs.gnucash ]
                                                                                                             ''
                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
-                                                                                                                gnush "$HOME/gnucash.xml"
+                                                                                                                gnucash "$HOME/gnucash.xml"
                                                                                                             '' ;
                                                                                                 } ;
                                                                                             pass =
