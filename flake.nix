@@ -341,7 +341,7 @@
                                                                                                                         echo "$EXPIRY" | while read -r KEY
                                                                                                                         do
                                                                                                                             echo "$RANDOM" "$KEY"
-                                                                                                                        done | sort --key 1 --numeric | cut --fields 2 --delimiter " " | head --lines "$NUMB"
+                                                                                                                        done | sort --key 1 --numeric | cut --fields 2 --delimiter " " | head --lines "$ceil_sqrt"
                                                                                                                     '' ;
                                                                                                             } ;
                                                                                                     expiry =
