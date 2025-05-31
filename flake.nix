@@ -113,7 +113,7 @@
                                                                                                                     fi
                                                                                                                     ${ pkgs.writeShellApplication { name = "run" ; runtimeInputs = run-inputs ; text = run-text ; } }/bin/run
                                                                                                                     git add profile
-                                                                                                                    if git commit -am ${ commit-message }"
+                                                                                                                    if git commit -am "${ commit-message }"
                                                                                                                     then
                                                                                                                         while ! git push origin HEAD
                                                                                                                         do
