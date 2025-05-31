@@ -82,7 +82,7 @@
                                                                             crypt =
                                                                                 branch : commit-message : run-inputs : run-text : ignore :
                                                                                     {
-                                                                                        runtimeInputs = [ ] ;
+                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                         text =
                                                                                             let
                                                                                                 application =
