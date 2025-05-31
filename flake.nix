@@ -938,6 +938,45 @@
                                                                                                                     } ;
                                                                                                         } ;
                                                                                         } ;
+                                                                                    couple =
+                                                                                        {
+                                                                                            repository =
+                                                                                                {
+                                                                                                    passwords =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                        export GIT_DIR="$GIT_WORK_TREE/.git"
+                                                                                                                        mkdir --parents "$1"
+                                                                                                                        mkdir --parents "$GIT_DIR"
+                                                                                                                        mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                        cat > "$1/.envrc" <<EOF
+                                                                                                                        export GIT_DIR="$GIT_DIR"
+                                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                        EOF
+                                                                                                                        git init 2>&1
+                                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                                        git remote add origin ${ config.personal.repository.pass-secrets.remote }
+                                                                                                                        if git fetch origin 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                        then
+                                                                                                                            git checkout 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                        else
+                                                                                                                            git checkout -b 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                            export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                            pass init 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                    family =
+                                                                                        {
+                                                                                        } ;
                                                                                 }
                                                                     ) ;
                                                             in builtins.concatStringsSep "\n" commands ;
