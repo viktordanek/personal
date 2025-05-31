@@ -170,72 +170,14 @@
                                                                                             chromium =
                                                                                                 {
                                                                                                     emory =
-                                                                                                        ignore :
-                                                                                                            {
-                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
-                                                                                                                text =
-                                                                                                                    let
-                                                                                                                        chromium =
-                                                                                                                            pkgs.writeShellApplication
-                                                                                                                                {
-                                                                                                                                    name = "chromium" ;
-                                                                                                                                    runtimeInputs = [ pkgs.flock pkgs.chromium pkgs.git-crypt ] ;
-                                                                                                                                    text =
-                                                                                                                                        ''
-                                                                                                                                            exec 201> "$ROOT/lock"
-                                                                                                                                            flock -x 201
-                                                                                                                                            chromium --user-data-dir "$GIT_WORK_TREE/profile"
-                                                                                                                                            git add profile
-                                                                                                                                            if git commit -am "chromium session:  ${ config.personal.name } ${ config.personal.current-time }"
-                                                                                                                                            then
-                                                                                                                                                while ! git push origin HEAD
-                                                                                                                                                do
-                                                                                                                                                    echo there was a problem pushing >&2
-                                                                                                                                                    sleep 1
-                                                                                                                                                done
-                                                                                                                                            fi
-                                                                                                                                            flock -u 201
-                                                                                                                                        '' ;
-                                                                                                                                } ;
-                                                                                                                        in
-                                                                                                                            ''
-                                                                                                                                ROOT="$1"
-                                                                                                                                GIT_DIR="$ROOT/git"
-                                                                                                                                GIT_WORK_TREE="$ROOT/work-tree"
-                                                                                                                                GNUPGHOME="$( "$2/boot/dot-gnupg/config" )"
-                                                                                                                                export GNUPGHOME
-                                                                                                                                mkdir "$ROOT"
-                                                                                                                                cat > "$ROOT/.envrc" <<EOF
-                                                                                                                                export ROOT="$ROOT"
-                                                                                                                                export GNUPGHOME="$GNUPGHOME"
-                                                                                                                                export GIT_DIR="$GIT_DIR"
-                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                                export PATH=${ pkgs.coreutils }/bin:${ pkgs.findutils }/bin:${ chromium }/bin:${ pkgs.git }/bin
-                                                                                                                                EOF
-                                                                                                                                mkdir "$GIT_DIR"
-                                                                                                                                mkdir "$GIT_WORK_TREE"
-                                                                                                                                export GIT_DIR
-                                                                                                                                export GIT_WORK_TREE
-                                                                                                                                git init 2>&1
-                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                                git config user.email "${ config.personal.email }"
-                                                                                                                                git config user.name "${ config.personal.description }"
-                                                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                                                                if git fetch origin 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                                then
-                                                                                                                                    git checkout 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                                else
-                                                                                                                                    git checkout -b 28c9a2bc-83c9-47fd-9062-38c506b7185d 2>&1
-                                                                                                                                fi
-                                                                                                                                mkdir --parents "$GIT_WORK_TREE/profile"
-                                                                                                                                git-crypt init 2>&1
-                                                                                                                                git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                                                cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                                                                "profile/**" filter=git-crypt diff=git-crypt
-                                                                                                                                EOF
-                                                                                                                                git add .gitattributes
-                                                                                                                            '' ;
-                                                                                                            } ;
+                                                                                                        crypt
+                                                                                                            "1ffa9bce-46ca-4690-b979-ff65a99d6d60"
+                                                                                                            "chrome session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.chromium ]
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                chromium --user-data-dir "$HOME/.config/chromium"
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             dot-gnupg =
                                                                                                 {
