@@ -338,7 +338,7 @@
                                                                                                                         EXPIRY=$( pass expiry )
                                                                                                                         NUMB=$( echo "$EXPIRY" | wc --lines )
                                                                                                                         ceil_sqrt=$(echo "sqrt($NUMB)" | bc -l | awk '{printf("%d\n", ($1 == int($1)) ? $1 : int($1)+1)}')
-                                                                                                                        echo "$EXPIRY" | while read KEY
+                                                                                                                        echo "$EXPIRY" | while read -r KEY
                                                                                                                         do
                                                                                                                             echo "$RANDOM" "KEY"
                                                                                                                         done | sort --key 1 --numeric | cut --fields 2 --delimiter " " | head --lines "$NUMB"
