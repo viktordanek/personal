@@ -796,7 +796,7 @@
                                                                                                             passphrases =
                                                                                                                 ignore :
                                                                                                                     {
-                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                                                         text =
                                                                                                                             ''
                                                                                                                                 export GIT_WORK_TREE="$1/work-tree"
@@ -821,6 +821,7 @@
                                                                                                                                     git checkout 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
                                                                                                                                 else
                                                                                                                                     git checkout -b 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
+                                                                                                                                    export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
                                                                                                                                     pass init B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                                                 fi
                                                                                                                             '' ;
