@@ -965,7 +965,6 @@
                                                                                                                         if git fetch origin 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
                                                                                                                         then
                                                                                                                             git checkout 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
-                                                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                         else
                                                                                                                             git checkout -b 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
                                                                                                                             export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
