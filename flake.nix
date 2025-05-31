@@ -820,7 +820,7 @@
                                                                                                                                 then
                                                                                                                                     git checkout 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
                                                                                                                                 else
-                                                                                                                                    git checkout -b 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea
+                                                                                                                                    git checkout -b 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
                                                                                                                                 fi
                                                                                                                             '' ;
                                                                                                                     } ;
