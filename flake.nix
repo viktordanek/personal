@@ -161,7 +161,11 @@
                                                                                                             "ee9af81a-425b-4229-a79b-4984cb7041b8"
                                                                                                             "brave session ${ config.personal.current-time }"
                                                                                                             [ pkgs.brave ]
-                                                                                                            ''HOME="$GIT_WORK_TREE/profile" BRAVE_USER_DATA_DIR="$HOME/.config/BraveSoftware/BraveBrowser" brave'' ;
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                export BRAVE_USER_DATA_DIR="$HOME/.config/BraveSoftware/BraveBrowser"
+                                                                                                                brave
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             chromium =
                                                                                                 {
