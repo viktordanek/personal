@@ -328,6 +328,22 @@
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
+                                                                                                    expiryn =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "expiryn" ;
+                                                                                                                runtimeInputs = [ pkgs.bc pkgs.coreutils pkgs.pass ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        EXPIRY=$( pass expiry )
+                                                                                                                        NUMB=$( echo "$EXPIRY" | wc --lines )
+                                                                                                                        ceil_sqrt=$(echo "sqrt($NUMB)" | bc -l | awk '{printf("%d\n", ($1 == int($1)) ? $1 : int($1)+1)}')
+                                                                                                                        echo "$EXPIRY" | while read KEY
+                                                                                                                        do
+                                                                                                                            echo "$RANDOM" "KEY"
+                                                                                                                        done |
+                                                                                                                    '' ;
+                                                                                                            } ;
                                                                                                     expiry =
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
