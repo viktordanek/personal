@@ -813,15 +813,15 @@
                                                                                                                                 git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                                                 git config user.email "${ config.personal.email }"
-                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                 git remote add origin ${ config.personal.repository.pass-secrets.remote }
-                                                                                                                                if git fetch origin 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
+                                                                                                                                if git fetch origin 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
                                                                                                                                 then
-                                                                                                                                    git checkout 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
+                                                                                                                                    git checkout 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                 else
-                                                                                                                                    git checkout -b 7f247c55-dfd3-48bd-a01a-8ad4ed0a2fea 2>&1
+                                                                                                                                    git checkout -b 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
                                                                                                                                     export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
-                                                                                                                                    pass init B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                                                    pass init B4A123BD34C93E5EDE57CCB466DF829A8C7285A2 2>&1
                                                                                                                                 fi
                                                                                                                             '' ;
                                                                                                                     } ;
