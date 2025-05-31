@@ -972,6 +972,7 @@
                                                                                                                             pass init 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
                                                                                                                         fi
                                                                                                                     '' ;
+                                                                                                            } ;
                                                                                                 } ;
                                                                                         } ;
                                                                                     family =
