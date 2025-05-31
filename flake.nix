@@ -341,7 +341,7 @@
                                                                                                                         echo "$EXPIRY" | while read KEY
                                                                                                                         do
                                                                                                                             echo "$RANDOM" "KEY"
-                                                                                                                        done |
+                                                                                                                        done | sort --key 1 --numeric | cut --fields 2 --delimiter " " | head --lines "$NUMB"
                                                                                                                     '' ;
                                                                                                             } ;
                                                                                                     expiry =
@@ -560,6 +560,7 @@
                                                                                                                                 ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
                                                                                                                                 sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
                                                                                                                                 chmod 0500 "$1/warn.bash"
+                                                                                                                                ln --symbolic ${ expiryn }/bin/expiryn "$1/expiryn.bash"
                                                                                                                             '' ;
                                                                                                                     } ;
                                                                                                         } ;
