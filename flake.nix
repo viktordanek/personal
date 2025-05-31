@@ -949,7 +949,7 @@
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         mkdir "$1"
-                                                                                                                        GIT_ROOT="$( "$2/couple/repository/secrets" )"
+                                                                                                                        GIT_ROOT="$( "$2/couple/repository/passwords" )"
                                                                                                                         GIT_WORK_TREE="$GIT_ROOT/work-tree"
                                                                                                                         cat > "$1/.envrc" <<EOF
                                                                                                                         export GIT_DIR="$GIT_ROOT/work-tree/.git"
