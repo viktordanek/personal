@@ -314,6 +314,18 @@
                                                                                                                 firefox
                                                                                                             '' ;
                                                                                                 } ;
+                                                                                            gnucash =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            "66baea75-1780-4c1d-a7c3-dd644c47944c"
+                                                                                                            "gnucash session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.gnucash ]
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile"
+                                                                                                                gnush "$HOME/gnucash.xml"
+                                                                                                            '' ;
+                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiry =
