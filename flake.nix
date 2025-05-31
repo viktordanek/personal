@@ -940,6 +940,34 @@
                                                                                         } ;
                                                                                     couple =
                                                                                         {
+                                                                                            pass =
+                                                                                                {
+                                                                                                            passphrases =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                mkdir "$1"
+                                                                                                                                GIT_ROOT="$( "$2/boot/repository/passphrases" )"
+                                                                                                                                GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_ROOT/work-tree/.git"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+                                                                                                                                export PASSWORD_STORE_EXTENSIONS_DIR="$1"
+                                                                                                                                EOF
+                                                                                                                                sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
+                                                                                                                                chmod 0500 "$1/expiry.bash"
+                                                                                                                                ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
+                                                                                                                                sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                                chmod 0500 "$1/warn.bash"
+                                                                                                                                ln --symbolic ${ expiryn }/bin/expiryn "$1/expiryn.bash"
+                                                                                                                            '' ;
+                                                                                                                    } ;
+                                                                                                } ;
                                                                                             repository =
                                                                                                 {
                                                                                                     passwords =
