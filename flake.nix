@@ -698,16 +698,91 @@
                                                                                                                         git add "$GIT_WORK_TREE/current-time.nix"
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                        scratch =
-                                                                                                            pkgs.writeShellApplication
-                                                                                                                {
-                                                                                                                    name = "scratch" ;
-                                                                                                                    runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
-                                                                                                                    text =
-                                                                                                                        ''
-                                                                                                                            git checkout -b "scratch/$( uuidgen )"
-                                                                                                                        '' ;
-                                                                                                                } ;
+                                                                                                    promote =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "promote" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.nixos-rebuild pkgs.nix ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        rm --force nixos.qcow2 result
+                                                                                                                        OUT=$( git config --get application.url )
+                                                                                                                        git checkout -b scratch/$( uuidgen )
+                                                                                                                        case "$1" in
+                                                                                                                            0)
+                                                                                                                                fun() {
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                    git add "inputs.$2.commit"
+                                                                                                                                }
+                                                                                                                                fun "$( "$OUT/boot/repository/personal" )" personal
+                                                                                                                                fun "$( "$OUT/boot/repository/age-secrets" )" secrets
+                                                                                                                                fun "$( "$OUT/boot/repository/visitor" )" visitor
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            1)
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --upgrade-input secrets --upgrade-input visitor
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            2)
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            3)
+                                                                                                                                nix-collect-garbage
+                                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            4)
+                                                                                                                                sudo nixos-rebuild test --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                                git fetch origin development
+                                                                                                                                git diff origin/development
+                                                                                                                                git reset --soft origin/development
+                                                                                                                                git commit -a
+                                                                                                                                git checkout development
+                                                                                                                                git rebase origin/development
+                                                                                                                                git rebase "$SCRATCH_BRANCH"
+                                                                                                                                git push origin HEAD
+                                                                                                                                ;;
+                                                                                                                            5)
+                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                                git fetch origin main
+                                                                                                                                git diff origin/main
+                                                                                                                                git reset --soft origin/main
+                                                                                                                                git commit -a
+                                                                                                                                git checkout main
+                                                                                                                                git rebase origin/main
+                                                                                                                                git rebase "$SCRATCH_BRANCH"
+                                                                                                                                git push origin HEAD
+                                                                                                                                ;;
+                                                                                                                            *)
+                                                                                                                                echo wrong
+                                                                                                                                exit 64
+                                                                                                                                ;;
+                                                                                                                        esac
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    scratch =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "scratch" ;
+                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        git checkout -b "scratch/$( uuidgen )"
+                                                                                                                    '' ;
+                                                                                                            } ;
                                                                                                     in
                                                                                                         {
                                                                                                             age-secrets =
@@ -896,6 +971,7 @@
                                                                                                                                 mkdir --parents "$GIT_DIR"
                                                                                                                                 mkdir --parents "$GIT_WORK_TREE"
                                                                                                                                 git init 2>&1
+                                                                                                                                git config alias.promot "!${ promote }/bin/promote"
                                                                                                                                 git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                                 git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                                 git config user.name "${ config.personal.description }"
