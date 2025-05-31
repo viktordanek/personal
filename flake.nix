@@ -707,7 +707,7 @@
                                                                                                                     ''
                                                                                                                         rm --force nixos.qcow2 result
                                                                                                                         OUT=$( git config --get application.url )
-                                                                                                                        git checkout -b scratch/$( uuidgen )
+                                                                                                                        git checkout -b "scratch/$( uuidgen )"
                                                                                                                         case "$1" in
                                                                                                                             0)
                                                                                                                                 fun() {
