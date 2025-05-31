@@ -563,6 +563,31 @@
                                                                                                                                 ln --symbolic ${ expiryn }/bin/expiryn "$1/expiryn.bash"
                                                                                                                             '' ;
                                                                                                                     } ;
+                                                                                                            passphrases =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                mkdir "$1"
+                                                                                                                                GIT_ROOT="$( "$2/boot/repository/passphrases" )"
+                                                                                                                                GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_ROOT/work-tree/.git"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                                export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
+                                                                                                                                export PASSWORD_STORE_ENABLE_EXTENSIONS=true
+                                                                                                                                export PASSWORD_STORE_EXTENSIONS_DIR="$1"
+                                                                                                                                EOF
+                                                                                                                                sed -e "s#\$GIT_ROOT#$GIT_ROOT#" -e "w$1/expiry.bash" ${ expiry }/bin/expiry
+                                                                                                                                chmod 0500 "$1/expiry.bash"
+                                                                                                                                ln --symbolic ${ phonetic }/bin/phonetic "$1/phonetic.bash"
+                                                                                                                                sed -e "s#\$GNUPGHOME#$( "$2/boot/dot-gnupg/config" )#" -e "s#\$PASSWORD_STORE_DIR#$GIT_WORK_TREE#" -e "w$1/warn.bash" ${ warn }/bin/warn
+                                                                                                                                chmod 0500 "$1/warn.bash"
+                                                                                                                                ln --symbolic ${ expiryn }/bin/expiryn "$1/expiryn.bash"
+                                                                                                                            '' ;
+                                                                                                                    } ;
                                                                                                         } ;
                                                                                             repository =
                                                                                                 let
@@ -673,16 +698,91 @@
                                                                                                                         git add "$GIT_WORK_TREE/current-time.nix"
                                                                                                                     '' ;
                                                                                                             } ;
-                                                                                                        scratch =
-                                                                                                            pkgs.writeShellApplication
-                                                                                                                {
-                                                                                                                    name = "scratch" ;
-                                                                                                                    runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
-                                                                                                                    text =
-                                                                                                                        ''
-                                                                                                                            git checkout -b "scratch/$( uuidgen )"
-                                                                                                                        '' ;
-                                                                                                                } ;
+                                                                                                    promote =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "promote" ;
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.nixos-rebuild pkgs.nix ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        rm --force nixos.qcow2 result
+                                                                                                                        OUT=$( git config --get application.url )
+                                                                                                                        git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        case "$1" in
+                                                                                                                            0)
+                                                                                                                                fun() {
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                    env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                    git add "inputs.$2.commit"
+                                                                                                                                }
+                                                                                                                                fun "$( "$OUT/boot/repository/personal" )" personal
+                                                                                                                                fun "$( "$OUT/boot/repository/age-secrets" )" secrets
+                                                                                                                                fun "$( "$OUT/boot/repository/visitor" )" visitor
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            1)
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --upgrade-input secrets --upgrade-input visitor
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            2)
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            3)
+                                                                                                                                nix-collect-garbage
+                                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                result/bin/run-nixos-vm
+                                                                                                                                ;;
+                                                                                                                            4)
+                                                                                                                                sudo nixos-rebuild test --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                                git fetch origin development
+                                                                                                                                git diff origin/development
+                                                                                                                                git reset --soft origin/development
+                                                                                                                                git commit -a
+                                                                                                                                git checkout development
+                                                                                                                                git rebase origin/development
+                                                                                                                                git rebase "$SCRATCH_BRANCH"
+                                                                                                                                git push origin HEAD
+                                                                                                                                ;;
+                                                                                                                            5)
+                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                                git commit -am "promoted to $1" --allow-empty
+                                                                                                                                SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                                git fetch origin main
+                                                                                                                                git diff origin/main
+                                                                                                                                git reset --soft origin/main
+                                                                                                                                git commit -a
+                                                                                                                                git checkout main
+                                                                                                                                git rebase origin/main
+                                                                                                                                git rebase "$SCRATCH_BRANCH"
+                                                                                                                                git push origin HEAD
+                                                                                                                                ;;
+                                                                                                                            *)
+                                                                                                                                echo wrong
+                                                                                                                                exit 64
+                                                                                                                                ;;
+                                                                                                                        esac
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                    scratch =
+                                                                                                        pkgs.writeShellApplication
+                                                                                                            {
+                                                                                                                name = "scratch" ;
+                                                                                                                runtimeInputs = [ pkgs.git pkgs.libuuid ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        git checkout -b "scratch/$( uuidgen )"
+                                                                                                                    '' ;
+                                                                                                            } ;
                                                                                                     in
                                                                                                         {
                                                                                                             age-secrets =
@@ -768,6 +868,38 @@
                                                                                                                                         git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
                                                                                                                                     '' ;
                                                                                                                     } ;
+                                                                                                            passphrases =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                export GIT_DIR="$GIT_WORK_TREE/.git"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                mkdir --parents "$GIT_DIR"
+                                                                                                                                mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                                                git remote add origin ${ config.personal.repository.pass-secrets.remote }
+                                                                                                                                if git fetch origin 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                                                then
+                                                                                                                                    git checkout 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                else
+                                                                                                                                    git checkout -b 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                                                    export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                                    pass init B4A123BD34C93E5EDE57CCB466DF829A8C7285A2 2>&1
+                                                                                                                                fi
+                                                                                                                            '' ;
+                                                                                                                    } ;
                                                                                                             pass-secrets =
                                                                                                                 ignore :
                                                                                                                     {
@@ -839,6 +971,7 @@
                                                                                                                                 mkdir --parents "$GIT_DIR"
                                                                                                                                 mkdir --parents "$GIT_WORK_TREE"
                                                                                                                                 git init 2>&1
+                                                                                                                                git config alias.promot "!${ promote }/bin/promote"
                                                                                                                                 git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                                 git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                                 git config user.name "${ config.personal.description }"
@@ -880,6 +1013,66 @@
                                                                                                                             '' ;
                                                                                                                     } ;
                                                                                                         } ;
+                                                                                        } ;
+                                                                                    couple =
+                                                                                        {
+                                                                                            pass =
+                                                                                                {
+                                                                                                    secrets =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.gnused ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        mkdir "$1"
+                                                                                                                        GIT_ROOT="$( "$2/couple/repository/passwords" )"
+                                                                                                                        GIT_WORK_TREE="$GIT_ROOT/work-tree"
+                                                                                                                        cat > "$1/.envrc" <<EOF
+                                                                                                                        export GIT_DIR="$GIT_ROOT/work-tree/.git"
+                                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                        export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir $( "$2/boot/dot-gnupg/config" )"
+                                                                                                                        export PASSWORD_STORE_ENABLE_EXTENSIONS=false
+                                                                                                                        EOF
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                            repository =
+                                                                                                {
+                                                                                                    passwords =
+                                                                                                        ignore :
+                                                                                                            {
+                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                                                text =
+                                                                                                                    ''
+                                                                                                                        export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                        export GIT_DIR="$GIT_WORK_TREE/.git"
+                                                                                                                        mkdir --parents "$1"
+                                                                                                                        mkdir --parents "$GIT_DIR"
+                                                                                                                        mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                        cat > "$1/.envrc" <<EOF
+                                                                                                                        export GIT_DIR="$GIT_DIR"
+                                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                        EOF
+                                                                                                                        git init 2>&1
+                                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                                        git remote add origin ${ config.personal.repository.pass-secrets.remote }
+                                                                                                                        if git fetch origin 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                        then
+                                                                                                                            git checkout 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                        else
+                                                                                                                            git checkout -b 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                            export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                                                            pass init 5d5683c3-fc44-47a3-aab9-864aba5ad5a7 2>&1
+                                                                                                                        fi
+                                                                                                                    '' ;
+                                                                                                            } ;
+                                                                                                } ;
+                                                                                        } ;
+                                                                                    family =
+                                                                                        {
                                                                                         } ;
                                                                                 }
                                                                     ) ;
