@@ -748,7 +748,7 @@
                                                                                                                             1)
                                                                                                                                 cd work-tree
                                                                                                                                 nix flake lock --update-input personal --update-input secrets --update-input visitor
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                nixos-rebuild build-vm --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 mv result ..
                                                                                                                                 cd ..
@@ -767,7 +767,7 @@
                                                                                                                                 ;;
                                                                                                                             4)
                                                                                                                                 date +%s > work-tree/current-time.nix
-                                                                                                                                sudo nixos-rebuild test --flake .work-tree/#myhost
+                                                                                                                                sudo nixos-rebuild test --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 SCRATCH_BRANCH="scratch/$( uuidgen )"
                                                                                                                                 git checkout -b "$SCRATCH_BRANCH"
@@ -785,7 +785,7 @@
                                                                                                                                 git fetch origin main
                                                                                                                                 git checkout main
                                                                                                                                 git rebase origin/main
-                                                                                                                                git merge --ff-only development
+                                                                                                                                git rebase development
                                                                                                                                 sudo nixos-rebuild switch --flake .work-tree/#myhost
                                                                                                                                 git push origin HEAD
                                                                                                                                 nix-collect-garbage
