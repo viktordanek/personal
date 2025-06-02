@@ -723,7 +723,8 @@
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             1)
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost --update-input personal --upgrade-input secrets --upgrade-input visitor
+                                                                                                                                nix flake lock --flake .#myhost --update-input personal --upgrade-input secrets --upgrade-input visitor
+                                                                                                                                nixos-rebuild build-vm --flake .#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
