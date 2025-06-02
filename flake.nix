@@ -349,7 +349,7 @@
                                                                                                                     user-environment =
                                                                                                                         pkgs.buildFHSUserEnv
                                                                                                                             {
-                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
+                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile/${ config.personal.name } /home/${ config.personal.name }" ] ;
                                                                                                                                 name = "journal" ;
                                                                                                                                 targetPkgs = pkgs : [ pkgs.jrnl ] ;
                                                                                                                                 runScript =
@@ -360,7 +360,7 @@
                                                                                                                             } ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            mkdir --parents "$GIT_WORK_TREE/profile"
+                                                                                                                            mkdir --parents "$GIT_WORK_TREE/profile/${ config.personal.name }"
                                                                                                                             ${ user-environment }/bin/journal
                                                                                                                         ''
                                                                                                             ) ;                                                                                                } ;
