@@ -1281,6 +1281,7 @@
                                                                 packages =
                                                                     [
                                                                         pkgs.git
+                                                                        pkgs.git-crypt
                                                                         pkgs.pass
                                                                         (
                                                                             pkgs.writeShellApplication
@@ -1297,11 +1298,12 @@
                                                                             pkgs.writeShellApplication
                                                                                 {
                                                                                     name = "studio" ;
-                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community ] ;
+                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community pkgs.git-crypt] ;
                                                                                     text =
                                                                                         ''
                                                                                             find ${ derivation } -mindepth 1 -type f -exec {} \;
-                                                                                            idea-community /home/${ config.personal.name }/${ config.personal.stash }
+                                                                                            ROOT_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) ] ] ) }
+                                                                                            idea-community "$ROOT_DIR"
                                                                                         '' ;
                                                                                 }
                                                                         )
