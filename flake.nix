@@ -344,10 +344,17 @@
                                                                                                             "6f2be77b-4485-4aff-9d9c-4405995ff090"
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [ pkgs.jrnl pkgs.mcaimi-st ]
-                                                                                                            ''
-                                                                                                                export HOME="$GIT_WORK_TREE/profile"
-                                                                                                                st
-                                                                                                            '' ;
+                                                                                                            (
+                                                                                                                let
+                                                                                                                    user-environment =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }"
+                                                                                                                                name = "journal" ;
+                                                                                                                                targetPkgs = pkgs : [ pkgs.jrnl ] ;
+                                                                                                                                runScript = "${ pkgs.mcaimi-st }"
+                                                                                                                            } ;
+                                                                                                                    in "${ user-environment }/bin/journal"
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
