@@ -325,6 +325,17 @@
                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
                                                                                                                 gnucash "$HOME/gnucash.gnucash"
                                                                                                             '' ;
+                                                                                                    me =
+                                                                                                        crypt
+                                                                                                            "a5192e42-2810-4808-8308-cf742e5bf080"
+                                                                                                            "gnucash session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.gnucash ]
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile/home"
+                                                                                                                mkdir --parents "$HOME"
+                                                                                                                mkdir --parents "$GIT_WORK_TREE/profile/gnucash"
+                                                                                                                gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
@@ -718,7 +729,7 @@
                                                                                                                                 fun "$( "$OUT/boot/repository/personal" )" personal
                                                                                                                                 fun "$( "$OUT/boot/repository/age-secrets" )" secrets
                                                                                                                                 fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                nixos-rebuild build-vm --flake ./work-tree.#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
