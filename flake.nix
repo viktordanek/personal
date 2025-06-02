@@ -358,7 +358,11 @@
                                                                                                                                         ${ pkgs.mcaimi-st }
                                                                                                                                     '' ;
                                                                                                                             } ;
-                                                                                                                    in "${ user-environment }/bin/journal"
+                                                                                                                    in
+                                                                                                                        ''
+                                                                                                                            mkdir --parents $GIT_WORK_TREE/profile
+                                                                                                                            ${ user-environment }/bin/journal
+                                                                                                                        ''
                                                                                                             ) ;                                                                                                } ;
                                                                                             pass =
                                                                                                 let
