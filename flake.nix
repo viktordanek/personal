@@ -337,6 +337,18 @@
                                                                                                                 gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
                                                                                                             '' ;
                                                                                                 } ;
+                                                                                            journal =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            ""
+                                                                                                            "journal entry ${ config.personal.current-time }"
+                                                                                                            [ pkgs.jrnl ]
+                                                                                                            ''
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile"
+                                                                                                                jrnl $@
+                                                                                                            '' ;
+                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
