@@ -783,7 +783,6 @@
                                                                                                     in
                                                                                                         {
                                                                                                             age-secrets =
-                                                                                                                ignore :                                                                                                            personal =
                                                                                                                 ignore :
                                                                                                                     {
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
