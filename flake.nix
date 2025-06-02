@@ -360,7 +360,7 @@
                                                                                                                             } ;
                                                                                                                     in
                                                                                                                         ''
-                                                                                                                            mkdir --parents $GIT_WORK_TREE/profile
+                                                                                                                            mkdir --parents "$GIT_WORK_TREE/profile"
                                                                                                                             ${ user-environment }/bin/journal
                                                                                                                         ''
                                                                                                             ) ;                                                                                                } ;
