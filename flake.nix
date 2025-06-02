@@ -333,7 +333,8 @@
                                                                                                             ''
                                                                                                                 export HOME="$GIT_WORK_TREE/profile/home"
                                                                                                                 mkdir --parents "$HOME"
-                                                                                                                gnucash "$GIT_WORK_TREE/profile/gnucash.gnucash"
+                                                                                                                mkdir --parents "$GIT_WORK_TREE/profile/gnucash"
+                                                                                                                gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
                                                                                                             '' ;
                                                                                                 } ;
                                                                                             pass =
