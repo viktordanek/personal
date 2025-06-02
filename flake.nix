@@ -352,7 +352,11 @@
                                                                                                                                 extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
                                                                                                                                 name = "journal" ;
                                                                                                                                 targetPkgs = pkgs : [ pkgs.jrnl ] ;
-                                                                                                                                runScript = "${ pkgs.mcaimi-st }" ;
+                                                                                                                                runScript =
+                                                                                                                                    ''
+                                                                                                                                        mkdir --parents $GIT_WORK_TREE/profile
+                                                                                                                                        ${ pkgs.mcaimi-st }
+                                                                                                                                    '' ;
                                                                                                                             } ;
                                                                                                                     in "${ user-environment }/bin/journal"
                                                                                                             ) ;                                                                                                } ;
