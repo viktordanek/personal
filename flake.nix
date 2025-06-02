@@ -337,6 +337,18 @@
                                                                                                                 gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
                                                                                                             '' ;
                                                                                                 } ;
+                                                                                            journal =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            ""
+                                                                                                            "journal entry ${ config.personal.current-time }"
+                                                                                                            [ pkgs.jrnl ]
+                                                                                                            ''
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile"
+                                                                                                                jrnl "$@"
+                                                                                                            '' ;
+                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
@@ -729,14 +741,14 @@
                                                                                                                                 fun "$( "$OUT/boot/repository/personal" )" personal
                                                                                                                                 fun "$( "$OUT/boot/repository/age-secrets" )" secrets
                                                                                                                                 fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                                nixos-rebuild build-vm --flake ./work-tree.#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             1)
                                                                                                                                 cd work-tree
                                                                                                                                 nix flake lock --update-input personal --update-input secrets --update-input visitor
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                nixos-rebuild build-vm --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 mv result ..
                                                                                                                                 cd ..
@@ -755,7 +767,7 @@
                                                                                                                                 ;;
                                                                                                                             4)
                                                                                                                                 date +%s > work-tree/current-time.nix
-                                                                                                                                sudo nixos-rebuild test --flake .work-tree/#myhost
+                                                                                                                                sudo nixos-rebuild test --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 SCRATCH_BRANCH="scratch/$( uuidgen )"
                                                                                                                                 git checkout -b "$SCRATCH_BRANCH"
@@ -773,7 +785,7 @@
                                                                                                                                 git fetch origin main
                                                                                                                                 git checkout main
                                                                                                                                 git rebase origin/main
-                                                                                                                                git merge --ff-only development
+                                                                                                                                git rebase development
                                                                                                                                 sudo nixos-rebuild switch --flake .work-tree/#myhost
                                                                                                                                 git push origin HEAD
                                                                                                                                 nix-collect-garbage
