@@ -82,7 +82,7 @@
                                                                             crypt =
                                                                                 branch : commit-message : run-inputs : run-text : ignore :
                                                                                     {
-                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
                                                                                         text =
                                                                                             let
                                                                                                 application =
@@ -739,6 +739,7 @@
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             4)
+                                                                                                                                date +%s > work-tree/current-time.nix
                                                                                                                                 sudo nixos-rebuild test --flake .#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 SCRATCH_BRANCH="scratch/$( uuidgen )"
@@ -753,18 +754,14 @@
                                                                                                                                 git push origin HEAD
                                                                                                                                 ;;
                                                                                                                             5)
-                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
-                                                                                                                                git commit -am "promoted to $1" --allow-empty
-                                                                                                                                SCRATCH_BRANCH="scratch/$( uuidgen )"
-                                                                                                                                git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                                git fetch origin development
                                                                                                                                 git fetch origin main
-                                                                                                                                git diff origin/main
-                                                                                                                                git reset --soft origin/main
-                                                                                                                                git commit -a
                                                                                                                                 git checkout main
                                                                                                                                 git rebase origin/main
-                                                                                                                                git rebase "$SCRATCH_BRANCH"
+                                                                                                                                git merge --ff-only development
+                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
                                                                                                                                 git push origin HEAD
+                                                                                                                                nix-collect-garbage
                                                                                                                                 ;;
                                                                                                                             *)
                                                                                                                                 echo wrong
@@ -786,7 +783,33 @@
                                                                                                     in
                                                                                                         {
                                                                                                             age-secrets =
+                                                                                                                ignore :                                                                                                            personal =
                                                                                                                 ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_DIR="$1/git"
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
+                                                                                                                                git config user.name "Victor Danek"
+                                                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin git@github.com:viktordanek/personal.git
+                                                                                                                                git fetch origin main 2>&1
+                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                            '' ;
+                                                                                                                    } ;
                                                                                                                     {
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                                         text =
@@ -867,6 +890,33 @@
                                                                                                                                         git fetch origin ${ config.personal.repository.age-secrets.branch } 2>&1
                                                                                                                                         git checkout ${ config.personal.repository.age-secrets.branch } 2>&1
                                                                                                                                     '' ;
+                                                                                                                    } ;
+                                                                                                            career =
+                                                                                                                ignore :
+                                                                                                                    {
+                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                        text =
+                                                                                                                            ''
+                                                                                                                                export GIT_DIR="$1/git"
+                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                mkdir --parents "$1"
+                                                                                                                                cat > "$1/.envrc" <<EOF
+                                                                                                                                export GIT_DIR="$GIT_DIR"
+                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                EOF
+                                                                                                                                mkdir "$GIT_DIR"
+                                                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                                                git init 2>&1
+                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
+                                                                                                                                git config user.name "Victor Danek"
+                                                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                git remote add origin git@github.com:viktordanek/career.git
+                                                                                                                                git fetch origin main 2>&1
+                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                            '' ;
                                                                                                                     } ;
                                                                                                             passphrases =
                                                                                                                 ignore :
@@ -971,7 +1021,7 @@
                                                                                                                                 mkdir --parents "$GIT_DIR"
                                                                                                                                 mkdir --parents "$GIT_WORK_TREE"
                                                                                                                                 git init 2>&1
-                                                                                                                                git config alias.promot "!${ promote }/bin/promote"
+                                                                                                                                git config alias.promote "!${ promote }/bin/promote"
                                                                                                                                 git config alias.scratch "!${ scratch }/bin/scratch"
                                                                                                                                 git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
                                                                                                                                 git config user.name "${ config.personal.description }"
