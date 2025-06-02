@@ -325,6 +325,17 @@
                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
                                                                                                                 gnucash "$HOME/gnucash.gnucash"
                                                                                                             '' ;
+                                                                                                    me =
+                                                                                                        crypt
+                                                                                                            "a5192e42-2810-4808-8308-cf742e5bf080"
+                                                                                                            "gnucash session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.gnucash ]
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile/home"
+                                                                                                                mkdir --parents "$HOME"
+                                                                                                                mkdir --parents "$GIT_WORK_TREE/profile/gnucash"
+                                                                                                                gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
@@ -718,7 +729,7 @@
                                                                                                                                 fun "$( "$OUT/boot/repository/personal" )" personal
                                                                                                                                 fun "$( "$OUT/boot/repository/age-secrets" )" secrets
                                                                                                                                 fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                nixos-rebuild build-vm --flake ./work-tree.#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
@@ -732,19 +743,19 @@
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             2)
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                nixos-rebuild build-vm --flake ./work-tree#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             3)
                                                                                                                                 nix-collect-garbage
-                                                                                                                                nixos-rebuild build-vm-with-bootloader --flake .#myhost
+                                                                                                                                nixos-rebuild build-vm-with-bootloader --flake ./work-tree#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             4)
                                                                                                                                 date +%s > work-tree/current-time.nix
-                                                                                                                                sudo nixos-rebuild test --flake .#myhost
+                                                                                                                                sudo nixos-rebuild test --flake .work-tree/#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 SCRATCH_BRANCH="scratch/$( uuidgen )"
                                                                                                                                 git checkout -b "$SCRATCH_BRANCH"
@@ -763,7 +774,7 @@
                                                                                                                                 git checkout main
                                                                                                                                 git rebase origin/main
                                                                                                                                 git merge --ff-only development
-                                                                                                                                sudo nixos-rebuild switch --flake .#myhost
+                                                                                                                                sudo nixos-rebuild switch --flake .work-tree/#myhost
                                                                                                                                 git push origin HEAD
                                                                                                                                 nix-collect-garbage
                                                                                                                                 ;;
@@ -1005,9 +1016,7 @@
                                                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                                                 git config user.email "${ config.personal.email }"
                                                                                                                                 git config application.url "$2"
-                                                                                                                                ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                                ln --symbolic ${ post-commit-private }/bin/post-commit "$GIT_DIR/hooks/post-rebase"
-                                                                                                                                ln --symbolic ${ pre-commit-private }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
+                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                                                 git remote add origin mobile:private
                                                                                                                                 git fetch origin 2>&1
                                                                                                                                 git checkout origin/main 2>&1
