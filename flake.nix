@@ -1281,6 +1281,7 @@
                                                                 packages =
                                                                     [
                                                                         pkgs.git
+                                                                        pkgs.git-crypt
                                                                         pkgs.pass
                                                                         (
                                                                             pkgs.writeShellApplication
