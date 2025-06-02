@@ -354,7 +354,7 @@
                                                                                                                                 targetPkgs = pkgs : [ pkgs.jrnl ] ;
                                                                                                                                 runScript = "${ pkgs.mcaimi-st }" ;
                                                                                                                             } ;
-                                                                                                                    in "${ user-environment }/bin/journal"
+                                                                                                                    in "${ user-environment }/bin/journal" ;
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
