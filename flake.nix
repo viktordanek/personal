@@ -809,6 +809,8 @@
                                                                                                                                 git checkout origin/main 2>&1
                                                                                                                             '' ;
                                                                                                                     } ;
+                                                                                                            personal =
+                                                                                                                ignore :
                                                                                                                     {
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                                         text =
