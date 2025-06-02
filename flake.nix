@@ -349,7 +349,7 @@
                                                                                                                     user-environment =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
-                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }"
+                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
                                                                                                                                 name = "journal" ;
                                                                                                                                 targetPkgs = pkgs : [ pkgs.jrnl ] ;
                                                                                                                                 runScript = "${ pkgs.mcaimi-st }"
