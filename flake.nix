@@ -346,7 +346,7 @@
                                                                                                             [ pkgs.jrnl ]
                                                                                                             ''
                                                                                                                 export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile"
-                                                                                                                jrnl $@
+                                                                                                                jrnl "$@"
                                                                                                             '' ;
                                                                                                 } ;
                                                                                             pass =
