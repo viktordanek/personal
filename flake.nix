@@ -344,7 +344,7 @@
                                                                                                             "6f2be77b-4485-4aff-9d9c-4405995ff090"
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [ pkgs.mcaimi-st pkgs.git ]
-                                                                                                            "st"                                                                                                } ;
+                                                                                                            "st" ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
