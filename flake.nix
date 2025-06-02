@@ -349,7 +349,7 @@
                                                                                                                     user-environment =
                                                                                                                         pkgs.buildFHSUserEnv
                                                                                                                             {
-                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
+                                                                                                                                extraBwrapArgs = [ "--ro-bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
                                                                                                                                 name = "journal" ;
                                                                                                                                 targetPkgs = pkgs : [ pkgs.jrnl ] ;
                                                                                                                                 runScript = "${ pkgs.mcaimi-st }" ;
