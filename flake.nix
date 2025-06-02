@@ -356,6 +356,7 @@
                                                                                                                             } ;
                                                                                                                     in "${ user-environment }/bin/journal"
                                                                                                             ) ;
+                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
