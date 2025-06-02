@@ -725,9 +725,10 @@
                                                                                                                             1)
                                                                                                                                 cd work-tree
                                                                                                                                 nix flake lock --update-input personal --upgrade-input secrets --upgrade-input visitor
-                                                                                                                                cd ..
                                                                                                                                 nixos-rebuild build-vm --flake .#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
+                                                                                                                                mv result ..
+                                                                                                                                cd ..
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             2)
