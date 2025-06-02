@@ -787,33 +787,6 @@
                                                                                                                     {
                                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                                         text =
-                                                                                                                            ''
-                                                                                                                                export GIT_DIR="$1/git"
-                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                                mkdir --parents "$1"
-                                                                                                                                cat > "$1/.envrc" <<EOF
-                                                                                                                                export GIT_DIR="$GIT_DIR"
-                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                                EOF
-                                                                                                                                mkdir "$GIT_DIR"
-                                                                                                                                mkdir "$GIT_WORK_TREE"
-                                                                                                                                git init 2>&1
-                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/viktor/config" )"
-                                                                                                                                git config user.name "Victor Danek"
-                                                                                                                                git config user.email "viktordanek10@gmail.com"
-                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                                ln --symbolic ${ pre-commit }/bin/pre-commit "$GIT_DIR/hooks/pre-commit"
-                                                                                                                                git remote add origin git@github.com:viktordanek/personal.git
-                                                                                                                                git fetch origin main 2>&1
-                                                                                                                                git checkout origin/main 2>&1
-                                                                                                                            '' ;
-                                                                                                                    } ;
-                                                                                                            personal =
-                                                                                                                ignore :
-                                                                                                                    {
-                                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
-                                                                                                                        text =
                                                                                                                             let
                                                                                                                                 gnupg-generate-key =
                                                                                                                                     pkgs.writeShellApplication
