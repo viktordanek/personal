@@ -344,8 +344,18 @@
                                                                                                             "6f2be77b-4485-4aff-9d9c-4405995ff090"
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [ ]
-                                                                                                            "" ;
-                                                                                                } ;
+                                                                                                            (
+                                                                                                                let
+                                                                                                                    user-environment =
+                                                                                                                        pkgs.buildFHSUserEnv
+                                                                                                                            {
+                                                                                                                                extraBwrapArgs = [ "--bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
+                                                                                                                                name = "journal" ;
+                                                                                                                                targetPkgs = pkgs : [ pkgs.jrnl ] ;
+                                                                                                                                runScript = "${ pkgs.mcaimi-st }" ;
+                                                                                                                            } ;
+                                                                                                                    in "${ user-environment }/bin/journal"
+                                                                                                            ) ;                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
