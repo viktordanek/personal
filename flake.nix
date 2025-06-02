@@ -1298,7 +1298,7 @@
                                                                             pkgs.writeShellApplication
                                                                                 {
                                                                                     name = "studio" ;
-                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community ] ;
+                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community pkgs.git-crypt] ;
                                                                                     text =
                                                                                         ''
                                                                                             find ${ derivation } -mindepth 1 -type f -exec {} \;
