@@ -325,6 +325,16 @@
                                                                                                                 export HOME="$GIT_WORK_TREE/profile"
                                                                                                                 gnucash "$HOME/gnucash.gnucash"
                                                                                                             '' ;
+                                                                                                    me =
+                                                                                                        crypt
+                                                                                                            "a5192e42-2810-4808-8308-cf742e5bf080"
+                                                                                                            "gnucash session ${ config.personal.current-time }"
+                                                                                                            [ pkgs.gnucash ]
+                                                                                                            ''
+                                                                                                                export HOME="$GIT_WORK_TREE/profile/home"
+                                                                                                                mkdir --parents "$HOME"
+                                                                                                                gnucash "$GIT_WORK_TREE/profile/gnucash.gnucash"
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
