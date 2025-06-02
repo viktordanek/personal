@@ -355,6 +355,7 @@
                                                                                                                                 runScript = "${ pkgs.mcaimi-st }" ;
                                                                                                                             } ;
                                                                                                                     in "${ user-environment }/bin/journal" ;
+                                                                                                            )
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
