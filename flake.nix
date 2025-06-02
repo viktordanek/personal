@@ -343,23 +343,8 @@
                                                                                                         crypt
                                                                                                             "6f2be77b-4485-4aff-9d9c-4405995ff090"
                                                                                                             "journal entry ${ config.personal.current-time }"
-                                                                                                            [ ]
-                                                                                                            (
-                                                                                                                let
-                                                                                                                    user-environment =
-                                                                                                                        pkgs.buildFHSUserEnv
-                                                                                                                            {
-                                                                                                                                extraBwrapArgs = [ "--ro-bind $GIT_WORK_TREE/profile /home/${ config.personal.name }" ] ;
-                                                                                                                                name = "journal" ;
-                                                                                                                                targetPkgs = pkgs : [ pkgs.jrnl ] ;
-                                                                                                                                runScript = "${ pkgs.mcaimi-st }" ;
-                                                                                                                            } ;
-                                                                                                                    in
-                                                                                                                        ''
-                                                                                                                            mkdir --parents "$GIT_WORK_TREE/profile/${ config.personal.name }"
-                                                                                                                            ${ user-environment }/bin/journal
-                                                                                                                        ''
-                                                                                                            ) ;                                                                                                } ;
+                                                                                                            [ pkgs.mcaimi-st pkgs.git ]
+                                                                                                            "st"                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
