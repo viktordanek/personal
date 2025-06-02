@@ -341,7 +341,7 @@
                                                                                                 {
                                                                                                     emory =
                                                                                                         crypt
-                                                                                                            ""
+                                                                                                            "b87ec938-c4f0-4f71-9c2b-09d68cd5c92c"
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [ pkgs.jrnl pkgs.mcaimi-st ]
                                                                                                             ''
