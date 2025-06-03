@@ -346,7 +346,7 @@
                                                                                                             [ pkgs.mcaimi-st pkgs.git ]
                                                                                                             ''
                                                                                                                 export JRNL_CONFIG="$GIT_WORK_TREE/profile/config"
-                                                                                                                export JRNL_PATH-"$GIT_WORK_TREE/profile/journal"
+                                                                                                                export JRNL_PATH="$GIT_WORK_TREE/profile/journal"
                                                                                                                 st
                                                                                                             '' ;
                                                                                                 } ;
