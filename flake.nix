@@ -337,6 +337,55 @@
                                                                                                                 gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
                                                                                                             '' ;
                                                                                                 } ;
+                                                                                            journals =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            "eebc37fd-8d77-4139-8b9a-50f12bdfd411"
+                                                                                                            "journal entry ${ config.personal.current-time }"
+                                                                                                            [
+                                                                                                                pkgs.mcaimi-st
+                                                                                                                pkgs.calcurse
+                                                                                                                pkgs.jrnl
+                                                                                                                pkgs.git
+                                                                                                                pkgs.git-crypt
+                                                                                                            ]
+                                                                                                            ''
+                                                                                                                export PYTHONWARNINGS="ignore::FutureWarning" jrnl
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
+                                                                                                                export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
+                                                                                                                export JOURNAL_FILE="$GIT_WORK_TREE/profile/jrnl/journal.txt"
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME"
+                                                                                                                mkdir --parents "$XDG_DATA_HOME"
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME/jrnl"
+                                                                                                                mkdir -p "$XDG_CONFIG_HOME/calcurse"
+                                                                                                                mkdir -p "$GIT_WORK_TREE/profile/calcurse"
+                                                                                                                cat > "$XDG_CONFIG_HOME/jrnl/jrnl.yaml" <<EOF
+                                                                                                                journal: "$JOURNAL_FILE"
+                                                                                                                editor: nano
+                                                                                                                encrypt: false
+                                                                                                                tagsymbols:
+                                                                                                                  - '@'
+                                                                                                                linewrap: 80
+                                                                                                                timeformat: "%Y-%m-%d %H:%M"
+                                                                                                                EOF
+                                                                                                                st
+                                                                                                                git add "$JOURNAL_FILE"
+                                                                                                            '' ;
+                                                                                                } ;
+                                                                                            journals2 =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            "6f2be77b-4485-4aff-9d9c-4405995ff090"
+                                                                                                            "journal entry ${ config.personal.current-time }"
+                                                                                                            [ pkgs.mcaimi-st pkgs.git ]
+                                                                                                            ''
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME"
+                                                                                                                mkdir --parents "$XDG_DATA_HOME"
+                                                                                                                st
+                                                                                                             '' ;
+                                                                                                } ;
                                                                                             pass =
                                                                                                 let
                                                                                                     expiryn =
@@ -729,14 +778,14 @@
                                                                                                                                 fun "$( "$OUT/boot/repository/personal" )" personal
                                                                                                                                 fun "$( "$OUT/boot/repository/age-secrets" )" secrets
                                                                                                                                 fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                                nixos-rebuild build-vm --flake ./work-tree.#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                                nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 result/bin/run-nixos-vm
                                                                                                                                 ;;
                                                                                                                             1)
                                                                                                                                 cd work-tree
                                                                                                                                 nix flake lock --update-input personal --update-input secrets --update-input visitor
-                                                                                                                                nixos-rebuild build-vm --flake .#myhost
+                                                                                                                                nixos-rebuild build-vm --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 mv result ..
                                                                                                                                 cd ..
@@ -755,7 +804,7 @@
                                                                                                                                 ;;
                                                                                                                             4)
                                                                                                                                 date +%s > work-tree/current-time.nix
-                                                                                                                                sudo nixos-rebuild test --flake .work-tree/#myhost
+                                                                                                                                sudo nixos-rebuild test --flake /work-tree.#myhost
                                                                                                                                 git commit -am "promoted to $1" --allow-empty
                                                                                                                                 SCRATCH_BRANCH="scratch/$( uuidgen )"
                                                                                                                                 git checkout -b "$SCRATCH_BRANCH"
@@ -773,7 +822,7 @@
                                                                                                                                 git fetch origin main
                                                                                                                                 git checkout main
                                                                                                                                 git rebase origin/main
-                                                                                                                                git merge --ff-only development
+                                                                                                                                git rebase development
                                                                                                                                 sudo nixos-rebuild switch --flake .work-tree/#myhost
                                                                                                                                 git push origin HEAD
                                                                                                                                 nix-collect-garbage
