@@ -359,6 +359,7 @@
                                                                                                                 pkgs.git
                                                                                                             ]
                                                                                                             ''
+                                                                                                                export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
                                                                                                                 export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
                                                                                                                 st
                                                                                                             '' ;
