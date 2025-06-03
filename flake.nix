@@ -347,6 +347,8 @@
                                                                                                             ''
                                                                                                                 export JRNL_CONFIG="$GIT_WORK_TREE/profile/config"
                                                                                                                 export JRNL_PATH="$GIT_WORK_TREE/profile/journal"
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
+                                                                                                                export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
                                                                                                                 st
                                                                                                             '' ;
                                                                                                 } ;
