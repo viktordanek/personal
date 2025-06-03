@@ -347,6 +347,7 @@
                                                                                                                 pkgs.mcaimi-st
                                                                                                                 pkgs.jrnl
                                                                                                                 pkgs.git
+                                                                                                                pkgs.git-crypt
                                                                                                             ]
                                                                                                             ''
                                                                                                                 export PYTHONWARNINGS="ignore::FutureWarning" jrnl
@@ -365,6 +366,19 @@
                                                                                                                 linewrap: 80
                                                                                                                 timeformat: "%Y-%m-%d %H:%M"
                                                                                                                 EOF
+                                                                                                                cat > "$GIT_WORK_TREE/profile/shell.nix" <<EOF
+                                                                                                                { pkgs ? import <nixpkgs> {} }:
+
+                                                                                                                pkgs.mkShell {
+                                                                                                                  buildInputs = [ pkgs.gcc pkgs.cmake pkgs.git pkgs.clang ];
+                                                                                                                }
+                                                                                                                EOF
+                                                                                                                export TEMP=$( mktemp -d )
+                                                                                                                git -C "$TEMP" clone https://github.com/ggerganov/llama.cpp
+                                                                                                                cd llama.cpp
+                                                                                                                make
+                                                                                                                # Download your quantized model to the ./models folder
+                                                                                                                ./main -m ./models/7B/ggml-model-q4_0.bin
                                                                                                                 st
                                                                                                                 git add "$JOURNAL_FILE"
                                                                                                             '' ;
