@@ -355,7 +355,7 @@
                                                                                                                 mkdir --parents "$XDG_CONFIG_HOME"
                                                                                                                 mkdir --parents "$XDG_DATA_HOME"
                                                                                                                 mkdir --parents "$XDG_CONFIG_HOME/jrnl"
-                                                                                                                cat > $XDG_CONFIG_HOME/jrnl/jrnl.yaml <<EOF
+                                                                                                                cat > "$XDG_CONFIG_HOME/jrnl/jrnl.yaml" <<EOF
                                                                                                                 EOF
                                                                                                                 st
                                                                                                             '' ;
