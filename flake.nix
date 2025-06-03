@@ -343,11 +343,22 @@
                                                                                                         crypt
                                                                                                             "eebc37fd-8d77-4139-8b9a-50f12bdfd411"
                                                                                                             "journal entry ${ config.personal.current-time }"
-                                                                                                            [ pkgs.mcaimi-st pkgs.jrnl pkgs.git ]
+                                                                                                            [
+                                                                                                                pkgs.mcaimi-st
+                                                                                                                (
+                                                                                                                    pkgs.writeShellApplication
+                                                                                                                        {
+                                                                                                                            name = "jrnl" ;
+                                                                                                                            runtimeInputs = [ pkgs.jrnl ] ;
+                                                                                                                            text =
+                                                                                                                                ''
+                                                                                                                                    exec jrnl --config-file "$GIT_WORK_TREE/profile/jrnl.yaml "$@"
+                                                                                                                                '' ;
+                                                                                                                        } ;
+                                                                                                                )
+                                                                                                                pkgs.git
+                                                                                                            ]
                                                                                                             ''
-                                                                                                                export JRNL_CONFIG="$GIT_WORK_TREE/profile/config"
-                                                                                                                export JRNL_PATH="$GIT_WORK_TREE/profile/journal"
-                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
                                                                                                                 export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
                                                                                                                 st
                                                                                                             '' ;
