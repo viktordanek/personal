@@ -373,7 +373,8 @@
                                                                                                                   buildInputs = [ pkgs.gcc pkgs.cmake pkgs.git pkgs.clang ];
                                                                                                                 }
                                                                                                                 EOF
-                                                                                                                export TEMP=$( mktemp -d )
+                                                                                                                TEMP=$( mktemp -d )
+                                                                                                                export TEMP
                                                                                                                 git -C "$TEMP" clone https://github.com/ggerganov/llama.cpp
                                                                                                                 cd llama.cpp
                                                                                                                 make
