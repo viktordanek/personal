@@ -349,6 +349,7 @@
                                                                                                                 pkgs.git
                                                                                                             ]
                                                                                                             ''
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
                                                                                                                 export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
                                                                                                                 export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
                                                                                                                 st
@@ -361,7 +362,11 @@
                                                                                                             "6f2be77b-4485-4aff-9d9c-4405995ff090"
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [ pkgs.mcaimi-st pkgs.git ]
-                                                                                                            "st" ;
+                                                                                                            ''
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME"
+                                                                                                                mkdir --parents "$XDG_DATA_HOME"
+                                                                                                                st
+                                                                                                             '' ;
                                                                                                 } ;
                                                                                             pass =
                                                                                                 let
