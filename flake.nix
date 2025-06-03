@@ -345,6 +345,7 @@
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [
                                                                                                                 pkgs.mcaimi-st
+                                                                                                                pkgs.calcurse
                                                                                                                 pkgs.jrnl
                                                                                                                 pkgs.git
                                                                                                                 pkgs.git-crypt
@@ -357,6 +358,8 @@
                                                                                                                 mkdir --parents "$XDG_CONFIG_HOME"
                                                                                                                 mkdir --parents "$XDG_DATA_HOME"
                                                                                                                 mkdir --parents "$XDG_CONFIG_HOME/jrnl"
+                                                                                                                mkdir -p "$XDG_CONFIG_HOME/calcurse"
+                                                                                                                mkdir -p "$GIT_WORK_TREE/profile/calcurse"
                                                                                                                 cat > "$XDG_CONFIG_HOME/jrnl/jrnl.yaml" <<EOF
                                                                                                                 journal: "$JOURNAL_FILE"
                                                                                                                 editor: nano
