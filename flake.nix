@@ -352,6 +352,11 @@
                                                                                                                 export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
                                                                                                                 export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
                                                                                                                 export JOURNAL_FILE="$GIT_WORK_TREE/profile/jrnl/journal.txt"
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME"
+                                                                                                                mkdir --parents "$XDG_DATA_HOME"
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME/jrnl"
+                                                                                                                cat > $XDG_CONFIG_HOME/jrnl/jrnl.yaml <<EOF
+                                                                                                                EOF
                                                                                                                 st
                                                                                                             '' ;
                                                                                                 } ;
