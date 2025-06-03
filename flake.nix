@@ -351,7 +351,7 @@
                                                                                                             ''
                                                                                                                 export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
                                                                                                                 export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
-                                                                                                                export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
+                                                                                                                export JOURNAL_FILE="$GIT_WORK_TREE/profile/jrnl/journal.txt"
                                                                                                                 st
                                                                                                             '' ;
                                                                                                 } ;
