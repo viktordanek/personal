@@ -366,6 +366,7 @@
                                                                                                                 timeformat: "%Y-%m-%d %H:%M"
                                                                                                                 EOF
                                                                                                                 st
+                                                                                                                git add "$JOURNAL_FILE"
                                                                                                             '' ;
                                                                                                 } ;
                                                                                             journals2 =
