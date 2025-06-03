@@ -345,17 +345,7 @@
                                                                                                             "journal entry ${ config.personal.current-time }"
                                                                                                             [
                                                                                                                 pkgs.mcaimi-st
-                                                                                                                (
-                                                                                                                    pkgs.writeShellApplication
-                                                                                                                        {
-                                                                                                                            name = "jrnl" ;
-                                                                                                                            runtimeInputs = [ pkgs.jrnl ] ;
-                                                                                                                            text =
-                                                                                                                                ''
-                                                                                                                                    exec jrnl --config-file "$GIT_WORK_TREE/profile/jrnl.yaml" "$@"
-                                                                                                                                '' ;
-                                                                                                                        }
-                                                                                                                )
+                                                                                                                pkgs.jrnl
                                                                                                                 pkgs.git
                                                                                                             ]
                                                                                                             ''
