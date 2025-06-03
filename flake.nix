@@ -343,7 +343,7 @@
                                                                                                         crypt
                                                                                                             "eebc37fd-8d77-4139-8b9a-50f12bdfd411"
                                                                                                             "journal entry ${ config.personal.current-time }"
-                                                                                                            [ pkgs.mcaimi-st pkgs.git ]
+                                                                                                            [ pkgs.mcaimi-st pkgs.jrnl pkgs.git ]
                                                                                                             ''
                                                                                                                 export JRNL_CONFIG="$GIT_WORK_TREE/profile/config"
                                                                                                                 export JRNL_PATH="$GIT_WORK_TREE/profile/journal"
