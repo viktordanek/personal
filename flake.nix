@@ -354,7 +354,7 @@
                                                                                                                                 ''
                                                                                                                                     exec jrnl --config-file "$GIT_WORK_TREE/profile/jrnl.yaml "$@"
                                                                                                                                 '' ;
-                                                                                                                        } ;
+                                                                                                                        }
                                                                                                                 )
                                                                                                                 pkgs.git
                                                                                                             ]
