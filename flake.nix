@@ -349,6 +349,7 @@
                                                                                                                 pkgs.git
                                                                                                             ]
                                                                                                             ''
+                                                                                                                export PYTHONWARNINGS="ignore::FutureWarning" jrnl
                                                                                                                 export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
                                                                                                                 export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
                                                                                                                 export JOURNAL_FILE="$GIT_WORK_TREE/profile/jrnl/journal.txt"
