@@ -366,20 +366,6 @@
                                                                                                                 linewrap: 80
                                                                                                                 timeformat: "%Y-%m-%d %H:%M"
                                                                                                                 EOF
-                                                                                                                cat > "$GIT_WORK_TREE/profile/shell.nix" <<EOF
-                                                                                                                { pkgs ? import <nixpkgs> {} }:
-
-                                                                                                                pkgs.mkShell {
-                                                                                                                  buildInputs = [ pkgs.gcc pkgs.cmake pkgs.git pkgs.clang ];
-                                                                                                                }
-                                                                                                                EOF
-                                                                                                                TEMP=$( mktemp -d )
-                                                                                                                export TEMP
-                                                                                                                git -C "$TEMP" clone https://github.com/ggerganov/llama.cpp
-                                                                                                                cd llama.cpp
-                                                                                                                make
-                                                                                                                # Download your quantized model to the ./models folder
-                                                                                                                ./main -m ./models/7B/ggml-model-q4_0.bin
                                                                                                                 st
                                                                                                                 git add "$JOURNAL_FILE"
                                                                                                             '' ;
