@@ -352,7 +352,7 @@
                                                                                                                             runtimeInputs = [ pkgs.jrnl ] ;
                                                                                                                             text =
                                                                                                                                 ''
-                                                                                                                                    exec jrnl --config-file "$GIT_WORK_TREE/profile/jrnl.yaml "$@"
+                                                                                                                                    exec jrnl --config-file "$GIT_WORK_TREE/profile/jrnl.yaml" "$@"
                                                                                                                                 '' ;
                                                                                                                         }
                                                                                                                 )
