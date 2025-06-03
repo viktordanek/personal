@@ -356,6 +356,17 @@
                                                                                                                 mkdir --parents "$XDG_DATA_HOME"
                                                                                                                 mkdir --parents "$XDG_CONFIG_HOME/jrnl"
                                                                                                                 cat > "$XDG_CONFIG_HOME/jrnl/jrnl.yaml" <<EOF
+                                                                                                                journal: "$JOURNAL_FILE"
+
+                                                                                                                editor: nano
+                                                                                                                encrypt: false
+                                                                                                                tagsymbols:
+                                                                                                                  - '@'
+                                                                                                                timeformat: "%Y-%m-%d %H:%M"
+                                                                                                                template: "{date} [{time}] {body}"
+
+                                                                                                                default_title: ""
+                                                                                                                linewrap: 80
                                                                                                                 EOF
                                                                                                                 st
                                                                                                             '' ;
