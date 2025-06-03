@@ -362,6 +362,7 @@
                                                                                                                 tagsymbols:
                                                                                                                   - '@'
                                                                                                                 linewrap: 80
+                                                                                                                timeformat: "%Y-%m-%d %H:%M"
                                                                                                                 EOF
                                                                                                                 st
                                                                                                             '' ;
