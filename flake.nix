@@ -337,7 +337,34 @@
                                                                                                                 gnucash "$GIT_WORK_TREE/profile/gnucash/gnucash.gnucash"
                                                                                                             '' ;
                                                                                                 } ;
-                                                                                            journals =
+                                                                                            journal =
+                                                                                                {
+                                                                                                    emory =
+                                                                                                        crypt
+                                                                                                            "4cd8bd41-f15b-45c3-9448-646a87fcd975"
+                                                                                                            "jrnl entry ${ config.personal.current-time }"
+                                                                                                            [ ]
+                                                                                                            ''
+                                                                                                                export PYTHONWARNINGS="ignore::FutureWarning" jrnl
+                                                                                                                export XDG_CONFIG_HOME="$GIT_WORK_TREE/profile/config"
+                                                                                                                export XDG_DATA_HOME="$GIT_WORK_TREE/profile/home"
+                                                                                                                export JOURNAL_FILE="$GIT_WORK_TREE/profile/journal.txt"
+                                                                                                                mkdir --parents "$XDG_CONFIG_HOME"
+                                                                                                                mkdir --parents "$XDG_DATA_HOME"
+                                                                                                                cat > "$XDG_CONFIG_HOME/jrnl/jrnl.yaml" <<EOF
+                                                                                                                journal: "$JOURNAL_FILE"
+                                                                                                                editor: nano
+                                                                                                                encrypt: false
+                                                                                                                tagsymbols:
+                                                                                                                  - '@'
+                                                                                                                linewrap: 80
+                                                                                                                timeformat: "%Y-%m-%d %H:%M"
+                                                                                                                EOF
+                                                                                                                git add "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$GIT_WORK_TREE/profile/journal.txt"
+                                                                                                                exec jrnl "$@"
+                                                                                                            ''
+                                                                                                } ;
+                                                                                            journals3 =
                                                                                                 {
                                                                                                     emory =
                                                                                                         crypt
