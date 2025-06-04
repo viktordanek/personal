@@ -682,7 +682,7 @@
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
                                                                                                                 name = "format" ;
-                                                                                                                runtimeInputs = [ pkgs.nixpkgs.format ] ;
+                                                                                                                runtimeInputs = [ pkgs.nixpkgs-format ] ;
                                                                                                                 text =
                                                                                                                     ''
                                                                                                                         nixpkgs-format flake.nix
