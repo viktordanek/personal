@@ -158,9 +158,7 @@
                                                                                                 {
                                                                                                     emory =
                                                                                                         crypt
-                          devShells.default = pkgs.mkShell {
-    packages = [ pkgs.nixpkgs-fmt ];
-  };                                                                                    "ee9af81a-425b-4229-a79b-4984cb7041b8"
+                                                                                                            "ee9af81a-425b-4229-a79b-4984cb7041b8"
                                                                                                             "brave session ${ config.personal.current-time }"
                                                                                                             [ pkgs.brave ]
                                                                                                             ''
