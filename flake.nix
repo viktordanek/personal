@@ -362,7 +362,7 @@
                                                                                                                 EOF
                                                                                                                 git add "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$GIT_WORK_TREE/profile/journal.txt"
                                                                                                                 exec jrnl "$@"
-                                                                                                            ''
+                                                                                                            '' ;
                                                                                                 } ;
                                                                                             journals3 =
                                                                                                 {
