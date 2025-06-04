@@ -678,10 +678,10 @@
                                                                                                         } ;
                                                                                             repository =
                                                                                                 let
-                                                                                                    format-code =
+                                                                                                    format =
                                                                                                         pkgs.writeShellApplication
                                                                                                             {
-                                                                                                                name = "format-code" ;
+                                                                                                                name = "format" ;
                                                                                                                 runtimeInputs = [ pkgs.nixpkgs.format ] ;
                                                                                                                 text =
                                                                                                                     ''
