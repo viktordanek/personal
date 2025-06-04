@@ -1002,27 +1002,31 @@
                                                                                                                                     nixfmt =
                                                                                                                                         ignore :
                                                                                                                                             {
-                                                                                                                                                export GIT_DIR="$1/git"
-                                                                                                                                                export GIT_WORK_TREE="$1/work-tree"
-                                                                                                                                                mkdir --parents "$1"
-                                                                                                                                                cat > "$1/.envrc" <<EOF
-                                                                                                                                                export OUT="$2"
-                                                                                                                                                export GIT_DIR="$GIT_DIR"
-                                                                                                                                                export GIT_WORK_TREE="$GIT_WORK_TREE"
-                                                                                                                                                EOF
-                                                                                                                                                mkdir --parents "$GIT_DIR"
-                                                                                                                                                mkdir --parents "$GIT_WORK_TREE"
-                                                                                                                                                git init 2>&1
-                                                                                                                                                git config alias.format "!${ format }/bin/format"
-                                                                                                                                                git config alias.scratch "!${ scratch }/bin/scratch"
-                                                                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
-                                                                                                                                                git config user.name "${ config.personal.description }"
-                                                                                                                                                git config user.email "${ config.personal.email }"
-                                                                                                                                                git config application.url "$2"
-                                                                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                                                                git remote add origin git@github.com:NixOS/nixfmt.git
-                                                                                                                                                git fetch origin 2>&1
-                                                                                                                                                git checkout origin/main 2>&1
+                                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                                                text =
+                                                                                                                                                    ''
+                                                                                                                                                        export GIT_DIR="$1/git"
+                                                                                                                                                        export GIT_WORK_TREE="$1/work-tree"
+                                                                                                                                                        mkdir --parents "$1"
+                                                                                                                                                        cat > "$1/.envrc" <<EOF
+                                                                                                                                                        export OUT="$2"
+                                                                                                                                                        export GIT_DIR="$GIT_DIR"
+                                                                                                                                                        export GIT_WORK_TREE="$GIT_WORK_TREE"
+                                                                                                                                                        EOF
+                                                                                                                                                        mkdir --parents "$GIT_DIR"
+                                                                                                                                                        mkdir --parents "$GIT_WORK_TREE"
+                                                                                                                                                        git init 2>&1
+                                                                                                                                                        git config alias.format "!${ format }/bin/format"
+                                                                                                                                                        git config alias.scratch "!${ scratch }/bin/scratch"
+                                                                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $( "$2/boot/dot-ssh/boot/config" )"
+                                                                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                                                                        git config application.url "$2"
+                                                                                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                                                                        git remote add origin git@github.com:NixOS/nixfmt.git
+                                                                                                                                                        git fetch origin 2>&1
+                                                                                                                                                        git checkout origin/main 2>&1
+                                                                                                                                                    '' ;
                                                                                                                                             } ;
                                                                                                                                 } ;
                                                                                                                         } ;
