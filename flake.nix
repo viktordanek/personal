@@ -168,7 +168,8 @@
                                                                                             one =
                                                                                                 ignore :
                                                                                                     {
-                                                                                                        init-script = "exit 63" ;
+                                                                                                        init-script = "echo one > /mount/one" ;
+                                                                                                        outputs = [ "one" ] ;
                                                                                                     } ;
                                                                                             two =
                                                                                                 ignore :
