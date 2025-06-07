@@ -29,10 +29,10 @@
                                                                         lambda =
                                                                             path : value :
                                                                                 let
-                                                                                    application =
+                                                                                    setup =
                                                                                         pkgs.writeShellApplication
                                                                                             {
-                                                                                                name = "application" ;
+                                                                                                name = "setup" ;
                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
                                                                                                 text =
                                                                                                     let
@@ -44,6 +44,26 @@
                                                                                                                     runScript = point.init-script ;
                                                                                                                     targetPkgs = point.init-packages ;
                                                                                                                 } ;
+                                                                                                        point =
+                                                                                                            let
+                                                                                                                identity =
+                                                                                                                    {
+                                                                                                                        dependencies ? { } ,
+                                                                                                                        init-packages ? pkgs : [ pkgs.coreutils ] ,
+                                                                                                                        init-script ? "" ,
+                                                                                                                        outputs ? [ ] ,
+                                                                                                                        release-packages ? pkgs : [ pkgs.coreutils ] ,
+                                                                                                                        release-script ? ""
+                                                                                                                    } :
+                                                                                                                        {
+                                                                                                                            dependencies = dependencies ;
+                                                                                                                            init-packages = init-packages ;
+                                                                                                                            init-script = init-script ;
+                                                                                                                            outputs = outputs ;
+                                                                                                                            release-packages = release-packages ;
+                                                                                                                            release-script = release-script ;
+                                                                                                                        } ;
+                                                                                                                in identity ( value null ) ;
                                                                                                         teardown =
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
@@ -126,28 +146,7 @@
                                                                                                                 fi
                                                                                                             '' ;
                                                                                             } ;
-                                                                                    point =
-                                                                                        let
-                                                                                            identity =
-                                                                                                {
-                                                                                                    dependencies ? { } ,
-                                                                                                    init-packages ? pkgs : [ pkgs.coreutils ] ,
-                                                                                                    init-script ? "" ,
-                                                                                                    outputs ? [ ] ,
-                                                                                                    release-packages ? pkgs : [ pkgs.coreutils ] ,
-                                                                                                    release-script ? ""
-                                                                                                } :
-                                                                                                    {
-                                                                                                        dependencies = dependencies ;
-                                                                                                        init-packages = init-packages ;
-                                                                                                        init-script = init-script ;
-                                                                                                        outputs = outputs ;
-                                                                                                        release-packages = release-packages ;
-                                                                                                        release-script = release-script ;
-                                                                                                    } ;
-                                                                                            in identity ( value null ) ;
-                                                                                    xx = "makeWrapper ${ value null } ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ;
-                                                                                    in [ ( builtins.trace "HI" "true" ) ] ;
+                                                                                    in [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
                                                                         list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
                                                                         null = path : value : [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ;
                                                                         set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
