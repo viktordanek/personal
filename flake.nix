@@ -33,7 +33,7 @@
                                                                                         pkgs.writeShellApplication
                                                                                             {
                                                                                                 name = "setup" ;
-                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
+                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock pkgs.jq pkgs.yq ] ;
                                                                                                 text =
                                                                                                     let
                                                                                                         init =
@@ -120,7 +120,7 @@
                                                                                                                             exit 64
                                                                                                                         elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "! -name ${ name }" ) point.outputs ) }" | wc --lines )" != 0 ]
                                                                                                                         then
-                                                                                                                            # FIXME jq
+                                                                                                                            jq --null-input '{ "failure" :  5451 }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
