@@ -68,7 +68,7 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "teardown" ;
-                                                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.flockutils ] ;
                                                                                                                     text =
                                                                                                                         let
                                                                                                                             mapper =
@@ -87,9 +87,12 @@
                                                                                                                             in
                                                                                                                                 ''
                                                                                                                                     export STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
+                                                                                                                                    exec 202> "$STASH/lock"
+                                                                                                                                    flock -x 202
                                                                                                                                     ${ builtins.concatStringsSep "\n" ( builtins.map mapper point.dependencies ) }
                                                                                                                                     ${ release }/bin/release
-                                                                                                                                    rm --recursive --force "$STASH"
+                                                                                                                                    mv "$STASH" "$( mktemp --directory "$1/XXXXXXXX" )"
+                                                                                                                                    flock -u 202
                                                                                                                                 '' ;
                                                                                                                 } ;
                                                                                                         in
@@ -186,7 +189,10 @@
                                                                                         } ;
                                                                                 }
                                                                     ) ;
-                                                            in builtins.concatStringsSep "\n" commands ;
+                                                            in
+                                                                ''
+                                                                    ${ builtins.concatStringsSep "\n" commands }
+                                                                '' ;
                                                     name = "derivation" ;
                                                     nativeBuildInputs = [ pkgs.makeWrapper ] ;
                                                     src = ./. ;
@@ -334,6 +340,36 @@
                                                                             } ;
                                                                         xkbVariant = "" ;
                                                                     } ;
+                                                            } ;
+                                                        systemd =
+                                                            {
+                                                                services =
+                                                                    {
+                                                                        stash-cleanup =
+                                                                            {
+                                                                                ServiceConfig =
+                                                                                    {
+                                                                                        ExecStart =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "ExecStart" ;
+                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            CLEANUP_DIRECTORY=$( mktemp --directory )
+                                                                                                            find /home/config.personal.name }/${ config.personal.stash } -mindepth 1 -maxdepth 1 -type d | sort --numeric | while read DIRECTORY
+                                                                                                            do
+                                                                                                                if [ "$( basename "$DIRECTORY" )" != "${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" config.personal.current-time ) }" ] && [ -x "$DIRECTORY/teardown" ]
+                                                                                                                then
+                                                                                                                    "$DIRECTORY/teardown" "$CLEANUP_DIRECTORY"
+                                                                                                                fi
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                        owner = config.personal.user
+                                                                                    } ;
+                                                                                wantedBy = [ "multiuser.target" ] ;
+                                                                            } ;
+                                                                    }
                                                             } ;
                                                         system.stateVersion = "23.05" ;
                                                         time.timeZone = "America/New_York" ;
