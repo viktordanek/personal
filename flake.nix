@@ -140,7 +140,7 @@
                                                                                                                         fi
                                                                                                                     else
                                                                                                                         jq --null-input '{ "failure" :  7830 }' | yq --yaml-output > "$STASH/failure.yaml"
-                                                                                                                        yq --yaml-output "$STASH/failure.yaml" >&2
+                                                                                                                        yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
                                                                                                                         exit 69
