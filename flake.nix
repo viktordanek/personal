@@ -88,7 +88,7 @@
                                                                                                                     flock -u 201
                                                                                                                     exit 64
                                                                                                                 else
-                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( path : ''if ! "${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$OUT" ] ( builtins.map builtins.toJSON path ) ] ) }" ; then jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "fault" : 5 , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT : "status" : $STATUS }' | yq --yaml-output "" > "$STASH/failure.yaml" && flock -u 201 && flock -u 202 && exit 64; fi'' point.dependencies }
+                                                                                                                    # FIXME dependencies
                                                                                                                     mkdir --parents "$STASH/mount"
                                                                                                                     if ${ user-environment }/bin/init > "$STASH/standard-output 2> "$STASH/standard-error"
                                                                                                                     then
