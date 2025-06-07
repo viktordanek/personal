@@ -139,7 +139,7 @@
                                                                                                                             exit 0
                                                                                                                         fi
                                                                                                                     else
-                                                                                                                        jq --null-input '{ "failure" :  7830 }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                        jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" '{ "failure" :  7830 , "standard-error" : $STANDARD_ERROR }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                         yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
