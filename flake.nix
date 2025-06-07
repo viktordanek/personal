@@ -134,8 +134,8 @@
                                                                                                                             flock -u 201
                                                                                                                             exit 64
                                                                                                                         else
-                                                                                                                            # FIXME link the teardown script
-                                                                                                                            echo "$?" > "$STASH/success.yaml"
+                                                                                                                            ln --symbolic ${ teardown }/bin/teardown "$STASH/teardown"
+                                                                                                                            jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  7830 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/success.yaml"
                                                                                                                             echo "$STASH/mount"
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
