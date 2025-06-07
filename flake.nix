@@ -81,7 +81,7 @@
                                                                                                                                     } ;
                                                                                                                             in
                                                                                                                                 ''
-                                                                                                                                    export STASH=${ builtins.concatStringsSep "/" [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] }
+                                                                                                                                    export STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) ) }
                                                                                                                                     # FIXME recursively teardown
                                                                                                                                     ${ release }/bin/release
                                                                                                                                     rm --recursive --force "$STASH"
