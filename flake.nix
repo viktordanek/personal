@@ -110,7 +110,7 @@
                                                                                                                 else
                                                                                                                     # FIXME dependencies
                                                                                                                     mkdir --parents "$STASH/mount"
-                                                                                                                    if ${ init }/bin/init > "$STASH/standard-output 2> "$STASH/standard-error"
+                                                                                                                    if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                                     then
                                                                                                                         if [ -s "$STASH/standard-error" ]
                                                                                                                         then
@@ -118,13 +118,13 @@
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
-                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "! -name ${ name }" ) point.outputs } | wc --lines )" != 0 ]
+                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "! -name ${ name }" ) point.outputs ) }" | wc --lines )" != 0 ]
                                                                                                                         then
                                                                                                                             # FIXME jq
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
-                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "-name ${ name }" ) point.outputs } | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
+                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "-name ${ name }" ) point.outputs ) }" | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
                                                                                                                         then
                                                                                                                             # FIXME jq
                                                                                                                             flock -u 202
@@ -137,6 +137,7 @@
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 0
+                                                                                                                        fi
                                                                                                                     else
                                                                                                                         # FIXME jq
                                                                                                                         flock -u 202
@@ -146,6 +147,7 @@
                                                                                                                 fi
                                                                                                             '' ;
                                                                                             } ;
+                                                                                    xx = [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
                                                                                     in [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
                                                                         list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
                                                                         null = path : value : [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ;
