@@ -347,7 +347,7 @@
                                                                     {
                                                                         stash-cleanup =
                                                                             {
-                                                                                ServiceConfig =
+                                                                                serviceConfig =
                                                                                     {
                                                                                         ExecStart =
                                                                                             pkgs.writeShellApplication
