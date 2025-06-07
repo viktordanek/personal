@@ -71,6 +71,11 @@
                                                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                                                     text =
                                                                                                                         let
+                                                                                                                            mapper =
+                                                                                                                                path :
+                                                                                                                                    let
+                                                                                                                                        stash = ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) [ "teardown" ] ] ) } ;
+                                                                                                                                        in "if [ -L ${ stash } ; then ${ stash } ; fi"
                                                                                                                             release =
                                                                                                                                 pkgs.buildFHSUserEnv
                                                                                                                                     {
@@ -82,7 +87,7 @@
                                                                                                                             in
                                                                                                                                 ''
                                                                                                                                     export STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                    # FIXME recursively teardown
+                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map mapper point.dependencies ) }
                                                                                                                                     ${ release }/bin/release
                                                                                                                                     rm --recursive --force "$STASH"
                                                                                                                                 '' ;
