@@ -165,7 +165,7 @@
                                                                                             one =
                                                                                                 ignore :
                                                                                                     {
-                                                                                                        init-script = "exit 63"
+                                                                                                        init-script = "exit 63" ;
                                                                                                     } ;
                                                                                             two =
                                                                                                 ignore :
