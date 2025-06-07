@@ -139,10 +139,11 @@
                                                                                                                             exit 0
                                                                                                                         fi
                                                                                                                     else
-                                                                                                                        # FIXME jq
+                                                                                                                        jq --null-input '{ "failure" :  7830 }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                        yq --yaml-output "$STASH/failure.yaml" >&2
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
-                                                                                                                        exit 64
+                                                                                                                        exit 69
                                                                                                                     fi
                                                                                                                 fi
                                                                                                             '' ;
