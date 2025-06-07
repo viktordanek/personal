@@ -106,7 +106,7 @@
                                                                                                                     yq --yaml-output "$STASH/failure.yaml" "." >&2
                                                                                                                     flock -u 202
                                                                                                                     flock -u 201
-                                                                                                                    exit 65
+                                                                                                                    exit 64
                                                                                                                 else
                                                                                                                     # FIXME dependencies
                                                                                                                     mkdir --parents "$STASH/mount"
@@ -114,22 +114,25 @@
                                                                                                                     then
                                                                                                                         if [ -s "$STASH/standard-error" ]
                                                                                                                         then
-                                                                                                                            jq --null-input '{ "failure" :  8052 }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            jq --null-input --argjson EXPECTED "${ builtins.toJSON point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  17997 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 66
+                                                                                                                            exit 64
                                                                                                                         elif [ "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "! -name ${ name }" ) point.outputs ) } | wc --lines )" != 0 ]
                                                                                                                         then
-                                                                                                                            jq --null-input '{ "failure" :  5451 }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            jq --null-input --argjson EXPECTED "${ builtins.toJSON point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  12733 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 67
+                                                                                                                            exit 64
                                                                                                                         elif [ "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "-name ${ name }" ) point.outputs ) } | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
                                                                                                                         then
-                                                                                                                            jq --null-input '{ "failure" :  7830 }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            jq --null-input --argjson EXPECTED "${ builtins.toJSON point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  23261 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 68
+                                                                                                                            exit 64
                                                                                                                         else
                                                                                                                             # FIXME link the teardown script
                                                                                                                             echo "$?" > "$STASH/success.yaml"
@@ -143,7 +146,7 @@
                                                                                                                         yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
-                                                                                                                        exit 69
+                                                                                                                        exit 64
                                                                                                                     fi
                                                                                                                 fi
                                                                                                             '' ;
