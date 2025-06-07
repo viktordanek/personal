@@ -350,21 +350,24 @@
                                                                                 serviceConfig =
                                                                                     {
                                                                                         ExecStart =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "ExecStart" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            CLEANUP_DIRECTORY=$( mktemp --directory )
-                                                                                                            find /home/config.personal.name }/${ config.personal.stash } -mindepth 1 -maxdepth 1 -type d | sort --numeric | while read DIRECTORY
-                                                                                                            do
-                                                                                                                if [ "$( basename "$DIRECTORY" )" != "${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" config.personal.current-time ) }" ] && [ -x "$DIRECTORY/teardown" ]
-                                                                                                                then
-                                                                                                                    "$DIRECTORY/teardown" "$CLEANUP_DIRECTORY"
-                                                                                                                fi
-                                                                                                        '' ;
-                                                                                                } ;
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "ExecStart" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    CLEANUP_DIRECTORY=$( mktemp --directory )
+                                                                                                                    find /home/config.personal.name }/${ config.personal.stash } -mindepth 1 -maxdepth 1 -type d | sort --numeric | while read DIRECTORY
+                                                                                                                    do
+                                                                                                                        if [ "$( basename "$DIRECTORY" )" != "${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" config.personal.current-time ) }" ] && [ -x "$DIRECTORY/teardown" ]
+                                                                                                                        then
+                                                                                                                            "$DIRECTORY/teardown" "$CLEANUP_DIRECTORY"
+                                                                                                                        fi
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application" ;
                                                                                         User = config.personal.name ;
                                                                                     } ;
                                                                                 wantedBy = [ "multiuser.target" ] ;
