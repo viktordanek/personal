@@ -69,7 +69,7 @@
                                                                                                                 } ;
                                                                                                         in
                                                                                                             ''
-                                                                                                                export STASH=${ builtins.concatStringsSep "/" [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) ) ) }
+                                                                                                                export STASH=${ builtins.concatStringsSep "/" [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) ) }
                                                                                                                 mkdir --parents "$STASH"
                                                                                                                 exec 201> ${ builtins.concatStringsSep "/" [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) "lock" ] ]
                                                                                                                 flock -s 201
