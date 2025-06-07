@@ -90,7 +90,7 @@
                                                                                                                 else
                                                                                                                     # FIXME dependencies
                                                                                                                     mkdir --parents "$STASH/mount"
-                                                                                                                    if ${ user-environment }/bin/init > "$STASH/standard-output 2> "$STASH/standard-error"
+                                                                                                                    if ${ init }/bin/init > "$STASH/standard-output 2> "$STASH/standard-error"
                                                                                                                     then
                                                                                                                         if [ -s "$STASH/standard-error" ]
                                                                                                                         then
