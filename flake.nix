@@ -158,7 +158,13 @@
                                                                                     couple = { } ;
                                                                                     family = { } ;
                                                                                     personal = { } ;
-                                                                                    scratch = { } ;
+                                                                                    scratch =
+                                                                                        {
+                                                                                            one =
+                                                                                                ignore
+                                                                                                    {
+                                                                                                    } ;
+                                                                                        } ;
                                                                                 }
                                                                     ) ;
                                                             in builtins.concatStringsSep "\n" commands ;
