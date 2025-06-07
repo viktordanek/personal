@@ -48,7 +48,7 @@
                                                                                                             let
                                                                                                                 identity =
                                                                                                                     {
-                                                                                                                        dependencies ? { } ,
+                                                                                                                        dependencies ? [ ] ,
                                                                                                                         init-packages ? pkgs : [ pkgs.coreutils ] ,
                                                                                                                         init-script ? "" ,
                                                                                                                         outputs ? [ ] ,
