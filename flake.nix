@@ -98,7 +98,7 @@
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
-                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "! -name ${ name }" ) outputs } | wc --lines )" != 0 ]
+                                                                                                                        elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "! -name ${ name }" ) point.outputs } | wc --lines )" != 0 ]
                                                                                                                         then
                                                                                                                             # FIXME jq
                                                                                                                             flock -u 202
