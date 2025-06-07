@@ -39,7 +39,7 @@
                                                                                                         init =
                                                                                                             pkgs.buildFHSUserEnv
                                                                                                                 {
-                                                                                                                    extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ personal.name }/${ personal.stash } /home/${ personal.name }/${ personal.stash }" ] ;
+                                                                                                                    extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ personal.stash } /home/${ personal.name }/${ personal.stash }" ] ;
                                                                                                                     name = "init" ;
                                                                                                                     runScript = point.init-script ;
                                                                                                                     targetPkgs = point.init-packages ;
