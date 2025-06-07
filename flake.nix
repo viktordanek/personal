@@ -39,7 +39,7 @@
                                                                                                         init =
                                                                                                             pkgs.buildFHSUserEnv
                                                                                                                 {
-                                                                                                                    extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
+                                                                                                                    extraBwrapArgs = [ "--bind $STASH/mount /mount" "--ro-bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
                                                                                                                     name = "init" ;
                                                                                                                     runScript = point.init-script ;
                                                                                                                     targetPkgs = point.init-packages ;
@@ -74,7 +74,7 @@
                                                                                                                             release =
                                                                                                                                 pkgs.buildFHSUserEnv
                                                                                                                                     {
-                                                                                                                                        extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
+                                                                                                                                        extraBwrapArgs = [ "--bind $STASH/mount /mount" "--ro-bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
                                                                                                                                         name = "release" ;
                                                                                                                                         runScript = point.release-script ;
                                                                                                                                         targetPkgs = point.release-packages ;
@@ -139,7 +139,7 @@
                                                                                                                             exit 0
                                                                                                                         fi
                                                                                                                     else
-                                                                                                                        jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" '{ "failure" :  7830 , "standard-error" : $STANDARD_ERROR }' | yq --yaml-output > "$STASH/failure.yaml"
+                                                                                                                        jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "failure" :  7830 , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATU }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                         yq --yaml-output "." "$STASH/failure.yaml" >&2
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
