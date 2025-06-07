@@ -68,7 +68,7 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "teardown" ;
-                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.flockutils ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.flockutil ] ;
                                                                                                                     text =
                                                                                                                         let
                                                                                                                             mapper =
