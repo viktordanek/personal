@@ -158,15 +158,7 @@
                                                                                     couple = { } ;
                                                                                     family = { } ;
                                                                                     personal = { } ;
-                                                                                    scratch =
-                                                                                        ignore :
-                                                                                            {
-                                                                                                init-script =
-                                                                                                    ''
-                                                                                                        echo hello > /mount/target
-                                                                                                    '' ;
-                                                                                                outputs = [ "target" ] ;
-                                                                                            } ;
+                                                                                    scratch = { } ;
                                                                                 }
                                                                     ) ;
                                                             in builtins.concatStringsSep "\n" commands ;
