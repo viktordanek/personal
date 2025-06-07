@@ -39,7 +39,7 @@
                                                                                                         init =
                                                                                                             pkgs.buildFHSUserEnv
                                                                                                                 {
-                                                                                                                    extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ personal.stash } /home/${ personal.name }/${ personal.stash }" ] ;
+                                                                                                                    extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
                                                                                                                     name = "init" ;
                                                                                                                     runScript = point.init-script ;
                                                                                                                     targetPkgs = point.init-packages ;
@@ -54,7 +54,7 @@
                                                                                                                             release =
                                                                                                                                 pkgs.buildFHSUserEnv
                                                                                                                                     {
-                                                                                                                                        extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ personal.stash } /home/${ personal.name }/${ personal.stash }" ] ;
+                                                                                                                                        extraBwrapArgs = [ "--mount $STASH/mount /mount" "--ro-mount /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
                                                                                                                                         name = "release" ;
                                                                                                                                         runScript = point.release-script ;
                                                                                                                                         targetPkgs = point.release-packages ;
