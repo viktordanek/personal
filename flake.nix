@@ -167,7 +167,7 @@
                                                                                                     '' ;
                                                                                                 outputs = [ "target" ] ;
                                                                                             } ;
-                                                                                } ;
+                                                                                }
                                                                     ) ;
                                                             in builtins.concatStringsSep "\n" commands ;
                                                     name = "derivation" ;
