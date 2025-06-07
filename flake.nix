@@ -94,7 +94,7 @@
                                                                                                                     then
                                                                                                                         if [ -s "$STASH/standard-error" ]
                                                                                                                         then
-                                                                                                                            jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "fault" : 1 , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT : "status" : $STATUS }' | yq --yaml-output "" > "$STASH/failure.yaml"
+                                                                                                                            # FIXME jq
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
@@ -106,7 +106,7 @@
                                                                                                                             exit 64
                                                                                                                         elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "-name ${ name }" ) outputs } | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
                                                                                                                         then
-                                                                                                                            jq --null-input --arg INTRA "find "find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.map ( name : "-name ${ name }" ) outputs }"--arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "intra" : $INTRA , "fault" : 3 , ""standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT : "status" : $STATUS }' | yq --yaml-output "" > "$STASH/failure.yaml"
+                                                                                                                            # FIXME jq
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
                                                                                                                             exit 64
