@@ -143,7 +143,7 @@
                                                                                                         init-script = init-script ;
                                                                                                         outputs = outputs ;
                                                                                                         release-packages = release-packages ;
-                                                                                                        release-scripts = release-scripts ;
+                                                                                                        release-script = release-script ;
                                                                                                     } ;
                                                                                             in identity ( value null ) ;
                                                                                     in "makeWrapper ${ value resource } ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ;
