@@ -147,7 +147,6 @@
                                                                                                                 fi
                                                                                                             '' ;
                                                                                             } ;
-                                                                                    xx = [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
                                                                                     in [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
                                                                         list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
                                                                         null = path : value : [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ;
