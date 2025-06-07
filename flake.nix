@@ -106,7 +106,7 @@
                                                                                                                     yq --yaml-output "$STASH/failure.yaml" "." >&2
                                                                                                                     flock -u 202
                                                                                                                     flock -u 201
-                                                                                                                    exit 64
+                                                                                                                    exit 65
                                                                                                                 else
                                                                                                                     # FIXME dependencies
                                                                                                                     mkdir --parents "$STASH/mount"
@@ -117,19 +117,19 @@
                                                                                                                             jq --null-input '{ "failure" :  8052 }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 64
+                                                                                                                            exit 66
                                                                                                                         elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "! -name ${ name }" ) point.outputs ) }" | wc --lines )" != 0 ]
                                                                                                                         then
                                                                                                                             jq --null-input '{ "failure" :  5451 }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 64
+                                                                                                                            exit 67
                                                                                                                         elif [ "$( find "$STASH/mount -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "-name ${ name }" ) point.outputs ) }" | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
                                                                                                                         then
                                                                                                                             jq --null-input '{ "failure" :  7830 }' | yq --yaml-output > "$STASH/failure.yaml"
                                                                                                                             flock -u 202
                                                                                                                             flock -u 201
-                                                                                                                            exit 64
+                                                                                                                            exit 68
                                                                                                                         else
                                                                                                                             # FIXME link the teardown script
                                                                                                                             echo "$?" > "$STASH/success.yaml"
