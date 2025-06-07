@@ -179,6 +179,9 @@
                                                                                             two =
                                                                                                 ignore :
                                                                                                     {
+                                                                                                        dependencies = [ [ "one" ] ] ;
+                                                                                                        init-script = "echo two > /mount/two" ;
+                                                                                                        outputs = [ "two" ] ;
                                                                                                     } ;
                                                                                         } ;
                                                                                 }
