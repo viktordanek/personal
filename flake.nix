@@ -369,7 +369,7 @@
                                                                                     } ;
                                                                                 wantedBy = [ "multiuser.target" ] ;
                                                                             } ;
-                                                                    }
+                                                                    } ;
                                                             } ;
                                                         system.stateVersion = "23.05" ;
                                                         time.timeZone = "America/New_York" ;
