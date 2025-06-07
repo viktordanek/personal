@@ -365,7 +365,7 @@
                                                                                                                 fi
                                                                                                         '' ;
                                                                                                 } ;
-                                                                                        owner = config.personal.user ;
+                                                                                        owner = config.personal.name ;
                                                                                     } ;
                                                                                 wantedBy = [ "multiuser.target" ] ;
                                                                             } ;
