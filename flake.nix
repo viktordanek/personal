@@ -118,7 +118,7 @@
                                                                                                                             flock -u 201
                                                                                                                             exit 0
                                                                                                                     else
-                                                                                                                        jq --null-input --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "fault" : 4 , ""standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT : "status" : $STATUS }' | yq --yaml-output "" > "$STASH/failure.yaml"
+                                                                                                                        # FIXME jq
                                                                                                                         flock -u 202
                                                                                                                         flock -u 201
                                                                                                                         exit 64
