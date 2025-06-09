@@ -154,7 +154,7 @@
                                                                                                     flock -u 201
                                                                                                     exit 0
                                                                                                 else
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : "if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ; then ${ yaml 13579 } &&& rm "$ROOT/lock" && flock -u 201 && exit 64 ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
+                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
