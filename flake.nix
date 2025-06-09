@@ -130,7 +130,7 @@
                                                                                             code :
                                                                                                 ''
                                                                                                     jq --null-input --arg CODE "${ builtins.toString code }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg OBSERVED "$( find "$STASH/mount -mindepth 1 -maxdepth 1 | sort" )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$( cat "$?" )" '{ "code" : $CODE , "observed" : $OBSERVED , ""standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml
-                                                                                                ''
+                                                                                                '' ;
                                                                                         in
                                                                                             ''
                                                                                                 ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
