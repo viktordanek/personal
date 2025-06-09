@@ -22,7 +22,7 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : { name = builtins.trace ( builtins.concatStringsSep " , " ( builtins.attrNames resource ) ) resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
+                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
                                                         in builtins.map mapper points ;
                                                 in builtins.listToAttrs list ;
                                         outputs =
@@ -213,7 +213,7 @@
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
+                                                    text = builtins.trace ( builtins.toJSON scripts ) ( builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ) ;
                                                 } ;
                                         in
                                             {
