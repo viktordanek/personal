@@ -149,7 +149,7 @@
                                                                                                 elif [ -f "$STASH/success.yaml" ]
                                                                                                 then
                                                                                                     mkdir --parents "$LINKED"
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : "if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi" ) resource.outputs ) }
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
                                                                                                     exit 0
