@@ -53,7 +53,7 @@
                                                                                     list =
                                                                                         visitor.lib.implementation
                                                                                             {
-                                                                                                lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
+                                                                                                lambda = path : value : [ ( value tree ) ] ;
                                                                                                 list = path : list : builtins.concatLists list ;
                                                                                                 set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
                                                                                             }
