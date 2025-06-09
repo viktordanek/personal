@@ -171,7 +171,7 @@
                                                                                                             exit 64
                                                                                                         else
                                                                                                             mkdir --parents "$LINKED"
-                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : "if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi" ) resource.outputs ) }
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                             ${ yaml 0 }
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
