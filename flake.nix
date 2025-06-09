@@ -213,7 +213,7 @@
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.concatStringsSep "\n" ( builtins.map "" scripts ) ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "" ) scripts ) ;
                                                 } ;
                                         in
                                             {
