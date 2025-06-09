@@ -216,7 +216,7 @@
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "# ${ builtins.trace ( builtins.typeOf 0 ) "0" }" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "# 0" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
                                                 } ;
                                         in
                                             {
