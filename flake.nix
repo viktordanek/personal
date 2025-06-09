@@ -126,6 +126,16 @@
                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.find pkgs.flock pkgs.jq pkgs.yq ] ;
                                                                                 text =
                                                                                     let
+                                                                                        init =
+                                                                                            pkgs.buildFHSUserEnv
+                                                                                                {
+                                                                                                    name = "init" ;
+                                                                                                    runScript =
+                                                                                                        let
+                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script ; } ;
+                                                                                                            in "${ init }/bin/init" ;
+                                                                                                    targetPkgs = resource.init-packages ;
+                                                                                                } ;
                                                                                         yaml =
                                                                                             code :
                                                                                                 ''
