@@ -73,7 +73,7 @@
                                                                             release-packages = release-packages ;
                                                                             release-script = release-script ;
                                                                         } ;
-                                                                in [ ( value ignore ) ] ;
+                                                                in [ ( value null ) ] ;
                                                     list = path : list : builtins.concatLists list ;
                                                     null = path : value : [ ] ;
                                                     set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
