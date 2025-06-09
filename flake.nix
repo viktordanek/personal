@@ -205,51 +205,6 @@
                                                                                                 STASH="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) }" ;
                                                                                                 LINKED="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }"
                                                                                                 mkdir --parents "$STASH/mount"
-                                                                                                if [ -f "$STASH/failure.yaml" ]
-                                                                                                then
-                                                                                                    yq --yaml-output "." "$STASH/failure.yaml" >&2
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 64
-                                                                                                elif [ -f "$STASH/success.yaml" ]
-                                                                                                then
-                                                                                                    mkdir --parents "$LINKED"
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 0
-                                                                                                else
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
-                                                                                                    if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
-                                                                                                    then
-                                                                                                        if [ -s "$STASH/standard-error" ]
-                                                                                                        then
-                                                                                                            ${ yaml 20189 }
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 64
-                                                                                                        elif [ "${ builtins.concatStringsSep "/n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 | sort )" ]
-                                                                                                        then
-                                                                                                            ${ yaml 850 }
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 64
-                                                                                                        else
-                                                                                                            mkdir --parents "$LINKED"
-                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
-                                                                                                            ${ yaml 0 }
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 0
-                                                                                                        fi
-                                                                                                    else
-                                                                                                        ${ yaml 3095 }
-                                                                                                        yq --yaml-output "." "$STASH/failure.yaml"
-                                                                                                        rm "$ROOT/lock"
-                                                                                                        flock -u 201
-                                                                                                        exit 64
-                                                                                                    fi
-                                                                                                fi
                                                                                             '' ;
                                                                             } ;
                                                                     teardown =
