@@ -18,184 +18,192 @@
                             in
                                 { config , lib , pkgs , ... } :
                                     let
-                                        derivation =
-                                            pkgs.stdenv.mkDerivation
+                                        dependencies =
+                                            let
+                                                list =
+                                                    let
+                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
+                                                        in builtins.map mapper points ;
+                                                in builtins.listToAttrs list ;
+                                        outputs =
+                                            let
+                                                list =
+                                                    let
+                                                        mapper = resource : { name = resource.name ; value = resource.outputs ; } ;
+                                                        in builtins.map mapper points ;
+                                                in builtins.listToAttrs list ;
+                                        points =
+                                            visitor.lib.implementation
                                                 {
-                                                    installPhase =
-                                                        let
-                                                            commands =
-                                                                visitor.lib.implementation
+                                                    lambda =
+                                                        path : value :
+                                                            let
+                                                                identity =
                                                                     {
-                                                                        lambda =
-                                                                            path : value :
+                                                                        dependencies ? x : [ ] ,
+                                                                        init-packages ? pkgs : [ ] ,
+                                                                        init-script ? "" ,
+                                                                        outputs ? [ ] ,
+                                                                        release-packages ? pkgs : [ ] ,
+                                                                        release-script ? ""
+                                                                    } :
+                                                                        {
+                                                                            dependencies =
                                                                                 let
-                                                                                    setup =
-                                                                                        pkgs.writeShellApplication
+                                                                                    list =
+                                                                                        visitor.lib.implementation
                                                                                             {
-                                                                                                name = "setup" ;
-                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.flock pkgs.jq pkgs.yq ] ;
-                                                                                                text =
-                                                                                                    let
-                                                                                                        init =
-                                                                                                            pkgs.buildFHSUserEnv
-                                                                                                                {
-                                                                                                                    extraBwrapArgs = [ "--bind $STASH/mount /mount" "--ro-bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
-                                                                                                                    name = "init" ;
-                                                                                                                    runScript = point.init-script ;
-                                                                                                                    targetPkgs = point.init-packages ;
-                                                                                                                } ;
-                                                                                                        point =
-                                                                                                            let
-                                                                                                                identity =
-                                                                                                                    {
-                                                                                                                        dependencies ? [ ] ,
-                                                                                                                        init-packages ? pkgs : [ pkgs.coreutils ] ,
-                                                                                                                        init-script ? "" ,
-                                                                                                                        outputs ? [ ] ,
-                                                                                                                        release-packages ? pkgs : [ pkgs.coreutils ] ,
-                                                                                                                        release-script ? ""
-                                                                                                                    } :
-                                                                                                                        {
-                                                                                                                            dependencies = dependencies ;
-                                                                                                                            init-packages = init-packages ;
-                                                                                                                            init-script = init-script ;
-                                                                                                                            outputs = outputs ;
-                                                                                                                            release-packages = release-packages ;
-                                                                                                                            release-script = release-script ;
-                                                                                                                        } ;
-                                                                                                                in identity ( value null ) ;
-                                                                                                        teardown =
-                                                                                                            pkgs.writeShellApplication
-                                                                                                                {
-                                                                                                                    name = "teardown" ;
-                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.flock ] ;
-                                                                                                                    text =
-                                                                                                                        let
-                                                                                                                            mapper =
-                                                                                                                                path :
-                                                                                                                                    let
-                                                                                                                                        stash = builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) [ "teardown" ] ] ) ;
-                                                                                                                                        in "if [ -L ${ stash } ] ; then ${ stash } ; fi" ;
-                                                                                                                            release =
-                                                                                                                                pkgs.buildFHSUserEnv
-                                                                                                                                    {
-                                                                                                                                        extraBwrapArgs = [ "--bind $STASH/mount /mount" "--ro-bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }" ] ;
-                                                                                                                                        name = "release" ;
-                                                                                                                                        runScript = point.release-script ;
-                                                                                                                                        targetPkgs = point.release-packages ;
-                                                                                                                                    } ;
-                                                                                                                            in
-                                                                                                                                ''
-                                                                                                                                    export STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                                    exec 202> "$STASH/lock"
-                                                                                                                                    flock -x 202
-                                                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map mapper point.dependencies ) }
-                                                                                                                                    ${ release }/bin/release
-                                                                                                                                    mv "$STASH" "$( mktemp --directory "$1/XXXXXXXX" )"
-                                                                                                                                    flock -u 202
-                                                                                                                                '' ;
-                                                                                                                } ;
-                                                                                                        in
-                                                                                                            ''
-                                                                                                                export STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "output" ] ( builtins.map builtins.toJSON path ) ] ) }
-                                                                                                                mkdir --parents "$STASH"
-                                                                                                                exec 201> ${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "lock" ] }
-                                                                                                                flock -s 201
-                                                                                                                exec 202> "$STASH/lock"
-                                                                                                                flock -x 202
-                                                                                                                if [ -f "$STASH/success.yaml" ]
-                                                                                                                then
-                                                                                                                    echo "$STASH/mount"
-                                                                                                                    flock -u 202
-                                                                                                                    flock -u 201
-                                                                                                                    exit 0
-                                                                                                                elif [ -f "$STASH/failure.yaml" ]
-                                                                                                                then
-                                                                                                                    yq --yaml-output "$STASH/failure.yaml" "." >&2
-                                                                                                                    flock -u 202
-                                                                                                                    flock -u 201
-                                                                                                                    exit 64
-                                                                                                                else
-                                                                                                                    # FIXME dependencies
-                                                                                                                    mkdir --parents "$STASH/mount"
-                                                                                                                    if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
-                                                                                                                    then
-                                                                                                                        if [ -s "$STASH/standard-error" ]
-                                                                                                                        then
-                                                                                                                            jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  17997 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
-                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
-                                                                                                                            flock -u 202
-                                                                                                                            flock -u 201
-                                                                                                                            exit 64
-                                                                                                                        elif [ "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "! -name ${ name }" ) point.outputs ) } | wc --lines )" != 0 ]
-                                                                                                                        then
-                                                                                                                            jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  12733 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
-                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
-                                                                                                                            flock -u 202
-                                                                                                                            flock -u 201
-                                                                                                                            exit 64
-                                                                                                                        elif [ "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 ${ builtins.concatStringsSep " " ( builtins.map ( name : "-name ${ name }" ) point.outputs ) } | wc --lines )" != ${ builtins.toString ( builtins.length point.outputs ) } ]
-                                                                                                                        then
-                                                                                                                            jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  23261 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
-                                                                                                                            yq --yaml-output "." "$STASH/failure.yaml" >&2
-                                                                                                                            flock -u 202
-                                                                                                                            flock -u 201
-                                                                                                                            exit 64
-                                                                                                                        else
-                                                                                                                            ln --symbolic ${ teardown }/bin/teardown "$STASH/teardown"
-                                                                                                                            jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/success.yaml"
-                                                                                                                            echo "$STASH/mount"
-                                                                                                                            flock -u 202
-                                                                                                                            flock -u 201
-                                                                                                                            exit 0
-                                                                                                                        fi
-                                                                                                                    else
-                                                                                                                        jq --null-input --arg EXPECTED "${ builtins.concatStringsSep "," point.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )"  --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "expected" : $EXPECTED  , "failure" :  7830 , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output > "$STASH/failure.yaml"
-                                                                                                                        yq --yaml-output "." "$STASH/failure.yaml" >&2
-                                                                                                                        flock -u 202
-                                                                                                                        flock -u 201
-                                                                                                                        exit 64
-                                                                                                                    fi
-                                                                                                                fi
-                                                                                                            '' ;
-                                                                                            } ;
-                                                                                    in [ "makeWrapper ${ setup }/bin/setup ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) } --set OUT $out" ] ;
-                                                                        list = path : list : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists list ) ] ;
-                                                                        null = path : value : [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ;
-                                                                        set = path : set : builtins.concatLists [ [ "mkdir --parents ${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$out" ] ( builtins.map builtins.toJSON path ) ] ) }" ] ( builtins.concatLists ( builtins.attrValues set ) ) ] ;
-                                                                    }
-                                                                    (
-                                                                        let
-                                                                            in
-                                                                                {
-                                                                                    couple = { } ;
-                                                                                    family = { } ;
-                                                                                    personal = { } ;
-                                                                                    scratch =
-                                                                                        {
-                                                                                            one =
-                                                                                                ignore :
-                                                                                                    {
-                                                                                                        init-script = "echo one > /mount/one" ;
-                                                                                                        outputs = [ "one" ] ;
-                                                                                                    } ;
-                                                                                            two =
-                                                                                                ignore :
-                                                                                                    {
-                                                                                                        dependencies = [ [ "scratch" "one" ] ] ;
-                                                                                                        init-script = "echo two > /mount/two" ;
-                                                                                                        outputs = [ "two" ] ;
-                                                                                                    } ;
-                                                                                        } ;
-                                                                                }
-                                                                    ) ;
+                                                                                                lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
+                                                                                                list = path : list : builtins.concatLists list ;
+                                                                                                set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                                            }
+                                                                                            resources ;
+                                                                                    tree =
+                                                                                        visitor.lib.implementation
+                                                                                            {
+                                                                                                lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                            }
+                                                                                            resources ;
+                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
+                                                                            init-packages = init-packages ;
+                                                                            init-script = init-script ;
+                                                                            name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                            outputs = outputs ;
+                                                                            path = path ;
+                                                                            release-packages = release-packages ;
+                                                                            release-script = release-script ;
+                                                                        } ;
+                                                                in [ ( value ignore ) ] ;
+                                                    list = path : list : builtins.concatLists list ;
+                                                    null = path : value : [ ] ;
+                                                    set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                }
+                                                resources ;
+                                        resources =
+                                            let
+                                                in
+                                                    {
+                                                        couple = { } ;
+                                                        family = { } ;
+                                                        personal = { } ;
+                                                        scratch =
+                                                            {
+                                                                one =
+                                                                    ignore :
+                                                                        {
+                                                                            init-script = "echo one > /mount/one" ;
+                                                                            outputs = [ "one" ] ;
+                                                                        } ;
+                                                                two =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = [ [ "scratch" "one" ] ] ;
+                                                                            init-script = "echo two > /mount/two" ;
+                                                                            outputs = [ "two" ] ;
+                                                                        } ;
+                                                            } ;
+                                                    } ;
+                                        scripts =
+                                            let
+                                                mapper =
+                                                    resource :
+                                                        let
+                                                            dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
                                                             in
-                                                                ''
-                                                                    ${ builtins.concatStringsSep "\n" commands }
-                                                                '' ;
-                                                    name = "derivation" ;
-                                                    nativeBuildInputs = [ pkgs.makeWrapper ] ;
-                                                    src = ./. ;
+                                                                {
+                                                                    index =
+                                                                        let
+                                                                            filtered = builtins.filter ( indexed : indexed.value.name == resource.name ) indexed ;
+                                                                            find = builtins.elemAt 0 filtered ;
+                                                                            indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
+                                                                            list = builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ;
+                                                                            sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "identical elements" ) list ;
+                                                                            in find.index ;
+                                                                    setup =
+                                                                        pkgs.writeShellApplication
+                                                                            {
+                                                                                name = "setup" ;
+                                                                                runtimeInputs = [ pkgs.coreutils pkgs.find pkgs.flock pkgs.jq pkgs.yq ] ;
+                                                                                text =
+                                                                                    let
+                                                                                        yaml =
+                                                                                            code :
+                                                                                                ''
+                                                                                                    jq --null-input --arg CODE "${ builtins.toString code }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg OBSERVED "$( find "$STASH/mount -mindepth 1 -maxdepth 1 | sort" )" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$( cat "$?" )" '{ "code" : $CODE , "observed" : $OBSERVED , ""standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml
+                                                                                                ''
+                                                                                        in
+                                                                                            ''
+                                                                                                ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
+                                                                                                mkdir --parents "$ROOT"
+                                                                                                exec 201> "$ROOT/lock"
+                                                                                                flock -x 201
+                                                                                                STASH="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] }" ;
+                                                                                                LINKED="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON path ) ] ) }"
+                                                                                                mkdir --parents "$STASH/mount"
+                                                                                                if [ -f "$STASH/failure.yaml" ]
+                                                                                                then
+                                                                                                    yq --yaml-output "." "$STASH/failure.yaml" >&2
+                                                                                                    rm "$ROOT/lock"
+                                                                                                    flock -u 201
+                                                                                                    exit 64
+                                                                                                elif [ -f "$STASH/success.yaml" ]
+                                                                                                then
+                                                                                                    mkdir --parents "$LINKED"
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : "if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi" ) resource.outputs ) }
+                                                                                                    rm "$ROOT/lock"
+                                                                                                    flock -u 201
+                                                                                                    exit 0
+                                                                                                else
+                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : "if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ; then ${ yaml 13579 } &&& rm "$ROOT/lock" && flock -u 201 && exit 64 ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
+                                                                                                    if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
+                                                                                                    then
+                                                                                                        if [ -s "$STASH/standard-error" ]
+                                                                                                        then
+                                                                                                            ${ yaml 20189 }
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 64
+                                                                                                        elif [ "${ builtins.concatStringsSep "/n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 | sort )" ]
+                                                                                                        then
+                                                                                                            ${ yaml 850 }
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 64
+                                                                                                        else
+                                                                                                            mkdir --parents "$LINKED"
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : "if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output } ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi" ) resource.outputs ) }
+                                                                                                            ${ yaml 0 }
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 0
+                                                                                                        fi
+                                                                                                    else
+                                                                                                        ${ yaml 3095 }
+                                                                                                        yq --yaml-output "." "$STASH/failure.yaml"
+                                                                                                        rm "$ROOT/lock"
+                                                                                                        flock -u 201
+                                                                                                        exit 64
+                                                                                                    fi
+                                                                                                fi
+                                                                                            '' ;
+                                                                            } ;
+                                                                    teardown =
+                                                                        pkgs.writeShellApplication
+                                                                            {
+                                                                                name = "setup" ;
+                                                                                runtimeInputs = [ ] ;
+                                                                                text =
+                                                                                    ''
+                                                                                    '' ;
+                                                                            } ;
+                                                                } ;
+                                                in builtins.map mapper points ;
+                                        setup =
+                                            pkgs.writeShellApplication
+                                                {
+                                                    name = "setup" ;
+                                                    runtimeInputs = [ ] ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
                                                 } ;
                                         in
                                             {
@@ -395,30 +403,7 @@
                                                                         pkgs.git
                                                                         pkgs.git-crypt
                                                                         pkgs.pass
-                                                                        (
-                                                                            pkgs.writeShellApplication
-                                                                                {
-                                                                                    name = "portfolio" ;
-                                                                                    runtimeInputs = [ pkgs.findutils ] ;
-                                                                                    text =
-                                                                                        ''
-                                                                                            find ${ derivation } -mindepth 1 -type f -exec {} \;
-                                                                                        '' ;
-                                                                                }
-                                                                        )
-                                                                        (
-                                                                            pkgs.writeShellApplication
-                                                                                {
-                                                                                    name = "studio" ;
-                                                                                    runtimeInputs = [ pkgs.findutils pkgs.git pkgs.jetbrains.idea-community pkgs.git-crypt] ;
-                                                                                    text =
-                                                                                        ''
-                                                                                            find ${ derivation } -mindepth 1 -type f -exec {} \;
-                                                                                            ROOT_DIR=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toJSON ( builtins.readFile config.personal.current-time ) ) ) ) ] ] ) }
-                                                                                            idea-community "$ROOT_DIR"
-                                                                                        '' ;
-                                                                                }
-                                                                        )
+                                                                        setup
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
