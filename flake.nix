@@ -198,13 +198,6 @@
                                                                                             '' ;
                                                                                         in
                                                                                             ''
-                                                                                                ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
-                                                                                                mkdir --parents "$ROOT"
-                                                                                                exec 201> "$ROOT/lock"
-                                                                                                flock -x 201
-                                                                                                STASH="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) }" ;
-                                                                                                LINKED="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }"
-                                                                                                mkdir --parents "$STASH/mount"
                                                                                             '' ;
                                                                             } ;
                                                                     teardown =
