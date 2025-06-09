@@ -22,7 +22,7 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
+                                                        mapper = resource : { name = builtins.trace ( builtins.concatStringsSep " , " ( builtins.attrNames resource ) ) resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
                                                         in builtins.map mapper points ;
                                                 in builtins.listToAttrs list ;
                                         outputs =
