@@ -213,7 +213,7 @@
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.trace ( builtins.typeOf scripts ) "" ; # builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
                                                 } ;
                                         in
                                             {
