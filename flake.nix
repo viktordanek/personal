@@ -209,12 +209,13 @@
                                                                 } ;
                                                 in builtins.map mapper points ;
                                         setup =
+                                            builtins.trace "HI" (
                                             pkgs.writeShellApplication
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.trace ( builtins.toJSON scripts ) ( builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ) ;
-                                                } ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script.setup }/bin/setup" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
+                                                } ) ;
                                         in
                                             {
                                                 config =
