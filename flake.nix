@@ -213,7 +213,7 @@
                                                 {
                                                     name = "setup" ;
                                                     runtimeInputs = [ ] ;
-                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "" ) (  scripts ) ) ;
+                                                    text = builtins.concatStringsSep "\n" ( builtins.map ( script : "${ script }/bin/script" ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) ;
                                                 } ;
                                         in
                                             {
