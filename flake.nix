@@ -2,9 +2,12 @@
     inputs =
         {
 	        visitor.url = "github:viktordanek/visitor" ;
+	            flox = {
+                  url = "github:flox/flox/v1.4.3";
+                };
         } ;
     outputs =
-        { self , visitor } :
+        { self , flox , visitor } :
             {
                 lib =
                     {
@@ -1224,6 +1227,18 @@
                                                                     ] ;
                                                                 settings.experimental-features = [ "nix-command" "flakes" ] ;
                                                             } ;
+      environment.systemPackages =
+          inputs.flox.packages.${pkgs.system}.default
+        ];
+      nix.settings = {
+        experimental-features = "nix-command flakes";
+        substituters = [
+          "https://cache.flox.dev"
+        ];
+        trusted-public-keys = [
+          "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+        ];
+      };
                                                         programs =
                                                             {
                                                                 bash.interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
