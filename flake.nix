@@ -1229,6 +1229,7 @@
                                                             } ;
       environment.systemPackages = [
           flox.packages.${pkgs.system}.default
+          pkgs.chromium
         ];
       nix.settings = {
         # experimental-features = "nix-command flakes";
