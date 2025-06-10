@@ -1227,7 +1227,7 @@
                                                                     ] ;
                                                                 settings.experimental-features = [ "nix-command" "flakes" ] ;
                                                             } ;
-      environment.systemPackages =
+      environment.systemPackages = [
           inputs.flox.packages.${pkgs.system}.default
         ];
       nix.settings = {
