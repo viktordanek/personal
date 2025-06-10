@@ -1231,7 +1231,7 @@
           inputs.flox.packages.${pkgs.system}.default
         ];
       nix.settings = {
-        experimental-features = "nix-command flakes";
+        # experimental-features = "nix-command flakes";
         substituters = [
           "https://cache.flox.dev"
         ];
