@@ -119,7 +119,7 @@
                                                                             list = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
                                                                             sorted1 = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "identical elements" ) list ;
                                                                             sorted = builtins.sort ( a : b : true ) list ;
-                                                                            in find.index ;
+                                                                            in builtins.trace ( builtins.typeOf find ) find.index ;
                                                                     setup =
                                                                         pkgs.writeShellApplication
                                                                             {
