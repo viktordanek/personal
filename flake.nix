@@ -111,7 +111,7 @@
                                                             dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
                                                             in
                                                                 {
-                                                                    index = 0
+                                                                    index =
 #                                                                        let
 #                                                                            filtered = builtins.filter ( indexed : indexed.value.name == resource.name ) indexed ;
 #                                                                            find = builtins.elemAt 0 filtered ;
