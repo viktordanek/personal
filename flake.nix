@@ -18,13 +18,13 @@
                             in
                                 { config , lib , pkgs , ... } :
                                     let
-                                        dependencies = { } ;
-#                                            let
-#                                                list =
-#                                                    let
-#                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
-#                                                        in builtins.map mapper points ;
-#                                                in builtins.listToAttrs list ;
+                                        dependencies =
+                                            let
+                                                list =
+                                                    let
+                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) resource.dependencies ) ] ; } ;
+                                                        in builtins.map mapper points ;
+                                                in builtins.listToAttrs list ;
                                         outputs =
                                             let
                                                 list =
