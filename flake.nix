@@ -64,7 +64,7 @@
                                                                                                 lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                             }
                                                                                             resources ;
-                                                                                    in builtins.trace "528e19fc-c058-41e6-844e-48366510a16d tree=${ builtins.toJSON tree } -- list=${ builtins.toJSON list }" ( builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ) ;
+                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
                                                                             init-packages = init-packages ;
                                                                             init-script = init-script ;
                                                                             name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
@@ -109,14 +109,14 @@
                                                     resource :
                                                         let
                                                             dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
-                                                            index = 0 ;
-#                                                                let
-#                                                                    find = builtins.elemAt filtered 0 ;
-#                                                                    filtered = builtins.filter ( dependency : dependency.value.name == resource.name ) indexed ;
-#                                                                    indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
-#                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
-#                                                                    sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
-#                                                                    in find.index ;
+                                                            index =
+                                                                let
+                                                                    find = builtins.elemAt filtered 0 ;
+                                                                    filtered = builtins.filter ( dependency : dependency.value.name == resource.name ) indexed ;
+                                                                    indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
+                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
+                                                                    sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
+                                                                    in find.index ;
                                                             in
                                                                 {
                                                                     index = index ;
