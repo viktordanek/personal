@@ -22,7 +22,7 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) ( builtins.trace "33a61db7-4b2d-4f93-9a7c-652bb77f4fa0 ${ builtins.typeOf resource.dependencies }" resource.dependencies ) ) ] ; } ;
+                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) ( builtins.trace "33a61db7-4b2d-4f93-9a7c-652bb77f4fa0 XX" resource.dependencies ) ) ] ; } ;
                                                         in builtins.map mapper points ;
                                                 in builtins.listToAttrs list ;
                                         outputs =
