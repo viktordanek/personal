@@ -97,7 +97,7 @@
                                                                 two =
                                                                     ignore :
                                                                         {
-                                                                            dependencies = tree : [ tree ] ;
+                                                                            dependencies = tree : [ tree.scratch ] ;
                                                                             init-script = "echo two > /mount/two" ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
