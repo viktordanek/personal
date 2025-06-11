@@ -169,7 +169,7 @@
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
-                                                                                                        elif [ "${ builtins.concatStringsSep "/n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 | sort )" ]
+                                                                                                        elif [ "${ builtins.concatStringsSep "/n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" ]
                                                                                                         then
                                                                                                             ${ yaml 850 }
                                                                                                             rm "$ROOT/lock"
