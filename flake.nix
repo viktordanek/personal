@@ -116,8 +116,7 @@
                                                                     indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
                                                                     listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
                                                                     sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
-                                                                    # in find.index ;
-                                                                    in 0 ;
+                                                                    in find.index ;
                                                             in
                                                                 {
                                                                     index = index ;
@@ -145,7 +144,7 @@
                                                                                                 } ;
                                                                                         yaml =
                                                                                             code :
-                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES "${ builtins.concatStringsSep "," resource.dependencies }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString ( builtins.trace "0a1a1dee-9cb1-4a8d-873f-ab4e53bd9e94" index ) } --arg INIT_SCRIPT "${ resource.init-script }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ resource.release-script }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init-script" : $INIT_SCRIPT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES "${ builtins.concatStringsSep "," resource.dependencies }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT_SCRIPT "${ resource.init-script }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ resource.release-script }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init-script" : $INIT_SCRIPT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
                                                                                         in
                                                                                             ''
                                                                                                 ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
@@ -226,7 +225,7 @@
                                                     text =
                                                         ''
                                                             rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
-                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) (  scripts ) ) }
+                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
                                                         '' ;
                                                 } ;
                                         in
