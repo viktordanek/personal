@@ -171,7 +171,7 @@
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
                                                                                                     mkdir --parents "$LINK"
-                                                                                                    # FIXME
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$MOUNT/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
