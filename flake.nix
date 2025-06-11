@@ -171,7 +171,7 @@
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
                                                                                                     mkdir --parents "$LINK"
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) ) resource.dependencies }
+                                                                                                    # FIXME
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
@@ -185,13 +185,13 @@
                                                                                                         then
                                                                                                             ${ yaml 850 }
                                                                                                             yq --yaml-output "$STASH/failure.yaml" >&2
-                                                                                                            rm "$ROOT/lock"                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
-
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         else
                                                                                                             mkdir --parents "$LINKED"
-# FIXME
+                                                                                                            # FIXME
                                                                                                             ${ yaml 0 }
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
