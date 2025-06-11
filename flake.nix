@@ -29,9 +29,9 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : { name = resource.name ; value = resource.outputs ; } ;
+                                                        mapper = resource : builtins.trace "28134a56-4acd-4c66-9a0a-fcc5dc9a645c" { name = resource.name ; value = resource.outputs ; } ;
                                                         in builtins.map mapper points ;
-                                                in builtins.listToAttrs list ;
+                                                in builtins.trace "b9cc6cbd-a6c2-40f2-bef5-32288f13c3cd" ( builtins.listToAttrs list ) ;
                                         points =
                                             visitor.lib.implementation
                                                 {
@@ -171,7 +171,7 @@
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
                                                                                                     mkdir --parents "$LINK"
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.trace "f5491678-2887-467f-bbd1-ced64b3b7aac" ( builtins.getAttr dependency outputs ) ) ) ( builtins.trace "d9fcfc8c-35d4-4b57-a150-160ef0227383 [[ ${ builtins.concatStringsSep " , " ( builtins.map builtins.typeOf resource.dependencies ) } ]] [ ${ builtins.typeOf ( builtins.getAttr  ) } ] ${ builtins.toJSON resource.dependencies }" resource.dependencies ) ) }
+                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.trace "f5491678-2887-467f-bbd1-ced64b3b7aac" ( builtins.getAttr dependency outputs ) ) ) ( builtins.trace "d9fcfc8c-35d4-4b57-a150-160ef0227383 [[ ${ builtins.concatStringsSep " , " ( builtins.map builtins.typeOf resource.dependencies ) } ]] ${ builtins.toJSON resource.dependencies }" resource.dependencies ) ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
