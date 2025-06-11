@@ -65,7 +65,7 @@
                                                                                             }
                                                                                             resources ;
                                                                                     # in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
-                                                                                    in builtins.trace "5449b9aa-6b72-4000-b3e6-9df74d8b1710" ( dependencies tree ) ;
+                                                                                    in builtins.trace "5449b9aa-6b72-4000-b3e6-9df74d8b1710 ${ builtins.typeOf ( dependencies tree ) }" ( dependencies tree ) ;
                                                                             init-packages = init-packages ;
                                                                             init-script = init-script ;
                                                                             name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
