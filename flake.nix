@@ -124,6 +124,7 @@
                                                                     # in builtins.trace "c1f3ebcd-d159-481e-adf5-69cffcc0f981" find.index ;
                                                             in
                                                                 {
+                                                                    index = index ;
                                                                     setup =
                                                                         pkgs.writeShellApplication
                                                                             {
