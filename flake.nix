@@ -22,7 +22,7 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ resource.dependencies ] ( builtins.map ( dependency : builtins.getAttr dependency dependencies ) ( builtins.trace "b5c0b819-6169-45fd-a938-7f8fd142f63e" resource.dependencies ) ) ] ; } ;
+                                                        mapper = resource : { name = resource.name ; value = builtins.concatLists [ [ ( builtins.trace "5664e376-4785-464f-a6bc-7f9a8b5b405f" resource.dependencies ) ] ( builtins.map ( dependency : builtins.getAttr dependency ( builtins.trace "bb8425d8-6929-45e5-979e-802a6f30d743" dependencies ) ) ( builtins.trace "b5c0b819-6169-45fd-a938-7f8fd142f63e" resource.dependencies ) ) ] ; } ;
                                                         in builtins.map mapper points ;
                                                 in builtins.listToAttrs list ;
                                         outputs =
@@ -64,7 +64,7 @@
                                                                                                 lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                             }
                                                                                             resources ;
-                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
+                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( ( builtins.trace "f5f8958b-9efc-4d38-9ff7-9d8d0b939e11" dependencies ) tree ) ;
                                                                             init-packages = init-packages ;
                                                                             init-script = init-script ;
                                                                             name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
@@ -108,13 +108,13 @@
                                                 mapper =
                                                     resource :
                                                         let
-                                                            dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
+                                                            dependencies-transitive-closure = builtins.getAttr resource.name ( builtins.trace "c6103a43-4f4e-43b1-b020-4c00ea15db17" dependencies ) ;
                                                             index =
                                                                 let
                                                                     find = builtins.elemAt filtered 0 ;
                                                                     filtered = builtins.filter ( dependency : dependency.value.name == resource.name ) indexed ;
                                                                     indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
-                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
+                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) ( builtins.trace "f5a4b8a4-1007-42b6-9143-6d8e96f524c7" dependencies ) ) ;
                                                                     sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
                                                                     in find.index ;
                                                             in
@@ -144,7 +144,7 @@
                                                                                                 } ;
                                                                                         yaml =
                                                                                             code :
-                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES "${ builtins.concatStringsSep "," resource.dependencies }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT_SCRIPT "${ resource.init-script }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ resource.release-script }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init-script" : $INIT_SCRIPT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES "${ builtins.concatStringsSep "," ( builtins.trace "b9ba0045-8c05-4174-9f20-026cf8448d14" resource.dependencies ) }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT_SCRIPT "${ resource.init-script }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ resource.release-script }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init-script" : $INIT_SCRIPT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
                                                                                         in
                                                                                             ''
                                                                                                 ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
@@ -171,7 +171,7 @@
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
                                                                                                     mkdir --parents "$LINK"
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
+                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) ( builtins.trace "d9fcfc8c-35d4-4b57-a150-160ef0227383" resource.dependencies ) ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
