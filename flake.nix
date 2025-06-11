@@ -110,7 +110,8 @@
                                                             dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
                                                             index =
                                                                 let
-                                                                    in 0 ;
+                                                                    list = builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) resource.dependencies ;
+                                                                    in builtins.length list ;
                                                                     # filtered = builtins.trace "9912a0bf-9d1c-4d54-b314-967cf9986ef0" ( builtins.filter ( indexed : indexed.value.name == resource.name ) indexed ) ;
                                                                     # find = builtins.trace "4ff3e2b5-faf7-4667-845f-afb69e7c301a" ( builtins.elemAt 0 filtered ) ;
                                                                     # indexed = builtins.trace "8534acfd-672e-4d64-bd6c-ba4f10bbd1cd" ( builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ) ;
