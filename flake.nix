@@ -185,12 +185,13 @@
                                                                                                         then
                                                                                                             ${ yaml 850 }
                                                                                                             yq --yaml-output "$STASH/failure.yaml" >&2
-                                                                                                            rm "$ROOT/lock"
+                                                                                                            rm "$ROOT/lock"                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
+
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         else
                                                                                                             mkdir --parents "$LINKED"
-
+# FIXME
                                                                                                             ${ yaml 0 }
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
