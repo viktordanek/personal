@@ -171,7 +171,6 @@
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
                                                                                                     mkdir --parents "$LINK"
-                                                                                                    ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) ( builtins.trace "d9fcfc8c-35d4-4b57-a150-160ef0227383 ${ builtins.concatStringsSep " , " ( builtins.map builtins.typeOf resource.dependencies ) }" resource.dependencies ) ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/standard-error" ]
