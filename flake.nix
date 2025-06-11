@@ -146,7 +146,6 @@
                                                                                                 STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                 LINKED=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }
                                                                                                 export MOUNT="$STASH/mount"
-                                                                                                export LINK="$ROOT/linked"
                                                                                                 mkdir --parents "$MOUNT"
                                                                                                 if [ -f "$STASH/failure.yaml" ]
                                                                                                 then
@@ -162,6 +161,8 @@
                                                                                                     flock -u 201
                                                                                                     exit 0
                                                                                                 else
+                                                                                                    export LINK="$ROOT/linked"
+                                                                                                    mkdir --parents "$LINK"
                                                                                                     ${ builtins.concatStringsSep "" ( builtins.map ( dependency : builtins.concatStringsSep "\n" ( output : ''if [ ! -e "${ builtins.concatStringsSep "/" [ "$LINKED" dependency output ] }" ] ; then ${ yaml 13579 } && rm "$ROOT/lock" && flock -u 201 && exit 64'' ) ( builtins.getAttr dependency outputs ) ) resource.dependencies ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
