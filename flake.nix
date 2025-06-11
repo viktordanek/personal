@@ -170,7 +170,7 @@
                                                                                                     exit 0
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
-                                                                                                    mkdir --parents "$LINK"
+                                                                                                    mkdir --parents "$LINKED"
                                                                                                     ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$MOUNT/${ output }" "$LINKED/${ output }" ; then ${ yaml 32126 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     if ${ init }/bin/init > "$STASH/standard-output" 2> "$STASH/standard-error"
                                                                                                     then
