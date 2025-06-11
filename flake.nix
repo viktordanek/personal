@@ -125,6 +125,7 @@
                                                                                                     extraBwrapArgs =
                                                                                                         [
                                                                                                             "--bind $MOUNT /mount"
+                                                                                                            "--ro-bind $LINKED /home/${ config.personal.name }/${ config.personal.stash }/linked"
                                                                                                         ] ;
                                                                                                     name = "init" ;
                                                                                                     runScript =
@@ -166,12 +167,14 @@
                                                                                                         if [ -s "$STASH/standard-error" ]
                                                                                                         then
                                                                                                             ${ yaml 20189 }
+                                                                                                            yq --yaml-output "$STASH/failure.yaml" >&2
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         elif [ "${ builtins.concatStringsSep "/n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" ]
                                                                                                         then
                                                                                                             ${ yaml 850 }
+                                                                                                            yq --yaml-output "$STASH/failure.yaml" >&2
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
