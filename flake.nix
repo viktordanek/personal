@@ -122,6 +122,10 @@
                                                                                         init =
                                                                                             pkgs.buildFHSUserEnv
                                                                                                 {
+                                                                                                    extraBwrapArgs =
+                                                                                                        [
+                                                                                                            "--bind $MOUNT /mount"
+                                                                                                        ] ;
                                                                                                     name = "init" ;
                                                                                                     runScript =
                                                                                                         let
@@ -131,7 +135,7 @@
                                                                                                 } ;
                                                                                         yaml =
                                                                                             code :
-                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "expected" : $EXPECTED , "observed" : $OBSERVED , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                ''jq --null-input --arg CODE "${ builtins.toString code }" --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 | sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg STANDARD_ERROR "$( cat "$STASH/standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "expected" : $EXPECTED , "observed" : $OBSERVED , "init-script" : $INIT_SCRIPT , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/${ if code == 0 then "success" else "failure" }.yaml"'' ;
                                                                                         in
                                                                                             ''
                                                                                                 ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
@@ -140,7 +144,8 @@
                                                                                                 flock -x 201
                                                                                                 STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                 LINKED=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }
-                                                                                                mkdir --parents "$STASH/mount"
+                                                                                                export MOUNT "$STASH/mount"
+                                                                                                mkdir --parents "$MOUNT"
                                                                                                 if [ -f "$STASH/failure.yaml" ]
                                                                                                 then
                                                                                                     yq --yaml-output "." "$STASH/failure.yaml" >&2
@@ -150,7 +155,7 @@
                                                                                                 elif [ -f "$STASH/success.yaml" ]
                                                                                                 then
                                                                                                     mkdir --parents "$LINKED"
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$MOUNT/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
                                                                                                     exit 0
