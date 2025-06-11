@@ -91,6 +91,7 @@
                                                                 one =
                                                                     ignore :
                                                                         {
+                                                                            init-packages = pkgs : [ pkgs.coreutils ] ;
                                                                             init-script = "echo one > /mount/one" ;
                                                                             outputs = [ "one" ] ;
                                                                         } ;
@@ -98,7 +99,8 @@
                                                                     ignore :
                                                                         {
                                                                             dependencies = tree : [ tree.scratch.one ] ;
-                                                                            init-script = "echo two > /mount/two" ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils ] ;
+                                                                            init-script = "ln --symbolic /home/emory/stash/linked/scratch/one/one /mount/two" ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
                                                             } ;
@@ -167,7 +169,7 @@
                                                                                                 elif [ -f "$STASH/success.yaml" ]
                                                                                                 then
                                                                                                     mkdir --parents "$LINKED"
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$MOUNT/${ output }" "$LINKED/${ output }" ; then ${ yaml 6079 } && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
+                                                                                                    # FIXME
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
                                                                                                     exit 0
