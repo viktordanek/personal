@@ -226,7 +226,7 @@
                                                     text =
                                                         ''
                                                             rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
-                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
+                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) (  scripts ) ) }
                                                         '' ;
                                                 } ;
                                         in
