@@ -493,7 +493,7 @@
                                                                                                                 ''
                                                                                                                     NOW="$( date +%s )"
                                                                                                                     RECYCLE_BIN="$( mktemp --directory )"
-                                                                                                                    find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-date ) ) } | while read DIRECTORY
+                                                                                                                    find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) } | while read DIRECTORY
                                                                                                                     do
                                                                                                                         if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
                                                                                                                         then
