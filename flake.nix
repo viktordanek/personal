@@ -95,9 +95,9 @@
                                                                                 ''
                                                                                     export GNUPGHOME=/mount/.gpg
                                                                                     mkdir "$GNUPGHOME"
-                                                                                    age --decrypt --identity ${ config.personal.age-key } --output /work/secret-keys.asc ${ secrets.secret-keys.asc.age }
+                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets.secret-keys.asc.age }
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc
-                                                                                    age --decrypt --identity ${ config.personal.age-key } --output /work/ownertrust.asc
+                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc }
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trust-db
                                                                                 '' ;
