@@ -106,6 +106,25 @@
                                                                         } ;
                                                                     dot-ssh =
                                                                         {
+                                                                            boot =
+                                                                                ignore :
+                                                                                    {
+                                                                                        init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
+                                                                                        init-script =
+                                                                                            ''
+                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/boot/identity.asc.age
+                                                                                                chmod 0400 /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
+                                                                                                chmod 0400 /mount/known-hosts
+                                                                                                cat > /mount/config <<EOF
+                                                                                                Host github.com
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/known-hosts
+                                                                                                EOF
+                                                                                                chmod 0400 /mount/config
+                                                                                            '' ;
+                                                                                        outputs = [ "config" "identity" "known-hosts" ] ;
+                                                                                    } ;
                                                                             viktor =
                                                                                 ignore :
                                                                                     {
