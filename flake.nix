@@ -524,7 +524,7 @@
                                                                                     {
                                                                                         OnCalendar = "daily" ;
                                                                                     } ;
-                                                                                wantedBy = [ timers.target ] ;
+                                                                                wantedBy = [ "timers.target" ] ;
                                                                             } ;
                                                                     } ;
                                                             } ;
