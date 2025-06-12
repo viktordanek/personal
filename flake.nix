@@ -239,9 +239,9 @@
                                                                                         yaml =
                                                                                             code :
                                                                                                 if code == 31314 then
-                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : $CODE }' | yq --yaml-output "." "$STASH/release.failure.yaml"''
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : $CODE }' | yq --yaml-output "." > "$STASH/release.failure.yaml"''
                                                                                                 else
-                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : $CODE }' | yq --yaml-output "." "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : $CODE }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
                                                                                         in
                                                                                     ''
                                                                                         ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
