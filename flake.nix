@@ -291,14 +291,15 @@
                                                         '' ;
                                                 } ;
                                         teardown =
-                                            {
-                                                name = "teardown" ;
-                                                runtimeInputs = [ pkgs.coreutils ] ;
-                                                text =
-                                                    ''
-                                                        ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
-                                                    '' ;
-                                            } ;
+                                            pkgs.writeShellApplication
+                                                {
+                                                    name = "teardown" ;
+                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                    text =
+                                                        ''
+                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
+                                                        '' ;
+                                                } ;
                                         in
                                             {
                                                 config =
