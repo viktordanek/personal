@@ -90,7 +90,7 @@
                                                                 dot-gnupg =
                                                                     ignore :
                                                                         {
-                                                                            init-packages = pkgs : [ pkgs.age pkgs.gnupg ] ;
+                                                                            init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                             init-script =
                                                                                 ''
                                                                                     export GNUPGHOME=/mount/.gpg
@@ -103,6 +103,28 @@
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
+                                                                        } ;
+                                                                    dot-ssh =
+                                                                        {
+                                                                            viktor =
+                                                                                ignore :
+                                                                                    {
+                                                                                        init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
+                                                                                        init-script =
+                                                                                            ''
+                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/viktor/identity.asc.age
+                                                                                                chmod 0400 /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/viktor/known-hosts.asc.age
+                                                                                                chmod 0400 /mount/known-hosts
+                                                                                                cat > /mount/config <<EOF
+                                                                                                Host github.com
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/viktor/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/viktor/known-hosts
+                                                                                                EOF
+                                                                                                chmod 0400 /mount/config
+                                                                                            '' ;
+                                                                                        outputs = [ "config" "identity" "known-hosts" ] ;
+                                                                                    } ;
                                                                         } ;
                                                             } ;
                                                         scratch =
