@@ -99,7 +99,7 @@
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc
                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --update-trust-db
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME"" --update-trust-db
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
                                                                         } ;
