@@ -502,7 +502,7 @@
                                                                                                                         if [ -f "$DIRECTORY/release.success.yaml" ]
                                                                                                                         then
                                                                                                                             LAST_ACCESS="$( stat "$DIRECTORY/release.success.yaml" --format "%X" )"
-                                                                                                                            if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ config.personal.stale } ]
+                                                                                                                            if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ builtins.toString config.personal.stale } ]
                                                                                                                             then
                                                                                                                                 mv "$DIRECTORY" "$RECYCLE_BIN"
                                                                                                                             fi
