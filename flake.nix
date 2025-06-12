@@ -222,7 +222,7 @@
                                                                         pkgs.writeShellApplication
                                                                             {
                                                                                 name = "teardown" ;
-                                                                                runtimeInputs = [ ] ;
+                                                                                runtimeInputs = [ pkgs.coreutils pkgs.find fpkgs.flock pkgs.jq pkgs.yq ] ;
                                                                                 text =
                                                                                     let
                                                                                         release =
