@@ -270,7 +270,7 @@
                                                                                                         if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
                                                                                                         then
                                                                                                             ${ yaml 30292 }
-                                                                                                            yq --yaml-output "$STASH/release.failure.yaml" >&2
+                                                                                                            yq --yaml-output "." "$STASH/release.failure.yaml" >&2
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
@@ -281,7 +281,7 @@
                                                                                                         exit 0
                                                                                                     else
                                                                                                         ${ yaml 31504 }
-                                                                                                        yq --yaml-output "$STASH/release.failure.yaml" >&2
+                                                                                                        yq --yaml-output "." ""$STASH/release.failure.yaml" >&2
                                                                                                         rm "$ROOT/lock"
                                                                                                         flock -u 201
                                                                                                         exit 64
