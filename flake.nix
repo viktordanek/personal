@@ -477,49 +477,55 @@
                                                             {
                                                                 services =
                                                                     {
-                                                                        after = [ "network.target" ] ;
-                                                                        serviceConfig =
+                                                                        stash-cleanup =
                                                                             {
-                                                                                ExecStart =
-                                                                                    let
-                                                                                        script =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "script" ;
-                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            NOW="$( date +%s )"
-                                                                                                            RECYCLE_BIN="$( mktemp --directory )"
-                                                                                                            find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-date ) ) } | while read DIRECTORY
-                                                                                                            do
-                                                                                                                if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
-                                                                                                                then
-                                                                                                                    "$DIRECTORY/teardown"
-                                                                                                                fi
-                                                                                                                if [ -f "$DIRECTORY/release.success.yaml" ]
-                                                                                                                then
-                                                                                                                    LAST_ACCESS="$( stat "$DIRECTORY/release.success.yaml" --format "%X" )"
-                                                                                                                    if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ config.personal.stale } ]
-                                                                                                                    then
-                                                                                                                        mv "$DIRECTORY" "$RECYCLE_BIN"
-                                                                                                                    fi
-                                                                                                                fi
-                                                                                                            done
-                                                                                                        '' ;
-                                                                                                } ;
-                                                                                        in "${ script }/bin/script" ;
-                                                                                Owner = config.personal.name ;
+                                                                                after = [ "network.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                script =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "script" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    NOW="$( date +%s )"
+                                                                                                                    RECYCLE_BIN="$( mktemp --directory )"
+                                                                                                                    find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-date ) ) } | while read DIRECTORY
+                                                                                                                    do
+                                                                                                                        if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
+                                                                                                                        then
+                                                                                                                            "$DIRECTORY/teardown"
+                                                                                                                        fi
+                                                                                                                        if [ -f "$DIRECTORY/release.success.yaml" ]
+                                                                                                                        then
+                                                                                                                            LAST_ACCESS="$( stat "$DIRECTORY/release.success.yaml" --format "%X" )"
+                                                                                                                            if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ config.personal.stale } ]
+                                                                                                                            then
+                                                                                                                                mv "$DIRECTORY" "$RECYCLE_BIN"
+                                                                                                                            fi
+                                                                                                                        fi
+                                                                                                                    done
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ script }/bin/script" ;
+                                                                                        Owner = config.personal.name ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
-                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                     } ;
                                                                 timers =
                                                                     {
-                                                                        timerConfig =
+                                                                        stash-cleanup =
                                                                             {
-                                                                                OnCalendar = "daily" ;
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = "daily" ;
+                                                                                    } ;
+                                                                                wantedBy = [ timers.target ] ;
                                                                             } ;
-                                                                        wantedBy = [ timers.target ] ;
                                                                     } ;
                                                             } ;
                                                         system.stateVersion = "23.05" ;
