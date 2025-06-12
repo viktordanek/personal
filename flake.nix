@@ -138,6 +138,7 @@
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host mobile
                                                                                                 HostName 192.168.1.202
+                                                                                                Port 8022
                                                                                                 IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/identity
                                                                                                 UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/known-hosts
                                                                                                 EOF
