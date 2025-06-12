@@ -239,9 +239,9 @@
                                                                                         yaml =
                                                                                             code :
                                                                                                 if code == 31314 then
-                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : $CODE }' | yq --yaml-output "." > "$STASH/release.failure.yaml"''
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } --arg DEPENDENCIES "${ builtins.concatStringsSep "," resource.dependencies }" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES }' | yq --yaml-output "." > "$STASH/release.failure.yaml"''
                                                                                                 else
-                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } --arg STANDARD_ERROR "$( cat "$STASH/release.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/release.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } --arg DEPENDENCIES "${ builtins.concatStringsSep "," resource.dependencies }" --arg STANDARD_ERROR "$( cat "$STASH/release.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/release.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
                                                                                         in
                                                                                     ''
                                                                                         ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
@@ -316,6 +316,7 @@
                                                     text =
                                                         ''
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/bin/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
+                                                            rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
                                                         '' ;
                                                 } ;
                                         in
