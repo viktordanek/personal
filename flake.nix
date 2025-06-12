@@ -217,20 +217,46 @@
                                                                                 name = "teardown" ;
                                                                                 runtimeInputs = [ ] ;
                                                                                 text =
+                                                                                    let
+                                                                                        release =
+                                                                                            pkgs.buildFHSUserEnv
+                                                                                                {
+                                                                                                    extraBwrapArgs =
+                                                                                                        [
+                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/linked"
+                                                                                                        ] ;
+                                                                                                    name = "release" ;
+                                                                                                    runScript = resource.release-script ;
+                                                                                                    targetPkgs = resource.release-packages;
+                                                                                                } ;
+                                                                                        in
                                                                                     ''
                                                                                         ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
                                                                                         if [ -d "$ROOT" ]
                                                                                         then
                                                                                             exec 201> "$ROOT/lock"
-                                                                                            flock 201
+                                                                                            flock -x 201
                                                                                             STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                             if [ -d "$STASH" ]
                                                                                             then
-                                                                                                if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
+                                                                                                if [ -f "$STASH/release.failure.yaml" ]
                                                                                                 then
-                                                                                                    echo "$?" > "$STASH/release.status"
+                                                                                                    yq --yaml-output "." "$STASH/release.failure.yaml"
+                                                                                                    rm "$ROOT/lock"
+                                                                                                    flock -u 201
+                                                                                                    exit 64
+                                                                                                elif [ -f "$STASH/release.success.yaml" ]
+                                                                                                then
+                                                                                                    rm "$ROOT/lock"
+                                                                                                    flock -u 201
+                                                                                                    exit 0
                                                                                                 else
-                                                                                                    echo "$?" > "$STASH/release.status"
+                                                                                                    if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
+                                                                                                    then
+                                                                                                        echo "$?" > "$STASH/release.status"
+                                                                                                    else
+                                                                                                        echo "$?" > "$STASH/release.status"
+                                                                                                    fi
                                                                                                 fi
                                                                                             fi
                                                                                             rm "$ROOT/lock"
