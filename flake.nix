@@ -229,6 +229,12 @@
                                                                                                     runScript = resource.release-script ;
                                                                                                     targetPkgs = resource.release-packages;
                                                                                                 } ;
+                                                                                        yaml =
+                                                                                            code :
+                                                                                                if code = 31314 then
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : code }' | yq --yaml-output "." "$STASH/release.failure.yaml"''
+                                                                                                else
+                                                                                                    ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : code }' | yq --yaml-output "." "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"''
                                                                                         in
                                                                                     ''
                                                                                         ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
@@ -253,9 +259,15 @@
                                                                                                 else
                                                                                                     if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
                                                                                                     then
-                                                                                                        echo "$?" > "$STASH/release.status"
+                                                                                                        ${ yaml 32197 }
+                                                                                                        rm "$ROOT/lock"
+                                                                                                        flock -u 201
+                                                                                                        exit 0
                                                                                                     else
-                                                                                                        echo "$?" > "$STASH/release.status"
+                                                                                                        ${ yaml 31504 }
+                                                                                                        rm "$ROOT/lock"
+                                                                                                        flock -u 201
+                                                                                                        exit 64
                                                                                                     fi
                                                                                                 fi
                                                                                             fi
@@ -270,13 +282,22 @@
                                             pkgs.writeShellApplication
                                                 {
                                                     name = "setup" ;
-                                                    runtimeInputs = [ ] ;
+                                                    runtimeInputs = [ pkgs.coreutils ] ;
                                                     text =
                                                         ''
                                                             rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
                                                         '' ;
                                                 } ;
+                                        teardown =
+                                            {
+                                                name = "teardown" ;
+                                                runtimeInputs = [ pkgs.coreutils ] ;
+                                                text =
+                                                    ''
+                                                        ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
+                                                    ''
+                                            } ;
                                         in
                                             {
                                                 config =
@@ -449,6 +470,7 @@
                                                                         pkgs.git-crypt
                                                                         pkgs.pass
                                                                         setup
+                                                                        teardown
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
