@@ -136,9 +136,10 @@
                                                                                                 age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
                                                                                                 chmod 0400 /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
-                                                                                                Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/known-hosts
+                                                                                                Host mobile
+                                                                                                HostName 192.168.1.202
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/known-hosts
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/config
                                                                                             '' ;
