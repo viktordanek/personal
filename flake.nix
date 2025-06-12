@@ -93,13 +93,7 @@
                                                                             init-packages = pkgs : [ pkgs.age pkgs.gnupg ] ;
                                                                             init-script =
                                                                                 ''
-                                                                                    export GNUPGHOME=/mount/.gpg
-                                                                                    mkdir "$GNUPGHOME"
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME"" --update-trust-db
+
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
                                                                         } ;
