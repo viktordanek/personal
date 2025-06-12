@@ -281,7 +281,7 @@
                                                                                                         exit 0
                                                                                                     else
                                                                                                         ${ yaml 31504 }
-                                                                                                        yq --yaml-output "." ""$STASH/release.failure.yaml" >&2
+                                                                                                        yq --yaml-output "." "$STASH/release.failure.yaml" >&2
                                                                                                         rm "$ROOT/lock"
                                                                                                         flock -u 201
                                                                                                         exit 64
