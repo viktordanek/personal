@@ -94,7 +94,7 @@
                                                                             init-script =
                                                                                 ''
                                                                                     export GNUPGHOME=/mount/.gpg
-                                                                                    mkdir "$GNUPGHOME"
+                                                                                    mkdir $GNUPGHOME
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
                                                                         } ;
