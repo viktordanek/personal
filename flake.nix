@@ -265,6 +265,7 @@
                                                                                                     exit 0
                                                                                                 else
                                                                                                     # FIXME
+                                                                                                    export LINK="$ROOT/linked"
                                                                                                     if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
                                                                                                     then
                                                                                                         if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
