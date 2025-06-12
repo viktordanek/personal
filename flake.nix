@@ -231,7 +231,7 @@
                                                                                                 } ;
                                                                                         yaml =
                                                                                             code :
-                                                                                                if code = 31314 then
+                                                                                                if code == 31314 then
                                                                                                     ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : code }' | yq --yaml-output "." "$STASH/release.failure.yaml"''
                                                                                                 else
                                                                                                     ''jq --null-input --arg CODE ${ builtins.toString code } '{ "code" : code }' | yq --yaml-output "." "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"''
@@ -259,6 +259,7 @@
                                                                                                 else
                                                                                                     if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
                                                                                                     then
+                                                                                                        ${ yaml 32197 }
                                                                                                         ${ yaml 32197 }
                                                                                                         rm "$ROOT/lock"
                                                                                                         flock -u 201
