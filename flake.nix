@@ -297,7 +297,7 @@
                                                 text =
                                                     ''
                                                         ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
-                                                    ''
+                                                    '' ;
                                             } ;
                                         in
                                             {
