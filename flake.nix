@@ -276,6 +276,7 @@
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         fi
+                                                                                                        LINKED=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }
                                                                                                         ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if [ "$STASH/mount/output" == "$( readlink "$LINKED/${ output }" )" ] ; then rm "$LINKED/${ output }" ; fi'' ) resource.outputs ) }
                                                                                                         ${ yaml 0 }
                                                                                                         rm "$ROOT/lock"
