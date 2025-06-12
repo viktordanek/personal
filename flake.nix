@@ -289,7 +289,7 @@
                                                                                                 fi
                                                                                             fi
                                                                                             rm "$ROOT/lock"
-                                                                                            ulock -u 201
+                                                                                            flock -u 201
                                                                                         fi
                                                                                     '' ;
                                                                             } ;
