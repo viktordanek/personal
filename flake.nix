@@ -97,10 +97,10 @@
                                                                                     mkdir "$GNUPGHOME"
                                                                                     chmod 0700 "$GNUPGHOME"
                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc 2>&1
                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/ownertrust.asc
-                                                                                    gpg --batch --yes --homeidr "$GNUPGHOME" --update-trustdb
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/ownertrust.asc 2>&1
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
                                                                         } ;
