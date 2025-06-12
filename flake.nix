@@ -196,6 +196,13 @@
                                                                                                         else
                                                                                                             mkdir --parents "$LINKED"
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
+                                                                                                            if ! rm --force release.standard-error release.standard-output release-failure.yaml release-success.yaml
+                                                                                                            then
+                                                                                                                ${ yaml 19035 }
+                                                                                                                rm "$ROOT/lock"
+                                                                                                                flock -u 201
+                                                                                                                exit 64
+                                                                                                            fi
                                                                                                             ${ yaml 0 }
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
@@ -257,9 +264,16 @@
                                                                                                     flock -u 201
                                                                                                     exit 0
                                                                                                 else
+                                                                                                    # FIXME
                                                                                                     if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
                                                                                                     then
-                                                                                                        ${ yaml 32197 }
+                                                                                                        if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
+                                                                                                        then
+                                                                                                            ${ yaml 30292 }
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 64
+                                                                                                        fi
                                                                                                         ${ yaml 32197 }
                                                                                                         rm "$ROOT/lock"
                                                                                                         flock -u 201
@@ -288,6 +302,7 @@
                                                         ''
                                                             rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
+                                                            ln --symbolic ${ teardown }/bin/teardown /home/${ config.personal.name }/${ config.personal.stash }/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }/teardown
                                                         '' ;
                                                 } ;
                                         teardown =
@@ -297,7 +312,7 @@
                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                     text =
                                                         ''
-                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
+                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/bin/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
                                                         '' ;
                                                 } ;
                                         in
