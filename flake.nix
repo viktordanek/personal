@@ -118,8 +118,8 @@
                                                                                                 chmod 0400 /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/viktor/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/viktor/known-hosts
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/known-hosts
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/config
                                                                                             '' ;
