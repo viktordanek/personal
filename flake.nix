@@ -93,6 +93,7 @@
                                                                             init-packages = pkgs : [ pkgs.age pkgs.gnupg ] ;
                                                                             init-script =
                                                                                 ''
+                                                                                    export GNUPGHOME=/mount/.gpg
 
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
