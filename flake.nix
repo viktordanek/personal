@@ -94,6 +94,9 @@
                                                                             init-script =
                                                                                 ''
                                                                                     export GNUPGHOME=/mount/.gpg
+                                                                                    mkdir "$GNUPGHOME"
+                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /work/secret-keys.asc
 
                                                                                 '' ;
                                                                             outputs = [ ".gpg" ] ;
