@@ -508,7 +508,7 @@
                                                                                                             done
                                                                                                         '' ;
                                                                                                 } ;
-                                                                                        in "${ script }/bin/script"
+                                                                                        in "${ script }/bin/script" ;
                                                                                 Owner = config.personal.name ;
                                                                             } ;
                                                                         wantedBy = [ "multi-user.target" ] ;
