@@ -211,6 +211,7 @@
                                                                         boot =
                                                                             ignore :
                                                                                 {
+                                                                                    dependencies = tree : [ tree.personal.dot-ssh.boot tree.personal.dot-gnupg ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         ''
