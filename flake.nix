@@ -114,7 +114,7 @@
                                                                                             export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
-                                                                                            git init
+                                                                                            git init 2>&1
                                                                                             git-crypt init
                                                                                             git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
