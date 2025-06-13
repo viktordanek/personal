@@ -710,7 +710,7 @@
                                                                             )
                                                                             
                                                                             echo "Corresponding full fingerprints:" >&2
-                                                                            printf '  %s\n' "${ENCRYPTION_FPRS[@]}" >&2
+                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
                                                                             
                                                                             # Get current trusted key full fingerprints
                                                                             # mapfile -t CURRENT_FPRS < <(
@@ -725,7 +725,7 @@
                                                                             
                                                                             # Check if all encryption fingerprints are in current trusted keys
                                                                             WARNING=0
-                                                                            for fpr in "${ENCRYPTION_FPRS[@]}"; do
+                                                                            for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
                                                                               if ! printf '%s\n' "${CURRENT_FPRS[@]}" | grep -qx "$fpr"; then
                                                                                 echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
                                                                                 echo "   $fpr" >&2
