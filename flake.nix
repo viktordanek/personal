@@ -81,6 +81,19 @@
                                                 resources ;
                                         resources =
                                             let
+                                                post-commit =
+                                                    pkgs.writeShellApplication
+                                                        {
+                                                            name = "post-commit" ;
+                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                            text =
+                                                                ''
+                                                                    while ! git push origin HEAD
+                                                                    do
+                                                                        sleep 1s
+                                                                    done
+                                                                '' ;
+                                                        } ;
                                                 in
                                                     {
                                                         couple = { } ;
@@ -180,6 +193,7 @@
                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
                                                                                     git config user.email "${ config.personal.email }"
                                                                                     git config user.name "${ config.personal.description }"
+                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                     git remote add origin git@github.com:nextmoose/secrets.git
                                                                                     git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
                                                                                     git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
@@ -285,6 +299,7 @@
                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                     git config user.email "${ config.personal.email }"
+                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                     git remote add origin mobile:private
                                                                                                     git fetch origin main 2>&1
                                                                                                     git checkout origin/main 2>&1
