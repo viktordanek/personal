@@ -105,7 +105,7 @@
                                                                         personal =
                                                                             ignore :
                                                                                 {
-                                                                                    # dependencies = tree : [ tree.personal.dot-gnupg ] ;
+                                                                                    dependencies = tree : [ tree.personal.dot-gnupg ] ;
                                                                                     init-packages = pkgs : [ pkgs.chromium pkgs.git pkgs.git-crypt ] ;
                                                                                     init-script =
                                                                                         ''
