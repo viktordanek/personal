@@ -297,7 +297,7 @@
                                                 mapper =
                                                     resource :
                                                         let
-                                                            dependencies-transitive-closure = builtins.getAttr resource.name ( builtins.trace "c6103a43-4f4e-43b1-b020-4c00ea15db17" dependencies ) ;
+                                                            dependencies-transitive-closure = builtins.getAttr resource.name dependencies ;
                                                             index =
                                                                 let
                                                                     find = builtins.elemAt filtered 0 ;
