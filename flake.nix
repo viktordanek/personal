@@ -569,8 +569,8 @@
                                                                     } ;
                                                                 variables =
                                                                     {
-                                                                        "PASSWORD_STORE_CHARACTER_SET" = ${ config.personal.pass.character-set } ;
-                                                                        "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = ${ config.personal.pass.character-set-no-symbols } ;
+                                                                        "PASSWORD_STORE_CHARACTER_SET" = config.personal.pass.character-set ;
+                                                                        "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
                                                                         "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir" ;
                                                                         "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
                                                                         "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
