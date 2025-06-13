@@ -739,6 +739,7 @@
                                                                 mkdir $out
                                                                 ln --symbolic ${ expiry }/bin/expiry $out/expiry.bash
                                                                 ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
+                                                                ln --symbolic ${ warn }/bin/warn $out/warn.bash
                                                             '' ;
                                                     nativeBuildInputs = [ pkgs.coreutils ] ;
                                                     name = "password-store-extensions-dir" ;
