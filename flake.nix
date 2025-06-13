@@ -186,11 +186,13 @@
                                                                                             export GIT_WORK_TREE=/mount/work-tree
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
-                                                                                            git init
+                                                                                            git init 2>&1
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             git config user.email "${ config.personal.email }"
                                                                                             git remote add origin mobile:private
+                                                                                            git fetch origin main
+                                                                                            git checkout origin/main
                                                                                         '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "work-tree" ] ;
                                                                                 } ;
