@@ -570,7 +570,7 @@
                                                                 variables =
                                                                     {
                                                                         "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir" ;
-                                                                        "PASSWORD_STORE_GENERATED_LENGTH" ${ builtins.toString config.personal.pass.generated-length }
+                                                                        "PASSWORD_STORE_GENERATED_LENGTH" = ${ builtins.toString config.personal.pass.generated-length }
                                                                         "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
                                                                     } ;
                                                             } ;
