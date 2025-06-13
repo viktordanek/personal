@@ -91,7 +91,7 @@
                                                                         output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
 
                                                                       elif [[ ${char} =~ [0-9] ]]; then
-                                                                        output+=("${DIGITS[$char]:-Digit$char}")
+                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
 
                                                                       elif [[ -n "${SYMBOLS[$char]+set}" ]]; then
                                                                         output+=("${SYMBOLS[$char]}")
