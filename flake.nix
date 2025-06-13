@@ -81,7 +81,7 @@
 
                                                                       if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
                                                                         raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                        transformed="${raw:0:1,}${raw:1^^}"  # lowercase first letter, rest uppercase
+                                                                        transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
                                                                         output+=("$transformed")
 
                                                                       elif [[ ${char} =~ [A-Z] ]]; then
