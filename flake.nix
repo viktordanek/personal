@@ -680,59 +680,63 @@
                                                                         ''
                                                                             export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg"
                                                                             ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
-                                                                            FILE=""$PASSWORD_STORE_DIR/$ENTRY.gpg"
-
+                                                                            FILE=${PASSWORD_STORE_DIR}/${ENTRY}.gpg
+                                                                            
                                                                             if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
                                                                               echo "Usage: pass warn <entry>" >&2
                                                                               exit 1
                                                                             fi
-
+                                                                            
                                                                             # Extract long key IDs from the encrypted file
                                                                             mapfile -t LONG_KEY_IDS < <(
                                                                               gpg --list-packets "$FILE" 2>/dev/null \
                                                                               | awk '/^:pubkey enc packet:/ { print $NF }'
                                                                             )
-
-                                                                            if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                            
+                                                                            if [[ ${#LONG_KEY_IDS[@]} -eq 0 ]]; then
                                                                               echo "No encryption keys found in $FILE" >&2
                                                                               exit 1
                                                                             fi
-
+                                                                            
                                                                             echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] }" >&2
-
+                                                                            printf '  %s\n' "${LONG_KEY_IDS[@]}" >&2
+                                                                            
                                                                             # Convert long key IDs to full fingerprints
                                                                             mapfile -t ENCRYPTION_FPRS < <(
-                                                                              for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                              for longid in "${LONG_KEY_IDS[@]}"; do
                                                                                 gpg --with-colons --fingerprint "$longid" 2>/dev/null \
                                                                                 | awk -F: '/^fpr:/ { print $10; exit }'
                                                                               done
                                                                             )
-
+                                                                            
                                                                             echo "Corresponding full fingerprints:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ]" >&2
-
-                                                                            mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir/.gpg-id"
-
-
+                                                                            printf '  %s\n' "${ENCRYPTION_FPRS[@]}" >&2
+                                                                            
+                                                                            # Get current trusted key full fingerprints
+                                                                            # mapfile -t CURRENT_FPRS < <(
+                                                                            #   gpg --with-colons --list-keys 2>/dev/null \
+                                                                            #   | awk -F: '/^fpr:/ { print $10 }'
+                                                                            # )
+                                                                            mapfile -t CURRENT_FPRS < "/home/emory/stash/712f77b2f122e7f5/output/boot/repository/pass-secrets/work-tree/.gpg-id"
+                                                                            
+                                                                            
                                                                             echo "Current trusted key fingerprints:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
-
+                                                                            printf '  %s\n' "${CURRENT_FPRS[@]}" >&2
+                                                                            
                                                                             # Check if all encryption fingerprints are in current trusted keys
                                                                             WARNING=0
-                                                                            for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                              if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                            for fpr in "${ENCRYPTION_FPRS[@]}"; do
+                                                                              if ! printf '%s\n' "${CURRENT_FPRS[@]}" | grep -qx "$fpr"; then
                                                                                 echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
                                                                                 echo "   $fpr" >&2
                                                                                 WARNING=1
                                                                               fi
                                                                             done
-
+                                                                            
                                                                             # Finally, show the password
                                                                             pass show "$ENTRY"
-
-                                                                            exit $WARNING
-
+                                                                            
+                                                                            exit $WARNING                                                                        
                                                                         '' ;
                                                                 } ;
                                                         in
