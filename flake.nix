@@ -575,7 +575,7 @@
 
                                                                                   if (( age >= YEAR_SECONDS )); then
                                                                                     # Strip ".gpg" and print
-                                                                                    key="${file%.gpg}"
+                                                                                    key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg}" "}" ] }"
                                                                                     echo "$key"
                                                                                   fi
                                                                                 done
