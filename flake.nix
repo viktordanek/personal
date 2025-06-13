@@ -166,6 +166,28 @@
                                                                                         outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                     } ;
                                                                         } ;
+                                                                pass =
+                                                                    {
+                                                                        ignore :
+                                                                            {
+                                                                                init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                init-script =
+                                                                                    ''
+                                                                                        export GIT_DIR=/mount/git
+                                                                                        export GIT_WORK_TREE=/mount/.password-store-dir
+                                                                                        mkdir "GIT_DIR"
+                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                        git init 2>&1
+                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                        git config user.email "${ config.personal.email }"
+                                                                                        git config user.name "${ config.personal.description }"
+                                                                                        git remote add origin git@github.com:nextmoose/secrets.git
+                                                                                        git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                        git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                    '' ;
+                                                                                outputs = [ ".password-store-dir" "git" ] ;
+                                                                            } ;
+                                                                    } ;
                                                                 repository =
                                                                     {
                                                                         private =
