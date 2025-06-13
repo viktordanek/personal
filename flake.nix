@@ -693,7 +693,7 @@
                                                                               | awk '/^:pubkey enc packet:/ { print $NF }'
                                                                             )
                                                                             
-                                                                            if [[ ${#LONG_KEY_IDS[@]} -eq 0 ]]; then
+                                                                            if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
                                                                               echo "No encryption keys found in $FILE" >&2
                                                                               exit 1
                                                                             fi
