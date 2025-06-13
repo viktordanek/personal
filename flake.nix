@@ -272,7 +272,7 @@
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                     git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
                                                                                                     git fetch origin main 2>&1
-                                                                                                    git checkout main
+                                                                                                    git checkout main 2>&1
                                                                                                 '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
