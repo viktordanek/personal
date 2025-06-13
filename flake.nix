@@ -237,7 +237,16 @@
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         let
-
+                                                                                            passphrase =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "passphrase" ;
+                                                                                                        runtimeInputs = [ pkgs.openssh ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config cat passphrase
+                                                                                                            '' ;
+                                                                                                    } ;
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
