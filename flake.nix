@@ -559,6 +559,9 @@
                                                                         runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
                                                                         text =
                                                                             ''
+                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/work-tree
+                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/work-tree
+                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/git
                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                 TIMESTAMP=$(date +%s)
 
