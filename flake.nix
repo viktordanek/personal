@@ -260,6 +260,7 @@
                                                                                                     mkdir /mount/bin
                                                                                                     ln --symbolic ${ pkgs.age }/bin/age /mount/bin
                                                                                                     ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
+                                                                                                    ln --symbolic ${ gpg-export }/bin/gpg-export /mount/bin
                                                                                                     export GIT_DIR=/mount/git
                                                                                                     export GIT_WORK_TREE=/mount/work-tree
                                                                                                     mkdir "$GIT_DIR"
@@ -271,7 +272,7 @@
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                     git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
                                                                                                     git fetch origin main 2>&1
-                                                                                                    # git checkout main
+                                                                                                    git checkout main
                                                                                                 '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
