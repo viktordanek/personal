@@ -29,7 +29,7 @@
                                             let
                                                 list =
                                                     let
-                                                        mapper = resource : builtins.trace "28134a56-4acd-4c66-9a0a-fcc5dc9a645c" { name = resource.name ; value = resource.outputs ; } ;
+                                                        mapper = resource : { name = resource.name ; value = resource.outputs ; } ;
                                                         in builtins.map mapper points ;
                                                 in builtins.trace "b9cc6cbd-a6c2-40f2-bef5-32288f13c3cd ${ builtins.typeOf points }" ( builtins.listToAttrs list ) ;
                                         points =
