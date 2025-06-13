@@ -570,6 +570,7 @@
                                                                 variables =
                                                                     {
                                                                         "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir" ;
+                                                                        "PASSWORD_STORE_GENERATED_LENGTH" ${ builtins.toString config.personal.pass.generated-length }
                                                                         "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
                                                                     } ;
                                                             } ;
@@ -797,6 +798,10 @@
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
+                                                                pass =
+                                                                    {
+                                                                        generated-length = lib.mkOption { default = 25 ; type = lib.types.int ; } ;
+                                                                    } ;
                                                                 password = lib.mkOption { type = lib.types.str ; } ;
                                                                 repository =
                                                                     {
