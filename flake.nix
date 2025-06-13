@@ -94,7 +94,7 @@
                                                                         output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
 
                                                                       elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
-                                                                        output+=("${SYMBOLS[$char]}")
+                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
 
                                                                       else
                                                                         output+=("Unknown($ascii)")
