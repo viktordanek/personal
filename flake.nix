@@ -306,6 +306,7 @@
                                                                                                     ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                                     mkdir /mount/bin
                                                                                                     ln --symbolic ${ pkgs.age }/bin/age /mount/bin
+                                                                                                    ln --symbolic ${ pkgs.git }/bin/git /mount/bin
                                                                                                     ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
                                                                                                     ln --symbolic ${ gpg-export }/bin/gpg-export /mount/bin
                                                                                                     export GIT_DIR=/mount/git
