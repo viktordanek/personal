@@ -247,13 +247,14 @@
                                                                                             ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
-                                                                                            git init
+                                                                                            git init 2>&1
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/boot/config"
                                                                                             git config user.email ${ config.personal.email }
                                                                                             git config user.name ${ config.personal.name }
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                             git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
-                                                                                            git fetch origin main
+                                                                                            git fetch origin main 2>&1
+                                                                                            git checkout main
                                                                                         '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
