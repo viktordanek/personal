@@ -173,27 +173,102 @@
                                                                                 {
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            cat > /mount/.envrc <<EOF
-                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                            export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin
-                                                                                            EOF
-                                                                                            BIN=/mount/bin
-                                                                                            mkdir "$BIN"
-                                                                                            ln --symbolic "$( which git )" "$BIN"
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
-                                                                                            git config user.name "${ config.personal.description }"
-                                                                                            git config user.email "${ config.personal.email }"
-                                                                                            git remote add origin mobile:private
-                                                                                            git fetch origin main 2>&1
-                                                                                            git checkout origin/main
-                                                                                        '' ;
+                                                                                        let
+                                                                                            promote =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "promote" ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                case "$1" in
+                                                                                                                    0)
+                                                                                                                        fun() {
+                                                                                                                            env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                            env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                            git add "inputs.$2.commit"
+                                                                                                                        }
+                                                                                                                        fun "$( "$OUT/boot/repository/personal" )" personal
+                                                                                                                        fun "$( "$OUT/boot/repository/age-secrets" )" secrets
+                                                                                                                        fun "$( "$OUT/boot/repository/visitor" )" visitor
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                        git commit -am "promoted to $1" --allow-empty
+                                                                                                                        result/bin/run-nixos-vm
+                                                                                                                        ;;
+                                                                                                                    1)
+                                                                                                                        cd work-tree
+                                                                                                                        nix flake lock --update-input personal --update-input secrets --update-input visitor
+                                                                                                                        nixos-rebuild build-vm --flake /work-tree.#myhost
+                                                                                                                        git commit -am "promoted to $1" --allow-empty
+                                                                                                                        mv result ..
+                                                                                                                        cd ..
+                                                                                                                        result/bin/run-nixos-vm
+                                                                                                                        ;;
+                                                                                                                    2)
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost
+                                                                                                                        git commit -am "promoted to $1" --allow-empty
+                                                                                                                        result/bin/run-nixos-vm
+                                                                                                                        ;;
+                                                                                                                    3)
+                                                                                                                        nix-collect-garbage
+                                                                                                                        nixos-rebuild build-vm-with-bootloader --flake ./work-tree#myhost
+                                                                                                                        git commit -am "promoted to $1" --allow-empty
+                                                                                                                        result/bin/run-nixos-vm
+                                                                                                                        ;;
+                                                                                                                    4)
+                                                                                                                        date +%s > work-tree/current-time.nix
+                                                                                                                        sudo nixos-rebuild test --flake /work-tree.#myhost
+                                                                                                                        git commit -am "promoted to $1" --allow-empty
+                                                                                                                        SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                        git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                        git fetch origin development
+                                                                                                                        git diff origin/development
+                                                                                                                        git reset --soft origin/development
+                                                                                                                        git commit -a
+                                                                                                                        git checkout development
+                                                                                                                        git rebase origin/development
+                                                                                                                        git rebase "$SCRATCH_BRANCH"
+                                                                                                                        git push origin HEAD
+                                                                                                                        ;;
+                                                                                                                    5)
+                                                                                                                        git fetch origin development
+                                                                                                                        git fetch origin main
+                                                                                                                        git checkout main
+                                                                                                                        git rebase origin/main
+                                                                                                                        git rebase development
+                                                                                                                        sudo nixos-rebuild switch --flake .work-tree/#myhost
+                                                                                                                        git push origin HEAD
+                                                                                                                        nix-collect-garbage
+                                                                                                                        ;;
+                                                                                                                    *)
+                                                                                                                        echo wrong
+                                                                                                                        exit 64
+                                                                                                                        ;;
+                                                                                                                esac
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    cat > /mount/.envrc <<EOF
+                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin
+                                                                                                    EOF
+                                                                                                    BIN=/mount/bin
+                                                                                                    mkdir "$BIN"
+                                                                                                    ln --symbolic "$( which git )" "$BIN"
+                                                                                                    ln --symbolic ${ promote } "$BIN"
+                                                                                                    export GIT_DIR=/mount/git
+                                                                                                    export GIT_WORK_TREE=/mount/work-tree
+                                                                                                    mkdir "$GIT_DIR"
+                                                                                                    mkdir "$GIT_WORK_TREE"
+                                                                                                    git init 2>&1
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
+                                                                                                    git config user.name "${ config.personal.description }"
+                                                                                                    git config user.email "${ config.personal.email }"
+                                                                                                    git remote add origin mobile:private
+                                                                                                    git fetch origin main 2>&1
+                                                                                                    git checkout origin/main 2>&1
+                                                                                                '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "work-tree" ] ;
                                                                                 } ;
                                                                     } ;
