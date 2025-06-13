@@ -746,7 +746,7 @@
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ script }/bin/script" ;
-                                                                                        Owner = config.personal.name ;
+                                                                                        User = config.personal.name ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
@@ -757,7 +757,7 @@
                                                                                 serviceConfig =
                                                                                     {
                                                                                         ExecStart = "${ setup }/bin/setup" ;
-                                                                                        Owner = config.personal.name ;
+                                                                                        User = config.personal.name ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
