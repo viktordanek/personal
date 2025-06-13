@@ -670,7 +670,7 @@
                                                                     } ;
                                                                 variables =
                                                                     {
-                                                                        "PASSWORD_STORE_ENABLE_EXTENSIONS" = true ;
+                                                                        "PASSWORD_STORE_ENABLE_EXTENSIONS" = "true" ;
                                                                         "PASSWORD_STORE_EXTENSIONS_DIR" = "${ password-store-extensions-dir }" ;
                                                                         "PASSWORD_STORE_CHARACTER_SET" = config.personal.pass.character-set ;
                                                                         "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
