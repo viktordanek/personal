@@ -100,6 +100,33 @@
                                                         family = { } ;
                                                         personal =
                                                             {
+                                                                chromium =
+                                                                    {
+                                                                        personal =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : [ tree.personal.dot-gnupg ] ;
+                                                                                    init-packages = pkgs : [ pkgs.chromium pkgs.git pkgs.git-crypt ] ;
+                                                                                    init-script =
+                                                                                        ''
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/work-tree
+                                                                                            export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
+                                                                                            mkdir "$GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                            git init
+                                                                                            git-crypt init
+                                                                                            git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                            git config user.email ${ config.personal.email }
+                                                                                            git config user.name "${ config.personal.name }"
+                                                                                            git remote add git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                            git fetch origin 1ffa9bce-46ca-4690-b979-ff65a99d6d60
+                                                                                            # git checkout 1ffa9bce-46ca-4690-b979-ff65a99d6d60
+                                                                                        '' ;
+                                                                                    outputs = [ ".envrc" "git" "work-tree" ] ;
+                                                                                } ;
+                                                                    } ;
                                                                 dot-gnupg =
                                                                     ignore :
                                                                         {
@@ -1004,6 +1031,7 @@
                                                                         pkgs.pass
                                                                         setup
                                                                         teardown
+                                                                        chromium
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
