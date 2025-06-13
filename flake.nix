@@ -712,21 +712,16 @@
                                                                             echo "Corresponding full fingerprints:" >&2
                                                                             printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
                                                                             
-                                                                            # Get current trusted key full fingerprints
-                                                                            # mapfile -t CURRENT_FPRS < <(
-                                                                            #   gpg --with-colons --list-keys 2>/dev/null \
-                                                                            #   | awk -F: '/^fpr:/ { print $10 }'
-                                                                            # )
                                                                             mapfile -t CURRENT_FPRS < "/home/emory/stash/712f77b2f122e7f5/output/boot/repository/pass-secrets/work-tree/.gpg-id"
                                                                             
                                                                             
                                                                             echo "Current trusted key fingerprints:" >&2
-                                                                            printf '  %s\n' "${CURRENT_FPRS[@]}" >&2
+                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
                                                                             
                                                                             # Check if all encryption fingerprints are in current trusted keys
                                                                             WARNING=0
                                                                             for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                              if ! printf '%s\n' "${CURRENT_FPRS[@]}" | grep -qx "$fpr"; then
+                                                                              if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
                                                                                 echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
                                                                                 echo "   $fpr" >&2
                                                                                 WARNING=1
