@@ -64,7 +64,7 @@
                                                                                                 lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                             }
                                                                                             resources ;
-                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( ( builtins.trace "f5f8958b-9efc-4d38-9ff7-9d8d0b939e11" dependencies ) tree ) ;
+                                                                                    in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) tree ;
                                                                             init-packages = init-packages ;
                                                                             init-script = init-script ;
                                                                             name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
