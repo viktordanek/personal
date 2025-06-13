@@ -569,6 +569,8 @@
                                                                     } ;
                                                                 variables =
                                                                     {
+                                                                        "PASSWORD_STORE_CHARACTER_SET" = ${ config.personal.pass.character-set } ;
+                                                                        "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = ${ config.personal.pass.character-set-no-symbols } ;
                                                                         "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir" ;
                                                                         "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
                                                                         "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
@@ -800,6 +802,8 @@
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
                                                                     {
+                                                                        character-set = lib.mkOption { default = ".,_=2345ABCDEFGHJKLMabcdefghjkmn" ; type = lib.types.str ; } ;
+                                                                        character-set-no-symbols = lib.mkOption { default = "6789NPQRSTUVWXYZpqrstuvwxyz" ; type = lib.types.str ; } ;
                                                                         generated-length = lib.mkOption { default = 25 ; type = lib.types.int ; } ;
                                                                     } ;
                                                                 password = lib.mkOption { type = lib.types.str ; } ;
