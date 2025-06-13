@@ -120,7 +120,7 @@
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
                                                                                             git config user.email ${ config.personal.email }
                                                                                             git config user.name "${ config.personal.name }"
-                                                                                            git remote add git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                            git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
                                                                                             git fetch origin 1ffa9bce-46ca-4690-b979-ff65a99d6d60 2>&1
                                                                                             # git checkout 1ffa9bce-46ca-4690-b979-ff65a99d6d60
                                                                                         '' ;
