@@ -1031,7 +1031,7 @@
                                                                         pkgs.pass
                                                                         setup
                                                                         teardown
-                                                                        chromium
+                                                                        pkgs.chromium
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
