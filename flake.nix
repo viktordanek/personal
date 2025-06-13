@@ -556,7 +556,7 @@
                                                                 pkgs.writeShellApplication
                                                                     {
                                                                         name = "expiry" ;
-                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                         text =
                                                                             ''
                                                                                 export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/work-tree
@@ -566,12 +566,12 @@
                                                                                 TIMESTAMP=$(date +%s)
 
                                                                                 # Get a list of all password keys tracked by Git
-                                                                                pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                git ls-tree -r --name-only HEAD | while IFS= read -r file; do
                                                                                   # Skip non-.gpg files
                                                                                   [[ "$file" != *.gpg ]] && continue
 
                                                                                   # Get the last commit timestamp for the file
-                                                                                  last_commit_ts=$( pass git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                  last_commit_ts=$( git log -1 --format="%at" -- "$file" || echo 0)
 
                                                                                   # Compute the age
                                                                                   age=$((TIMESTAMP - last_commit_ts))
