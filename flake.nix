@@ -175,9 +175,9 @@
                                                                                     init-script =
                                                                                         ''
                                                                                             cat > .envrc <<EOF
-                                                                                            export GIT_DIR=/home/${ config.personal.user }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                            export GIT_WORK_TREE=/home/${ config.personal.user }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                            export PATH=$PATH:/home/${ config.personal.user }/${ config.personal.stash }/linked/personal/repository/private/bin
+                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
+                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
+                                                                                            export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin
                                                                                             EOF
                                                                                             BIN=/mount/bin
                                                                                             ln --symbolic "$( which git )" "$BIN"
@@ -187,7 +187,7 @@
                                                                                             mkdir "$GIT"
                                                                                             mkdir "$WORK_TREE"
                                                                                             git init
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.user }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             git config user.email "${ config.personal.email }"
                                                                                             git remote add origin mobile:private
