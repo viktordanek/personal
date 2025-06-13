@@ -184,7 +184,7 @@
                                                                                             ln --symbolic "$( which git )" "$BIN"
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT"
+                                                                                            mkdir "$GIT_DIR"
                                                                                             mkdir "$WORK_TREE"
                                                                                             git init
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
