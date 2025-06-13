@@ -229,6 +229,33 @@
                                                                                         '' ;
                                                                                     outputs = [ ".password-store-dir" "git" ] ;
                                                                                 } ;
+                                                                        passphrase =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : [ tree.personal.dot-ssh.boot tree.personal.dot-gnupg ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        ''
+                                                                                            cat > .envrc <<EOF
+                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
+                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
+                                                                                            export PASSWORD_STORE_DIR="$GIT_WORK_TREE"
+                                                                                            EOF
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/.password-store-dir
+                                                                                            mkdir "GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                            git init 2>&1
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                            git config user.email "${ config.personal.email }"
+                                                                                            git config user.name "${ config.personal.description }"
+                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                            git remote add origin git@github.com:nextmoose/secrets.git
+                                                                                            git fetch origin 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                            git checkout 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                        '' ;
+                                                                                    outputs = [ ".envrc" ".password-store-dir" "git" ] ;
+                                                                                } ;
                                                                     } ;
                                                                 repository =
                                                                     {
