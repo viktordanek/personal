@@ -85,7 +85,7 @@
                                                                         output+=("$transformed")
 
                                                                       elif [[ ${char} =~ [A-Z] ]]; then
-                                                                        output+=("${NATO[$char]:-UNKNOWN}")
+                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
 
                                                                       elif [[ ${char} =~ [a-z] ]]; then
                                                                         output+=("${PHONETIC_LOWER[$char]:-unknown}")
