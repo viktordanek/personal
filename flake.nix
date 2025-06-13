@@ -124,7 +124,7 @@
                                                                                             git fetch origin 1ffa9bce-46ca-4690-b979-ff65a99d6d60
                                                                                             # git checkout 1ffa9bce-46ca-4690-b979-ff65a99d6d60
                                                                                         '' ;
-                                                                                    outputs = [ ".envrc" "git" "work-tree" ] ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
                                                                     } ;
                                                                 dot-gnupg =
