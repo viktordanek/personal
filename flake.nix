@@ -93,7 +93,7 @@
                                                                       elif [[ ${char} =~ [0-9] ]]; then
                                                                         output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
 
-                                                                      elif [[ -n "${SYMBOLS[$char]+set}" ]]; then
+                                                                      elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
                                                                         output+=("${SYMBOLS[$char]}")
 
                                                                       else
