@@ -180,8 +180,8 @@
                                                                                             export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin
                                                                                             EOF
                                                                                             BIN=/mount/bin
-                                                                                            ln --symbolic "$( which git )" "$BIN"
                                                                                             mkdir "$BIN"
+                                                                                            ln --symbolic "$( which git )" "$BIN"
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
                                                                                             mkdir "$GIT"
