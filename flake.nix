@@ -680,7 +680,7 @@
                                                                         ''
                                                                             export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg"
                                                                             ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
-                                                                            FILE=${PASSWORD_STORE_DIR}/${ENTRY}.gpg
+                                                                            FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
                                                                             
                                                                             if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
                                                                               echo "Usage: pass warn <entry>" >&2
@@ -699,11 +699,11 @@
                                                                             fi
                                                                             
                                                                             echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                            printf '  %s\n' "${LONG_KEY_IDS[@]}" >&2
+                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
                                                                             
                                                                             # Convert long key IDs to full fingerprints
                                                                             mapfile -t ENCRYPTION_FPRS < <(
-                                                                              for longid in "${LONG_KEY_IDS[@]}"; do
+                                                                              for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
                                                                                 gpg --with-colons --fingerprint "$longid" 2>/dev/null \
                                                                                 | awk -F: '/^fpr:/ { print $10; exit }'
                                                                               done
