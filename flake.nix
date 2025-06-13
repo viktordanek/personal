@@ -712,7 +712,7 @@
                                                                             echo "Corresponding full fingerprints:" >&2
                                                                             printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
                                                                             
-                                                                            mapfile -t CURRENT_FPRS < "/home/emory/stash/712f77b2f122e7f5/output/boot/repository/pass-secrets/work-tree/.gpg-id"
+                                                                            mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir/.gpg-id"
                                                                             
                                                                             
                                                                             echo "Current trusted key fingerprints:" >&2
