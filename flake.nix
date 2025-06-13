@@ -303,7 +303,7 @@
                                                                     find = builtins.elemAt filtered 0 ;
                                                                     filtered = builtins.filter ( dependency : dependency.value.name == resource.name ) indexed ;
                                                                     indexed = builtins.genList ( index : { index = index ; value = builtins.elemAt sorted index ; } ) ( builtins.length sorted ) ;
-                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) ( builtins.trace "f5a4b8a4-1007-42b6-9143-6d8e96f524c7" dependencies ) ) ;
+                                                                    listed = builtins.attrValues ( builtins.mapAttrs ( name : value : { name = name ; value = value ; } ) dependencies ) ;
                                                                     sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
                                                                     in find.index ;
                                                             in
