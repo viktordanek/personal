@@ -552,6 +552,36 @@
                                                 {
                                                     installPhase =
                                                         let
+                                                            expiry =
+                                                                pkgs.writeShellApplication
+                                                                    {
+                                                                        name = "expiry" ;
+                                                                        runtimeInputs = [ pkgs.coreutils pkgs.pass ] ;
+                                                                        text =
+                                                                            ''
+                                                                                YEAR_SECONDS=$((366 * 86400))
+                                                                                TIMESTAMP=$(date +%s)
+
+                                                                                # Get a list of all password keys tracked by Git
+                                                                                pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                  # Skip non-.gpg files
+                                                                                  [[ "$file" != *.gpg ]] && continue
+
+                                                                                  # Get the last commit timestamp for the file
+                                                                                  last_commit_ts=$( pass git log -1 --format="%at" -- "$file" || echo 0)
+
+                                                                                  # Compute the age
+                                                                                  age=$((TIMESTAMP - last_commit_ts))
+
+                                                                                  if (( age >= YEAR_SECONDS )); then
+                                                                                    # Strip ".gpg" and print
+                                                                                    key="${file%.gpg}"
+                                                                                    echo "$key"
+                                                                                  fi
+                                                                                done
+
+                                                                            '' ;
+                                                                    }
                                                             phonetic =
                                                                 pkgs.writeShellApplication
                                                                     {
@@ -642,6 +672,7 @@
                                                         in
                                                             ''
                                                                 mkdir $out
+                                                                ln --symbolic ${ expiry }/bin/expiry $out/expiry.bash
                                                                 ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
                                                             '' ;
                                                     nativeBuildInputs = [ pkgs.coreutils ] ;
