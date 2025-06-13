@@ -263,7 +263,7 @@
                                                                                                     mkdir "$GIT_DIR"
                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                     git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/boot/config"
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
                                                                                                     git config user.email ${ config.personal.email }
                                                                                                     git config user.name ${ config.personal.name }
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
