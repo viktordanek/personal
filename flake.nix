@@ -244,11 +244,12 @@
                                                                                             ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                             mkdir /mount/bin
                                                                                             ln --symbolic ${ pkgs.age }/bin/age /mount/bin
+                                                                                            ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
                                                                                             git init
                                                                                         '' ;
-                                                                                    outputs = [ ".envrc" "agenix" ""bin" ""git" "work-tree" ] ;
+                                                                                    outputs = [ ".envrc" "agenix" "bin" ""git" "work-tree" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
