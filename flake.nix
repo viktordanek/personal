@@ -205,7 +205,7 @@
                                                                         private =
                                                                             ignore :
                                                                                 {
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.which ] ;
                                                                                     init-script =
                                                                                         let
                                                                                             promote =
