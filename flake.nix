@@ -257,6 +257,7 @@
                                                                                                     EOF
                                                                                                     mkdir /mount/bin
                                                                                                     ln --symbolic ${ passphrase }/bin/passphrase /mount/bin
+                                                                                                    ln --symbolic ${ pkgs.pass }/bin/pass /mount/bin
                                                                                                     export GIT_DIR=/mount/git
                                                                                                     export GIT_WORK_TREE=/mount/.password-store-dir
                                                                                                     mkdir "$GIT_DIR"
