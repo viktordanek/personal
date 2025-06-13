@@ -750,10 +750,28 @@
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
+                                                                        stash-setup =
+                                                                            {
+                                                                                after = [ "network.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ExecStart = "${ setup }/bin/setup" ;
+                                                                                        Owner = config.personal.name ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
                                                                     } ;
                                                                 timers =
                                                                     {
                                                                         stash-cleanup =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = "daily" ;
+                                                                                    } ;
+                                                                                wantedBy = [ "timers.target" ] ;
+                                                                            } ;
+                                                                        stash-setup =
                                                                             {
                                                                                 timerConfig =
                                                                                     {
