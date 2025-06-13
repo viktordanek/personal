@@ -579,9 +579,8 @@
                                                                                     echo "$key"
                                                                                   fi
                                                                                 done
-
                                                                             '' ;
-                                                                    }
+                                                                    } ;
                                                             phonetic =
                                                                 pkgs.writeShellApplication
                                                                     {
