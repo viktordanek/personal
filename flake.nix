@@ -207,26 +207,29 @@
                                                                                     } ;
                                                                         } ;
                                                                 pass =
-                                                                    ignore :
-                                                                        {
-                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
-                                                                            init-script =
-                                                                                ''
-                                                                                    export GIT_DIR=/mount/git
-                                                                                    export GIT_WORK_TREE=/mount/.password-store-dir
-                                                                                    mkdir "GIT_DIR"
-                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                    git init 2>&1
-                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
-                                                                                    git config user.email "${ config.personal.email }"
-                                                                                    git config user.name "${ config.personal.description }"
-                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                    git remote add origin git@github.com:nextmoose/secrets.git
-                                                                                    git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                    git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                '' ;
-                                                                            outputs = [ ".password-store-dir" "git" ] ;
-                                                                        } ;
+                                                                    {
+                                                                        boot =
+                                                                            ignore :
+                                                                                {
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        ''
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/.password-store-dir
+                                                                                            mkdir "GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                            git init 2>&1
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                            git config user.email "${ config.personal.email }"
+                                                                                            git config user.name "${ config.personal.description }"
+                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                            git remote add origin git@github.com:nextmoose/secrets.git
+                                                                                            git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                            git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                        '' ;
+                                                                                    outputs = [ ".password-store-dir" "git" ] ;
+                                                                                } ;
+                                                                    } ;
                                                                 repository =
                                                                     {
                                                                         age-secrets =
@@ -633,9 +636,9 @@
                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                         text =
                                                                             ''
-                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/work-tree
-                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/work-tree
-                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/git
+                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/work-tree
+                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/work-tree
+                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/git
                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                 TIMESTAMP=$(date +%s)
 
@@ -845,7 +848,7 @@
                                                                         "PASSWORD_STORE_EXTENSIONS_DIR" = "${ password-store-extensions-dir }" ;
                                                                         "PASSWORD_STORE_CHARACTER_SET" = config.personal.pass.character-set ;
                                                                         "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
-                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir" ;
+                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/.password-store-dir" ;
                                                                         "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
                                                                         "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
                                                                     } ;
