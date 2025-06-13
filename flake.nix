@@ -259,7 +259,7 @@
                                                                                                     ln --symbolic ${ pkgs.age }/bin/age /mount/bin
                                                                                                     ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
                                                                                                     export GIT_DIR=/mount/git
-                                                                                                    export GIT_WORK_TREE=/mount/woage-secretsrk-tree
+                                                                                                    export GIT_WORK_TREE=/mount/work-tree
                                                                                                     mkdir "$GIT_DIR"
                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                     git init 2>&1
