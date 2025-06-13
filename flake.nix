@@ -243,8 +243,9 @@
                                                                                                         runtimeInputs = [ pkgs.age pkgs.gnupg ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                gpg --export-secret-keys --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-secret-keys.asc.age
-                                                                                                                gpg --export-ownertrust --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-ownertrust.asc.age
+                                                                                                                export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
+                                                                                                                gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-secret-keys.asc.age
+                                                                                                                gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-ownertrust.asc.age
                                                                                                             '' ;
                                                                                                     } ;
                                                                                             in
@@ -252,6 +253,7 @@
                                                                                                     cat > /mount/.envrc <<EOF
                                                                                                     export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/git
                                                                                                     export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree
+                                                                                                    export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
                                                                                                     export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/bin
                                                                                                     EOF
                                                                                                     ln --symbolic ${ config.personal.agenix } /mount/agenix
