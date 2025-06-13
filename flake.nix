@@ -237,7 +237,7 @@
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         ''
-                                                                                            cat > .envrc <<EOF
+                                                                                            cat > /mount/.envrc <<EOF
                                                                                             export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
                                                                                             export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
                                                                                             export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
