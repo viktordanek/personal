@@ -106,7 +106,7 @@
                                                                             init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                             init-script =
                                                                                 ''
-                                                                                    export GNUPGHOME=/mount/.gpg
+                                                                                    export GNUPGHOME=/mount/.gnupg
                                                                                     mkdir "$GNUPGHOME"
                                                                                     chmod 0700 "$GNUPGHOME"
                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
@@ -115,7 +115,7 @@
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                 '' ;
-                                                                            outputs = [ ".gpg" ] ;
+                                                                            outputs = [ ".gnupg" ] ;
                                                                         } ;
                                                                     dot-ssh =
                                                                         {
@@ -567,6 +567,11 @@
                                                                                 group = "root" ;
                                                                             } ;
                                                                     } ;
+                                                                variables =
+                                                                    [
+                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir"
+                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg"
+                                                                    ] ;
                                                             } ;
                                                         hardware.pulseaudio =
                                                             {
