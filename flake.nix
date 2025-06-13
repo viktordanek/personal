@@ -244,7 +244,7 @@
                                                                                                         runtimeInputs = [ pkgs.openssh ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config cat passphrase
+                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config mobile cat passphrase
                                                                                                             '' ;
                                                                                                     } ;
                                                                                             in
