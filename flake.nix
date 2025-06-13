@@ -68,7 +68,7 @@
                                                                             init-packages = init-packages ;
                                                                             init-script = init-script ;
                                                                             name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                            outputs = outputs ;
+                                                                            outputs = builtins.sort builtins.lessThan outputs ;
                                                                             path = path ;
                                                                             release-packages = release-packages ;
                                                                             release-script = release-script ;
