@@ -185,7 +185,7 @@
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
                                                                                             mkdir "$GIT_DIR"
-                                                                                            mkdir "$WORK_TREE"
+                                                                                            mkdir "$GIT_WORK_TREE"
                                                                                             git init
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
                                                                                             git config user.name "${ config.personal.description }"
