@@ -247,6 +247,8 @@
                                                                                             ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
+                                                                                            mkdir "$GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/boot/config"
                                                                                             git config user.email ${ config.personal.email }
