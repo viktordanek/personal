@@ -249,7 +249,7 @@
                                                                                             export GIT_WORK_TREE=/mount/work-tree
                                                                                             git init
                                                                                         '' ;
-                                                                                    outputs = [ ".envrc" "agenix" "bin" ""git" "work-tree" ] ;
+                                                                                    outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
