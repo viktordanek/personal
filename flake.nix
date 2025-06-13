@@ -243,7 +243,7 @@
                                                                                             EOF
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/.password-store-dir
-                                                                                            mkdir "GIT_DIR"
+                                                                                            mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
