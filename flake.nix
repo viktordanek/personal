@@ -256,7 +256,7 @@
                                                                                                     BIN=/mount/bin
                                                                                                     mkdir "$BIN"
                                                                                                     ln --symbolic "$( which git )" "$BIN"
-                                                                                                    ln --symbolic ${ promote } "$BIN"
+                                                                                                    ln --symbolic ${ promote }/bin/promote "$BIN"
                                                                                                     export GIT_DIR=/mount/git
                                                                                                     export GIT_WORK_TREE=/mount/work-tree
                                                                                                     mkdir "$GIT_DIR"
