@@ -235,29 +235,42 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.boot ] ;
                                                                                     init-packages = pkgs : [ pkgs.git ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            cat > /mount/.envrc <<EOF
-                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/git
-                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree
-                                                                                            export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/bin
-                                                                                            EOF
-                                                                                            ln --symbolic ${ config.personal.agenix } /mount/agenix
-                                                                                            mkdir /mount/bin
-                                                                                            ln --symbolic ${ pkgs.age }/bin/age /mount/bin
-                                                                                            ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/boot/config"
-                                                                                            git config user.email ${ config.personal.email }
-                                                                                            git config user.name ${ config.personal.name }
-                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                            git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
-                                                                                            # git fetch origin main 2>&1
-                                                                                            # git checkout main
-                                                                                        '' ;
+                                                                                        let
+                                                                                            gpg-export =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "gpg-export" ;
+                                                                                                        runtimeInputs = [ pkgs.age pkgs.gnupg ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                gpg --export-secret-keys --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-secret-keys.asc.age
+                                                                                                                gpg --export-ownertrust --armor | age --encrypt --recipient $( age-keygen -y --identity ${ config.personal.agenix } ) > work-tree/gpg-ownertrust.asc.age
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    cat > /mount/.envrc <<EOF
+                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/git
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/bin
+                                                                                                    EOF
+                                                                                                    ln --symbolic ${ config.personal.agenix } /mount/agenix
+                                                                                                    mkdir /mount/bin
+                                                                                                    ln --symbolic ${ pkgs.age }/bin/age /mount/bin
+                                                                                                    ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
+                                                                                                    export GIT_DIR=/mount/git
+                                                                                                    export GIT_WORK_TREE=/mount/woage-secretsrk-tree
+                                                                                                    mkdir "$GIT_DIR"
+                                                                                                    mkdir "$GIT_WORK_TREE"
+                                                                                                    git init 2>&1
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/dot-ssh/boot/config"
+                                                                                                    git config user.email ${ config.personal.email }
+                                                                                                    git config user.name ${ config.personal.name }
+                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                    git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
+                                                                                                    git fetch origin main 2>&1
+                                                                                                    # git checkout main
+                                                                                                '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
                                                                         private =
