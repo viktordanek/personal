@@ -236,7 +236,7 @@
                                                                                     init-packages = pkgs : [ pkgs.git ] ;
                                                                                     init-script =
                                                                                         ''
-                                                                                            cat > .envrc <<EOF
+                                                                                            cat > /mount/.envrc <<EOF
                                                                                             export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/git
                                                                                             export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/work-tree
                                                                                             export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/bin
