@@ -237,9 +237,9 @@
                                                                                     init-script =
                                                                                         ''
                                                                                             cat > /mount/.envrc <<EOF
-                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/git
-                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/work-tree
-                                                                                            export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/repository/age-secrets/bin
+                                                                                            export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/git
+                                                                                            export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree
+                                                                                            export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/bin
                                                                                             EOF
                                                                                             ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                             mkdir /mount/bin
