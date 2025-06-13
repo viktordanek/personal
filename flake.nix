@@ -80,7 +80,7 @@
                                                                       ascii=$(printf "%d" "'$char")
 
                                                                       if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                        raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN "}" ] }"
+                                                                        raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
                                                                         transformed="${raw:0:1,}${raw:1^^}"  # lowercase first letter, rest uppercase
                                                                         output+=("$transformed")
 
