@@ -191,7 +191,7 @@
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             git config user.email "${ config.personal.email }"
                                                                                             git remote add origin mobile:private
-                                                                                            git fetch origin main
+                                                                                            git fetch origin main 2>&1
                                                                                             git checkout origin/main
                                                                                         '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "work-tree" ] ;
@@ -295,14 +295,14 @@
                                                                                                         if [ -s "$STASH/init.standard-error" ]
                                                                                                         then
                                                                                                             ${ yaml 20189 }
-                                                                                                            yq --yaml-output "$STASH/init.failure.yaml" >&2
+                                                                                                            yq --yaml-output "." "$STASH/init.failure.yaml" >&2
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         elif [ "${ builtins.concatStringsSep "\n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | sort )" ]
                                                                                                         then
                                                                                                             ${ yaml 850 }
-                                                                                                            yq --yaml-output "$STASH/init.failure.yaml" >&2
+                                                                                                            yq --yaml-output "." "$STASH/init.failure.yaml" >&2
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
