@@ -244,7 +244,6 @@
                                                                                                         text =
                                                                                                             ''
                                                                                                                 export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
-                                                                                                                gpg --full-generate-key
                                                                                                                 gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y --identity ${ config.personal.agenix } )" > work-tree/gpg-secret-keys.asc.age
                                                                                                                 gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y --identity ${ config.personal.agenix } )" > work-tree/gpg-ownertrust.asc.age
                                                                                                             '' ;
