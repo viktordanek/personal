@@ -111,13 +111,13 @@
                                                                                         ''
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
-                                                                                            export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
+                                                                                            export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
                                                                                             # git-crypt init
                                                                                             # git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
                                                                                             git config user.email ${ config.personal.email }
                                                                                             git config user.name "${ config.personal.name }"
                                                                                             git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
@@ -158,8 +158,8 @@
                                                                                                 chmod 0400 /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/known-hosts
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/known-hosts
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/config
                                                                                             '' ;
@@ -179,8 +179,8 @@
                                                                                                 Host mobile
                                                                                                 HostName 192.168.1.202
                                                                                                 Port 8022
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/known-hosts
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/known-hosts
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/config
                                                                                             '' ;
@@ -198,8 +198,8 @@
                                                                                                 chmod 0400 /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/known-hosts
+                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/identity
+                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/known-hosts
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/config
                                                                                             '' ;
@@ -227,7 +227,7 @@
                                                                                             mkdir "GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
                                                                                             git config user.email "${ config.personal.email }"
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -251,16 +251,16 @@
                                                                                                         runtimeInputs = [ pkgs.openssh ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config mobile cat passphrase
+                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config mobile cat passphrase
                                                                                                             '' ;
                                                                                                     } ;
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/.password-store-dir
-                                                                                                    export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/.password-store-dir
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/passphrase/bin
+                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/git
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir
+                                                                                                    export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/bin
                                                                                                     EOF
                                                                                                     mkdir /mount/bin
                                                                                                     ln --symbolic ${ passphrase }/bin/passphrase /mount/bin
@@ -270,7 +270,7 @@
                                                                                                     mkdir "$GIT_DIR"
                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                     git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -297,7 +297,7 @@
                                                                                                         runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
+                                                                                                                export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
                                                                                                                 gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
                                                                                                                 gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
                                                                                                                 git commit -am "export gnupg secret keys"
@@ -307,10 +307,10 @@
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree
-                                                                                                    export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin
+                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree
+                                                                                                    export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin
                                                                                                     EOF
                                                                                                     ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                                     mkdir /mount/bin
@@ -323,7 +323,7 @@
                                                                                                     mkdir "$GIT_DIR"
                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                     git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/boot/config"
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
                                                                                                     git config user.email ${ config.personal.email }
                                                                                                     git config user.name ${ config.personal.name }
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -345,7 +345,7 @@
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/config"
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
                                                                                             git config user.email "viktordanek10@gmail.com"
                                                                                             git config user.name "Viktor Danek"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -376,10 +376,10 @@
                                                                                                                             env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                             git add "inputs.$2.commit"
                                                                                                                         }
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal personal
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets secrets
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/visitor visitor
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --show-trace
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal personal
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets secrets
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/visitor visitor
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --show-trace
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         result/bin/run-nixos-vm
                                                                                                                         ;;
@@ -438,9 +438,9 @@
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/work-tree
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin:${ pkgs.coreutils }/bin
+                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/git
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/work-tree
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/bin:${ pkgs.coreutils }/bin
                                                                                                     EOF
                                                                                                     BIN=/mount/bin
                                                                                                     mkdir "$BIN"
@@ -451,7 +451,7 @@
                                                                                                     mkdir "$GIT_DIR"
                                                                                                     mkdir "$GIT_WORK_TREE"
                                                                                                     git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/mobile/config"
+                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config"
                                                                                                     git config user.name "${ config.personal.description }"
                                                                                                     git config user.email "${ config.personal.email }"
                                                                                                     ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -473,7 +473,7 @@
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/config"
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
                                                                                             git config user.email "viktordanek10@gmail.com"
                                                                                             git config user.name "Viktor Danek"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -535,7 +535,7 @@
                                                                                                     extraBwrapArgs =
                                                                                                         [
                                                                                                             "--bind $MOUNT /mount"
-                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/linked"
+                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "init" ;
@@ -557,8 +557,8 @@
                                                                                                 mkdir --parents "$ROOT"
                                                                                                 exec 201> "$ROOT/lock"
                                                                                                 flock -x 201
-                                                                                                STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
-                                                                                                LINKED=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }
+                                                                                                export UNIQ_TOKEN=${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }
+                                                                                                STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                 export MOUNT="$STASH/mount"
                                                                                                 mkdir --parents "$MOUNT"
                                                                                                 if [ -f "$STASH/init.failure.yaml" ]
@@ -569,16 +569,11 @@
                                                                                                     exit 64
                                                                                                 elif [ -f "$STASH/init.success.yaml" ]
                                                                                                 then
-                                                                                                    mkdir --parents "$LINKED"
-                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
-                                                                                                    # FIXME
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
                                                                                                     exit 0
                                                                                                 else
-                                                                                                    export LINK="$ROOT/linked"
-                                                                                                    mkdir --parents "$LINKED"
-                                                                                                    # FIXME
+                                                                                                    # FIXME VERIFY THE DEPENDENCIES HAVE BEEN MADE
                                                                                                     if ${ init }/bin/init > "$STASH/init.standard-output" 2> "$STASH/init.standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/init.standard-error" ]
@@ -596,7 +591,6 @@
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         else
-                                                                                                            ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                             if ! rm --force release.standard-error release.standard-output release-failure.yaml release-success.yaml
                                                                                                             then
                                                                                                                 ${ yaml 19035 }
@@ -631,7 +625,7 @@
                                                                                                 {
                                                                                                     extraBwrapArgs =
                                                                                                         [
-                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/linked"
+                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "release" ;
@@ -667,7 +661,6 @@
                                                                                                     exit 0
                                                                                                 else
                                                                                                     # FIXME
-                                                                                                    export LINK="$ROOT/linked"
                                                                                                     if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
                                                                                                     then
                                                                                                         if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
@@ -678,8 +671,6 @@
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         fi
-                                                                                                        LINKED=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "linked" ] ( builtins.map builtins.toJSON resource.path ) ] ) }
-                                                                                                        ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if [ "$STASH/mount/${ output }" == "$( readlink "$LINKED/${ output }" )" ] ; then rm "$LINKED/${ output }" ; fi'' ) resource.outputs ) }
                                                                                                         ${ yaml 0 }
                                                                                                         rm "$ROOT/lock"
                                                                                                         flock -u 201
@@ -707,7 +698,6 @@
                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                     text =
                                                         ''
-                                                            rm --recursive --force /home/${ config.personal.name }/${ config.personal.stash }/linked
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
                                                             if [ ! -e /home/${ config.personal.name }/${ config.personal.stash }/direct/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }/teardown ]
                                                             then
@@ -737,9 +727,9 @@
                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                         text =
                                                                             ''
-                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/work-tree
-                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/work-tree
-                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/git
+                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree
+                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree
+                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/git
                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                 TIMESTAMP=$(date +%s)
 
@@ -856,7 +846,7 @@
                                                                     runtimeInputs = [ pkgs.pass ] ;
                                                                     text =
                                                                         ''
-                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg"
+                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                             ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
                                                                             FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
                                                                             
@@ -890,7 +880,7 @@
                                                                             echo "Corresponding full fingerprints:" >&2
                                                                             printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
                                                                             
-                                                                            mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/.password-store-dir/.gpg-id"
+                                                                            mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/.password-store-dir/.gpg-id"
                                                                             
                                                                             
                                                                             echo "Current trusted key fingerprints:" >&2
@@ -949,9 +939,9 @@
                                                                         "PASSWORD_STORE_EXTENSIONS_DIR" = "${ password-store-extensions-dir }" ;
                                                                         "PASSWORD_STORE_CHARACTER_SET" = config.personal.pass.character-set ;
                                                                         "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
-                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/pass/boot/.password-store-dir" ;
+                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/.password-store-dir" ;
                                                                         "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
-                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-gnupg/.gnupg" ;
+                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg" ;
                                                                     } ;
                                                             } ;
                                                         hardware.pulseaudio =
