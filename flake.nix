@@ -1104,6 +1104,7 @@
                                                                         stash-cleanup =
                                                                             {
                                                                                 after = [ "network.target" ] ;
+                                                                                enable = false ;
                                                                                 serviceConfig =
                                                                                     {
                                                                                         ExecStart =
