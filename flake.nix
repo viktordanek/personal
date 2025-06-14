@@ -558,7 +558,7 @@
                                                                                                 exec 201> "$ROOT/lock"
                                                                                                 flock -x 201
                                                                                                 export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }"
-                                                                                                STASH="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) }" ;
+                                                                                                STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                 export MOUNT="$STASH/mount"
                                                                                                 mkdir --parents "$MOUNT"
                                                                                                 if [ -f "$STASH/init.failure.yaml" ]
