@@ -575,7 +575,6 @@
                                                                                                     exit 0
                                                                                                 else
                                                                                                     export LINK="$ROOT/linked"
-                                                                                                    mkdir --parents "$LINKED"
                                                                                                     # FIXME
                                                                                                     if ${ init }/bin/init > "$STASH/init.standard-output" 2> "$STASH/init.standard-error"
                                                                                                     then
@@ -1185,6 +1184,7 @@
                                                                         setup
                                                                         teardown
                                                                         pkgs.chromium
+                                                                        pkgs.jetbrains.idea-community
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
