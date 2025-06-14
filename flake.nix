@@ -375,17 +375,17 @@
                                                                                                                             env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                             git add "inputs.$2.commit"
                                                                                                                         }
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree personal
-                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree" secrets
-                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/visitor/work-tree" visitor
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree"
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal personal
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets secrets
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/visitor visitor
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --show-trace
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         result/bin/run-nixos-vm
                                                                                                                         ;;
                                                                                                                     1)
                                                                                                                         cd work-tree
                                                                                                                         nix flake lock --update-input personal --update-input secrets --update-input visitor
-                                                                                                                        nixos-rebuild build-vm --flake /work-tree.#myhost
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --show-trace
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         mv result ..
                                                                                                                         cd ..
@@ -404,7 +404,7 @@
                                                                                                                         ;;
                                                                                                                     4)
                                                                                                                         date +%s > work-tree/current-time.nix
-                                                                                                                        sudo nixos-rebuild test --flake /work-tree.#myhost
+                                                                                                                        sudo nixos-rebuild test --flake ./work-tree#myhost
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         SCRATCH_BRANCH="scratch/$( uuidgen )"
                                                                                                                         git checkout -b "$SCRATCH_BRANCH"
@@ -423,7 +423,7 @@
                                                                                                                         git checkout main
                                                                                                                         git rebase origin/main
                                                                                                                         git rebase development
-                                                                                                                        sudo nixos-rebuild switch --flake .work-tree/#myhost
+                                                                                                                        sudo nixos-rebuild switch --flake ./work-tree#myhost
                                                                                                                         git push origin HEAD
                                                                                                                         nix-collect-garbage
                                                                                                                         ;;
@@ -438,8 +438,8 @@
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
                                                                                                     export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/git
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin
+                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/work-tree
+                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/private/bin:${ pkgs.coreutils }/bin
                                                                                                     EOF
                                                                                                     BIN=/mount/bin
                                                                                                     mkdir "$BIN"
