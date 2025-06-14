@@ -545,8 +545,8 @@
                                                                                                     extraBwrapArgs =
                                                                                                         [
                                                                                                             "--bind $MOUNT /mount"
-                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
-                                                                                                            # "--tmpfs /work"
+                                                                                                            "--ro-bind /home/${ config.personal.name }/${ config.personal.stash }/direct /home/${ config.personal.name }/${ config.personal.stash }/direct"
+                                                                                                            "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "init" ;
                                                                                                     runScript =
