@@ -583,6 +583,7 @@
                                                                                                     exit 0
                                                                                                 else
                                                                                                     # FIXME VERIFY THE DEPENDENCIES HAVE BEEN MADE
+                                                                                                    echo cda8e021-f8f0-41f9-b492-adbe9b49ce83 >> "$STASH/debug"
                                                                                                     if ${ init }/bin/init > "$STASH/init.standard-output" 2> "$STASH/init.standard-error"
                                                                                                     then
                                                                                                         if [ -s "$STASH/init.standard-error" ]
