@@ -326,6 +326,26 @@
                                                                                                 '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
+                                                                        personal =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : [ tree.personal.dot-ssh.viktor ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
+                                                                                        ''
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/work-tree
+                                                                                            git init
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/config"
+                                                                                            git config user.email "viktordanek10@gmail.com"
+                                                                                            git config user.name "Viktor Danek"
+                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                            git remote add origin  git@github.com:viktordanek/personal.git
+                                                                                            git fetch origin main
+                                                                                            git checkout origin/main
+                                                                                            git checkout -b scratch/$( uuidgen )
+                                                                                        '' ;
+                                                                                } ;
                                                                         private =
                                                                             ignore :
                                                                                 {
@@ -348,7 +368,7 @@
                                                                                                                         fun "$( "$OUT/boot/repository/personal" )" personal
                                                                                                                         fun "$( "$OUT/boot/repository/age-secrets" )" secrets
                                                                                                                         fun "$( "$OUT/boot/repository/visitor" )" visitor
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "$( "$OUT/boot/repository/personal" )/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
+                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/linked/personal/repository/personal/work-tree" --override-input secrets "$( "$OUT/boot/repository/age-secrets" )/work-tree" --override-input visitor "$( "$OUT/boot/repository/visitor" )/work-tree"
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         result/bin/run-nixos-vm
                                                                                                                         ;;
