@@ -206,6 +206,13 @@
                                                                                         outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                     } ;
                                                                         } ;
+                                                                gnucash =
+                                                                    {
+# [emory@nixos:~/stash/712f77b2f122e7f5/output/boot/gnucash/emory]$ git remote -v
+# origin  git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git (fetch)
+# origin  git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git (push)
+
+                                                                    } ;
                                                                 pass =
                                                                     {
                                                                         boot =
