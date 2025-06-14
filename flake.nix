@@ -1146,6 +1146,7 @@
                                                                         stash-setup =
                                                                             {
                                                                                 after = [ "network.target" ] ;
+                                                                                enable = false ;
                                                                                 serviceConfig =
                                                                                     {
                                                                                         ExecStart = "${ setup }/bin/setup" ;
