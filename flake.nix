@@ -54,33 +54,33 @@
                                                                                         lambda = path : value : dependency : builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString ( builtins.toString config.personal.current-time ) ) ) "mount" dependency ] ;
                                                                                     }
                                                                                     resources ;
-                                                                            in
-                                                                                {
-                                                                                    dependencies =
-                                                                                        let
-                                                                                            list =
-                                                                                                visitor.lib.implementation
-                                                                                                    {
-                                                                                                        lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
-                                                                                                        list = path : list : builtins.concatLists list ;
-                                                                                                        set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
-                                                                                                    }
-                                                                                                    resources ;
-                                                                                            tree =
-                                                                                                visitor.lib.implementation
-                                                                                                    {
-                                                                                                        lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                                                    }
-                                                                                                    resources ;
-                                                                                            in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
-                                                                                    init-packages = init-packages ;
-                                                                                    init-script = init-script tree2 ;
-                                                                                    name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                                    outputs = builtins.sort builtins.lessThan outputs ;
-                                                                                    path = path ;
-                                                                                    release-packages = release-packages ;
-                                                                                    release-script = release-script tree2 ;
-                                                                                } ;
+                                                                        in
+                                                                            {
+                                                                                dependencies =
+                                                                                    let
+                                                                                        list =
+                                                                                            visitor.lib.implementation
+                                                                                                {
+                                                                                                    lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
+                                                                                                    list = path : list : builtins.concatLists list ;
+                                                                                                    set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                                                }
+                                                                                                resources ;
+                                                                                        tree =
+                                                                                            visitor.lib.implementation
+                                                                                                {
+                                                                                                    lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                                }
+                                                                                                resources ;
+                                                                                        in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
+                                                                                init-packages = init-packages ;
+                                                                                init-script = init-script tree2 ;
+                                                                                name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                outputs = builtins.sort builtins.lessThan outputs ;
+                                                                                path = path ;
+                                                                                release-packages = release-packages ;
+                                                                                release-script = release-script tree2 ;
+                                                                            } ;
                                                                 in [ ( identity ( value null ) ) ] ;
                                                     list = path : list : builtins.concatLists list ;
                                                     null = path : value : [ ] ;
@@ -120,7 +120,7 @@
                                                                                             ''
                                                                                                 export GIT_DIR=/mount/git
                                                                                                 export GIT_WORK_TREE=/mount/work-tree
-
+                                                                                                export GNUPGHOME=${ tree.personal.dot-gnupg.dot-gnupg }
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
