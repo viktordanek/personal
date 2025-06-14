@@ -546,7 +546,7 @@
                                                                                                         [
                                                                                                             "--bind $MOUNT /mount"
                                                                                                             "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
-                                                                                                            "--tmpfs /work"
+                                                                                                            # "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "init" ;
                                                                                                     runScript =
