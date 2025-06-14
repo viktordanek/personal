@@ -120,7 +120,7 @@
                                                                                             ''
                                                                                                 export GIT_DIR=/mount/git
                                                                                                 export GIT_WORK_TREE=/mount/work-tree
-                                                                                                export GNUPGHOME=${ tree "homedir" }
+                                                                                                export GNUPGHOME=${ tree.personal.dot-gnupg "homedir" }
                                                                                                 export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
