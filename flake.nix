@@ -453,6 +453,29 @@
                                                                                                 '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "work-tree" ] ;
                                                                                 } ;
+                                                                        visitor =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : [ tree.personal.dot-ssh.viktor ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
+                                                                                        ''
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/work-tree
+                                                                                            mkdir "$GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                            git init 2>&1
+                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/config"
+                                                                                            git config user.email "viktordanek10@gmail.com"
+                                                                                            git config user.name "Viktor Danek"
+                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                            git remote add origin  git@github.com:viktordanek/visitor.git
+                                                                                            git fetch origin main 2>&1
+                                                                                            git checkout origin/main 2>&1
+                                                                                            git checkout -b "scratch/$( uuidgen )" 2>&1
+                                                                                        '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                } ;
                                                                     } ;
                                                             } ;
                                                         scratch =
