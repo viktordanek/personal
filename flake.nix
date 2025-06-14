@@ -1141,6 +1141,7 @@
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
+                                                                git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
