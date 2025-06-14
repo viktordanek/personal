@@ -140,14 +140,13 @@
                                                                                     echo 35cd6139-1207-48b8-aea7-1fbd8f718fc0 >&2
                                                                                     chmod 0700 "$GNUPGHOME"
                                                                                     echo bcd5529f-fcd9-42f5-b506-d6d604bfe9cf >&2
-                                                                                    TEMP=$( mktemp --directory )
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$TEMP/secret-keys.asc ${ secrets }/secret-keys.asc.age"
+                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
                                                                                     echo 4143513d-a61f-411b-9892-ebc7b7e5ff18 >&2
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import "$TEMP/secret-keys.asc" 2>&1
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import "/work/secret-keys.asc" 2>&1
                                                                                     echo 7a29b67b-2ba6-4a99-9ba6-755864330fce >&2
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output "$TEMP/ownertrust.asc ${ secrets }/ownertrust.asc.age"
+                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
                                                                                     echo 3ada7439-0198-4fc4-a38e-6de7fcc5c212 >&2
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust "$TEMP/ownertrust.asc" 2>&1
+                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                     echo 9910e90e-2531-464c-be4b-b98e77ab0d28 >&2
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                     echo a9f4de5d-791b-4590-b777-32f51740e34d >&2
