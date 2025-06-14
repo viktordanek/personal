@@ -500,7 +500,7 @@
                                                                         {
                                                                             dependencies = tree : [ tree.scratch.one ] ;
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = "ln --symbolic /home/emory/stash/linked/scratch/one/one /mount/two" ;
+                                                                            init-script = "ln --symbolic /home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one /mount/two" ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
                                                             } ;
