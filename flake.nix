@@ -116,22 +116,23 @@
                                                                                     dependencies = tree : [ tree.personal.dot-gnupg ] ;
                                                                                     init-packages = pkgs : [ pkgs.chromium pkgs.git pkgs.git-crypt ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            # git-crypt init
-                                                                                            # git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
-                                                                                            git config user.email ${ config.personal.email }
-                                                                                            git config user.name "${ config.personal.name }"
-                                                                                            git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
-                                                                                            # git fetch origin 1ffa9bce-46ca-4690-b979-ff65a99d6d60 2>&1
-                                                                                            # git checkout 1ffa9bce-46ca-4690-b979-ff65a99d6d60
-                                                                                        '' ;
+                                                                                        tree :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                # git-crypt init
+                                                                                                # git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                git config user.email ${ config.personal.email }
+                                                                                                git config user.name "${ config.personal.name }"
+                                                                                                git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
+                                                                                                # git fetch origin 1ffa9bce-46ca-4690-b979-ff65a99d6d60 2>&1
+                                                                                                # git checkout 1ffa9bce-46ca-4690-b979-ff65a99d6d60
+                                                                                            '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
                                                                     } ;
@@ -140,16 +141,17 @@
                                                                         {
                                                                             init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                             init-script =
-                                                                                ''
-                                                                                    export GNUPGHOME=/mount/.gnupg
-                                                                                    mkdir "$GNUPGHOME"
-                                                                                    chmod 0700 "$GNUPGHOME"
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import "/work/secret-keys.asc" 2>&1
-                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
-                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
-                                                                                '' ;
+                                                                                tree :
+                                                                                    ''
+                                                                                        export GNUPGHOME=/mount/.gnupg
+                                                                                        mkdir "$GNUPGHOME"
+                                                                                        chmod 0700 "$GNUPGHOME"
+                                                                                        age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
+                                                                                        gpg --batch --yes --homedir "$GNUPGHOME" --import "/work/secret-keys.asc" 2>&1
+                                                                                        age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
+                                                                                        gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
+                                                                                        gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                    '' ;
                                                                             outputs = [ ".gnupg" ] ;
                                                                         } ;
                                                                     dot-ssh =
@@ -159,18 +161,19 @@
                                                                                     {
                                                                                         init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
                                                                                         init-script =
-                                                                                            ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/boot/identity.asc.age
-                                                                                                chmod 0400 /mount/identity
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
-                                                                                                chmod 0400 /mount/known-hosts
-                                                                                                cat > /mount/config <<EOF
-                                                                                                Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/known-hosts
-                                                                                                EOF
-                                                                                                chmod 0400 /mount/config
-                                                                                            '' ;
+                                                                                            tree :
+                                                                                                ''
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/boot/identity.asc.age
+                                                                                                    chmod 0400 /mount/identity
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
+                                                                                                    chmod 0400 /mount/known-hosts
+                                                                                                    cat > /mount/config <<EOF
+                                                                                                    Host github.com
+                                                                                                    IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/identity
+                                                                                                    UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/known-hosts
+                                                                                                    EOF
+                                                                                                    chmod 0400 /mount/config
+                                                                                                '' ;
                                                                                         outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                     } ;
                                                                             mobile =
@@ -178,20 +181,21 @@
                                                                                     {
                                                                                         init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
                                                                                         init-script =
-                                                                                            ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/boot/identity.asc.age
-                                                                                                chmod 0400 /mount/identity
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
-                                                                                                chmod 0400 /mount/known-hosts
-                                                                                                cat > /mount/config <<EOF
-                                                                                                Host mobile
-                                                                                                HostName 192.168.1.202
-                                                                                                Port 8022
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/known-hosts
-                                                                                                EOF
-                                                                                                chmod 0400 /mount/config
-                                                                                            '' ;
+                                                                                            tree :
+                                                                                                ''
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/boot/identity.asc.age
+                                                                                                    chmod 0400 /mount/identity
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/boot/known-hosts.asc.age
+                                                                                                    chmod 0400 /mount/known-hosts
+                                                                                                    cat > /mount/config <<EOF
+                                                                                                    Host mobile
+                                                                                                    HostName 192.168.1.202
+                                                                                                    Port 8022
+                                                                                                    IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/identity
+                                                                                                    UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/known-hosts
+                                                                                                    EOF
+                                                                                                    chmod 0400 /mount/config
+                                                                                                '' ;
                                                                                         outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                     } ;
                                                                             viktor =
@@ -199,18 +203,19 @@
                                                                                     {
                                                                                         init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
                                                                                         init-script =
-                                                                                            ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/viktor/identity.asc.age
-                                                                                                chmod 0400 /mount/identity
-                                                                                                age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/viktor/known-hosts.asc.age
-                                                                                                chmod 0400 /mount/known-hosts
-                                                                                                cat > /mount/config <<EOF
-                                                                                                Host github.com
-                                                                                                IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/identity
-                                                                                                UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/known-hosts
-                                                                                                EOF
-                                                                                                chmod 0400 /mount/config
-                                                                                            '' ;
+                                                                                            tree :
+                                                                                                ''
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/identity ${ secrets }/dot-ssh/viktor/identity.asc.age
+                                                                                                    chmod 0400 /mount/identity
+                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /mount/known-hosts ${ secrets }/dot-ssh/viktor/known-hosts.asc.age
+                                                                                                    chmod 0400 /mount/known-hosts
+                                                                                                    cat > /mount/config <<EOF
+                                                                                                    Host github.com
+                                                                                                    IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/identity
+                                                                                                    UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/known-hosts
+                                                                                                    EOF
+                                                                                                    chmod 0400 /mount/config
+                                                                                                '' ;
                                                                                         outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                     } ;
                                                                         } ;
@@ -229,20 +234,21 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.boot tree.personal.dot-gnupg ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/.password-store-dir
-                                                                                            mkdir "GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
-                                                                                            git config user.email "${ config.personal.email }"
-                                                                                            git config user.name "${ config.personal.description }"
-                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                            git remote add origin git@github.com:nextmoose/secrets.git
-                                                                                            git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                            git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
-                                                                                        '' ;
+                                                                                        tree :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/.password-store-dir
+                                                                                                mkdir "GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin git@github.com:nextmoose/secrets.git
+                                                                                                git fetch origin scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                                git checkout scratch/8060776f-fa8d-443e-9902-118cf4634d9e 2>&1
+                                                                                            '' ;
                                                                                     outputs = [ ".password-store-dir" "git" ] ;
                                                                                 } ;
                                                                         passphrase =
@@ -251,41 +257,42 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.boot tree.personal.dot-gnupg ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
-                                                                                        let
-                                                                                            passphrase =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "passphrase" ;
-                                                                                                        runtimeInputs = [ pkgs.openssh ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                ssh -F "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config" mobile cat passphrase
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                            in
-                                                                                                ''
-                                                                                                    cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/git"
-                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
-                                                                                                    export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
-                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/bin"
-                                                                                                    EOF
-                                                                                                    mkdir /mount/bin
-                                                                                                    ln --symbolic ${ passphrase }/bin/passphrase /mount/bin
-                                                                                                    ln --symbolic ${ pkgs.pass }/bin/pass /mount/bin
-                                                                                                    export GIT_DIR=/mount/git
-                                                                                                    export GIT_WORK_TREE=/mount/.password-store-dir
-                                                                                                    mkdir "$GIT_DIR"
-                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                    git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
-                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                    git remote add origin git@github.com:nextmoose/secrets.git
-                                                                                                    git fetch origin 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
-                                                                                                    git checkout 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
-                                                                                                '' ;
+                                                                                        tree :
+                                                                                            let
+                                                                                                passphrase =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "passphrase" ;
+                                                                                                            runtimeInputs = [ pkgs.openssh ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    ssh -F "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config" mobile cat passphrase
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        cat > /mount/.envrc <<EOF
+                                                                                                        export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/git"
+                                                                                                        export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
+                                                                                                        export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
+                                                                                                        export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/bin"
+                                                                                                        EOF
+                                                                                                        mkdir /mount/bin
+                                                                                                        ln --symbolic ${ passphrase }/bin/passphrase /mount/bin
+                                                                                                        ln --symbolic ${ pkgs.pass }/bin/pass /mount/bin
+                                                                                                        export GIT_DIR=/mount/git
+                                                                                                        export GIT_WORK_TREE=/mount/.password-store-dir
+                                                                                                        mkdir "$GIT_DIR"
+                                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                                        git init 2>&1
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                        git remote add origin git@github.com:nextmoose/secrets.git
+                                                                                                        git fetch origin 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                        git checkout 60e0f839-8f0e-4568-a522-3c0d5de2e1aa 2>&1
+                                                                                                    '' ;
                                                                                     outputs = [ ".envrc" ".password-store-dir" "bin" "git" ] ;
                                                                                 } ;
                                                                     } ;
@@ -297,48 +304,49 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.boot ] ;
                                                                                     init-packages = pkgs : [ pkgs.git ] ;
                                                                                     init-script =
-                                                                                        let
-                                                                                            gpg-export =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "gpg-export" ;
-                                                                                                        runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
-                                                                                                                gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
-                                                                                                                gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
-                                                                                                                git commit -am "export gnupg secret keys"
-                                                                                                                git push origin HEAD
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                            in
-                                                                                                ''
-                                                                                                    cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git"
-                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree"
-                                                                                                    export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
-                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin"
-                                                                                                    EOF
-                                                                                                    ln --symbolic ${ config.personal.agenix } /mount/agenix
-                                                                                                    mkdir /mount/bin
-                                                                                                    ln --symbolic ${ pkgs.age }/bin/age /mount/bin
-                                                                                                    ln --symbolic ${ pkgs.git }/bin/git /mount/bin
-                                                                                                    ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
-                                                                                                    ln --symbolic ${ gpg-export }/bin/gpg-export /mount/bin
-                                                                                                    export GIT_DIR=/mount/git
-                                                                                                    export GIT_WORK_TREE=/mount/work-tree
-                                                                                                    mkdir "$GIT_DIR"
-                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                    git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
-                                                                                                    git config user.email ${ config.personal.email }
-                                                                                                    git config user.name ${ config.personal.name }
-                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                    git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
-                                                                                                    git fetch origin main 2>&1
-                                                                                                    git checkout main 2>&1
-                                                                                                '' ;
+                                                                                        tree :
+                                                                                            let
+                                                                                                gpg-export =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "gpg-export" ;
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
+                                                                                                                    gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
+                                                                                                                    gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
+                                                                                                                    git commit -am "export gnupg secret keys"
+                                                                                                                    git push origin HEAD
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        cat > /mount/.envrc <<EOF
+                                                                                                        export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git"
+                                                                                                        export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree"
+                                                                                                        export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
+                                                                                                        export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin"
+                                                                                                        EOF
+                                                                                                        ln --symbolic ${ config.personal.agenix } /mount/agenix
+                                                                                                        mkdir /mount/bin
+                                                                                                        ln --symbolic ${ pkgs.age }/bin/age /mount/bin
+                                                                                                        ln --symbolic ${ pkgs.git }/bin/git /mount/bin
+                                                                                                        ln --symbolic ${ pkgs.gnupg }/bin/gpg /mount/bin
+                                                                                                        ln --symbolic ${ gpg-export }/bin/gpg-export /mount/bin
+                                                                                                        export GIT_DIR=/mount/git
+                                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                                        mkdir "$GIT_DIR"
+                                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                                        git init 2>&1
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                        git config user.email ${ config.personal.email }
+                                                                                                        git config user.name ${ config.personal.name }
+                                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                        git remote add origin git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b
+                                                                                                        git fetch origin main 2>&1
+                                                                                                        git checkout main 2>&1
+                                                                                                    '' ;
                                                                                     outputs = [ ".envrc" "agenix" "bin" "git" "work-tree" ] ;
                                                                                 } ;
                                                                         personal =
@@ -347,21 +355,22 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.viktor ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
-                                                                                            git config user.email "viktordanek10@gmail.com"
-                                                                                            git config user.name "Viktor Danek"
-                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                            git remote add origin  git@github.com:viktordanek/personal.git
-                                                                                            git fetch origin main 2>&1
-                                                                                            git checkout origin/main 2>&1
-                                                                                            git checkout -b "scratch/$( uuidgen )" 2>&1
-                                                                                        '' ;
+                                                                                        tree :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
+                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                git config user.name "Viktor Danek"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin  git@github.com:viktordanek/personal.git
+                                                                                                git fetch origin main 2>&1
+                                                                                                git checkout origin/main 2>&1
+                                                                                                git checkout -b "scratch/$( uuidgen )" 2>&1
+                                                                                            '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
                                                                         private =
@@ -369,104 +378,105 @@
                                                                                 {
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.which ] ;
                                                                                     init-script =
-                                                                                        let
-                                                                                            promote =
-                                                                                                pkgs.writeShellApplication
-                                                                                                    {
-                                                                                                        name = "promote" ;
-                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.nixos-rebuild ] ;
-                                                                                                        text =
-                                                                                                            ''
-                                                                                                                case "$1" in
-                                                                                                                    0)
-                                                                                                                        fun() {
-                                                                                                                            env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                            env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
-                                                                                                                            git add "inputs.$2.commit"
-                                                                                                                        }
-                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal" personal
-                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets" secrets
-                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/visitor" visitor
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --show-trace
-                                                                                                                        git commit -am "promoted to $1" --allow-empty
-                                                                                                                        result/bin/run-nixos-vm
-                                                                                                                        ;;
-                                                                                                                    1)
-                                                                                                                        cd work-tree
-                                                                                                                        nix flake lock --update-input personal --update-input secrets --update-input visitor
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost --show-trace
-                                                                                                                        git commit -am "promoted to $1" --allow-empty
-                                                                                                                        mv result ..
-                                                                                                                        cd ..
-                                                                                                                        result/bin/run-nixos-vm
-                                                                                                                        ;;
-                                                                                                                    2)
-                                                                                                                        nixos-rebuild build-vm --flake ./work-tree#myhost
-                                                                                                                        git commit -am "promoted to $1" --allow-empty
-                                                                                                                        result/bin/run-nixos-vm
-                                                                                                                        ;;
-                                                                                                                    3)
-                                                                                                                        nix-collect-garbage
-                                                                                                                        nixos-rebuild build-vm-with-bootloader --flake ./work-tree#myhost
-                                                                                                                        git commit -am "promoted to $1" --allow-empty
-                                                                                                                        result/bin/run-nixos-vm
-                                                                                                                        ;;
-                                                                                                                    4)
-                                                                                                                        date +%s > work-tree/current-time.nix
-                                                                                                                        sudo nixos-rebuild test --flake ./work-tree#myhost
-                                                                                                                        git commit -am "promoted to $1" --allow-empty
-                                                                                                                        SCRATCH_BRANCH="scratch/$( uuidgen )"
-                                                                                                                        git checkout -b "$SCRATCH_BRANCH"
-                                                                                                                        git fetch origin development
-                                                                                                                        git diff origin/development
-                                                                                                                        git reset --soft origin/development
-                                                                                                                        git commit -a
-                                                                                                                        git checkout development
-                                                                                                                        git rebase origin/development
-                                                                                                                        git rebase "$SCRATCH_BRANCH"
-                                                                                                                        git push origin HEAD
-                                                                                                                        ;;
-                                                                                                                    5)
-                                                                                                                        git fetch origin development
-                                                                                                                        git fetch origin main
-                                                                                                                        git checkout main
-                                                                                                                        git rebase origin/main
-                                                                                                                        git rebase development
-                                                                                                                        sudo nixos-rebuild switch --flake ./work-tree#myhost
-                                                                                                                        git push origin HEAD
-                                                                                                                        nix-collect-garbage
-                                                                                                                        ;;
-                                                                                                                    *)
-                                                                                                                        echo wrong
-                                                                                                                        exit 64
-                                                                                                                        ;;
-                                                                                                                esac
-                                                                                                            '' ;
-                                                                                                    } ;
-                                                                                            in
-                                                                                                ''
-                                                                                                    cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/git"
-                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/work-tree"
-                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/bin:${ pkgs.coreutils }/bin"
-                                                                                                    EOF
-                                                                                                    BIN=/mount/bin
-                                                                                                    mkdir "$BIN"
-                                                                                                    ln --symbolic "$( which git )" "$BIN"
-                                                                                                    ln --symbolic ${ promote }/bin/promote "$BIN"
-                                                                                                    export GIT_DIR=/mount/git
-                                                                                                    export GIT_WORK_TREE=/mount/work-tree
-                                                                                                    mkdir "$GIT_DIR"
-                                                                                                    mkdir "$GIT_WORK_TREE"
-                                                                                                    git init 2>&1
-                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config"
-                                                                                                    git config user.name "${ config.personal.description }"
-                                                                                                    git config user.email "${ config.personal.email }"
-                                                                                                    ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                                    git remote add origin mobile:private
-                                                                                                    git fetch origin main 2>&1
-                                                                                                    git checkout origin/main 2>&1
-                                                                                                '' ;
+                                                                                        tree :
+                                                                                            let
+                                                                                                promote =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "promote" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.nixos-rebuild ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    case "$1" in
+                                                                                                                        0)
+                                                                                                                            fun() {
+                                                                                                                                env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                git add "inputs.$2.commit"
+                                                                                                                            }
+                                                                                                                            fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal" personal
+                                                                                                                            fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets" secrets
+                                                                                                                            fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/visitor" visitor
+                                                                                                                            nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --show-trace
+                                                                                                                            git commit -am "promoted to $1" --allow-empty
+                                                                                                                            result/bin/run-nixos-vm
+                                                                                                                            ;;
+                                                                                                                        1)
+                                                                                                                            cd work-tree
+                                                                                                                            nix flake lock --update-input personal --update-input secrets --update-input visitor
+                                                                                                                            nixos-rebuild build-vm --flake ./work-tree#myhost --show-trace
+                                                                                                                            git commit -am "promoted to $1" --allow-empty
+                                                                                                                            mv result ..
+                                                                                                                            cd ..
+                                                                                                                            result/bin/run-nixos-vm
+                                                                                                                            ;;
+                                                                                                                        2)
+                                                                                                                            nixos-rebuild build-vm --flake ./work-tree#myhost
+                                                                                                                            git commit -am "promoted to $1" --allow-empty
+                                                                                                                            result/bin/run-nixos-vm
+                                                                                                                            ;;
+                                                                                                                        3)
+                                                                                                                            nix-collect-garbage
+                                                                                                                            nixos-rebuild build-vm-with-bootloader --flake ./work-tree#myhost
+                                                                                                                            git commit -am "promoted to $1" --allow-empty
+                                                                                                                            result/bin/run-nixos-vm
+                                                                                                                            ;;
+                                                                                                                        4)
+                                                                                                                            date +%s > work-tree/current-time.nix
+                                                                                                                            sudo nixos-rebuild test --flake ./work-tree#myhost
+                                                                                                                            git commit -am "promoted to $1" --allow-empty
+                                                                                                                            SCRATCH_BRANCH="scratch/$( uuidgen )"
+                                                                                                                            git checkout -b "$SCRATCH_BRANCH"
+                                                                                                                            git fetch origin development
+                                                                                                                            git diff origin/development
+                                                                                                                            git reset --soft origin/development
+                                                                                                                            git commit -a
+                                                                                                                            git checkout development
+                                                                                                                            git rebase origin/development
+                                                                                                                            git rebase "$SCRATCH_BRANCH"
+                                                                                                                            git push origin HEAD
+                                                                                                                            ;;
+                                                                                                                        5)
+                                                                                                                            git fetch origin development
+                                                                                                                            git fetch origin main
+                                                                                                                            git checkout main
+                                                                                                                            git rebase origin/main
+                                                                                                                            git rebase development
+                                                                                                                            sudo nixos-rebuild switch --flake ./work-tree#myhost
+                                                                                                                            git push origin HEAD
+                                                                                                                            nix-collect-garbage
+                                                                                                                            ;;
+                                                                                                                        *)
+                                                                                                                            echo wrong
+                                                                                                                            exit 64
+                                                                                                                            ;;
+                                                                                                                    esac
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        cat > /mount/.envrc <<EOF
+                                                                                                        export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/git"
+                                                                                                        export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/work-tree"
+                                                                                                        export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/bin:${ pkgs.coreutils }/bin"
+                                                                                                        EOF
+                                                                                                        BIN=/mount/bin
+                                                                                                        mkdir "$BIN"
+                                                                                                        ln --symbolic "$( which git )" "$BIN"
+                                                                                                        ln --symbolic ${ promote }/bin/promote "$BIN"
+                                                                                                        export GIT_DIR=/mount/git
+                                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                                        mkdir "$GIT_DIR"
+                                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                                        git init 2>&1
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config"
+                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                        git remote add origin mobile:private
+                                                                                                        git fetch origin main 2>&1
+                                                                                                        git checkout origin/main 2>&1
+                                                                                                    '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "work-tree" ] ;
                                                                                 } ;
                                                                         visitor =
@@ -475,21 +485,22 @@
                                                                                     dependencies = tree : [ tree.personal.dot-ssh.viktor ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
-                                                                                        ''
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
-                                                                                            git config user.email "viktordanek10@gmail.com"
-                                                                                            git config user.name "Viktor Danek"
-                                                                                            ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                            git remote add origin  git@github.com:viktordanek/visitor.git
-                                                                                            git fetch origin main 2>&1
-                                                                                            git checkout origin/main 2>&1
-                                                                                            git checkout -b "scratch/$( uuidgen )" 2>&1
-                                                                                        '' ;
+                                                                                        tree :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
+                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                git config user.name "Viktor Danek"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin  git@github.com:viktordanek/visitor.git
+                                                                                                git fetch origin main 2>&1
+                                                                                                git checkout origin/main 2>&1
+                                                                                                git checkout -b "scratch/$( uuidgen )" 2>&1
+                                                                                            '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
                                                                     } ;
@@ -500,7 +511,7 @@
                                                                     ignore :
                                                                         {
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = "echo one > /mount/one" ;
+                                                                            init-script = tree : "echo one > /mount/one" ;
                                                                             outputs = [ "one" ] ;
                                                                         } ;
                                                                 two =
@@ -508,7 +519,7 @@
                                                                         {
                                                                             dependencies = tree : [ tree.scratch.one ] ;
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
+                                                                            init-script = tree : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
                                                             } ;
