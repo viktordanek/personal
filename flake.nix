@@ -141,7 +141,6 @@
                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
-                                                                                    echo a9f4de5d-791b-4590-b777-32f51740e34d >&2
                                                                                 '' ;
                                                                             outputs = [ ".gnupg" ] ;
                                                                         } ;
