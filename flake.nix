@@ -111,7 +111,7 @@
                                                                                         ''
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
-                                                                                            export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
+                                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                             mkdir "$GIT_DIR"
                                                                                             mkdir "$GIT_WORK_TREE"
                                                                                             git init 2>&1
@@ -251,16 +251,16 @@
                                                                                                         runtimeInputs = [ pkgs.openssh ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config mobile cat passphrase
+                                                                                                                ssh -F "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/mobile/config" mobile cat passphrase
                                                                                                             '' ;
                                                                                                     } ;
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir
-                                                                                                    export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/bin
+                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/git"
+                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
+                                                                                                    export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/.password-store-dir"
+                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/passphrase/bin"
                                                                                                     EOF
                                                                                                     mkdir /mount/bin
                                                                                                     ln --symbolic ${ passphrase }/bin/passphrase /mount/bin
@@ -297,7 +297,7 @@
                                                                                                         runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
+                                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                                                 gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
                                                                                                                 gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
                                                                                                                 git commit -am "export gnupg secret keys"
@@ -307,10 +307,10 @@
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree
-                                                                                                    export GNUPGHOME=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin
+                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git"
+                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree"
+                                                                                                    export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
+                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin"
                                                                                                     EOF
                                                                                                     ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                                     mkdir /mount/bin
@@ -376,9 +376,9 @@
                                                                                                                             env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                             git add "inputs.$2.commit"
                                                                                                                         }
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal personal
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets secrets
-                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/visitor visitor
+                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal" personal
+                                                                                                                        fun "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets" secrets
+                                                                                                                        fun /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/visitor" visitor
                                                                                                                         nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --override-input secrets "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree" --override-input visitor "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/personal/work-tree" --show-trace
                                                                                                                         git commit -am "promoted to $1" --allow-empty
                                                                                                                         result/bin/run-nixos-vm
@@ -438,9 +438,9 @@
                                                                                             in
                                                                                                 ''
                                                                                                     cat > /mount/.envrc <<EOF
-                                                                                                    export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/git
-                                                                                                    export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/work-tree
-                                                                                                    export PATH=$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/bin:${ pkgs.coreutils }/bin
+                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/git"
+                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/work-tree"
+                                                                                                    export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/private/bin:${ pkgs.coreutils }/bin"
                                                                                                     EOF
                                                                                                     BIN=/mount/bin
                                                                                                     mkdir "$BIN"
@@ -557,8 +557,8 @@
                                                                                                 mkdir --parents "$ROOT"
                                                                                                 exec 201> "$ROOT/lock"
                                                                                                 flock -x 201
-                                                                                                export UNIQ_TOKEN=${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }
-                                                                                                STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
+                                                                                                export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }"
+                                                                                                STASH="${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) }" ;
                                                                                                 export MOUNT="$STASH/mount"
                                                                                                 mkdir --parents "$MOUNT"
                                                                                                 if [ -f "$STASH/init.failure.yaml" ]
@@ -727,9 +727,9 @@
                                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                         text =
                                                                             ''
-                                                                                export PASSWORD_STORE_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree
-                                                                                export GIT_WORK_TREE=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree
-                                                                                export GIT_DIR=/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/git
+                                                                                export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
+                                                                                export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
+                                                                                export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/git"
                                                                                 YEAR_SECONDS=$((366 * 86400))
                                                                                 TIMESTAMP=$(date +%s)
 
