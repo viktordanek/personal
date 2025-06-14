@@ -366,6 +366,7 @@
                                                                                                 pkgs.writeShellApplication
                                                                                                     {
                                                                                                         name = "promote" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.nixos-rebuild ] ;
                                                                                                         text =
                                                                                                             ''
                                                                                                                 case "$1" in
