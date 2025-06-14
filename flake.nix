@@ -42,10 +42,10 @@
                                                                     {
                                                                         dependencies ? x : [ ] ,
                                                                         init-packages ? pkgs : [ ] ,
-                                                                        init-script ? x : "" ,
+                                                                        init-script ? "" ,
                                                                         outputs ? [ ] ,
                                                                         release-packages ? pkgs : [ ] ,
-                                                                        release-script ? x : ""
+                                                                        release-script ? ""
                                                                     } :
                                                                         let
                                                                             tree2 =
@@ -54,33 +54,33 @@
                                                                                         lambda = path : value : dependency : builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString ( builtins.toString config.personal.current-time ) ) ) "mount" dependency ] ;
                                                                                     }
                                                                                     resources ;
-                                                                        in
-                                                                            {
-                                                                                dependencies =
-                                                                                    let
-                                                                                        list =
-                                                                                            visitor.lib.implementation
-                                                                                                {
-                                                                                                    lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
-                                                                                                    list = path : list : builtins.concatLists list ;
-                                                                                                    set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
-                                                                                                }
-                                                                                                resources ;
-                                                                                        tree =
-                                                                                            visitor.lib.implementation
-                                                                                                {
-                                                                                                    lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                                                }
-                                                                                                resources ;
-                                                                                        in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
-                                                                                init-packages = init-packages ;
-                                                                                init-script = init-script ;
-                                                                                name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                                outputs = builtins.sort builtins.lessThan outputs ;
-                                                                                path = path ;
-                                                                                release-packages = release-packages ;
-                                                                                release-script = release-script ;
-                                                                            } ;
+                                                                            in
+                                                                                {
+                                                                                    dependencies =
+                                                                                        let
+                                                                                            list =
+                                                                                                visitor.lib.implementation
+                                                                                                    {
+                                                                                                        lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
+                                                                                                        list = path : list : builtins.concatLists list ;
+                                                                                                        set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                                                    }
+                                                                                                    resources ;
+                                                                                            tree =
+                                                                                                visitor.lib.implementation
+                                                                                                    {
+                                                                                                        lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                                    }
+                                                                                                    resources ;
+                                                                                            in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
+                                                                                    init-packages = init-packages ;
+                                                                                    init-script = init-script ;
+                                                                                    name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                    outputs = builtins.sort builtins.lessThan outputs ;
+                                                                                    path = path ;
+                                                                                    release-packages = release-packages ;
+                                                                                    release-script = release-script ;
+                                                                                } ;
                                                                 in [ ( identity ( value null ) ) ] ;
                                                     list = path : list : builtins.concatLists list ;
                                                     null = path : value : [ ] ;
