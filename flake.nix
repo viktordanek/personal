@@ -341,9 +341,9 @@
                                                                                             git config user.name "Viktor Danek"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                             git remote add origin  git@github.com:viktordanek/personal.git
-                                                                                            git fetch origin main
-                                                                                            git checkout origin/main
-                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                            git fetch origin main 2>&1
+                                                                                            git checkout origin/main 2>&1
+                                                                                            git checkout -b "scratch/$( uuidgen )" 2>&1
                                                                                         '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
