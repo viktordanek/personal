@@ -569,6 +569,7 @@
                                                                                                 elif [ -f "$STASH/init.success.yaml" ]
                                                                                                 then
                                                                                                     mkdir --parents "$LINKED"
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     # FIXME
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
@@ -594,7 +595,6 @@
                                                                                                             flock -u 201
                                                                                                             exit 64
                                                                                                         else
-                                                                                                            mkdir --parents "$LINKED"
                                                                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then ${ yaml 25247 } && yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                             if ! rm --force release.standard-error release.standard-output release-failure.yaml release-success.yaml
                                                                                                             then
@@ -1185,6 +1185,7 @@
                                                                         setup
                                                                         teardown
                                                                         pkgs.chromium
+                                                                        pkgs.jetbrains.idea-community
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
