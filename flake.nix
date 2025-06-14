@@ -569,6 +569,7 @@
                                                                                                 elif [ -f "$STASH/init.success.yaml" ]
                                                                                                 then
                                                                                                     mkdir --parents "$LINKED"
+                                                                                                    ${ builtins.concatStringsSep "\n" ( builtins.map ( output : ''if ! ln --symbolic "$STASH/mount/${ output }" "$LINKED/${ output }" ; then yq --yaml-output "$STASH/failure.yaml" && rm "$ROOT/lock" && flock -u 201 && exit 64 ; fi'' ) resource.outputs ) }
                                                                                                     # FIXME
                                                                                                     rm "$ROOT/lock"
                                                                                                     flock -u 201
