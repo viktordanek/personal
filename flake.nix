@@ -335,6 +335,8 @@
                                                                                         ''
                                                                                             export GIT_DIR=/mount/git
                                                                                             export GIT_WORK_TREE=/mount/work-tree
+                                                                                            mkdir "$GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
                                                                                             git init
                                                                                             git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/linked/personal/dot-ssh/viktor/config"
                                                                                             git config user.email "viktordanek10@gmail.com"
