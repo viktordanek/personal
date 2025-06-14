@@ -42,10 +42,10 @@
                                                                     {
                                                                         dependencies ? x : [ ] ,
                                                                         init-packages ? pkgs : [ ] ,
-                                                                        init-script ? "" ,
+                                                                        init-script ? x : "" ,
                                                                         outputs ? [ ] ,
                                                                         release-packages ? pkgs : [ ] ,
-                                                                        release-script ? ""
+                                                                        release-script ? x : ""
                                                                     } :
                                                                         let
                                                                             tree2 =
@@ -74,12 +74,12 @@
                                                                                                     resources ;
                                                                                             in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
                                                                                     init-packages = init-packages ;
-                                                                                    init-script = init-script ;
+                                                                                    init-script = init-script tree2 ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                     outputs = builtins.sort builtins.lessThan outputs ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script ;
+                                                                                    release-script = release-script tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
                                                     list = path : list : builtins.concatLists list ;
