@@ -120,7 +120,7 @@
                                                                                             ''
                                                                                                 export GIT_DIR=/mount/git
                                                                                                 export GIT_WORK_TREE=/mount/work-tree
-                                                                                                export GNUPGHOME=${ tree.personal.dot-gnupg.dot-gnupg }
+                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
@@ -144,7 +144,7 @@
                                                                             init-script =
                                                                                 tree :
                                                                                     ''
-                                                                                        export GNUPGHOME=/mount/homedir
+                                                                                        export GNUPGHOME=/mount/.gnupg
                                                                                         mkdir "$GNUPGHOME"
                                                                                         chmod 0700 "$GNUPGHOME"
                                                                                         age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
@@ -153,7 +153,7 @@
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                     '' ;
-                                                                            outputs = [ "homedir" ] ;
+                                                                            outputs = [ ".gnupg" ] ;
                                                                         } ;
                                                                     dot-ssh =
                                                                         {
@@ -313,7 +313,7 @@
                                                                                                         runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
+                                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                                                 gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
                                                                                                                 gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
                                                                                                                 git commit -am "export gnupg secret keys"
@@ -326,7 +326,7 @@
                                                                                                         cat > /mount/.envrc <<EOF
                                                                                                         export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git"
                                                                                                         export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree"
-                                                                                                        export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
+                                                                                                        export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                                                         export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin"
                                                                                                         EOF
                                                                                                         ln --symbolic ${ config.personal.agenix } /mount/agenix
@@ -867,7 +867,7 @@
                                                                     runtimeInputs = [ pkgs.pass ] ;
                                                                     text =
                                                                         ''
-                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
+                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg"
                                                                             ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
                                                                             FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
                                                                             
@@ -962,7 +962,7 @@
                                                                         "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
                                                                         "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/.password-store-dir" ;
                                                                         "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
-                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir" ;
+                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/.gnupg" ;
                                                                     } ;
                                                             } ;
                                                         hardware.pulseaudio =
