@@ -345,6 +345,7 @@
                                                                                             git checkout origin/main
                                                                                             git checkout -b "scratch/$( uuidgen )"
                                                                                         '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
