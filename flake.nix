@@ -228,7 +228,7 @@
                                                                                                 export GIT_WORK_TREE=/mount/work-tree
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
-                                                                                                git init
+                                                                                                git init 2>&1
 
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
