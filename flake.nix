@@ -172,7 +172,6 @@
                                                                                                     chmod 0400 /mount/known-hosts
                                                                                                     cat > /mount/config <<EOF
                                                                                                     Host github.com
-                                                                                                    IdentityFile ${ tree.personal.dot-ssh.boot "identity" }
                                                                                                     EOF
                                                                                                     chmod 0400 /mount/config
                                                                                                 '' ;
