@@ -128,7 +128,7 @@
                                                                                                 # git-crypt init
                                                                                                 # git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
                                                                                                 SSH_CONFIG=${ tree.personal.dot-ssh.boot "config" }
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${SSH_CONFIG}"
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                 git config user.email ${ config.personal.email }
                                                                                                 git config user.name "${ config.personal.name }"
                                                                                                 git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
