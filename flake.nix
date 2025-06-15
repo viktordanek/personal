@@ -179,16 +179,17 @@
                                                                                     init-script =
                                                                                         { outputs , tree } :
                                                                                             ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity.asc
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts.asc
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile ${ builtins.trace "${ builtins.typeOf outputs }" "" }
+                                                                                                IdentityFile ${ outputs.identity }
+                                                                                                UserKnownHostsFile ${ outputs.known-hosts }
                                                                                                 UseStrictHostKeyChecking true
                                                                                                 EOF
-                                                                                                chmod 0400 /mount/identity.asc /mount/known-hosts.asc /mount/config
+                                                                                                chmod 0400 /mount/identity /mount/known-hosts /mount/config
                                                                                             '' ;
-                                                                                    outputs = [ "config" "identity.asc" "known-hosts.asc" ] ;
+                                                                                    outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
                                                                     } ;
                                                             } ;
