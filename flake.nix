@@ -314,7 +314,7 @@
                                                                                                             runtimeInputs = [ pkgs.age pkgs.git pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
+                                                                                                                    export GNUPGHOME=${ tree.personal.dot-gnupg "homedir" }
                                                                                                                     gpg --home "$GNUPGHOME" --export-secret-keys --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/secret-keys.asc.age
                                                                                                                     gpg --home "$GNUPGHOME" --export-ownertrust --armor | age --encrypt --recipient "$( age-keygen -y < ${ config.personal.agenix } )" > work-tree/ownertrust.asc.age
                                                                                                                     git commit -am "export gnupg secret keys"
