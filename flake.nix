@@ -54,6 +54,7 @@
                                                                                         lambda = path : value : dependency : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" dependency ] ] ) ;
                                                                                     }
                                                                                     resources ;
+                                                                            outputs_ = builtins.listToAttrs ( builtins.map ( output : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] ) outputs ;
                                                                             in
                                                                                 {
                                                                                     dependencies =
@@ -74,12 +75,12 @@
                                                                                                     resources ;
                                                                                             in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
                                                                                     init-packages = init-packages ;
-                                                                                    init-script = init-script tree2 ;
+                                                                                    init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                     outputs = builtins.sort builtins.lessThan outputs ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script tree2 ;
+                                                                                    release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
                                                     list = path : list : builtins.concatLists list ;
@@ -124,7 +125,7 @@
                                                                         {
                                                                             init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                             init-script =
-                                                                                tree :
+                                                                                { ... } :
                                                                                     ''
                                                                                         export GNUPGHOME=/mount/.gnupg
                                                                                         mkdir "$GNUPGHOME"
@@ -144,14 +145,14 @@
                                                                                 {
                                                                                     init-packages = pkgs : [ pkgs.age ] ;
                                                                                     init-script =
-                                                                                        tree :
+                                                                                        { outputs , tree } :
                                                                                             ''
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity.asc
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts.asc
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile ${ tree.personal.dot-ssh.boot "identity.asc" }
-                                                                                                UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts.asc" }
+                                                                                                IdentityFile ${ outputs."identity.asc" }
+                                                                                                UserKnownHostsFile ${ outputs."known-hosts.asc" }
                                                                                                 UseStrictHostKeyChecking true
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/identity.asc /mount/known-hosts.asc /mount/config
@@ -166,7 +167,7 @@
                                                                     ignore :
                                                                         {
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = tree : "echo one > /mount/one" ;
+                                                                            init-script = { ... } : "echo one > /mount/one" ;
                                                                             outputs = [ "one" ] ;
                                                                         } ;
                                                                 two =
@@ -174,7 +175,7 @@
                                                                         {
                                                                             dependencies = tree : [ tree.scratch.one ] ;
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = tree : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
+                                                                            init-script = { outputs , tree } : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
                                                             } ;
