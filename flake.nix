@@ -161,6 +161,7 @@
                                                                             boot =
                                                                                 ignore :
                                                                                     {
+                                                                                        dependencies = [ ] ;
                                                                                         init-packages = pkgs : [ pkgs.age pkgs.coreutils pkgs.openssh ] ;
                                                                                         init-script =
                                                                                             tree :
@@ -171,8 +172,8 @@
                                                                                                     chmod 0400 /mount/known-hosts
                                                                                                     cat > /mount/config <<EOF
                                                                                                     Host github.com
-                                                                                                    IdentityFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/identity
-                                                                                                    UserKnownHostsFile /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/known-hosts
+                                                                                                    IdentityFile ${ tree.personal.dot-ssh.boot "identity" }
+                                                                                                    UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts" }
                                                                                                     EOF
                                                                                                     chmod 0400 /mount/config
                                                                                                 '' ;
