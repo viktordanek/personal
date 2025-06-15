@@ -102,6 +102,17 @@
                                                                     done
                                                                 '' ;
                                                         } ;
+                                                ssh-command =
+                                                    configuration-file :
+                                                        pkgs.writeShellApplication
+                                                            {
+                                                                name = "ssh" ;
+                                                                runtimeInputs = [ pkgs.openssh ] ;
+                                                                text =
+                                                                    ''
+                                                                        exec ssh -F ${ configuration-file } $@
+                                                                    '' ;
+                                                        } ;
                                                 in
                                                     {
                                                         couple = { } ;
@@ -115,7 +126,7 @@
                                                                             init-script =
                                                                                 tree :
                                                                                     ''
-                                                                                        export GNUPGHOME=/mount/homedir
+                                                                                        export GNUPGHOME=/mount/.gnupg
                                                                                         mkdir "$GNUPGHOME"
                                                                                         chmod 0700 "$GNUPGHOME"
                                                                                         age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
@@ -124,8 +135,30 @@
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                     '' ;
-                                                                            outputs = [ "homedir" ] ;
+                                                                            outputs = [ ".gnupg" ] ;
                                                                         } ;
+                                                                dot-ssh =
+                                                                    {
+                                                                        boot =
+                                                                            ignore :
+                                                                                {
+                                                                                    init-packages = pkgs : [ pkgs.age ] ;
+                                                                                    init-script =
+                                                                                        tree :
+                                                                                            ''
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity > /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts > /mount/known-hosts
+                                                                                                cat > /mount/config <<EOF
+                                                                                                Host github.com
+                                                                                                IdentityFile ${ tree.personal.dot-ssh.boot "identity" }
+                                                                                                UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts" }
+                                                                                                UseStrictHostKeyChecking true
+                                                                                                EOF
+                                                                                                chmod 0400 /mount/identity /mount/known-hosts /mount/config
+                                                                                            '' ;
+                                                                                    outputs = [ "config" "identity-file" "known-hosts" ] ;
+                                                                                } ;
+                                                                    } ;
                                                             } ;
                                                         scratch =
                                                             {
