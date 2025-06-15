@@ -127,7 +127,8 @@
                                                                                                 git init 2>&1
                                                                                                 # git-crypt init
                                                                                                 # git-crypt add-gpg-user B4A123BD34C93E5EDE57CCB466DF829A8C7285A2
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                SSH_CONFIG=${ tree.personal.dot-ssh.boot "config" }
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${SSH_CONFIG}"
                                                                                                 git config user.email ${ config.personal.email }
                                                                                                 git config user.name "${ config.personal.name }"
                                                                                                 git remote add origin git@github.com:AFnRFCb7/9f41f49f-5426-4287-9a91-7e2afadfd79a.git
@@ -242,7 +243,8 @@
                                                                                                 mkdir "GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                SSH_CONFIG=${ tree.personal.dot-ssh.boot "config" }
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                 git config user.email "${ config.personal.email }"
                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                 ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -286,7 +288,8 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                        SSH_CONFIG=${ tree.personal.dot-ssh.boot "config" }
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                         git config user.email "${ config.personal.email }"
                                                                                                         git config user.name "${ config.personal.description }"
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -340,7 +343,8 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.boot "config" }"
+                                                                                                        SSH_CONFIG=${ tree.personal.dot-ssh.boot "config" }
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                         git config user.email ${ config.personal.email }
                                                                                                         git config user.name ${ config.personal.name }
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -363,7 +367,8 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.mobile "config" }"
+                                                                                                SSH_CONFIG=${ tree.personal.dot-ssh.mobile "config" }
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -471,7 +476,8 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.mobile "config" }"
+                                                                                                        SSH_CONFIG=${ tree.personal.dot-ssh.mobile "config" }
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
                                                                                                         git config user.name "${ config.personal.description }"
                                                                                                         git config user.email "${ config.personal.email }"
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
