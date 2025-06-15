@@ -154,7 +154,7 @@
                                                                                                 UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts.asc" }
                                                                                                 UseStrictHostKeyChecking true
                                                                                                 EOF
-                                                                                                chmod 0400 /mount/identity /mount/known-hosts /mount/config
+                                                                                                chmod 0400 /mount/identity.asc /mount/known-hosts.asc /mount/config
                                                                                             '' ;
                                                                                     outputs = [ "config" "identity-file" "known-hosts" ] ;
                                                                                 } ;
