@@ -51,7 +51,7 @@
                                                                             tree2 =
                                                                                 visitor.lib.implementation
                                                                                     {
-                                                                                        lambda = path : value : dependency : builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "mount" dependency ] ;
+                                                                                        lambda = path : value : dependency : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" dependency ] ] ) ;
                                                                                     }
                                                                                     resources ;
                                                                             in
@@ -340,7 +340,7 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F 2${ tree.personal.dot-ssh.boot "config" }2"
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.boot "config" }"
                                                                                                         git config user.email ${ config.personal.email }
                                                                                                         git config user.name ${ config.personal.name }
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
