@@ -325,7 +325,7 @@
                                                                                                     ''
                                                                                                         cat > /mount/.envrc <<EOF
                                                                                                         export GIT_DIR=${ tree.personal.repository.age-secrets "git" }
-                                                                                                        export GIT_WORK_TREE=${ tree.personal.repository.age-secret "work-tree" }
+                                                                                                        export GIT_WORK_TREE=${ tree.personal.repository.age-secrets "work-tree" }
                                                                                                         export GNUPGHOME=${ tree.personal.dot-gnupg "homedir" }
                                                                                                         export PATH="$PATH:${ tree.personal.repository.age-secrets "bin" }:${ pkgs.coreutils }/bin"
                                                                                                         EOF
