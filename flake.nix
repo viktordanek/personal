@@ -363,7 +363,7 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/viktor/config"
+                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.mobile "config" }"
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
@@ -396,10 +396,10 @@
                                                                                                                                 env -i HOME="$HOME" PATH="$PATH" GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                                 git add "inputs.$2.commit"
                                                                                                                             }
-                                                                                                                            fun ${ tree.personal.repository.personal } personal
-                                                                                                                            fun ${ tree.personal.repository.age-secrets } secrets
-                                                                                                                            fun ${ tree.personal.repository.visitor } visitor
-                                                                                                                            nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal ${ tree.personal.repository.personal }/work-tree --override-input secrets ${ tree.personal.repository.age-secrets }/work-tree" --override-input visitor ${ tree.personal.repository.visitor }/work-tree" --show-trace
+                                                                                                                            fun ${ tree.personal.repository.personal "personal" }
+                                                                                                                            fun ${ tree.personal.repository.age-secrets "secrets" }
+                                                                                                                            fun ${ tree.personal.repository.visitor "visitor" }
+                                                                                                                            nixos-rebuild build-vm --flake ./work-tree#myhost --override-input personal ${ tree.personal.repository.personal "work-tree" } --override-input secrets ${ tree.personal.repository.age-secrets "work-tree" } --override-input visitor ${ tree.personal.repository.visitor "work-tree" } --show-trace
                                                                                                                             git commit -am "promoted to $1" --allow-empty
                                                                                                                             result/bin/run-nixos-vm
                                                                                                                             ;;
@@ -458,9 +458,9 @@
                                                                                                 in
                                                                                                     ''
                                                                                                         cat > /mount/.envrc <<EOF
-                                                                                                        export GIT_DIR=${ tree.personal.repository.private }/git
-                                                                                                        export GIT_WORK_TREE=${ tree.personal.repository.private }/work-tree
-                                                                                                        export PATH="$PATH:${ tree.personal.repository.private }/bin:${ pkgs.coreutils }/bin"
+                                                                                                        export GIT_DIR=${ tree.personal.repository.private "git" }
+                                                                                                        export GIT_WORK_TREE=${ tree.personal.repository.private "work-tree" }
+                                                                                                        export PATH="$PATH:${ tree.personal.repository.private "bin" }:${ pkgs.coreutils }/bin"
                                                                                                         EOF
                                                                                                         BIN=/mount/bin
                                                                                                         mkdir "$BIN"
@@ -471,7 +471,7 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.mobile }/config"
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.mobile "config" }"
                                                                                                         git config user.name "${ config.personal.description }"
                                                                                                         git config user.email "${ config.personal.email }"
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
