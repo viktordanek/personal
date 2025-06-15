@@ -146,12 +146,12 @@
                                                                                     init-script =
                                                                                         tree :
                                                                                             ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity > /mount/identity
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts > /mount/known-hosts
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity.asc
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts.asc
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile ${ tree.personal.dot-ssh.boot "identity" }
-                                                                                                UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts" }
+                                                                                                IdentityFile ${ tree.personal.dot-ssh.boot "identity.asc" }
+                                                                                                UserKnownHostsFile ${ tree.personal.dot-ssh.boot "known-hosts.asc" }
                                                                                                 UseStrictHostKeyChecking true
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/identity /mount/known-hosts /mount/config
