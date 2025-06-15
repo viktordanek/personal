@@ -156,7 +156,7 @@
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/identity.asc /mount/known-hosts.asc /mount/config
                                                                                             '' ;
-                                                                                    outputs = [ "config" "identity-file" "known-hosts" ] ;
+                                                                                    outputs = [ "config" "identity-file.asc" "known-hosts.asc" ] ;
                                                                                 } ;
                                                                     } ;
                                                             } ;
