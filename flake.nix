@@ -78,6 +78,7 @@
                                                                                                                         "mount"
                                                                                                                         output
                                                                                                                     ]
+                                                                                                                ]
                                                                                                         )
                                                                                             )
                                                                                             outputs
