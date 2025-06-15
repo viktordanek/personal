@@ -219,7 +219,7 @@
                                                                         personal =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : [ { dot-ssh = tree.personal.dot-ssh.viktor ; } ] ;
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
                                                                                     init-script =
                                                                                         { ... } :
                                                                                             ''
