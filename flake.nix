@@ -220,6 +220,7 @@
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         { ... } :
                                                                                             ''
