@@ -324,10 +324,10 @@
                                                                                                 in
                                                                                                     ''
                                                                                                         cat > /mount/.envrc <<EOF
-                                                                                                        export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/git"
-                                                                                                        export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/work-tree"
-                                                                                                        export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
-                                                                                                        export PATH="$PATH:/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/repository/age-secrets/bin:${ pkgs.coreutils }/bin"
+                                                                                                        export GIT_DIR=${ tree.personal.repository.age-secrets "git" }
+                                                                                                        export GIT_WORK_TREE=${ tree.personal.repository.age-secret "work-tree" }
+                                                                                                        export GNUPGHOME=${ tree.personal.dot-gnupg "homedir" }
+                                                                                                        export PATH="$PATH:${ tree.personal.repository.age-secrets "bin" }:${ pkgs.coreutils }/bin"
                                                                                                         EOF
                                                                                                         ln --symbolic ${ config.personal.agenix } /mount/agenix
                                                                                                         mkdir /mount/bin
@@ -340,7 +340,7 @@
                                                                                                         mkdir "$GIT_DIR"
                                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                                         git init 2>&1
-                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-ssh/boot/config"
+                                                                                                        git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F ${ tree.personal.dot-ssh.boot "config" }
                                                                                                         git config user.email ${ config.personal.email }
                                                                                                         git config user.name ${ config.personal.name }
                                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
