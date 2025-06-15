@@ -48,6 +48,24 @@
                                                                         release-script ? x : ""
                                                                     } :
                                                                         let
+                                                                            list =
+                                                                                visitor.lib.implementation
+                                                                                    {
+                                                                                        lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
+                                                                                        list = path : list : builtins.concatLists list ;
+                                                                                        set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
+                                                                                    }
+                                                                                    resources ;
+                                                                            set = dependencies tree ;
+                                                                            strings = builtins.attrValues set ;
+                                                                            tree =
+                                                                                visitor.lib.implementation
+                                                                                    {
+                                                                                        lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
+                                                                                    }
+                                                                                    resources ;
+                                                                            validated = builtins.map ( dependency : if builtins.elem  dependency list then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
+                                                                            dependencies_ = validated ;
                                                                             tree2 =
                                                                                 visitor.lib.implementation
                                                                                     {
@@ -89,26 +107,7 @@
                                                                                     ) ;
                                                                             in
                                                                                 {
-                                                                                    dependencies =
-                                                                                        let
-                                                                                            list =
-                                                                                                visitor.lib.implementation
-                                                                                                    {
-                                                                                                        lambda = path : value : [ ( builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ) ] ;
-                                                                                                        list = path : list : builtins.concatLists list ;
-                                                                                                        set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
-                                                                                                    }
-                                                                                                    resources ;
-                                                                                            set = dependencies tree ;
-                                                                                            strings = builtins.attrValues set ;
-                                                                                            tree =
-                                                                                                visitor.lib.implementation
-                                                                                                    {
-                                                                                                        lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
-                                                                                                    }
-                                                                                                    resources ;
-                                                                                            validated = builtins.map ( dependency : if builtins.elem  dependency list then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
-                                                                                            in validated ;
+                                                                                    dependencies = dependencies_ ;
                                                                                     init-packages = init-packages ;
                                                                                     init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
