@@ -40,7 +40,7 @@
                                                             let
                                                                 identity =
                                                                     {
-                                                                        dependencies ? x : [ ] ,
+                                                                        dependencies ? x : { } ,
                                                                         init-packages ? pkgs : [ ] ,
                                                                         init-script ? x : "" ,
                                                                         outputs ? [ ] ,
@@ -99,13 +99,16 @@
                                                                                                         set = path : set : builtins.concatLists ( builtins.attrValues set ) ;
                                                                                                     }
                                                                                                     resources ;
+                                                                                            set = dependencies tree ;
+                                                                                            strings = builtins.attrValues set ;
                                                                                             tree =
                                                                                                 visitor.lib.implementation
                                                                                                     {
                                                                                                         lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                                     }
                                                                                                     resources ;
-                                                                                            in builtins.map ( dependency : if builtins.elem dependency list then dependency else builtins.throw "dependency ${ builtins.toString dependency } is not correct." ) ( dependencies tree ) ;
+                                                                                            validated = builtins.map ( dependency : if builtins.elem list then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
+                                                                                            in validated ;
                                                                                     init-packages = init-packages ;
                                                                                     init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
@@ -191,6 +194,43 @@
                                                                                             '' ;
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
+                                                                        viktor =
+                                                                            ignore :
+                                                                                {
+                                                                                    init-packages = pkgs : [ pkgs.age ] ;
+                                                                                    init-script =
+                                                                                        { outputs , tree } :
+                                                                                            ''
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/viktor/identity.asc.age > /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/viktor/known-hosts.asc.age > /mount/known-hosts
+                                                                                                cat > /mount/config <<EOF
+                                                                                                Host github.com
+                                                                                                IdentityFile ${ outputs.identity }
+                                                                                                UserKnownHostsFile ${ outputs.known-hosts }
+                                                                                                StrictHostKeyChecking true
+                                                                                                EOF
+                                                                                                chmod 0400 /mount/identity /mount/known-hosts /mount/config
+                                                                                            '' ;
+                                                                                    outputs = [ "config" "identity" "known-hosts" ] ;
+                                                                                } ;
+                                                                    } ;
+                                                                repository =
+                                                                    {
+                                                                        personal =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : [ { dot-ssh = tree.personal.dot-ssh.viktor ; } ] ;
+                                                                                    init-script =
+                                                                                        { ... } :
+                                                                                            ''
+                                                                                                export GIT_DIR=/work/git
+                                                                                                export GIT_WORK_TREE=/work/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init
+                                                                                            '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                } ;
                                                                     } ;
                                                             } ;
                                                         scratch =
@@ -205,7 +245,7 @@
                                                                 two =
                                                                     ignore :
                                                                         {
-                                                                            dependencies = tree : [ tree.scratch.one ] ;
+                                                                            dependencies = tree : { one = tree.scratch.one } ;
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
                                                                             init-script = { outputs , tree } : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
                                                                             outputs = [ "two" ] ;
