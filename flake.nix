@@ -185,7 +185,7 @@
                                                                                                 Host github.com
                                                                                                 IdentityFile ${ outputs.identity }
                                                                                                 UserKnownHostsFile ${ outputs.known-hosts }
-                                                                                                UseStrictHostKeyChecking true
+                                                                                                StrictHostKeyChecking true
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/identity /mount/known-hosts /mount/config
                                                                                             '' ;
