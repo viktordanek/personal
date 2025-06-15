@@ -179,7 +179,7 @@
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts.asc
                                                                                                 cat > /mount/config <<EOF
                                                                                                 Host github.com
-                                                                                                IdentityFile ${ outputs."identity.asc" }
+                                                                                                IdentityFile ${ builtins.trace "HI" "" }
                                                                                                 UseStrictHostKeyChecking true
                                                                                                 EOF
                                                                                                 chmod 0400 /mount/identity.asc /mount/known-hosts.asc /mount/config
