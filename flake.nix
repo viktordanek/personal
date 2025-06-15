@@ -223,11 +223,12 @@
                                                                                     init-script =
                                                                                         { ... } :
                                                                                             ''
-                                                                                                export GIT_DIR=/work/git
-                                                                                                export GIT_WORK_TREE=/work/work-tree
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init
+
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
