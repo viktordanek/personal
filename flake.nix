@@ -107,7 +107,7 @@
                                                                                                         lambda = path : value : builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                                     }
                                                                                                     resources ;
-                                                                                            validated = builtins.map ( dependency : if builtins.elem list dependency then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
+                                                                                            validated = builtins.map ( dependency : if builtins.elem  dependency list then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
                                                                                             in validated ;
                                                                                     init-packages = init-packages ;
                                                                                     init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
