@@ -184,7 +184,7 @@
                                                                                 {
                                                                                     init-packages = pkgs : [ pkgs.age ] ;
                                                                                     init-script =
-                                                                                        { outputs } :
+                                                                                        { dependencies , outputs } :
                                                                                             ''
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
