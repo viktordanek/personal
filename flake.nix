@@ -327,7 +327,7 @@
                                                                                                                         output :
                                                                                                                             {
                                                                                                                                 name = output ;
-                                                                                                                                value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) "direct" value "mount" output ] ;
+                                                                                                                                value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) "direct" value "mount" output ] ;
                                                                                                                             }
                                                                                                                     )
                                                                                                                     list
