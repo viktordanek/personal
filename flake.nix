@@ -312,7 +312,20 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                # dependencies = { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                dependencies =
+                                                                                    builtins.listToAttrs
+                                                                                        (
+                                                                                            builtins.map
+                                                                                                (
+                                                                                                    dependency :
+                                                                                                        {
+                                                                                                            name = dependency ;
+                                                                                                            value = { config = "SPPOOKY2" ; } ;
+                                                                                                        }
+                                                                                                )
+                                                                                                resource.tools.dependencies
+                                                                                        ) ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
