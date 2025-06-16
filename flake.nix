@@ -326,7 +326,7 @@
                                                                                                                         value = builtins.getAttr output outputs ;
                                                                                                                     }
                                                                                                             )
-                                                                                                            builtins.getAttr output outputs
+                                                                                                            builtins.getAttr name outputs
                                                                                                     )
                                                                                         )
                                                                                         resource.tools.dependencies ;
