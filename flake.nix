@@ -118,7 +118,7 @@
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
                                                                                     release-script = release-script ;
-                                                                                    tools = { outputs = outputs_ ; tree = tree2 ; } ;
+                                                                                    tools = { dependencies = dependencies__ ; outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
