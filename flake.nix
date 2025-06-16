@@ -322,7 +322,7 @@
                                                                                                     in
                                                                                                         builtins.listToAttrs
                                                                                                             (
-                                                                                                                map
+                                                                                                                builtins.map
                                                                                                                     (
                                                                                                                         output :
                                                                                                                             {
