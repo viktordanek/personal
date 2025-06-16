@@ -365,7 +365,7 @@
                                                                                                                     (
                                                                                                                         output :
                                                                                                                             {
-                                                                                                                                name = output ;
+                                                                                                                                name = builtins.trace ( builtins.toJSON { name = name ; value = value ; output = output ; } ) output ;
                                                                                                                                 value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) value "mount" output ] ;
                                                                                                                             }
                                                                                                                     )
