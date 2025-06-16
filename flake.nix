@@ -266,7 +266,7 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                git config core.sshCommand ${ ssh-command ( dependencies.personal.dot-ssh.viktor ) }
+                                                                                                ${ builtins.trace ( builtins.concatStringsSep " , " ( builtins.attrNames dependencies ) ) "" }
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 git remote add origin git@github.com/viktordanek/visitor.git
