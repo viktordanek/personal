@@ -253,7 +253,7 @@
                                                                         {
                                                                             dependencies = tree : { one = tree.scratch.one ; } ;
                                                                             init-packages = pkgs : [ pkgs.coreutils ] ;
-                                                                            init-script = { outputs , tree } : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
+                                                                            init-script = { outputs } : ''ln --symbolic "/home/emory/stash/direct/$UNIQ_TOKEN/scratch/one/mount/one" /mount/two'' ;
                                                                             outputs = [ "two" ] ;
                                                                         } ;
                                                             } ;
