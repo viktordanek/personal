@@ -312,7 +312,7 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = { dot-ssh = { config = "" ; } ; } ;
+                                                                                dependencies = { dot-ssh = { config = "SPOOKY" ; } ; } ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
