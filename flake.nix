@@ -320,7 +320,11 @@
                                                                                                 let
                                                                                                     postfix = builtins.getAttr value outputs ;
                                                                                                     prefix = value ;
-
+                                                                                                    in
+                                                                                                        {
+                                                                                                            name = prefix ;
+                                                                                                            value = postfix ;
+                                                                                                        } ;
                                                                                         )
                                                                                         resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
