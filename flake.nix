@@ -118,6 +118,7 @@
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
                                                                                     release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
+                                                                                    tools = { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
@@ -381,7 +382,15 @@
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "release" ;
-                                                                                                    runScript = resource.release-script ;
+                                                                                                    runScript =
+                                                                                                        let
+                                                                                                            release =
+                                                                                                                pkgs.writeShellApplication
+                                                                                                                    {
+                                                                                                                        name = "release" ;
+                                                                                                                        text = resource.release-script ;
+                                                                                                                    } ;
+                                                                                                                in "${ release }/bin/release" ;
                                                                                                     targetPkgs = resource.release-packages;
                                                                                                 } ;
                                                                                         yaml =
