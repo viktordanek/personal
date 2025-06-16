@@ -312,7 +312,24 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = resource.tools.dependencies ;
+                                                                                dependencies =
+                                                                                    builtins.mapAttrs
+                                                                                        (
+                                                                                            name : value :
+                                                                                                builtins.listToAttrs
+                                                                                                    (
+                                                                                                        builtins.map
+                                                                                                            (
+                                                                                                                output :
+                                                                                                                    {
+                                                                                                                        name = output ;
+                                                                                                                        value = builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ output ] ] ) ;
+                                                                                                                    }
+                                                                                                            )
+                                                                                                            builtins.getAttr output outputs
+                                                                                                    )
+                                                                                        )
+                                                                                        resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
