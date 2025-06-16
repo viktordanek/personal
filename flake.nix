@@ -325,14 +325,31 @@
                                                                                                                         name = output ;
                                                                                                                         value = builtins.getAttr output outputs ;
                                                                                                                     }
+                                                                                                            )                                                                                dependencies_ =
+                                                                                    builtins.mapAttrs
+                                                                                        (
+                                                                                            name : value :
+                                                                                                builtins.listToAttrs
+                                                                                                    (
+                                                                                                        builtins.map
+                                                                                                            (
+                                                                                                                output :
+                                                                                                                    {
+                                                                                                                        name = output ;
+                                                                                                                        value = builtins.getAttr output outputs ;
+                                                                                                                    }
                                                                                                             )
+                                                                                                            builtins.getAttr name outputs
+                                                                                                    )
+                                                                                        )
+                                                                                        resource.tools.dependencies ;
                                                                                                             builtins.getAttr name outputs
                                                                                                     )
                                                                                         )
                                                                                         resource.tools.dependencies ;
                                                                                 in
                                                                             {
-                                                                                dependencies = { } ;
+                                                                                dependencies = { dot-ssh = null ; } ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
