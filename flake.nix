@@ -273,184 +273,186 @@
                                                                     sorted = builtins.sort ( a : b : if ( builtins.length a.value ) < ( builtins.length b.value ) then true else if ( builtins.length a.value ) > ( builtins.length b.value ) then false else if a.name < b.name then true else if a.name > b.name then false else builtins.throw "not meets" ) listed ;
                                                                     in find.index ;
                                                             in
-                                                                {
-                                                                    index = index ;
-                                                                    setup =
-                                                                        pkgs.writeShellApplication
+                                                                let
+                                                                    init =
+                                                                        pkgs.buildFHSUserEnv
                                                                             {
-                                                                                name = "setup" ;
-                                                                                runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock pkgs.jq pkgs.yq ] ;
-                                                                                text =
+                                                                                extraBwrapArgs =
+                                                                                    [
+                                                                                        "--bind $MOUNT /mount"
+                                                                                        "--ro-bind /home/${ config.personal.name }/${ config.personal.stash }/direct /home/${ config.personal.name }/${ config.personal.stash }/direct"
+                                                                                        "--tmpfs /work"
+                                                                                    ] ;
+                                                                                name = "init" ;
+                                                                                runScript =
                                                                                     let
-                                                                                        init =
-                                                                                            pkgs.buildFHSUserEnv
-                                                                                                {
-                                                                                                    extraBwrapArgs =
-                                                                                                        [
-                                                                                                            "--bind $MOUNT /mount"
-                                                                                                            "--ro-bind /home/${ config.personal.name }/${ config.personal.stash }/direct /home/${ config.personal.name }/${ config.personal.stash }/direct"
-                                                                                                            "--tmpfs /work"
-                                                                                                        ] ;
-                                                                                                    name = "init" ;
-                                                                                                    runScript =
-                                                                                                        let
-                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script resource.tools ; } ;
-                                                                                                            in "${ init }/bin/init" ;
-                                                                                                    targetPkgs = resource.init-packages ;
-                                                                                                } ;
-                                                                                        yaml =
-                                                                                            code :
-                                                                                                if code == 32126 then
-                                                                                                    ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" '{ "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT }' | yq --yaml-output "." > "$STASH/init.${ if code == 0 then "success" else "failure" }.yaml"''
-                                                                                                else
-                                                                                                    ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" --arg STANDARD_ERROR "$( cat "$STASH/init.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/init.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/init.${ if code == 0 then "success" else "failure" }.yaml"'' ;
-                                                                                        in
-                                                                                            ''
-                                                                                                ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
-                                                                                                mkdir --parents "$ROOT"
-                                                                                                exec 201> "$ROOT/lock"
-                                                                                                flock -x 201
-                                                                                                export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }"
-                                                                                                STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
-                                                                                                export MOUNT="$STASH/mount"
-                                                                                                mkdir --parents "$MOUNT"
-                                                                                                if [ -f "$STASH/init.failure.yaml" ]
-                                                                                                then
-                                                                                                    yq --yaml-output "." "$STASH/init.failure.yaml" >&2
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 64
-                                                                                                elif [ -f "$STASH/init.success.yaml" ]
-                                                                                                then
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 0
-                                                                                                else
-                                                                                                    # FIXME VERIFY THE DEPENDENCIES HAVE BEEN MADE
-                                                                                                    if ${ init }/bin/init > "$STASH/init.standard-output" 2> "$STASH/init.standard-error"
-                                                                                                    then
-                                                                                                        if [ -s "$STASH/init.standard-error" ]
-                                                                                                        then
-                                                                                                            ${ yaml 20189 }
-                                                                                                            yq --yaml-output "." "$STASH/init.failure.yaml" >&2
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 64
-                                                                                                        elif [ "${ builtins.concatStringsSep "\n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" ]
-                                                                                                        then
-                                                                                                            ${ yaml 850 }
-                                                                                                            yq --yaml-output "." "$STASH/init.failure.yaml" >&2
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 64
+                                                                                        init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script resource.tools ; } ;
+                                                                                        in "${ init }/bin/init" ;
+                                                                                targetPkgs = resource.init-packages ;
+                                                                            } ;
+                                                                    in
+                                                                        {
+                                                                            index = index ;
+                                                                            setup =
+                                                                                pkgs.writeShellApplication
+                                                                                    {
+                                                                                        name = "setup" ;
+                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock pkgs.jq pkgs.yq ] ;
+                                                                                        text =
+                                                                                            let
+                                                                                                yaml =
+                                                                                                    code :
+                                                                                                        if code == 32126 then
+                                                                                                            ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" '{ "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT }' | yq --yaml-output "." > "$STASH/init.${ if code == 0 then "success" else "failure" }.yaml"''
                                                                                                         else
-                                                                                                            if ! rm --force release.standard-error release.standard-output release-failure.yaml release-success.yaml
+                                                                                                            ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" --arg STANDARD_ERROR "$( cat "$STASH/init.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/init.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/init.${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
+                                                                                                        mkdir --parents "$ROOT"
+                                                                                                        exec 201> "$ROOT/lock"
+                                                                                                        flock -x 201
+                                                                                                        export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }"
+                                                                                                        STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
+                                                                                                        export MOUNT="$STASH/mount"
+                                                                                                        mkdir --parents "$MOUNT"
+                                                                                                        if [ -f "$STASH/init.failure.yaml" ]
+                                                                                                        then
+                                                                                                            yq --yaml-output "." "$STASH/init.failure.yaml" >&2
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 64
+                                                                                                        elif [ -f "$STASH/init.success.yaml" ]
+                                                                                                        then
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 0
+                                                                                                        else
+                                                                                                            # FIXME VERIFY THE DEPENDENCIES HAVE BEEN MADE
+                                                                                                            if ${ init }/bin/init > "$STASH/init.standard-output" 2> "$STASH/init.standard-error"
                                                                                                             then
-                                                                                                                ${ yaml 19035 }
+                                                                                                                if [ -s "$STASH/init.standard-error" ]
+                                                                                                                then
+                                                                                                                    ${ yaml 20189 }
+                                                                                                                    yq --yaml-output "." "$STASH/init.failure.yaml" >&2
+                                                                                                                    rm "$ROOT/lock"
+                                                                                                                    flock -u 201
+                                                                                                                    exit 64
+                                                                                                                elif [ "${ builtins.concatStringsSep "\n" resource.outputs }" != "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" ]
+                                                                                                                then
+                                                                                                                    ${ yaml 850 }
+                                                                                                                    yq --yaml-output "." "$STASH/init.failure.yaml" >&2
+                                                                                                                    rm "$ROOT/lock"
+                                                                                                                    flock -u 201
+                                                                                                                    exit 64
+                                                                                                                else
+                                                                                                                    if ! rm --force release.standard-error release.standard-output release-failure.yaml release-success.yaml
+                                                                                                                    then
+                                                                                                                        ${ yaml 19035 }
+                                                                                                                        rm "$ROOT/lock"
+                                                                                                                        flock -u 201
+                                                                                                                        exit 64
+                                                                                                                    fi
+                                                                                                                    ${ yaml 0 }
+                                                                                                                    rm "$ROOT/lock"
+                                                                                                                    flock -u 201
+                                                                                                                    exit 0
+                                                                                                                fi
+                                                                                                            else
+                                                                                                                ${ yaml 3095 }
+                                                                                                                yq --yaml-output "." "$STASH/init.failure.yaml"
                                                                                                                 rm "$ROOT/lock"
                                                                                                                 flock -u 201
                                                                                                                 exit 64
                                                                                                             fi
-                                                                                                            ${ yaml 0 }
-                                                                                                            rm "$ROOT/lock"
-                                                                                                            flock -u 201
-                                                                                                            exit 0
                                                                                                         fi
-                                                                                                    else
-                                                                                                        ${ yaml 3095 }
-                                                                                                        yq --yaml-output "." "$STASH/init.failure.yaml"
-                                                                                                        rm "$ROOT/lock"
-                                                                                                        flock -u 201
-                                                                                                        exit 64
-                                                                                                    fi
-                                                                                                fi
-                                                                                            '' ;
-                                                                            } ;
-                                                                    teardown =
-                                                                        pkgs.writeShellApplication
-                                                                            {
-                                                                                name = "teardown" ;
-                                                                                runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock pkgs.jq pkgs.yq ] ;
-                                                                                text =
-                                                                                    let
-                                                                                        release =
-                                                                                            pkgs.buildFHSUserEnv
-                                                                                                {
-                                                                                                    extraBwrapArgs =
-                                                                                                        [
-                                                                                                            "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
-                                                                                                            "--tmpfs /work"
-                                                                                                        ] ;
-                                                                                                    name = "release" ;
-                                                                                                    runScript =
-                                                                                                        let
-                                                                                                            release =
-                                                                                                                pkgs.writeShellApplication
-                                                                                                                    {
-                                                                                                                        name = "release" ;
-                                                                                                                        text = resource.release-script ;
-                                                                                                                    } ;
-                                                                                                                in "${ release }/bin/release" ;
-                                                                                                    targetPkgs = resource.release-packages;
-                                                                                                } ;
-                                                                                        yaml =
-                                                                                            code :
-                                                                                                if code == 31314 then
-                                                                                                    ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"''
-                                                                                                else
-                                                                                                    ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" --arg STANDARD_ERROR "$( cat "$STASH/release.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/release.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
-                                                                                        in
-                                                                                    ''
-                                                                                        ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
-                                                                                        if [ -d "$ROOT" ]
-                                                                                        then
-                                                                                            exec 201> "$ROOT/lock"
-                                                                                            flock -x 201
-                                                                                            STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
-                                                                                            if [ -d "$STASH" ]
-                                                                                            then
-                                                                                                if [ -f "$STASH/release.failure.yaml" ]
+                                                                                                    '' ;
+                                                                                    } ;
+                                                                            teardown =
+                                                                                pkgs.writeShellApplication
+                                                                                    {
+                                                                                        name = "teardown" ;
+                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock pkgs.jq pkgs.yq ] ;
+                                                                                        text =
+                                                                                            let
+                                                                                                release =
+                                                                                                    pkgs.buildFHSUserEnv
+                                                                                                        {
+                                                                                                            extraBwrapArgs =
+                                                                                                                [
+                                                                                                                    "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
+                                                                                                                    "--tmpfs /work"
+                                                                                                                ] ;
+                                                                                                            name = "release" ;
+                                                                                                            runScript =
+                                                                                                                let
+                                                                                                                    release =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "release" ;
+                                                                                                                                text = resource.release-script ;
+                                                                                                                            } ;
+                                                                                                                        in "${ release }/bin/release" ;
+                                                                                                            targetPkgs = resource.release-packages;
+                                                                                                        } ;
+                                                                                                yaml =
+                                                                                                    code :
+                                                                                                        if code == 31314 then
+                                                                                                            ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"''
+                                                                                                        else
+                                                                                                            ''jq --null-input --arg CODE "${ builtins.toString code }" --arg DEPENDENCIES '${ builtins.concatStringsSep "," resource.dependencies }' --arg EXPECTED "${ builtins.concatStringsSep "\n" resource.outputs }" --arg INDEX ${ builtins.toString index } --arg INIT "${ init }/bin/init" --arg OBSERVED "$( find "$STASH/mount" -mindepth 1 -maxdepth 1 -exec basename {} \; | LC_ALL=C sort )" --arg OUTPUT "${ builtins.concatStringsSep "," resource.outputs }" --arg RELEASE_SCRIPT "${ pkgs.writeShellApplication { name = "release" ; text = resource.release-script ; } }" --arg STANDARD_ERROR "$( cat "$STASH/release.standard-error" )" --arg STANDARD_OUTPUT "$( cat "$STASH/release.standard-output" )" --arg STATUS "$?" '{ "code" : $CODE , "dependencies" : $DEPENDENCIES , "expected" : $EXPECTED , "index" : $INDEX , "observed" : $OBSERVED , "init" : $INIT , "release-script" : $RELEASE_SCRIPT ,"standard-error" : $STANDARD_ERROR , "standard-output" : $STANDARD_OUTPUT , "status" : $STATUS }' | yq --yaml-output "." > "$STASH/release.${ if code == 0 then "success" else "failure" }.yaml"'' ;
+                                                                                                in
+                                                                                            ''
+                                                                                                ROOT=${ builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash ] } ;
+                                                                                                if [ -d "$ROOT" ]
                                                                                                 then
-                                                                                                    yq --yaml-output "." "$STASH/release.failure.yaml"
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 64
-                                                                                                elif [ -f "$STASH/release.success.yaml" ]
-                                                                                                then
-                                                                                                    rm "$ROOT/lock"
-                                                                                                    flock -u 201
-                                                                                                    exit 0
-                                                                                                else
-                                                                                                    # FIXME
-                                                                                                    if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
+                                                                                                    exec 201> "$ROOT/lock"
+                                                                                                    flock -x 201
+                                                                                                    STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
+                                                                                                    if [ -d "$STASH" ]
                                                                                                     then
-                                                                                                        if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
+                                                                                                        if [ -f "$STASH/release.failure.yaml" ]
                                                                                                         then
-                                                                                                            ${ yaml 30292 }
-                                                                                                            yq --yaml-output "." "$STASH/release.failure.yaml" >&2
+                                                                                                            yq --yaml-output "." "$STASH/release.failure.yaml"
                                                                                                             rm "$ROOT/lock"
                                                                                                             flock -u 201
                                                                                                             exit 64
+                                                                                                        elif [ -f "$STASH/release.success.yaml" ]
+                                                                                                        then
+                                                                                                            rm "$ROOT/lock"
+                                                                                                            flock -u 201
+                                                                                                            exit 0
+                                                                                                        else
+                                                                                                            # FIXME
+                                                                                                            if ${ release }/bin/release > "$STASH/release.standard-output" 2> "$STASH/release.standard-error"
+                                                                                                            then
+                                                                                                                if ! rm --force "$STASH/init.standard-error" "$STASH/init.standard-output" "$STASH/init.failure.yaml" "$STASH/init.success.yaml"
+                                                                                                                then
+                                                                                                                    ${ yaml 30292 }
+                                                                                                                    yq --yaml-output "." "$STASH/release.failure.yaml" >&2
+                                                                                                                    rm "$ROOT/lock"
+                                                                                                                    flock -u 201
+                                                                                                                    exit 64
+                                                                                                                fi
+                                                                                                                ${ yaml 0 }
+                                                                                                                rm "$ROOT/lock"
+                                                                                                                flock -u 201
+                                                                                                                exit 0
+                                                                                                            else
+                                                                                                                ${ yaml 31504 }
+                                                                                                                yq --yaml-output "." "$STASH/release.failure.yaml" >&2
+                                                                                                                rm "$ROOT/lock"
+                                                                                                                flock -u 201
+                                                                                                                exit 64
+                                                                                                            fi
                                                                                                         fi
-                                                                                                        ${ yaml 0 }
-                                                                                                        rm "$ROOT/lock"
-                                                                                                        flock -u 201
-                                                                                                        exit 0
-                                                                                                    else
-                                                                                                        ${ yaml 31504 }
-                                                                                                        yq --yaml-output "." "$STASH/release.failure.yaml" >&2
-                                                                                                        rm "$ROOT/lock"
-                                                                                                        flock -u 201
-                                                                                                        exit 64
                                                                                                     fi
+                                                                                                    rm "$ROOT/lock"
+                                                                                                    flock -u 201
                                                                                                 fi
-                                                                                            fi
-                                                                                            rm "$ROOT/lock"
-                                                                                            flock -u 201
-                                                                                        fi
-                                                                                    '' ;
-                                                                            } ;
-                                                                } ;
+                                                                                            '' ;
+                                                                                    } ;
+                                                                        } ;
                                                 in builtins.map mapper points ;
                                         setup =
                                             pkgs.writeShellApplication
