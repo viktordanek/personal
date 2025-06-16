@@ -111,13 +111,13 @@
                                                                                     dependencies = dependencies_ ;
                                                                                     dependencies__ = dependencies__ ;
                                                                                     init-packages = init-packages ;
-                                                                                    init-script = init-script ;
+                                                                                    init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                     outputs = builtins.sort builtins.lessThan outputs ;
                                                                                     outputs_ = outputs_ ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script ;
+                                                                                    release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
@@ -293,7 +293,7 @@
                                                                                                     name = "init" ;
                                                                                                     runScript =
                                                                                                         let
-                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script { dependencies = resource.dependencies__ ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
+                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script ; } ;
                                                                                                             in "${ init }/bin/init" ;
                                                                                                     targetPkgs = resource.init-packages ;
                                                                                                 } ;
@@ -381,10 +381,7 @@
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "release" ;
-                                                                                                    # runScript =
-                                                                                                    #     let
-                                                                                                    #         release = pkgs.writeShellApplication { text = resource.release-script { dependencies = resource.dependencies ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
-                                                                                                    #         in "${ release }/bin/release" ;
+                                                                                                    runScript = resource.release-script ;
                                                                                                     targetPkgs = resource.release-packages;
                                                                                                 } ;
                                                                                         yaml =
