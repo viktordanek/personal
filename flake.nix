@@ -312,7 +312,7 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                # dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
                                                                                 # dependencies =
                                                                                 #      builtins.mapAttrs
                                                                                 #         (
