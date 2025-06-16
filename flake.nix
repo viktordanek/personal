@@ -312,14 +312,14 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
-                                                                                # dependencies =
-                                                                                #     builtins.mapAttrs
-                                                                                #        (
-                                                                                #            name : value :
-                                                                                #                builtins.getAttr value outputs
-                                                                                #        )
-                                                                                #        resource.tools.dependencies ;
+                                                                                # dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                dependencies =
+                                                                                     builtins.mapAttrs
+                                                                                        (
+                                                                                            name : value :
+                                                                                                { config = "SPPPPP3" ; }
+                                                                                        )
+                                                                                        resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
