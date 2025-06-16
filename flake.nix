@@ -203,7 +203,7 @@
                                                                                 {
                                                                                     init-packages = pkgs : [ pkgs.age ] ;
                                                                                     init-script =
-                                                                                        { outputs , tree } :
+                                                                                        { outputs } :
                                                                                             ''
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/viktor/identity.asc.age > /mount/identity
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/viktor/known-hosts.asc.age > /mount/known-hosts
