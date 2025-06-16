@@ -111,14 +111,13 @@
                                                                                     dependencies = dependencies_ ;
                                                                                     dependencies__ = dependencies__ ;
                                                                                     init-packages = init-packages ;
-                                                                                    init-script = init-script ;
+                                                                                    init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                     outputs = builtins.sort builtins.lessThan outputs ;
                                                                                     outputs_ = outputs_ ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script ;
-                                                                                    tools = { outputs = outputs ; tree = tree2 ; } ;
+                                                                                    release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
@@ -294,7 +293,7 @@
                                                                                                     name = "init" ;
                                                                                                     runScript =
                                                                                                         let
-                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script resource.tools ; } ;
+                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script ; } ;
                                                                                                             in "${ init }/bin/init" ;
                                                                                                     targetPkgs = resource.init-packages ;
                                                                                                 } ;
@@ -382,7 +381,7 @@
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "release" ;
-                                                                                                    runScript = resource.release-script resource.tools ;
+                                                                                                    runScript = resource.release-script ;
                                                                                                     targetPkgs = resource.release-packages;
                                                                                                 } ;
                                                                                         yaml =
