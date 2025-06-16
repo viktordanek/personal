@@ -312,17 +312,28 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
-                                                                                # dependencies =
-                                                                                #      builtins.mapAttrs
-                                                                                #         (
-                                                                                #             name : value :
-                                                                                #                 let
-                                                                                #                     postfix = builtins.getAttr name outputs ;
-                                                                                #                     prefix = value ;
-                                                                                #                     in postfix
-                                                                                #         )
-                                                                                #         resource.tools.dependencies ;
+                                                                                # dependencies = builtins.trace ( builtins.concatStringsSep "\n\n" [ ( builtins.toJSON resource.tools.dependencies ) ( builtins.toJSON outputs ) ] ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                dependencies =
+                                                                                     builtins.mapAttrs
+                                                                                        (
+                                                                                            name : value :
+                                                                                                let
+                                                                                                    list = builtins.getAttr value outputs ;
+                                                                                                    in
+                                                                                                        builtins.listToAttrs
+                                                                                                            (
+                                                                                                                map
+                                                                                                                    (
+                                                                                                                        output :
+                                                                                                                            {
+                                                                                                                                name = output ;
+                                                                                                                                value = value
+                                                                                                                            }
+                                                                                                                    )
+                                                                                                                    list
+                                                                                                            ) ;
+                                                                                        )
+                                                                                        resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
