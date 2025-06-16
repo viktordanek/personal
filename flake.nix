@@ -305,7 +305,7 @@
                                                                                             pkgs.writeShellApplication
                                                                                                 {
                                                                                                     name = "release" ;
-                                                                                                    text = resource.release-script tools ;
+                                                                                                    text = resource.release-script ;
                                                                                                 } ;
                                                                                             in "${ release }/bin/release" ;
                                                                                 targetPkgs = resource.release-packages;
