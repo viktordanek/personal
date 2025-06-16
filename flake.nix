@@ -327,7 +327,7 @@
                                                                                                                         output :
                                                                                                                             {
                                                                                                                                 name = output ;
-                                                                                                                                value = value ;
+                                                                                                                                value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" value output ] ;
                                                                                                                             }
                                                                                                                     )
                                                                                                                     list
