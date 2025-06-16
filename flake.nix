@@ -150,7 +150,7 @@
                                                                 runtimeInputs = [ pkgs.openssh ] ;
                                                                 text =
                                                                     ''
-                                                                        exec ssh -F ${ configuration-file } $@
+                                                                        exec ssh -F ${ configuration-file } "$@"
                                                                     '' ;
                                                         } ;
                                                 in
@@ -220,6 +220,22 @@
                                                                     } ;
                                                                 repository =
                                                                     {
+                                                                        age-secrets =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , ... } :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                            '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                } ;
                                                                         personal =
                                                                             ignore :
                                                                                 {
@@ -234,6 +250,29 @@
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
                                                                                                 echo ${ dependencies.dot-ssh.config }
+                                                                                            '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                } ;
+                                                                        visitor =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , ... } :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                git config core.sshCommand ${ ssh-command ( dependencies.personal.dot-ssh.viktor ) }
+                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                git config user.name "Viktor Danek"
+                                                                                                git remote add origin git@github.com/viktordanek/visitor.git
+                                                                                                git fetch origin main
+                                                                                                git checkout origin/main
+                                                                                                git scratch
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
