@@ -312,7 +312,8 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies =
+                                                                                dependencies = { } ;
+                                                                                dependencies_ =
                                                                                     builtins.mapAttrs
                                                                                         (
                                                                                             name : value :
@@ -326,7 +327,7 @@
                                                                                                                         value = builtins.getAttr output outputs ;
                                                                                                                     }
                                                                                                             )
-                                                                                                            builtins.getAttr name resource.tools.outputs
+                                                                                                            builtins.getAttr name outputs
                                                                                                     )
                                                                                         )
                                                                                         resource.tools.dependencies ;
