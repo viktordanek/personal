@@ -381,7 +381,7 @@
                                                                                                             "--tmpfs /work"
                                                                                                         ] ;
                                                                                                     name = "release" ;
-                                                                                                    runScript = pkgs.writeShellApplication { text = resource.release-script { dependencies = resource.dependencies ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
+                                                                                                    # runScript = pkgs.writeShellApplication { text = resource.release-script { dependencies = resource.dependencies ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
                                                                                                     targetPkgs = resource.release-packages;
                                                                                                 } ;
                                                                                         yaml =
