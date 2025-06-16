@@ -117,7 +117,7 @@
                                                                                     outputs_ = outputs_ ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script tools ;
+                                                                                    release-script = release-script ;
                                                                                     tools = { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
