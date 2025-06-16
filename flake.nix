@@ -311,8 +311,7 @@
                                                                                 targetPkgs = resource.release-packages;
                                                                             } ;
                                                                         tools =
-                                                                            {
-                                                                                dependencies = { } ;
+                                                                            let
                                                                                 dependencies_ =
                                                                                     builtins.mapAttrs
                                                                                         (
@@ -331,6 +330,9 @@
                                                                                                     )
                                                                                         )
                                                                                         resource.tools.dependencies ;
+                                                                                in
+                                                                            {
+                                                                                dependencies = { } ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
