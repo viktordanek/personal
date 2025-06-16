@@ -66,6 +66,7 @@
                                                                                     resources ;
                                                                             validated = builtins.map ( dependency : if builtins.elem  dependency list then dependency else builtins.throw "depdency ${ dependency } is not correct." ) strings ;
                                                                             dependencies_ = validated ;
+                                                                            dependencies__ = set ;
                                                                             tree2 =
                                                                                 visitor.lib.implementation
                                                                                     {
@@ -108,13 +109,16 @@
                                                                             in
                                                                                 {
                                                                                     dependencies = dependencies_ ;
+                                                                                    dependencies__ = dependencies__ ;
                                                                                     init-packages = init-packages ;
                                                                                     init-script = init-script { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
                                                                                     outputs = builtins.sort builtins.lessThan outputs ;
+                                                                                    outputs_ = outputs_ ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
                                                                                     release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
+                                                                                    tree2 = tree2 ;
                                                                                 } ;
                                                                 in [ ( identity ( value null ) ) ] ;
                                                     list = path : list : builtins.concatLists list ;
