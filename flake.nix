@@ -331,7 +331,7 @@
                                                                                                                             }
                                                                                                                     )
                                                                                                                     list
-                                                                                                            ) ;
+                                                                                                            )
                                                                                         )
                                                                                         resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
