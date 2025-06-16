@@ -317,7 +317,10 @@
                                                                                      builtins.mapAttrs
                                                                                         (
                                                                                             name : value :
-                                                                                                { config = "SPPPPP3" ; }
+                                                                                                let
+                                                                                                    postfix = builtins.getAttr value outputs ;
+                                                                                                    prefix = value ;
+
                                                                                         )
                                                                                         resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
