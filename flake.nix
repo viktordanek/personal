@@ -293,7 +293,7 @@
                                                                                                     name = "init" ;
                                                                                                     runScript =
                                                                                                         let
-                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script { dependencies = resource.dependencies_ ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
+                                                                                                            init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script { dependencies = resource.dependencies__ ; outputs = resource.outputs_ ; tree = resource.tree2 ; } ; } ;
                                                                                                             in "${ init }/bin/init" ;
                                                                                                     targetPkgs = resource.init-packages ;
                                                                                                 } ;
