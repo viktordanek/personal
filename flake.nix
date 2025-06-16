@@ -312,6 +312,7 @@
                                                                             } ;
                                                                         tools =
                                                                             {
+                                                                                dependencies = resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
