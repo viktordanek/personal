@@ -327,7 +327,7 @@
                                                                                                                         output :
                                                                                                                             {
                                                                                                                                 name = output ;
-                                                                                                                                value = value
+                                                                                                                                value = value ;
                                                                                                                             }
                                                                                                                     )
                                                                                                                     list
