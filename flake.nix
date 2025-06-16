@@ -286,7 +286,7 @@
                                                                                 name = "init" ;
                                                                                 runScript =
                                                                                     let
-                                                                                        init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script resource.tools ; } ;
+                                                                                        init = pkgs.writeShellApplication { name = "init" ; text = resource.init-script tools ; } ;
                                                                                         in "${ init }/bin/init" ;
                                                                                 targetPkgs = resource.init-packages ;
                                                                             } ;
@@ -310,6 +310,7 @@
                                                                                             in "${ release }/bin/release" ;
                                                                                 targetPkgs = resource.release-packages;
                                                                             } ;
+                                                                        tools = resource.tools ;
                                                                     in
                                                                         {
                                                                             index = index ;
