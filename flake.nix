@@ -310,7 +310,10 @@
                                                                                             in "${ release }/bin/release" ;
                                                                                 targetPkgs = resource.release-packages;
                                                                             } ;
-                                                                        tools = resource.tools ;
+                                                                        tools =
+                                                                            {
+                                                                                outputs = resource.tools.outputs ;
+                                                                            } ;
                                                                     in
                                                                         {
                                                                             index = index ;
