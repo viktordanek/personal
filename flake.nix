@@ -290,6 +290,26 @@
                                                                                         in "${ init }/bin/init" ;
                                                                                 targetPkgs = resource.init-packages ;
                                                                             } ;
+                                                                    release =
+                                                                        pkgs.buildFHSUserEnv
+                                                                            {
+                                                                                extraBwrapArgs =
+                                                                                    [
+                                                                                        "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
+                                                                                        "--tmpfs /work"
+                                                                                    ] ;
+                                                                                name = "release" ;
+                                                                                runScript =
+                                                                                    let
+                                                                                        release =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "release" ;
+                                                                                                    text = resource.release-script ;
+                                                                                                } ;
+                                                                                            in "${ release }/bin/release" ;
+                                                                                targetPkgs = resource.release-packages;
+                                                                            } ;
                                                                     in
                                                                         {
                                                                             index = index ;
@@ -375,26 +395,6 @@
                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.findutils pkgs.flock pkgs.jq pkgs.yq ] ;
                                                                                         text =
                                                                                             let
-                                                                                                release =
-                                                                                                    pkgs.buildFHSUserEnv
-                                                                                                        {
-                                                                                                            extraBwrapArgs =
-                                                                                                                [
-                                                                                                                    "--ro-bind $LINK /home/${ config.personal.name }/${ config.personal.stash }/direct"
-                                                                                                                    "--tmpfs /work"
-                                                                                                                ] ;
-                                                                                                            name = "release" ;
-                                                                                                            runScript =
-                                                                                                                let
-                                                                                                                    release =
-                                                                                                                        pkgs.writeShellApplication
-                                                                                                                            {
-                                                                                                                                name = "release" ;
-                                                                                                                                text = resource.release-script ;
-                                                                                                                            } ;
-                                                                                                                        in "${ release }/bin/release" ;
-                                                                                                            targetPkgs = resource.release-packages;
-                                                                                                        } ;
                                                                                                 yaml =
                                                                                                     code :
                                                                                                         if code == 31314 then
