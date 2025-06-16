@@ -312,20 +312,13 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                # dependencies = { dot-ssh = { config = "SPOOKY" ; } ; } ;
-                                                                                dependencies =
-                                                                                    builtins.listToAttrs
-                                                                                        (
-                                                                                            builtins.map
-                                                                                                (
-                                                                                                    dependency :
-                                                                                                        {
-                                                                                                            name = dependency ;
-                                                                                                            value = { config = "SPPOOKY2" ; } ;
-                                                                                                        }
-                                                                                                )
-                                                                                                resource.tools.dependencies
-                                                                                        ) ;
+                                                                                dependencies = builtins.trace ( builtins.toJSON resource.tools.dependencies ) { dot-ssh = { config = "SPOOKY" ; } ; } ;
+                                                                                # dependencies =
+                                                                                #     builtins.mapAttrs
+                                                                                #         (
+                                                                                #             name : value :
+                                                                                #         )
+                                                                                #        resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
