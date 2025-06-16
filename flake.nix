@@ -312,7 +312,7 @@
                                                                             } ;
                                                                         tools =
                                                                             {
-                                                                                dependencies = { dot-ssh = null ; } ;
+                                                                                dependencies = { dot-ssh = {} ; } ;
                                                                                 outputs = resource.tools.outputs ;
                                                                             } ;
                                                                     in
