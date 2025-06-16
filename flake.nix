@@ -226,14 +226,14 @@
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
-                                                                                        { ... } :
+                                                                                        { dependencies , ... } :
                                                                                             ''
                                                                                                 export GIT_DIR=/mount/git
                                                                                                 export GIT_WORK_TREE=/mount/work-tree
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-
+                                                                                                echo ${ dependencies.dot-ssh.config }
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
