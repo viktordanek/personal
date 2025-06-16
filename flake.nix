@@ -117,7 +117,7 @@
                                                                                     outputs_ = outputs_ ;
                                                                                     path = path ;
                                                                                     release-packages = release-packages ;
-                                                                                    release-script = release-script { outputs = outputs_ ; tree = tree2 ; } ;
+                                                                                    release-script = release-script ;
                                                                                     tools = { outputs = outputs_ ; tree = tree2 ; } ;
                                                                                     tree2 = tree2 ;
                                                                                 } ;
@@ -305,7 +305,7 @@
                                                                                             pkgs.writeShellApplication
                                                                                                 {
                                                                                                     name = "release" ;
-                                                                                                    text = resource.release-script ;
+                                                                                                    text = resource.release-script tools ;
                                                                                                 } ;
                                                                                             in "${ release }/bin/release" ;
                                                                                 targetPkgs = resource.release-packages;
