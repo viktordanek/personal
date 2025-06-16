@@ -318,13 +318,9 @@
                                                                                         (
                                                                                             name : value :
                                                                                                 let
-                                                                                                    postfix = builtins.getAttr value outputs ;
+                                                                                                    postfix = builtins.getAttr name outputs ;
                                                                                                     prefix = value ;
-                                                                                                    in
-                                                                                                        {
-                                                                                                            name = prefix ;
-                                                                                                            value = postfix ;
-                                                                                                        } ;
+                                                                                                    in postfix
                                                                                         )
                                                                                         resource.tools.dependencies ;
                                                                                 outputs = resource.tools.outputs ;
