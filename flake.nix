@@ -230,7 +230,7 @@
                                                                 pass =
                                                                     ignore :
                                                                         {
-                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; } ;
+                                                                            dependencies = tree : { dot-gnupg = tree.personal.dot-gnupg ; dot-ssh = tree.personal.dot-ssh.boot ; } ;
                                                                             environment-name = "pass" ;
                                                                             environment-script =
                                                                                 { dependencies , outputs } :
