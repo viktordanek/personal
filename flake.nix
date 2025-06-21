@@ -255,7 +255,7 @@
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit /mount/git/hooks/post-commit
                                                                                             git remote add origin ${ config.personal.pass.remote } 2>&1
-                                                                                            # git remote fetch origin ${ config.personal.pass.branch } 2>&1
+                                                                                            git remote fetch origin ${ config.personal.pass.branch } 2>&1
                                                                                             # git checkout ${ config.personal.pass.branch } 2>&1
                                                                                         '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
