@@ -239,7 +239,7 @@
                                                                                             ''
                                                                                                 export GIT_DIR=${ outputs.git }
                                                                                                 export GIT_WORK_TREE=${ outputs.work-tree }
-                                                                                                idea "$GIT_WORK_TREE"
+                                                                                                echo idea "$GIT_WORK_TREE"
                                                                                             '' ;
                                                                                     environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
