@@ -891,7 +891,11 @@
                                                                         nix-direnv.enable = true ;
                                                                         enable = true ;
                                                                     } ;
-                                                                gnupg.agent.enable = true ;
+                                                                gnupg.agent =
+                                                                    {
+                                                                        enable = true ;
+                                                                        pinEntryFlavor = "curses" ;
+                                                                    } ;
                                                             } ;
                                                         security =
                                                             {
