@@ -817,7 +817,7 @@
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
-                                                   src = ./src ;
+                                                   src = ./. ;
                                                 } ;
                                         in
                                             {
