@@ -813,7 +813,7 @@
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
-                                                                    makeWrapper pass $out/bin/pass
+                                                                    makeWrapper ${ pkgs.pass }/bin/pass $out/bin/pass
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
