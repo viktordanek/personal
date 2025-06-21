@@ -161,7 +161,7 @@
                                                                                 exec ssh -F ${ configuration-file } "$@"
                                                                             '' ;
                                                                     } ;
-                                                            in "git config core.sshCommand ${ ssh }/bin/application" ;
+                                                            in "git config core.sshCommand ${ application }/bin/ssh" ;
                                                 in
                                                     {
                                                         couple = { } ;
