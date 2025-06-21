@@ -315,6 +315,12 @@
                                                                         } ;
                                                             } ;
                                                     } ;
+                                        scripts-foobar =
+                                            path :
+                                                let
+                                                    filtered = builtins.filter ( script : script.path == path ) scripts ;
+                                                    find = if builtins.length filtered == 1 then builtins.head filtered else builtins.throw "bad path" ;
+                                                    in find.environment ;
                                         scripts =
                                             let
                                                 mapper =
@@ -1038,11 +1044,7 @@
                                                                         teardown
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
-                                                                        (
-                                                                            let
-                                                                                resource = builtins.elemAt scripts 3 ;
-                                                                                in resource.environment
-                                                                        )
+                                                                        ( scripts-foobar [ "self" "repository" "age-secrets" ] )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
