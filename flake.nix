@@ -238,6 +238,7 @@
                                                                                         export GIT_DIR=${ outputs.git }
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
+                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir ${ dependencies.dot-gnupg.homedir }
                                                                                         exec pass "$@"
                                                                                     '' ;
                                                                                 environment-packages = pkgs : [ pkgs.pass ] ;
