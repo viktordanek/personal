@@ -1028,6 +1028,13 @@
                                                                         teardown
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "DEBUG" ;
+                                                                                    text = builtins.trace ( builtins.typeOf scripts ) "" ;
+                                                                                }
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
