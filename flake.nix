@@ -310,7 +310,7 @@
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
                                                                                         { dependencies , ... } :
                                                                                             ''
@@ -323,9 +323,9 @@
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 git remote add origin git@github.com:viktordanek/visitor.git
-                                                                                                git fetch origin main
-                                                                                                git checkout origin/main
-                                                                                                git scratch
+                                                                                                git fetch origin main 2>&1
+                                                                                                git checkout origin/main 2>&1
+                                                                                                git checkout -b scratch/$( uuidgen )
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
