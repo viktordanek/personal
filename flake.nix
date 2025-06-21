@@ -350,6 +350,7 @@
                                                                         } ;
                                                             } ;
                                                     } ;
+                                        foobar = path : output : builtins.concatStringsSep "/" ( builtins.concatLists [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] )
                                         scripts-foobar =
                                             path :
                                                 let
@@ -618,203 +619,217 @@
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/bin/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
                                                         '' ;
                                                 } ;
-                                        password-store-extensions-dir =
+                                        pass =
                                             pkgs.stdenv.mkDerivation
                                                 {
                                                     installPhase =
                                                         let
-                                                            expiry =
-                                                                pkgs.writeShellApplication
+                                                            password-store-extensions-dir =
+                                                                pkgs.stdenv.mkDerivation
                                                                     {
-                                                                        name = "expiry" ;
-                                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
-                                                                        text =
-                                                                            ''
-                                                                                export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
-                                                                                export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
-                                                                                export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/git"
-                                                                                YEAR_SECONDS=$((366 * 86400))
-                                                                                TIMESTAMP=$(date +%s)
+                                                                        installPhase =
+                                                                            let
+                                                                                expiry =
+                                                                                    pkgs.writeShellApplication
+                                                                                        {
+                                                                                            name = "expiry" ;
+                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
+                                                                                            text =
+                                                                                                ''
+                                                                                                    export PASSWORD_STORE_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
+                                                                                                    export GIT_WORK_TREE="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/work-tree"
+                                                                                                    export GIT_DIR="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/git"
+                                                                                                    YEAR_SECONDS=$((366 * 86400))
+                                                                                                    TIMESTAMP=$(date +%s)
 
-                                                                                # Get a list of all password keys tracked by Git
-                                                                                git ls-tree -r --name-only HEAD | while IFS= read -r file; do
-                                                                                  # Skip non-.gpg files
-                                                                                  [[ "$file" != *.gpg ]] && continue
+                                                                                                    # Get a list of all password keys tracked by Git
+                                                                                                    git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                      # Skip non-.gpg files
+                                                                                                      [[ "$file" != *.gpg ]] && continue
 
-                                                                                  # Get the last commit timestamp for the file
-                                                                                  last_commit_ts=$( git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                                      # Get the last commit timestamp for the file
+                                                                                                      last_commit_ts=$( git log -1 --format="%at" -- "$file" || echo 0)
 
-                                                                                  # Compute the age
-                                                                                  age=$((TIMESTAMP - last_commit_ts))
+                                                                                                      # Compute the age
+                                                                                                      age=$((TIMESTAMP - last_commit_ts))
 
-                                                                                  if (( age >= YEAR_SECONDS )); then
-                                                                                    # Strip ".gpg" and print
-                                                                                    key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg}" "}" ] }"
-                                                                                    echo "$key"
-                                                                                  fi
-                                                                                done
-                                                                            '' ;
+                                                                                                      if (( age >= YEAR_SECONDS )); then
+                                                                                                        # Strip ".gpg" and print
+                                                                                                        key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg}" "}" ] }"
+                                                                                                        echo "$key"
+                                                                                                      fi
+                                                                                                    done
+                                                                                                '' ;
+                                                                                        } ;
+                                                                                phonetic =
+                                                                                    pkgs.writeShellApplication
+                                                                                        {
+                                                                                            name = "phonetic" ;
+                                                                                            runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                            text =
+                                                                                                ''
+                                                                                                    declare -A NATO=(
+                                                                                                      [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                      [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                      [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                      [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                      [Y]=YANKEE [Z]=ZULU
+                                                                                                    )
+
+                                                                                                    declare -A PHONETIC_LOWER=(
+                                                                                                      [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                      [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                      [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                      [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                      [y]=yam [z]=zucchini
+                                                                                                    )
+
+                                                                                                    declare -A DIGITS=(
+                                                                                                      [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                      [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                    )
+
+                                                                                                    declare -A SYMBOLS=(
+                                                                                                      ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                      ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                      ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                      [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                      ["\\"]=BackwardSlash
+                                                                                                      ["\'"]=SingleQuote
+                                                                                                      ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                      ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                      ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                      ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                    )
+
+                                                                                                    declare -A CONTROL=(
+                                                                                                      [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                      [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                      [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                      [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                      [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                      [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                      [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                      [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                      [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                      [127]=DELETE
+                                                                                                    )
+
+                                                                                                    output=()
+
+                                                                                                    while IFS= read -r -n1 char; do
+                                                                                                      [[ -z "$char" ]] && continue
+                                                                                                      ascii=$(printf "%d" "'$char")
+
+                                                                                                      if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                        raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                        transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                        output+=("$transformed")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                      elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                      else
+                                                                                                        output+=("Unknown($ascii)")
+                                                                                                      fi
+                                                                                                    done < <( pass show "$@" )
+
+                                                                                                    echo OPEN
+                                                                                                    printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                    echo CLOSE
+                                                                                                '' ;
+                                                                                        } ;
+                                                                            warn =
+                                                                                pkgs.writeShellApplication
+                                                                                    {
+                                                                                        name = "warn" ;
+                                                                                        runtimeInputs = [ pkgs.pass ] ;
+                                                                                        text =
+                                                                                            ''
+                                                                                                export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
+                                                                                                ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
+                                                                                                FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+
+                                                                                                if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                  echo "Usage: pass warn <entry>" >&2
+                                                                                                  exit 1
+                                                                                                fi
+
+                                                                                                # Extract long key IDs from the encrypted file
+                                                                                                mapfile -t LONG_KEY_IDS < <(
+                                                                                                  gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                  | awk '/^:pubkey enc packet:/ { print $NF }'
+                                                                                                )
+
+                                                                                                if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                                                  echo "No encryption keys found in $FILE" >&2
+                                                                                                  exit 1
+                                                                                                fi
+
+                                                                                                echo "Encryption Long Key IDs found in $ENTRY:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
+
+                                                                                                # Convert long key IDs to full fingerprints
+                                                                                                mapfile -t ENCRYPTION_FPRS < <(
+                                                                                                  for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                                                    gpg --with-colons --fingerprint "$longid" 2>/dev/null \
+                                                                                                    | awk -F: '/^fpr:/ { print $10; exit }'
+                                                                                                  done
+                                                                                                )
+
+                                                                                                echo "Corresponding full fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
+
+                                                                                                mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/.password-store-dir/.gpg-id"
+
+
+                                                                                                echo "Current trusted key fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
+
+                                                                                                # Check if all encryption fingerprints are in current trusted keys
+                                                                                                WARNING=0
+                                                                                                for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
+                                                                                                  if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                                                    echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
+                                                                                                    echo "   $fpr" >&2
+                                                                                                    WARNING=1
+                                                                                                  fi
+                                                                                                done
+
+                                                                                                # Finally, show the password
+                                                                                                pass show "$ENTRY"
+
+                                                                                                exit $WARNING
+                                                                                            '' ;
+                                                                                    } ;
+                                                                            in
+                                                                                ''
+                                                                                    mkdir $out
+                                                                                    ln --symbolic ${ expiry }/bin/expiry $out/expiry.bash
+                                                                                    ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
+                                                                                    ln --symbolic ${ warn }/bin/warn $out/warn.bash
+                                                                                '' ;
+                                                                        nativeBuildInputs = [ pkgs.coreutils ] ;
+                                                                        name = "password-store-extensions-dir" ;
+                                                                        src = ./. ;
                                                                     } ;
-                                                            phonetic =
-                                                                pkgs.writeShellApplication
-                                                                    {
-                                                                        name = "phonetic" ;
-                                                                        runtimeInputs = [ pkgs.coreutils ] ;
-                                                                        text =
-                                                                            ''
-                                                                                declare -A NATO=(
-                                                                                  [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
-                                                                                  [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
-                                                                                  [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
-                                                                                  [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
-                                                                                  [Y]=YANKEE [Z]=ZULU
-                                                                                )
-
-                                                                                declare -A PHONETIC_LOWER=(
-                                                                                  [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
-                                                                                  [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
-                                                                                  [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
-                                                                                  [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
-                                                                                  [y]=yam [z]=zucchini
-                                                                                )
-
-                                                                                declare -A DIGITS=(
-                                                                                  [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
-                                                                                  [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
-                                                                                )
-
-                                                                                declare -A SYMBOLS=(
-                                                                                  ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
-                                                                                  ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
-                                                                                  ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
-                                                                                  [',']=Comma ['.']=Dot ['/']=ForwardSlash
-                                                                                  ["\\"]=BackwardSlash
-                                                                                  ["\'"]=SingleQuote
-                                                                                  ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
-                                                                                  ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
-                                                                                  ['[']=LeftSquareBracket [']']=RightSquareBracket
-                                                                                  ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
-                                                                                )
-
-                                                                                declare -A CONTROL=(
-                                                                                  [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
-                                                                                  [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
-                                                                                  [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
-                                                                                  [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
-                                                                                  [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
-                                                                                  [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
-                                                                                  [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
-                                                                                  [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
-                                                                                  [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
-                                                                                  [127]=DELETE
-                                                                                )
-
-                                                                                output=()
-
-                                                                                while IFS= read -r -n1 char; do
-                                                                                  [[ -z "$char" ]] && continue
-                                                                                  ascii=$(printf "%d" "'$char")
-
-                                                                                  if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                                    raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                                    transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
-                                                                                    output+=("$transformed")
-
-                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
-                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
-
-                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
-                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
-
-                                                                                  elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
-                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
-
-                                                                                  elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
-                                                                                    output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
-
-                                                                                  else
-                                                                                    output+=("Unknown($ascii)")
-                                                                                  fi
-                                                                                done < <( pass show "$@" )
-
-                                                                                echo OPEN
-                                                                                printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
-                                                                                echo CLOSE
-                                                                            '' ;
-                                                                    } ;
-                                                        warn =
-                                                            pkgs.writeShellApplication
-                                                                {
-                                                                    name = "warn" ;
-                                                                    runtimeInputs = [ pkgs.pass ] ;
-                                                                    text =
-                                                                        ''
-                                                                            export GNUPGHOME="/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir"
-                                                                            ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
-                                                                            FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
-                                                                            
-                                                                            if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                              echo "Usage: pass warn <entry>" >&2
-                                                                              exit 1
-                                                                            fi
-                                                                            
-                                                                            # Extract long key IDs from the encrypted file
-                                                                            mapfile -t LONG_KEY_IDS < <(
-                                                                              gpg --list-packets "$FILE" 2>/dev/null \
-                                                                              | awk '/^:pubkey enc packet:/ { print $NF }'
-                                                                            )
-                                                                            
-                                                                            if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
-                                                                              echo "No encryption keys found in $FILE" >&2
-                                                                              exit 1
-                                                                            fi
-                                                                            
-                                                                            echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
-                                                                            
-                                                                            # Convert long key IDs to full fingerprints
-                                                                            mapfile -t ENCRYPTION_FPRS < <(
-                                                                              for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
-                                                                                gpg --with-colons --fingerprint "$longid" 2>/dev/null \
-                                                                                | awk -F: '/^fpr:/ { print $10; exit }'
-                                                                              done
-                                                                            )
-                                                                            
-                                                                            echo "Corresponding full fingerprints:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
-                                                                            
-                                                                            mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/.password-store-dir/.gpg-id"
-                                                                            
-                                                                            
-                                                                            echo "Current trusted key fingerprints:" >&2
-                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
-                                                                            
-                                                                            # Check if all encryption fingerprints are in current trusted keys
-                                                                            WARNING=0
-                                                                            for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                              if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
-                                                                                echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
-                                                                                echo "   $fpr" >&2
-                                                                                WARNING=1
-                                                                              fi
-                                                                            done
-                                                                            
-                                                                            # Finally, show the password
-                                                                            pass show "$ENTRY"
-                                                                            
-                                                                            exit $WARNING                                                                        
-                                                                        '' ;
-                                                                } ;
-                                                        in
-                                                            ''
-                                                                mkdir $out
-                                                                ln --symbolic ${ expiry }/bin/expiry $out/expiry.bash
-                                                                ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
-                                                                ln --symbolic ${ warn }/bin/warn $out/warn.bash
-                                                            '' ;
-                                                    nativeBuildInputs = [ pkgs.coreutils ] ;
-                                                    name = "password-store-extensions-dir" ;
-                                                    src = ./. ;
+                                                            in
+                                                                ''
+                                                                    mkdir --parents $out/bin
+                                                                    makeWrapper pass $out/bin/pass --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "password-store-dir } --set PASSWORD_STORE_GPG_OPTS=--homedir $GNUPGHOME" --set PASSWORD_STORE_ENABLE_EXTENSIONS=true --set PASSWORD_STORE_EXTENSIONS_DIR ${ password-store-extensions-dir }
+                                                                '' ;
+                                                   name = "pass" ;
+                                                   nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                   src = ./src ;
                                                 } ;
                                         in
                                             {
