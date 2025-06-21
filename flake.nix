@@ -813,10 +813,12 @@
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
+                                                                    GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
                                                                     makeWrapper \
                                                                         ${ pkgs.pass }/bin/pass \
                                                                         $out/bin/pass \
                                                                         --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree" }
+                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
