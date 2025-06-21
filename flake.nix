@@ -175,7 +175,7 @@
                                                                             init-script =
                                                                                 { ... } :
                                                                                     ''
-                                                                                        export GNUPGHOME=/mount/.gnupg
+                                                                                        export GNUPGHOME=/mount/config
                                                                                         mkdir "$GNUPGHOME"
                                                                                         chmod 0700 "$GNUPGHOME"
                                                                                         age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
@@ -238,7 +238,8 @@
                                                                                         export GIT_DIR=${ outputs.git }
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
-                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir ${ dependencies.dot-gnupg.config }
+                                                                                        export GNUPGHOME=${ dependencies.dot-gnupg.config }
+                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                         exec pass "$@"
                                                                                     '' ;
                                                                                 environment-packages = pkgs : [ pkgs.pass ] ;
