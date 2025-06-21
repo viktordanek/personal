@@ -401,6 +401,7 @@
                                                                         {
                                                                             environment = environment ;
                                                                             index = index ;
+                                                                            path = resource.path ;
                                                                             setup =
                                                                                 pkgs.writeShellApplication
                                                                                     {
@@ -1029,11 +1030,7 @@
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
                                                                         (
-                                                                            pkgs.writeShellApplication
-                                                                                {
-                                                                                    name = "DEBUG" ;
-                                                                                    text = builtins.trace ( builtins.typeOf scripts ) "" ;
-                                                                                }
+                                                                            builtins.elemAt scripts 0
                                                                         )
                                                                     ] ;
                                                                 password = config.personal.password ;
