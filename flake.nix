@@ -1078,7 +1078,7 @@
                                                                         teardown
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
-                                                                        # ( scripts-foobar [ "personal" "repository" "age-secrets" ] )
+                                                                        ( scripts-foobar [ "personal" "pass" ] )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
