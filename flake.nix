@@ -813,7 +813,7 @@
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
-                                                                    makeWrapper ${ pkgs.pass }/bin/pass $out/bin/pass
+                                                                    makeWrapper ${ pkgs.pass }/bin/pass $out/bin/pass --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree"
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
