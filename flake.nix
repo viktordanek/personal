@@ -241,7 +241,7 @@
                                                                                         export GNUPGHOME=${ dependencies.dot-gnupg.config }
                                                                                         export GPG_TTY=$( tty )
                                                                                         echo "allow-preset-passphrase" >> "$GNUPGHOME/gpg-agent.conf"
-                                                                                        echo "pinentry-program ${pkgs.pinentry-tty}/bin/pinentry" >> "$GNUPGHOME/gpg-agent.conf"
+                                                                                        echo "pinentry-program ${pkgs.pinentry-qt}/bin/pinentry" >> "$GNUPGHOME/gpg-agent.conf"
 
                                                                                         gpgconf --kill gpg-agent
                                                                                         gpgconf --launch gpg-agent
