@@ -322,7 +322,7 @@
                                                                                                 ${ ssh-command dependencies.dot-ssh.config }
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
-                                                                                                git remote add origin git@github.com/viktordanek/visitor.git
+                                                                                                git remote add origin git@github.com:viktordanek/visitor.git
                                                                                                 git fetch origin main
                                                                                                 git checkout origin/main
                                                                                                 git scratch
