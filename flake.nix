@@ -825,7 +825,7 @@
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
-                                                                    makeWrapper pass $out/bin/pass --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "password-store-dir } --set PASSWORD_STORE_GPG_OPTS=--homedir $GNUPGHOME" --set PASSWORD_STORE_ENABLE_EXTENSIONS=true --set PASSWORD_STORE_EXTENSIONS_DIR ${ password-store-extensions-dir }
+                                                                    makeWrapper pass $out/bin/pass --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "password-store-dir } --set PASSWORD_STORE_GPG_OPTS=--homedir $GNUPGHOME" --set PASSWORD_STORE_ENABLE_EXTENSIONS true --set PASSWORD_STORE_EXTENSIONS_DIR ${ password-store-extensions-dir }
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
@@ -1098,7 +1098,7 @@
                                                                         teardown
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
-                                                                        ( scripts-foobar [ "personal" "pass" ] )
+                                                                        pass
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
