@@ -1072,7 +1072,6 @@
                                                                     [
                                                                         pkgs.git
                                                                         pkgs.git-crypt
-                                                                        pkgs.pass
                                                                         setup
                                                                         teardown
                                                                         pkgs.chromium
