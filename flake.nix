@@ -184,7 +184,7 @@
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
                                                                                         gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                     '' ;
-                                                                            outputs = [ ".gnupg" ] ;
+                                                                            outputs = [ "config" ] ;
                                                                         } ;
                                                                 dot-ssh =
                                                                     {
@@ -238,7 +238,7 @@
                                                                                         export GIT_DIR=${ outputs.git }
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
-                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir ${ dependencies.dot-gnupg.homedir }
+                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir ${ dependencies.dot-gnupg.config }
                                                                                         exec pass "$@"
                                                                                     '' ;
                                                                                 environment-packages = pkgs : [ pkgs.pass ] ;
