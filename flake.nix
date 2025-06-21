@@ -239,37 +239,6 @@
                                                                                             ''
                                                                                                 export GIT_DIR=${ outputs.git }
                                                                                                 export GIT_WORK_TREE=${ outputs.work-tree }{ lib, ... }:
-
-                                                                                                                                           let
-                                                                                                                                             # Takes a path and a value, returns a nested attrset
-                                                                                                                                             pathToAttrset = path: value:
-                                                                                                                                               lib.attrsets.setAttrByPath path value;
-
-                                                                                                                                             # Given one element, build an attrset like { a.b.c = env; }
-                                                                                                                                             entryToAttrset = entry:
-                                                                                                                                               pathToAttrset entry.path entry.environment;
-
-                                                                                                                                             # Input: a list of elements
-                                                                                                                                             input = [
-                                                                                                                                               {
-                                                                                                                                                 path = [ "foo" "bar" ];
-                                                                                                                                                 environment = { a = 1; };
-                                                                                                                                               }
-                                                                                                                                               {
-                                                                                                                                                 path = [ "foo" "baz" ];
-                                                                                                                                                 environment = { b = 2; };
-                                                                                                                                               }
-                                                                                                                                               {
-                                                                                                                                                 path = [ "qux" ];
-                                                                                                                                                 environment = { c = 3; };
-                                                                                                                                               }
-                                                                                                                                             ];
-
-                                                                                                                                             # Fold all into one big attrset
-                                                                                                                                             result = lib.foldl' lib.recursiveUpdate {} (map entryToAttrset input);
-                                                                                                                                           in
-                                                                                                                                             result
-
                                                                                                 echo "$GIT_DIR"
                                                                                             '' ;
                                                                                     environment-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
