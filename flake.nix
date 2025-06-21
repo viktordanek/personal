@@ -1073,7 +1073,7 @@
                                                                         teardown
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
-                                                                        ( scripts-foobar [ "personal" "repository" "age-secrets" ] )
+                                                                        ( scripts-foobar [ "personal" "pass" ] )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
@@ -1091,9 +1091,11 @@
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
                                                                     {
+                                                                        branch = lib.mkOption { default = "scratch/8060776f-fa8d-443e-9902-118cf4634d9e" ; type = lib.types.str ; } ;
                                                                         character-set = lib.mkOption { default = ".,_=2345ABCDEFGHJKLMabcdefghjkmn" ; type = lib.types.str ; } ;
                                                                         character-set-no-symbols = lib.mkOption { default = "6789NPQRSTUVWXYZpqrstuvwxyz" ; type = lib.types.str ; } ;
                                                                         generated-length = lib.mkOption { default = 25 ; type = lib.types.int ; } ;
+                                                                        remote = lib.mkOption { default = "git@github.com:nextmoose/secrets.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 password = lib.mkOption { type = lib.types.str ; } ;
                                                                 repository =
