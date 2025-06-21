@@ -328,7 +328,7 @@
                                                                                 extraBwrapArgs =
                                                                                     [
                                                                                     ] ;
-                                                                                name = resource.environment ;
+                                                                                name = resource.environment-name ;
                                                                                 runScript =
                                                                                     let
                                                                                         environment = pkgs.writeShellApplication { name = "environment" ; text = resource.environment-script tools ; } ;
