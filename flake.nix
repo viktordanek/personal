@@ -242,7 +242,7 @@
                                                                                         export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                         exec pass "$@"
                                                                                     '' ;
-                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.gnupg pkgs.pass ] ;
+                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.pass ] ;
                                                                                 init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                 init-script =
                                                                                     { dependencies , ... } :
