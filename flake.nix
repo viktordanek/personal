@@ -227,6 +227,35 @@
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
                                                                     } ;
+                                                                pass =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; } ;
+                                                                            environment-name = "pass" ;
+                                                                            environment-script =
+                                                                                { dependencies , outputs } :
+                                                                                    ''
+                                                                                    '' ;
+                                                                                environment-packages = pkgs : [ pkgs.pass ] ;
+                                                                                init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                init-script =
+                                                                                    { dependencies , ... } :
+                                                                                        ''
+                                                                                            export GIT_DIR=/mount/git
+                                                                                            export GIT_WORK_TREE=/mount/work-tree
+                                                                                            mkdir "$GIT_DIR"
+                                                                                            mkdir "$GIT_WORK_TREE"
+                                                                                            git init 2>&1
+                                                                                            ${ ssh-command dependencies.dot-ssh.config }
+                                                                                            git config user.email "${ config.personal.email }"
+                                                                                            git config user.name "${ config.personal.description }"
+                                                                                            ln --symbolic ${ post-commit } /mount/git/hooks/post-commit
+                                                                                            git remote add origin ${ config.personal.pass.remote } 2>&1
+                                                                                            git remote fetch origin ${ config.personal.pass.branch } 2>&1
+                                                                                            git checkout ${ config.personal.pass.branch } 2>&1
+                                                                                        '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                        } ;
                                                                 repository =
                                                                     {
                                                                         age-secrets =
