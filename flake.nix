@@ -239,10 +239,17 @@
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
                                                                                         export GNUPGHOME=${ dependencies.dot-gnupg.config }
+                                                                                        export GPG_TTY=$( tty )
+                                                                                        echo "allow-preset-passphrase" >> "$GNUPGHOME/gpg-agent.conf"
+                                                                                        echo "pinentry-program ${pkgs.pinentry-tty}/bin/pinentry" >> "$GNUPGHOME/gpg-agent.conf"
+
+                                                                                        gpgconf --kill gpg-agent
+                                                                                        gpgconf --launch gpg-agent
+                                                                                        gpg-connect-agent updatestartuptty /bye
                                                                                         export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                         exec pass "$@"
                                                                                     '' ;
-                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.pass pkgs.pinentry-qt ] ;
+                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.gnupg pkgs.pass pkgs.pinentry-qt ] ;
                                                                                 init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                 init-script =
                                                                                     { dependencies , ... } :
@@ -1079,7 +1086,6 @@
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
                                                                         ( scripts-foobar [ "personal" "pass" ] )
-                                                                        pkgs.pinentry-qt
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
