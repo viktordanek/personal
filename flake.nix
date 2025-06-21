@@ -242,7 +242,7 @@
                                                                                         export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                         exec pass "$@"
                                                                                     '' ;
-                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.pass pkgs.pinentry-tty ] ;
+                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.pass pkgs.pinentry-qt ] ;
                                                                                 init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                 init-script =
                                                                                     { dependencies , ... } :
