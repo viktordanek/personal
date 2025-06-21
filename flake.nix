@@ -240,7 +240,7 @@
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
                                                                                         export GNUPGHOME=${ dependencies.dot-gnupg.config }
                                                                                         GPG_TTY="$( tty )"
-                                                                                        export "$GPG_TTY"
+                                                                                        export GPG_TTY
                                                                                         echo "allow-preset-passphrase" >> "$GNUPGHOME/gpg-agent.conf"
                                                                                         echo "pinentry-program ${pkgs.pinentry-qt}/bin/pinentry" >> "$GNUPGHOME/gpg-agent.conf"
 
