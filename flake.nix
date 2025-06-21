@@ -1030,7 +1030,9 @@
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
                                                                         (
-                                                                            builtins.elemAt scripts 0
+                                                                            let
+                                                                                resource = builtins.elemAt scripts 0 ;
+                                                                                in resource.environment
                                                                         )
                                                                     ] ;
                                                                 password = config.personal.password ;
