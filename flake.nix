@@ -1079,6 +1079,7 @@
                                                                         pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
                                                                         ( scripts-foobar [ "personal" "pass" ] )
+                                                                        pkgs.pinentry-qt
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
