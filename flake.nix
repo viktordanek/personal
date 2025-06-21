@@ -350,7 +350,7 @@
                                                                         } ;
                                                             } ;
                                                     } ;
-                                        foobar = path : output : builtins.concatStringsSep "/" ( builtins.concatLists [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] )
+                                        foobar = path : output : builtins.concatStringsSep "/" ( builtins.concatLists [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] ) ;
                                         scripts-foobar =
                                             path :
                                                 let
