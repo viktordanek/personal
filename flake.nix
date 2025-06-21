@@ -853,13 +853,6 @@
                                                                     } ;
                                                                 variables =
                                                                     {
-                                                                        "PASSWORD_STORE_ENABLE_EXTENSIONS" = "true" ;
-                                                                        "PASSWORD_STORE_EXTENSIONS_DIR" = "${ password-store-extensions-dir }" ;
-                                                                        "PASSWORD_STORE_CHARACTER_SET" = config.personal.pass.character-set ;
-                                                                        "PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS" = config.personal.pass.character-set-no-symbols ;
-                                                                        "PASSWORD_STORE_DIR" = "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/boot/.password-store-dir" ;
-                                                                        "PASSWORD_STORE_GENERATED_LENGTH" = builtins.toString config.personal.pass.generated-length ;
-                                                                        "PASSWORD_STORE_GPG_OPTS" = "--homedir /home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/dot-gnupg/homedir" ;
                                                                     } ;
                                                             } ;
                                                         hardware.pulseaudio =
