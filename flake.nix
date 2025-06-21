@@ -41,6 +41,9 @@
                                                                 identity =
                                                                     {
                                                                         dependencies ? x : { } ,
+                                                                        environment-name ? "environment" ,
+                                                                        environment-packages ? pkgs : [ ] ,
+                                                                        environment-script ? x : "" ,
                                                                         init-packages ? pkgs : [ ] ,
                                                                         init-script ? x : "" ,
                                                                         outputs ? [ ] ,
@@ -110,6 +113,9 @@
                                                                                 {
                                                                                     dependencies = dependencies_ ;
                                                                                     dependencies__ = dependencies__ ;
+                                                                                    environment-name = environment-name ;
+                                                                                    environment-packages = environment-packages ;
+                                                                                    environment-script = environment-script ;
                                                                                     init-packages = init-packages ;
                                                                                     init-script = init-script ;
                                                                                     name = builtins.concatStringsSep "/" ( builtins.map builtins.toJSON path ) ;
@@ -144,15 +150,18 @@
                                                         } ;
                                                 ssh-command =
                                                     configuration-file :
-                                                        pkgs.writeShellApplication
-                                                            {
-                                                                name = "ssh" ;
-                                                                runtimeInputs = [ pkgs.openssh ] ;
-                                                                text =
-                                                                    ''
-                                                                        exec ssh -F ${ configuration-file } "$@"
-                                                                    '' ;
-                                                        } ;
+                                                        let
+                                                            application =
+                                                                pkgs.writeShellApplication
+                                                                    {
+                                                                        name = "ssh" ;
+                                                                        runtimeInputs = [ pkgs.openssh ] ;
+                                                                        text =
+                                                                            ''
+                                                                                exec ssh -F ${ configuration-file } "$@"
+                                                                            '' ;
+                                                                    } ;
+                                                            in "git config core.sshCommand ${ application }/bin/application" ;
                                                 in
                                                     {
                                                         couple = { } ;
@@ -266,8 +275,7 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                SSH_CONFIG=${ dependencies.dot-ssh.config }
-                                                                                                git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F $SSH_CONFIG"
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
                                                                                                 git config user.email "viktordanek10@gmail.com"
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 git remote add origin git@github.com/viktordanek/visitor.git
@@ -314,6 +322,19 @@
                                                                     in find.index ;
                                                             in
                                                                 let
+                                                                    environment =
+                                                                        pkgs.buildFHSUserEnv
+                                                                            {
+                                                                                extraBwrapArgs =
+                                                                                    [
+                                                                                    ] ;
+                                                                                name = resource.environment ;
+                                                                                runScript =
+                                                                                    let
+                                                                                        environment = pkgs.writeShellApplication { name = "environment" ; text = resource.environment-script tools ; } ;
+                                                                                        in "${ environment }/bin/environment" ;
+                                                                                targetPkgs = resource.environment-packages ;
+                                                                            } ;
                                                                     init =
                                                                         pkgs.buildFHSUserEnv
                                                                             {
@@ -378,6 +399,7 @@
                                                                             } ;
                                                                     in
                                                                         {
+                                                                            environment = environment ;
                                                                             index = index ;
                                                                             setup =
                                                                                 pkgs.writeShellApplication
