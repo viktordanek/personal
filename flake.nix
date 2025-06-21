@@ -235,6 +235,9 @@
                                                                             environment-script =
                                                                                 { dependencies , outputs } :
                                                                                     ''
+                                                                                        export GIT_DIR=${ outputs.git }
+                                                                                        export GIT_WORK_DIR=${ outputs.work-tree }
+                                                                                        export PASSWORD_STORE_DIR=${ outputs.work-tree }
                                                                                         exec pass "$@"
                                                                                     '' ;
                                                                                 environment-packages = pkgs : [ pkgs.pass ] ;
@@ -252,7 +255,7 @@
                                                                                             git config user.name "${ config.personal.description }"
                                                                                             ln --symbolic ${ post-commit }/bin/post-commit /mount/git/hooks/post-commit
                                                                                             git remote add origin ${ config.personal.pass.remote } 2>&1
-                                                                                            git remote fetch origin ${ config.personal.pass.branch } 2>&1
+                                                                                            # git remote fetch origin ${ config.personal.pass.branch } 2>&1
                                                                                             # git checkout ${ config.personal.pass.branch } 2>&1
                                                                                         '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
