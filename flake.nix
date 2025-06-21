@@ -227,41 +227,6 @@
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
                                                                     } ;
-                                                                pass =
-                                                                    ignore :
-                                                                        {
-                                                                            dependencies = tree : { dot-gnupg = tree.personal.dot-gnupg ; dot-ssh = tree.personal.dot-ssh.boot ; } ;
-                                                                            environment-name = "pass" ;
-                                                                            environment-script =
-                                                                                { dependencies , outputs } :
-                                                                                    ''
-                                                                                        export GIT_DIR=${ outputs.git }
-                                                                                        export GIT_WORK_DIR=${ outputs.work-tree }
-                                                                                        export PASSWORD_STORE_DIR=${ outputs.work-tree }
-                                                                                        export GNUPGHOME=${ dependencies.dot-gnupg.config }
-                                                                                        export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
-                                                                                        exec pass "$@"
-                                                                                    '' ;
-                                                                                environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.pass ] ;
-                                                                                init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
-                                                                                init-script =
-                                                                                    { dependencies , ... } :
-                                                                                        ''
-                                                                                            export GIT_DIR=/mount/git
-                                                                                            export GIT_WORK_TREE=/mount/work-tree
-                                                                                            mkdir "$GIT_DIR"
-                                                                                            mkdir "$GIT_WORK_TREE"
-                                                                                            git init 2>&1
-                                                                                            ${ ssh-command dependencies.dot-ssh.config }
-                                                                                            git config user.email "${ config.personal.email }"
-                                                                                            git config user.name "${ config.personal.description }"
-                                                                                            ln --symbolic ${ post-commit }/bin/post-commit /mount/git/hooks/post-commit
-                                                                                            git remote add origin ${ config.personal.pass.remote } 2>&1
-                                                                                            git fetch origin ${ config.personal.pass.branch } 2>&1
-                                                                                            git checkout ${ config.personal.pass.branch } 2>&1
-                                                                                        '' ;
-                                                                                    outputs = [ "git" "work-tree" ] ;
-                                                                        } ;
                                                                 repository =
                                                                     {
                                                                         age-secrets =
