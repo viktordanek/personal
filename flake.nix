@@ -239,13 +239,6 @@
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
                                                                                         export GNUPGHOME=${ dependencies.dot-gnupg.config }
-                                                                                        # GPG_TTY="$( tty )"
-                                                                                        # export GPG_TTY
-                                                                                        # echo "allow-preset-passphrase" >> "$GNUPGHOME/gpg-agent.conf"
-
-                                                                                        # gpgconf --kill gpg-agent
-                                                                                        # gpgconf --launch gpg-agent
-                                                                                        # gpg-connect-agent updatestartuptty /bye
                                                                                         export PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                         exec pass "$@"
                                                                                     '' ;
