@@ -894,7 +894,7 @@
                                                                 gnupg.agent =
                                                                     {
                                                                         enable = true ;
-                                                                        pinEntryFlavor = "curses" ;
+                                                                        pinentryFlavor = "curses" ;
                                                                     } ;
                                                             } ;
                                                         security =
