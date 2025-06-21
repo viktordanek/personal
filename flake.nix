@@ -233,6 +233,15 @@
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    environment-name = "age-secrets" ;
+                                                                                    environment-script =
+                                                                                        { dependencies , outputs } :
+                                                                                            ''
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.work-tree }
+                                                                                                echo "$GIT_DIR"
+                                                                                            '' ;
+                                                                                    environment-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         { dependencies , ... } :
@@ -1031,7 +1040,7 @@
                                                                         pkgs.jetbrains.idea-community
                                                                         (
                                                                             let
-                                                                                resource = builtins.elemAt scripts 0 ;
+                                                                                resource = builtins.elemAt scripts 2 ;
                                                                                 in resource.environment
                                                                         )
                                                                     ] ;
