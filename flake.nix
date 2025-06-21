@@ -377,7 +377,7 @@
                                                                             {
                                                                                 extraBwrapArgs =
                                                                                     [
-                                                                                        "--bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }
+                                                                                        "--bind /home/${ config.personal.name }/${ config.personal.stash } /home/${ config.personal.name }/${ config.personal.stash }"
                                                                                     ] ;
                                                                                 name = resource.environment-name ;
                                                                                 runScript =
