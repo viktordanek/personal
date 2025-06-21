@@ -239,7 +239,8 @@
                                                                                         export GIT_WORK_DIR=${ outputs.work-tree }
                                                                                         export PASSWORD_STORE_DIR=${ outputs.work-tree }
                                                                                         export GNUPGHOME=${ dependencies.dot-gnupg.config }
-                                                                                        export GPG_TTY="$( tty )"
+                                                                                        GPG_TTY="$( tty )"
+                                                                                        export "$GPG_TTY"
                                                                                         echo "allow-preset-passphrase" >> "$GNUPGHOME/gpg-agent.conf"
                                                                                         echo "pinentry-program ${pkgs.pinentry-qt}/bin/pinentry" >> "$GNUPGHOME/gpg-agent.conf"
 
