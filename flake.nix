@@ -196,6 +196,7 @@
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
                                                                                             git-crypt init 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
+                                                                                            git commit -am "Assymetric Encryption"
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
@@ -1189,7 +1190,7 @@
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 chromium =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/da0a0ddb61cae8849a8598eb2f28de2f05cc3848bf94d0556a3fedb" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/37d5b43921844f68b65204d5dd73e169426cda0982e36f036c7e588" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
