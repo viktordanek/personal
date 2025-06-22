@@ -191,9 +191,11 @@
                                                                                         then
                                                                                             echo "branch already exists"
                                                                                             git checkout ${ config.personal.chromium.branch } 2>&1
+                                                                                            git-crypt unlock
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
+                                                                                            git-crypt unlock
                                                                                             git-crypt init 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
@@ -1190,7 +1192,7 @@
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 chromium =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/cb23be6cf1ee22edc40eb96d33551c433cbe065278bd0a9797ee855" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/b2a2033a2db62fc7171d9755573f34ef1f662922273aa0b642b80aa" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
