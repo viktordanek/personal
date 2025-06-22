@@ -652,7 +652,7 @@
                                                 pkgs.writeShellApplication
                                                     {
                                                         name = name ;
-                                                        runtimeInputs = [ pkgs.chromium pkgs.gitcrypt ] ;
+                                                        runtimeInputs = [ pkgs.chromium pkgs.git-crypt ] ;
                                                         text =
                                                             ''
                                                                 export XDG_CONFIG_HOME=${ work-tree }/config
