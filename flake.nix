@@ -198,6 +198,7 @@
                                                                                             gpg --list-keys
                                                                                             git-crypt unlock
                                                                                             git-crypt init 2>&1
+                                                                                            echo git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                         config/** filter=git-crypt diff=git-crypt
