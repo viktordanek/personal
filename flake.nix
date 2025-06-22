@@ -787,7 +787,7 @@
                                                                                                     echo "Corresponding full fingerprints:" >&2
                                                                                                     printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
 
-                                                                                                    mapfile -t CURRENT_FPRS < "/home/${ config.personal.name }/${ config.personal.stash }/direct/$UNIQ_TOKEN/personal/pass/.password-store-dir/.gpg-id"
+                                                                                                    mapfile -t CURRENT_FPRS < ${ password-store-dir }/.gpg-id
 
 
                                                                                                     echo "Current trusted key fingerprints:" >&2
