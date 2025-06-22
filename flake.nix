@@ -1277,7 +1277,7 @@
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
-                                                                chromium =
+                                                                jrnl =
                                                                     {
                                                                         branch = lib.mkOption { default = "artifact/21e6dc7c3f9f2ab893488ce452fa8465cbac726c8d48475ae8fa020" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
