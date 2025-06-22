@@ -185,7 +185,7 @@
                                                                                         git config user.email ${ config.personal.email }
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                        git remote add ${ config.personal.git.remote }
+                                                                                        git remote add ${ config.personal.chromium.remote }
                                                                                         if git fetch origin ${ config.personal.git.branch } 2>&1
                                                                                         then
                                                                                             git checkout ${ config.personal.git.branch } 2>&1
@@ -648,7 +648,7 @@
                                                         '' ;
                                                 } ;
                                         chromium =
-                                            name : work-tree : dot-gnupg : message :
+                                            name : git : work-tree : dot-gnupg : message :
                                                 pkgs.writeShellApplication
                                                     {
                                                         name = name ;
@@ -657,6 +657,8 @@
                                                             ''
                                                                 export XDG_CONFIG_HOME=${ work-tree }/config
                                                                 export XDG_DATA_HOME=${ work-tree }/data
+                                                                export GIT_DIR=${ git }
+                                                                export GIT_WORK_TREE=${ work-tree }
                                                                 export GNUPGHOME=${ dot-gnupg }
                                                                 git-crypt unlock
                                                                 cleanup ( )
@@ -1169,7 +1171,7 @@
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
-                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
+                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
