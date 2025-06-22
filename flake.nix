@@ -838,7 +838,12 @@
                                                                         ${ pkgs.pass }/bin/pass \
                                                                         $out/bin/pass \
                                                                         --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree" } \
-                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
+                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME" \
+                                                                        --set PASSWORD_STORE_ENABLE_EXTENSIONS true \
+                                                                        --set PASSWORD_STORE_EXTENSIONS_DIR ${ password-store-extensions-dir } \
+                                                                        --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
+                                                                        --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols } \
+                                                                        --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length }
                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                     ln --symbolic ${ pkgs.writeShellScript "completion" completion } $out/share/bash-completion/completions/pass
                                                                     mkdir --parents $out/share/man/man1
