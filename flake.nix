@@ -195,8 +195,6 @@
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
-                                                                                            gpg --list-keys
-                                                                                            git-crypt unlock
                                                                                             git-crypt init 2>&1
                                                                                             echo git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
@@ -204,6 +202,8 @@
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
+                                                                                            gpg --list-keys
+                                                                                            git-crypt unlock
                                                                                             mkdir "$GIT_WORK_TREE/config"
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
@@ -301,8 +301,6 @@
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.jrnl.branch } 2>&1
-                                                                                            gpg --list-keys
-                                                                                            git-crypt unlock
                                                                                             git-crypt init 2>&1
                                                                                             echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
@@ -310,6 +308,8 @@
                                                                                         config/** filterjrnl ==git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
+                                                                                            gpg --list-keys
+                                                                                            git-crypt unlock
                                                                                             mkdir "$GIT_WORK_TREE/config"
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
