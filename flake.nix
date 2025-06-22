@@ -663,7 +663,9 @@
                                                                 git-crypt unlock
                                                                 cleanup ( )
                                                                     {
-                                                                        git commit -am "${ message }" --allow-empty --allow-empty-message
+                                                                        git add config
+                                                                        git add data
+                                                                        git commit -m "${ message }" --allow-empty --allow-empty-message
                                                                         git push origin HEAD
                                                                     }
                                                                 trap cleanup EXIT
