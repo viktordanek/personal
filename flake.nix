@@ -667,8 +667,8 @@
                                                                 git-crypt unlock
                                                                 cleanup ( )
                                                                     {
-                                                                        git add config
-                                                                        git add data
+                                                                        git add --all config
+                                                                        git add --all data
                                                                         git commit -m "${ message }" --allow-empty --allow-empty-message
                                                                         git push origin HEAD
                                                                     }
