@@ -186,13 +186,13 @@
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                         git remote add ${ config.personal.chromium.remote }
-                                                                                        if git fetch origin ${ config.personal.git.branch } 2>&1
+                                                                                        if git fetch origin ${ config.personal.chromium.branch } 2>&1
                                                                                         then
-                                                                                            git checkout ${ config.personal.git.branch } 2>&1
+                                                                                            git checkout ${ config.personal.chromium.branch } 2>&1
                                                                                         else
-                                                                                            git checkout -b ${ config.personal.git.branch } 2>&1
+                                                                                            git checkout -b ${ config.personal.chromium.branch } 2>&1
                                                                                             git-crypt init
-                                                                                            git-crypt add-gpg-user ${ config.personal.git.recipient }
+                                                                                            git-crypt add-gpg-user ${ config.personal.chromium.recipient }
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
