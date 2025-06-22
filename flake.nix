@@ -748,6 +748,7 @@
                                                                     --set GNUPGHOME ${ dot-gnupg }
                                                             '' ;
                                                         name = "jrnl" ;
+                                                        nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                         src = ./. ;
                                                     } ;
                                         pass =
