@@ -745,7 +745,7 @@
                                                                     $out/bin/${ git-name } \
                                                                     --set GIT_DIR ${ git } \
                                                                     --set GIT_WORK_TREE ${ work-tree } \
-                                                                    --set GNUPGHOME ${ gnupghome }
+                                                                    --set GNUPGHOME ${ dot-gnupg }
                                                             '' ;
                                                         name = "jrnl" ;
                                                         src = ./. ;
