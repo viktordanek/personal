@@ -1189,8 +1189,8 @@
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 chromium =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/53d5fc02ffd3a50b37b2913da22a8ab4dc150fab0feac4cbda6abb" ; type = lib.types.str ; } ;
-                                                                        recipient = lib.mkOption { default = "git-crypt@local" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/307d9caae7c951410d39290b8d97bc5bb78bc22447921114a9fb405" ; type = lib.types.str ; } ;
+                                                                        recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
