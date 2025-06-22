@@ -185,7 +185,7 @@
                                                                                         git config user.email ${ config.personal.email }
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                        git remote add ${ config.personal.chromium.remote }
+                                                                                        git remote add origin ${ config.personal.chromium.remote }
                                                                                         if git fetch origin ${ config.personal.chromium.branch } 2>&1
                                                                                         then
                                                                                             git checkout ${ config.personal.chromium.branch } 2>&1
