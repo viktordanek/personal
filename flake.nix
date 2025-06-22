@@ -172,7 +172,7 @@
                                                                     ignore :
                                                                         {
                                                                             dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
-                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt ] ;
                                                                             init-script =
                                                                                 { ... } :
                                                                                     ''
