@@ -826,6 +826,7 @@
                                                                         text =
                                                                             ''
                                                                                 export PASSWORD_STORE_DIR=${ foobar [ "personal" "pass" ] "work-tree" }
+                                                                                # shellcheck disable=SC1091
                                                                                 source ${ pkgs.pass }/share/bash-completion/completions/pass
                                                                             '' ;
                                                                     } ;
