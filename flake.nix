@@ -729,32 +729,26 @@
                                                             '' ;
                                                     } ;
                                         jrnl =
-                                            name : git : work-tree : dot-gnupg : message :
-                                                pkgs.writeShellApplication
+                                            jrnl-name : commit-name : git : work-tree : dot-gnupg : message :
+                                                pkgs.stdenv.mkDerivation
                                                     {
-                                                        name = name ;
-                                                        runtimeInputs = [ pkgs.jrnl pkgs.git-crypt ] ;
-                                                        text =
+                                                        installPhase =
                                                             ''
-                                                                export XDG_CONFIG_HOME=${ work-tree }/config
-                                                                export XDG_DATA_HOME=${ work-tree }/data
-                                                                export GIT_DIR=${ git }
-                                                                export GIT_WORK_TREE=${ work-tree }
-                                                                export GNUPGHOME=${ dot-gnupg }
-                                                                git fetch origin ${ config.personal.chromium.branch }
-                                                                git rebase origin/${ config.personal.chromium.branch }
-                                                                git-crypt unlock
-                                                                cleanup ( )
-                                                                    {
-                                                                        sleep 10s
-                                                                        git add --all config
-                                                                        git add --all data
-                                                                        git commit -m "${ message }" --allow-empty --allow-empty-message
-                                                                        git push origin HEAD
-                                                                    }
-                                                                trap cleanup EXIT
-                                                                exec jrnl "$@"
+                                                                mkdir --parents $out/bin
+                                                                makeWrapper \
+                                                                    ${ pkgs.jrnl }/bin/jrnl \
+                                                                    $out/bin/${ jrnl-name } \
+                                                                    --set XDG_CONFIG_HOME=${ work-tree }/config
+                                                                    --set XDG_DATA_HOME=${ work-tree }/data
+                                                                makeWrapper \
+                                                                    ${ pkgs.git }/bin/git \
+                                                                    $out/bin/${ git-name } \
+                                                                    --set GIT_DIR ${ git } \
+                                                                    --set GIT_WORK_TREE ${ work-tree } \
+                                                                    --set GNUPGHOME ${ gnupghome }
                                                             '' ;
+                                                        name = "jrnl" ;
+                                                        src = ./. ;
                                                     } ;
                                         pass =
                                             password-store-dir : git-dir : dot-gnupg :
@@ -1258,6 +1252,7 @@
                                                                         pkgs.jetbrains.idea-community
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
                                                                         ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
+                                                                        ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString config.personal.current-time }" )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
