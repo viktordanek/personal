@@ -820,16 +820,16 @@
                                                                         src = ./. ;
                                                                     } ;
                                                             completion =
-                                                                pkgs.writeShellApplication
-                                                                    {
-                                                                        name = "completion" ;
-                                                                        text =
+                                                                # pkgs.writeShellApplication
+                                                                #     {
+                                                                #         name = "completion" ;
+                                                                #        text =
                                                                             ''
                                                                                 export PASSWORD_STORE_DIR=${ foobar [ "personal" "pass" ] "work-tree" }
                                                                                 # shellcheck disable=SC1091
                                                                                 source ${ pkgs.pass }/share/bash-completion/completions/pass
                                                                             '' ;
-                                                                    } ;
+                                                                #    } ;
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
@@ -840,7 +840,7 @@
                                                                         --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree" } \
                                                                         --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
                                                                     mkdir --parents $out/share/bash-completion/completions
-                                                                    ln --symbolic ${ completion }/bin/completion $out/share/bash-completion/completions/pass
+                                                                    ln --symbolic ${ builtins.toFile completion } $out/share/bash-completion/completions/pass
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
