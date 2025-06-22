@@ -607,6 +607,15 @@
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.teardown }/bin/teardown'' ) ( builtins.sort ( a : b : a.index > b.index ) scripts ) ) }
                                                         '' ;
                                                 } ;
+                                        chromium =
+                                            pkgs.stdenv.mkDerivation
+                                                {
+                                                    installPhase =
+                                                        ''
+                                                        '' ;
+                                                    name = "chromium" ;
+                                                    src = ./. ;
+                                                } ;
                                         pass =
                                             pkgs.stdenv.mkDerivation
                                                 {
@@ -810,6 +819,16 @@
                                                                         name = "password-store-extensions-dir" ;
                                                                         src = ./. ;
                                                                     } ;
+                                                            completion =
+                                                                pkgs.writeShellApplication
+                                                                    {
+                                                                        name = "completion" ;
+                                                                        text =
+                                                                            ''
+                                                                                export PASSWORD_STORE_DIR=${ foobar [ "personal" "pass" ] "work-tree" }
+                                                                                source ${ pkgs.pass }/share/bash-completion/completions/pass
+                                                                            '' ;
+                                                                    } ;
                                                             in
                                                                 ''
                                                                     mkdir --parents $out/bin
@@ -819,6 +838,8 @@
                                                                         $out/bin/pass \
                                                                         --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree" } \
                                                                         --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
+                                                                    mkdir --parents $out/share/bash-completion/completions
+                                                                    ln --symbolic ${ completion } $out/share/bash-completion/completions/pass
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
