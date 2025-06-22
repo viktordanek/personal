@@ -648,7 +648,7 @@
                                                         '' ;
                                                 } ;
                                         chromium =
-                                            name : work-tree : message :
+                                            name : work-tree : dot-gnupg : message :
                                                 pkgs.writeShellApplication
                                                     {
                                                         name = name ;
@@ -657,6 +657,7 @@
                                                             ''
                                                                 export XDG_CONFIG_HOME=${ work-tree }/config
                                                                 export XDG_DATA_HOME=${ work-tree }/data
+                                                                export GNUPGHOME=${ dot-gnupg }
                                                                 git-crypt unlock
                                                                 cleanup ( )
                                                                     {
