@@ -180,9 +180,9 @@
                                                                                         export GIT_WORK_TREE=/mount/work-tree
                                                                                         mkdir "$GIT_DIR"
                                                                                         mkdir "$GIT_WORK_TREE"
-
+                                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
                                                                                         git init 2>&1
-                                                                                        ${ ssh-command ( foobar [ "personal" "dot-gnupg" ] "config" ) }
+                                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
                                                                                         git config user.email ${ config.personal.email }
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
