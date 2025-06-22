@@ -280,7 +280,7 @@
                                                                                         mkdir "$GIT_DIR"
                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                         git init 2>&1
-                                                                                        ${ ssh-cremoteommand dependencies.dot-ssh.config }
+                                                                                        ${ ssh-command dependencies.dot-ssh.config }
                                                                                         git config user.email "${ config.personal.email }"
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit /mount/git/hooks/post-commit
