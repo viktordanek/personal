@@ -194,8 +194,8 @@
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
-                                                                                            git-crypt init
-                                                                                            git-crypt add-gpg-user ${ config.personal.chromium.recipient }
+                                                                                            git-crypt init 2>&1
+                                                                                            git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
@@ -205,8 +205,8 @@
                                                                                             mkdir "$GIT_WORK_TREE/data"
                                                                                             touch "$GIT_WORK_TREE/data/.gitkeep"
                                                                                             git add .gitattributes config/.gitkeep data/.gitkeep
-                                                                                            git commit -m "Initialize git-crypt with .gitattributes"
-                                                                                            git push origin HEAD
+                                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                            git push origin HEAD 2>&1
                                                                                         fi
                                                                                     '' ;
                                                                             outputs = [ "git" "work-tree" ] ;
@@ -1189,7 +1189,7 @@
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 chromium =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/307d9caae7c951410d39290b8d97bc5bb78bc22447921114a9fb405" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/da0a0ddb61cae8849a8598eb2f28de2f05cc3848bf94d0556a3fedb" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
