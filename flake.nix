@@ -738,7 +738,7 @@
                                                                 makeWrapper \
                                                                     ${ pkgs.jrnl }/bin/jrnl \
                                                                     $out/bin/${ jrnl-name } \
-                                                                    --set XDG_CONFIG_HOME=${ work-tree }/config
+                                                                    --set XDG_CONFIG_HOME=${ work-tree }/config \
                                                                     --set XDG_DATA_HOME=${ work-tree }/data
                                                                 makeWrapper \
                                                                     ${ pkgs.git }/bin/git \
