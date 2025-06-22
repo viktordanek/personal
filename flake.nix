@@ -307,7 +307,7 @@
                                                                                             echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                                        config/** filterjrnl ==git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
                                                                                             mkdir "$GIT_WORK_TREE/config"
