@@ -189,8 +189,10 @@
                                                                                         git remote add origin ${ config.personal.chromium.remote }
                                                                                         if git fetch origin ${ config.personal.chromium.branch } 2>&1
                                                                                         then
+                                                                                            echo "branch already exists"
                                                                                             git checkout ${ config.personal.chromium.branch } 2>&1
                                                                                         else
+                                                                                            echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
                                                                                             git-crypt init
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient }
