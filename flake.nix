@@ -1338,7 +1338,7 @@
                                                         personal =
                                                             {
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
-                                                                jrnl =
+                                                                calcurses =
                                                                     {
                                                                         branch = lib.mkOption { default = "artifact/21c0167f9fc25f1c81ea166a7ea6e0171865527ef2df34ffc1931c6" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
