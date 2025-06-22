@@ -840,7 +840,7 @@
                                                                         --set PASSWORD_STORE_DIR ${ foobar [ "personal" "pass" ] "work-tree" } \
                                                                         --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
                                                                     mkdir --parents $out/share/bash-completion/completions
-                                                                    ln --symbolic ${ builtins.toFile "completion" completion } $out/share/bash-completion/completions/pass
+                                                                    ln --symbolic ${ builtins.writeShellScript "completion" completion } $out/share/bash-completion/completions/pass
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
