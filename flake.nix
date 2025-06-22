@@ -662,6 +662,8 @@
                                                                 export GIT_DIR=${ git }
                                                                 export GIT_WORK_TREE=${ work-tree }
                                                                 export GNUPGHOME=${ dot-gnupg }
+                                                                git fetch origin ${ config.personal.chromium.branch }
+                                                                git rebase origin/${ config.personal.chromium.branch }
                                                                 git-crypt unlock
                                                                 cleanup ( )
                                                                     {
