@@ -1171,7 +1171,7 @@
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
-                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
+                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
