@@ -180,7 +180,7 @@
                                                                                         export GIT_WORK_TREE=/mount/work-tree
                                                                                         mkdir "$GIT_DIR"
                                                                                         mkdir "$GIT_WORK_TREE"
-                                                                                        git init
+                                                                                        git init 2>&1
                                                                                         ${ ssh-command ( foobar [ "personal" "dot-gnupg" ] "config" ) }
                                                                                         git config user.email ${ config.personal.email }
                                                                                         git config user.name "${ config.personal.description }"
