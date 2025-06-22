@@ -195,6 +195,7 @@
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
+                                                                                            gpg --list-keys
                                                                                             git-crypt unlock
                                                                                             git-crypt init 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
