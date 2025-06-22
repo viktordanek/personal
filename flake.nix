@@ -841,6 +841,8 @@
                                                                         --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME"
                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                     ln --symbolic ${ pkgs.writeShellScript "completion" completion } $out/share/bash-completion/completions/pass
+                                                                    mkdir --parents $out/share/man/man1
+                                                                    ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
                                                                 '' ;
                                                    name = "pass" ;
                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
