@@ -292,8 +292,8 @@
                                                                                         git config user.email ${ config.personal.email }
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                                        git remote add origin ${ config.personal.chromium.remote }
-                                                                                        if git fetch origin ${ config.personal.chromium.branch } 2>&1
+                                                                                        git remote add origin ${ config.personal.jrnl.remote }
+                                                                                        if git fetch origin ${ config.personal.jrnl.branch } 2>&1
                                                                                         then
                                                                                             echo "branch already exists"
                                                                                             git checkout ${ config.personal.jrnl.branch } 2>&1
