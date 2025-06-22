@@ -729,7 +729,7 @@
                                                             '' ;
                                                     } ;
                                         jrnl =
-                                            jrnl-name : commit-name : git : work-tree : dot-gnupg : message :
+                                            jrnl-name : git-name : git : work-tree : dot-gnupg : message :
                                                 pkgs.stdenv.mkDerivation
                                                     {
                                                         installPhase =
