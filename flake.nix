@@ -305,7 +305,7 @@
                                                                                             echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                                        config/** filterjrnl ==git-crypt diff=git-crypt
+                                                                                        config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
                                                                                             gpg --list-keys
@@ -1277,7 +1277,7 @@
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
                                                                 jrnl =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/dd2903faf77f7a3c2e82b8668835311ec2877043fc9b80528d63758" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/6787fa9629bad98dde0ad1a1ae5ee50f4dab6a81fa543ee68275307" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
