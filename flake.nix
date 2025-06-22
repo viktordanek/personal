@@ -309,7 +309,9 @@
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
                                                                                             gpg --list-keys
+                                                                                            echo before unlock
                                                                                             git-crypt unlock
+                                                                                            echo after unlock
                                                                                             mkdir "$GIT_WORK_TREE/config"
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
