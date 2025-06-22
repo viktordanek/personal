@@ -422,7 +422,7 @@
                                                                                 extraBwrapArgs =
                                                                                     [
                                                                                         "--bind $MOUNT /mount"
-                                                                                        "--ro-bind /home/${ config.personal.name }/${ config.personal.stash }/direct /home/${ config.personal.name }/${ config.personal.stash }/direct"
+                                                                                        "--bind /home/${ config.personal.name }/${ config.personal.stash }/direct /home/${ config.personal.name }/${ config.personal.stash }/direct"
                                                                                         "--tmpfs /work"
                                                                                     ] ;
                                                                                 name = "init" ;
