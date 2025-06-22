@@ -195,6 +195,8 @@
                                                                                         else
                                                                                             echo "branch does not already exist"
                                                                                             git checkout -b ${ config.personal.chromium.branch } 2>&1
+                                                                                            gpg --list-keys
+                                                                                            git-crypt unlock
                                                                                             git-crypt init 2>&1
                                                                                             echo git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
                                                                                             git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
@@ -202,8 +204,6 @@
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
                                                                                         EOF
-                                                                                            gpg --list-keys
-                                                                                            git-crypt unlock
                                                                                             mkdir "$GIT_WORK_TREE/config"
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
@@ -274,6 +274,53 @@
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
                                                                     } ;
+                                                                jrnl =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                            init-script =
+                                                                                { ... } :
+                                                                                    ''
+                                                                                        export GIT_DIR=/mount/git
+                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                        mkdir "$GIT_DIR"
+                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
+                                                                                        git init 2>&1
+                                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
+                                                                                        git config user.email ${ config.personal.email }
+                                                                                        git config user.name "${ config.personal.description }"
+                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                        git remote add origin ${ config.personal.chromium.remote }
+                                                                                        if git fetch origin ${ config.personal.chromium.branch } 2>&1
+                                                                                        then
+                                                                                            echo "branch already exists"
+                                                                                            git checkout ${ config.personal.jrnl.branch } 2>&1
+                                                                                            git-crypt unlock
+                                                                                        else
+                                                                                            echo "branch does not already exist"
+                                                                                            git checkout -b ${ config.personal.jrnl.branch } 2>&1
+                                                                                            gpg --list-keys
+                                                                                            git-crypt unlock
+                                                                                            git-crypt init 2>&1
+                                                                                            echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                            git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                                        data/** filter=git-crypt diff=git-crypt
+                                                                                        EOF
+                                                                                            mkdir "$GIT_WORK_TREE/config"
+                                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
+                                                                                            mkdir "$GIT_WORK_TREE/data"
+                                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
+                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                            git push origin HEAD 2>&1
+                                                                                        fi
+                                                                                    '' ;
+                                                                            outputs = [ "git" "work-tree" ] ;
+                                                                        } ;
                                                                 pass =
                                                                     ignore :
                                                                         {
@@ -679,6 +726,34 @@
                                                                     }
                                                                 trap cleanup EXIT
                                                                 chromium
+                                                            '' ;
+                                                    } ;
+                                        jrnl =
+                                            name : git : work-tree : dot-gnupg : message :
+                                                pkgs.writeShellApplication
+                                                    {
+                                                        name = name ;
+                                                        runtimeInputs = [ pkgs.jrnl pkgs.git-crypt ] ;
+                                                        text =
+                                                            ''
+                                                                export XDG_CONFIG_HOME=${ work-tree }/config
+                                                                export XDG_DATA_HOME=${ work-tree }/data
+                                                                export GIT_DIR=${ git }
+                                                                export GIT_WORK_TREE=${ work-tree }
+                                                                export GNUPGHOME=${ dot-gnupg }
+                                                                git fetch origin ${ config.personal.chromium.branch }
+                                                                git rebase origin/${ config.personal.chromium.branch }
+                                                                git-crypt unlock
+                                                                cleanup ( )
+                                                                    {
+                                                                        sleep 10s
+                                                                        git add --all config
+                                                                        git add --all data
+                                                                        git commit -m "${ message }" --allow-empty --allow-empty-message
+                                                                        git push origin HEAD
+                                                                    }
+                                                                trap cleanup EXIT
+                                                                exec jrnl "$@"
                                                             '' ;
                                                     } ;
                                         pass =
@@ -1202,6 +1277,12 @@
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
+                                                                chromium =
+                                                                    {
+                                                                        branch = lib.mkOption { default = "artifact/21e6dc7c3f9f2ab893488ce452fa8465cbac726c8d48475ae8fa020" ; type = lib.types.str ; } ;
+                                                                        recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
+                                                                    } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
