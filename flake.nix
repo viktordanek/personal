@@ -168,6 +168,46 @@
                                                         family = { } ;
                                                         personal =
                                                             {
+                                                                chromium =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                            init-script =
+                                                                                { ... } :
+                                                                                    ''
+                                                                                        export GIT_DIR=/mount/git
+                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                        mkdir "$GIT_DIR"
+                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                        git init
+                                                                                        ${ ssh-command ( foobar [ "personal" "dot-gnupg" ] "config" ) }
+                                                                                        git config user.email ${ config.personal.email }
+                                                                                        git config user.name "${ config.personal.description }"
+                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                        git remote add ${ config.personal.git.remote }
+                                                                                        if git fetch origin ${ config.personal.git.branch } 2>&1
+                                                                                        then
+                                                                                            git checkout ${ config.personal.git.branch } 2>&1
+                                                                                        else
+                                                                                            git checkout -b ${ config.personal.git.branch } 2>&1
+                                                                                            git-crypt init
+                                                                                            git-crypt add-gpg-user ${ config.personal.git.recipient }
+                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                                        data/** filter=git-crypt diff=git-crypt
+                                                                                        EOF
+                                                                                            mkdir "$GIT_WORK_TREE/config"
+                                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
+                                                                                            mkdir "$GIT_WORK_TREE/data"
+                                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
+                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                            git commit -m "Initialize git-crypt with .gitattributes"
+                                                                                            git push origin HEAD
+                                                                                        fi
+                                                                                    '' ;
+                                                                            outputs = [ "git" "work-tree" ] ;
+                                                                        } ;
                                                                 dot-gnupg =
                                                                     ignore :
                                                                         {
@@ -240,7 +280,7 @@
                                                                                         mkdir "$GIT_DIR"
                                                                                         mkdir "$GIT_WORK_TREE"
                                                                                         git init 2>&1
-                                                                                        ${ ssh-command dependencies.dot-ssh.config }
+                                                                                        ${ ssh-cremoteommand dependencies.dot-ssh.config }
                                                                                         git config user.email "${ config.personal.email }"
                                                                                         git config user.name "${ config.personal.description }"
                                                                                         ln --symbolic ${ post-commit }/bin/post-commit /mount/git/hooks/post-commit
@@ -608,14 +648,25 @@
                                                         '' ;
                                                 } ;
                                         chromium =
-                                            pkgs.stdenv.mkDerivation
-                                                {
-                                                    installPhase =
-                                                        ''
-                                                        '' ;
-                                                    name = "chromium" ;
-                                                    src = ./. ;
-                                                } ;
+                                            name : work-tree : message :
+                                                pkgs.writeShellApplication
+                                                    {
+                                                        name = name ;
+                                                        runtimeInputs = [ pkgs.chromium pkgs.gitcrypt ] ;
+                                                        text =
+                                                            ''
+                                                                export XDG_CONFIG_HOME=${ work-tree }/config
+                                                                export XDG_DATA_HOME=${ work-tree }/data
+                                                                git-crypt unlock
+                                                                cleanup ( )
+                                                                    {
+                                                                        git commit -am "${ message }" --allow-empty --allow-empty-message
+                                                                        git push origin HEAD
+                                                                    }
+                                                                trap cleanup EXIT
+                                                                chromium
+                                                            '' ;
+                                                    } ;
                                         pass =
                                             password-store-dir : git-dir : dot-gnupg :
                                                 pkgs.stdenv.mkDerivation
@@ -1115,9 +1166,9 @@
                                                                         pkgs.git-crypt
                                                                         setup
                                                                         teardown
-                                                                        pkgs.chromium
                                                                         pkgs.jetbrains.idea-community
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
+                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time" )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
@@ -1127,6 +1178,12 @@
                                                         personal =
                                                             {
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
+                                                                chromium =
+                                                                    {
+                                                                        branch = lib.mkOption { default = "artifact/53d5fc02ffd3a50b37b2913da22a8ab4dc150fab0feac4cbda6abb" ; type = lib.types.str ; } ;
+                                                                        recipient = lib.mkOption { default = "git-crypt@local" ; type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
+                                                                    } ;
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
