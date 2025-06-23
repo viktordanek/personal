@@ -536,18 +536,25 @@
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
                                                                                         { dependencies , ... } :
                                                                                             ''
                                                                                                 export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
                                                                                                 mkdir "$GIT_DIR"
-                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                echo ${ dependencies.dot-ssh.config }
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
+                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit
+                                                                                                git remote add origin "github:viktordanek/personal.git"
+                                                                                                git fetch origin main 2>&1
+                                                                                                git checkout origin/main 2>&1
+                                                                                                git checkout -b scratch/$( uuidgen)
                                                                                             '' ;
-                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                    outputs = [ "git" "workspace" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
