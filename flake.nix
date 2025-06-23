@@ -545,7 +545,7 @@
                                                                                                 git checkout origin/main 2>&1
                                                                                                 git checkout -b "scratch/$( uuidgen)" 2>&1
                                                                                             '' ;
-                                                                                    outputs = [ "envrc" "git" "workspace" ] ;
+                                                                                    outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
