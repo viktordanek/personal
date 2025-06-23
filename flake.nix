@@ -954,55 +954,29 @@
                                                         nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                         src = ./. ;
                                                     } ;
-                                                ledger =
-                                                    ignore :
-                                                        {
-                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
-                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
-                                                            init-script =
-                                                                { ... } :
-                                                                    ''
-                                                                        export GIT_DIR=/mount/git
-                                                                        export GIT_WORK_TREE=/mount/work-tree
-                                                                        mkdir "$GIT_DIR"
-                                                                        mkdir "$GIT_WORK_TREE"
-                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
-                                                                        git init 2>&1
-                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
-                                                                        git config user.email ${ config.personal.email }
-                                                                        git config user.name "${ config.personal.description }"
-                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
-                                                                        git remote add origin ${ config.personal.ledger.remote }
-                                                                        if git fetch origin ${ config.personal.ledger.branch } 2>&1
-                                                                        then
-                                                                            echo "branch already exists"
-                                                                            git checkout ${ config.personal.ledger.branch } 2>&1
-                                                                            git-crypt unlock
-                                                                        else
-                                                                            echo "branch does not already exist"
-                                                                            git checkout -b ${ config.personal.ledger.branch } 2>&1
-                                                                            git-crypt init 2>&1
-                                                                            echo git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
-                                                                            git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
-                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
-                                                                        config/** filter=git-crypt diff=git-crypt
-                                                                        data/** filter=git-crypt diff=git-crypt
-                                                                        EOF
-                                                                            gpg --list-keys
-                                                                            echo before unlock
-                                                                            git-crypt unlock
-                                                                            echo after unlock
-                                                                            mkdir "$GIT_WORK_TREE/config"
-                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
-                                                                            mkdir "$GIT_WORK_TREE/data"
-                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
-                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
-                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
-                                                                            git push origin HEAD 2>&1
-                                                                        fi
-                                                                    '' ;
-                                                            outputs = [ "git" "work-tree" ] ;
-                                                        } ;
+                                        ledger =
+                                            ledger-name : git-name : git : work-tree : dot-gnupg : message :
+                                                pkgs.stdenv.mkDerivation
+                                                    {
+                                                        installPhase =
+                                                            ''
+                                                                mkdir --parents $out/bin
+                                                                makeWrapper \
+                                                                    ${ pkgs.ledger }/bin/ledger \
+                                                                    $out/bin/${ ledger-name } \
+                                                                    --set XDG_CONFIG_HOME ${ work-tree }/config \
+                                                                    --set XDG_DATA_HOME ${ work-tree }/data
+                                                                makeWrapper \
+                                                                    ${ pkgs.git }/bin/git \
+                                                                    $out/bin/${ git-name } \
+                                                                    --set GIT_DIR ${ git } \
+                                                                    --set GIT_WORK_TREE ${ work-tree } \
+                                                                    --set GNUPGHOME ${ dot-gnupg }
+                                                            '' ;
+                                                        name = "ledger" ;
+                                                        nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                        src = ./. ;
+                                                    } ;
                                         pass =
                                             password-store-dir : git-dir : dot-gnupg :
                                                 pkgs.stdenv.mkDerivation
