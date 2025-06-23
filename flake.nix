@@ -1525,17 +1525,6 @@
                                                                                         '' ;
                                                                                 }
                                                                         )
-                                                                        (
-                                                                            pkgs.writeShellApplication
-                                                                                {
-                                                                                    name = "private-studio" ;
-                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.jetbrains.idea-community ] ;
-                                                                                    text =
-                                                                                        ''
-                                                                                            idea ${ foobar [ "personal" "repository" "private" ] [ "workspace" ] }
-                                                                                        '' ;
-                                                                                }
-                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
