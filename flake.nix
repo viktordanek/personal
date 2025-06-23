@@ -148,6 +148,19 @@
                                                                     done
                                                                 '' ;
                                                         } ;
+                                                repository =
+                                                    name : workspace :
+                                                        pkgs.writeShellApplication
+                                                            {
+                                                                name = name ;
+                                                                runtimeInputs = [ ] ;
+                                                                text =
+                                                                    ''
+                                                                        export GIT_DIR=${ mount }/git
+                                                                        export GIT_WORK_TREE=${ mount }/workspace/work-tree
+                                                                        idea ${ mount }/workspace
+                                                                    '' ;
+                                                            } ;
                                                 ssh-command =
                                                     configuration-file :
                                                         let
