@@ -581,7 +581,7 @@
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         mv result virtual-machines/$( git rev-parse HEAD )
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
+                                                                                                                                        virtual-machines/"$( git rev-parse HEAD )"/bin/run-nixos-vm
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     update-promote =
