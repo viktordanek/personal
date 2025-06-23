@@ -585,8 +585,8 @@
                                                                                                                                                 GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
                                                                                                                                                 GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
                                                                                                                                             }
-                                                                                                                                        fun ${ foobar [ "personal" "repository" "personal" ] "worktree" } personal
-                                                                                                                                        fun ${ foobar [ "personal" "repository" "secrets" ] "worktree" } secrets
+                                                                                                                                        fun ${ foobar [ "personal" "repository" "personal" ] "workspace" } personal
+                                                                                                                                        fun ${ foobar [ "personal" "repository" "secrets" ] "workspace" } secrets
                                                                                                                                         fun ${ foobar [ "personal" "repository" "visitor" ] "worktree" } visitor
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "worktree" } --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "worktree" }  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "worktree" }
                                                                                                                                         git commit -am "promoted $0" --allow-empty
@@ -1609,6 +1609,7 @@
                                                                                         '' ;
                                                                                 }
                                                                         )
+                                                                        ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
