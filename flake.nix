@@ -540,6 +540,10 @@
                                                                                     init-script =
                                                                                         { dependencies , ... } :
                                                                                             ''
+                                                                                                cat > /mount/.envrc <<EOF
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                EOF
                                                                                                 export GIT_DIR=/mount/git
                                                                                                 export GIT_WORK_TREE=/mount/workspace/work-tree
                                                                                                 mkdir "$GIT_DIR"
@@ -552,9 +556,9 @@
                                                                                                 git remote add origin "github:viktordanek/personal.git"
                                                                                                 git fetch origin main 2>&1
                                                                                                 git checkout origin/main 2>&1
-                                                                                                git checkout -b scratch/$( uuidgen)
+                                                                                                git checkout -b "scratch/$( uuidgen)"
                                                                                             '' ;
-                                                                                    outputs = [ "git" "workspace" ] ;
+                                                                                    outputs = [ "envrc" "git" "workspace" ] ;
                                                                                 } ;
                                                                         private =
                                                                             ignore :
