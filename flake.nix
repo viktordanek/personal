@@ -579,7 +579,7 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                ${ ssh-command dependencies.dot-ssh.mobile }
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
                                                                                                 git config user.email "${ config.personal.email }"
                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                 git remote add origin mobile:private
