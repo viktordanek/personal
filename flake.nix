@@ -564,7 +564,7 @@
                                                                         private =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
+                                                                                    dependencies = tree : { } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
