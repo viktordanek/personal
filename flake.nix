@@ -1609,7 +1609,7 @@
                                                                                         '' ;
                                                                                 }
                                                                         )
-                                                                        ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" )
+                                                                        ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" ) )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
