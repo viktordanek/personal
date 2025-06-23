@@ -849,6 +849,34 @@
                                                                 chromium
                                                             '' ;
                                                     } ;
+                                        gnucash =
+                                            name : git : work-tree : dot-gnupg : message :
+                                                pkgs.writeShellApplication
+                                                    {
+                                                        name = name ;
+                                                        runtimeInputs = [ pkgs.gnucash pkgs.git-crypt ] ;
+                                                        text =
+                                                            ''
+                                                                export XDG_CONFIG_HOME=${ work-tree }/config
+                                                                export XDG_DATA_HOME=${ work-tree }/data
+                                                                export GIT_DIR=${ git }
+                                                                export GIT_WORK_TREE=${ work-tree }
+                                                                export GNUPGHOME=${ dot-gnupg }
+                                                                git fetch origin ${ config.personal.gnucash.branch }
+                                                                git rebase origin/${ config.personal.gnucash.branch }
+                                                                git-crypt unlock
+                                                                cleanup ( )
+                                                                    {
+                                                                        sleep 10s
+                                                                        git add --all config
+                                                                        git add --all data
+                                                                        git commit -m "${ message }" --allow-empty --allow-empty-message
+                                                                        git push origin HEAD
+                                                                    }
+                                                                trap cleanup EXIT
+                                                                gnucash "$XDG_DATA_HOME/gnucash.gnucash
+                                                            '' ;
+                                                    } ;
                                         jrnl =
                                             jrnl-name : git-name : git : work-tree : dot-gnupg : message :
                                                 pkgs.stdenv.mkDerivation
