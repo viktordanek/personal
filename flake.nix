@@ -577,6 +577,7 @@
                                                                                                                             '' ;
                                                                                                             name = "bin" ;
                                                                                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
+                                                                                                            src = ./. ;
                                                                                                         } ;
                                                                                                 in
                                                                                                     ''
