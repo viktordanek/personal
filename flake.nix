@@ -619,27 +619,30 @@
                                                                         secrets =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
-                                                                                    environment-name = "age-secrets" ;
-                                                                                    environment-script =
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
                                                                                         { dependencies , outputs } :
                                                                                             ''
+                                                                                                cat > /mount/.envrc <<EOF
                                                                                                 export GIT_DIR=${ outputs.git }
-                                                                                                export GIT_WORK_TREE=${ outputs.work-tree }
-                                                                                                echo idea "$GIT_WORK_TREE"
-                                                                                            '' ;
-                                                                                    environment-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
-                                                                                    init-script =
-                                                                                        { dependencies , ... } :
-                                                                                            ''
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                EOF
                                                                                                 export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
                                                                                                 mkdir "$GIT_DIR"
-                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
+                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin "git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b"
+                                                                                                git fetch origin main 2>&1
+                                                                                                git checkout origin/main 2>&1
+                                                                                                git checkout -b "scratch/$( uuidgen)" 2>&1
                                                                                             '' ;
-                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                    outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
                                                                         visitor =
                                                                             ignore :
