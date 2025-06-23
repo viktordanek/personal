@@ -584,9 +584,95 @@
                                                                                                                                         virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
                                                                                                                                     '' ;
                                                                                                                             } ;
+                                                                                                                    update-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "update-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        mv result virtual-machines/$( git rev-parse HEAD )
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
+                                                                                                                                        virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                    stable-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "stable-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost
+                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        mv result virtual-machines/$( git rev-parse HEAD )
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
+                                                                                                                                        virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                   stress-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "stress-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        nixos-rebuild build-vm-with-bootloader --flake ${ outputs.workspace }/work-tree#myhost
+                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        mv result virtual-machines/$( git rev-parse HEAD )
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
+                                                                                                                                        virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                   development-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "development-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild pkgs.libuuid ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        sudo nixos-rebuild test --flake ${ outputs.workspace }/work-tree#myhost
+                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        SCRATCH=$( uuidgen )
+                                                                                                                                        git checkout -b "$SCRATCH"
+                                                                                                                                        git fetch origin development
+                                                                                                                                        git diff origin/development
+                                                                                                                                        git reset --soft origin/development
+                                                                                                                                        git commit -a
+                                                                                                                                        git checkout development
+                                                                                                                                        git rebase origin/development
+                                                                                                                                        git rebase "$SCRATCH
+                                                                                                                                        git push origin HEAD
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                   main-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "development-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nix pkgs.nixos-rebuild pkgs.libuuid ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        git fetch origin development
+                                                                                                                                        git fetch origin main
+                                                                                                                                        git checkout main
+                                                                                                                                        git rebase origin/main
+                                                                                                                                        git rebase origin/development
+                                                                                                                                        sudo nixos-rebuild switch --flake ${ outputs.workspace }/work-tree#myhost
+                                                                                                                                        git push origin HEAD
+                                                                                                                                        nix-collect-garbage
+                                                                                                                                    '' ;
+                                                                                                                            } ;
                                                                                                                         in
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
+                                                                                                                                makeWrapper ${ live-promote } $out/bin/live-promote
+                                                                                                                                makeWrapper ${ update-promote } $out/bin/upgrade-promote
+                                                                                                                                makeWrapper ${ stable-promote } $out/bin/stable-promote
+                                                                                                                                makeWrapper ${ stress-promote } $out/bin/stress-promote
+                                                                                                                                makeWrapper ${ development-promote } $out/bin/development-promote
+                                                                                                                                makeWrapper ${ main-promote } $out/bin/main-promote
                                                                                                                             '' ;
                                                                                                             name = "bin" ;
                                                                                                             nativeBuildInputs = [ pkgs.makeWrapper ] ;
