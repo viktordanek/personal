@@ -570,6 +570,7 @@
                                                                                         { dependencies , outputs } :
                                                                                             ''
                                                                                                 mkdir /mount/bin
+                                                                                                mkdir /mount/virtual-machines
                                                                                                 cat > /mount/.envrc <<EOF
                                                                                                 export GIT_DIR=${ outputs.git }
                                                                                                 export GIT_WORK_TREE=${ outputs.workspace }/work-tree
@@ -579,7 +580,7 @@
                                                                                                 export WORKSPACE=/mount/workspace
                                                                                                 export GIT_WORK_TREE="$WORKSPACE/work-tree"
                                                                                                 mkdir "$GIT_DIR"
-                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
                                                                                                 ${ ssh-command dependencies.dot-ssh.config }
                                                                                                 git config user.email "${ config.personal.email }"
@@ -588,7 +589,7 @@
                                                                                                 git fetch origin main
                                                                                                 git checkout -b "scratch/$( uuidgen )"
                                                                                             '' ;
-                                                                                    outputs = [ ".envrc" "bin" "git" "workspace" ] ;
+                                                                                    outputs = [ ".envrc" "bin" "git" "virtual-machines" "workspace" ] ;
                                                                                 } ;
                                                                         visitor =
                                                                             ignore :
