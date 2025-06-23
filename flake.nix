@@ -579,9 +579,10 @@
                                                                                                                                         fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace } visitor
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "worktree" } --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "worktree" }  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "worktree" }
                                                                                                                                         git commit -am "promoted $0" --allow-empty
-                                                                                                                                        mv result "virtual-machines/$( git rev-parse HEAD )"
+                                                                                                                                        TARGET="$( git rev-parse HEAD )"
+                                                                                                                                        mv result "virtual-machines/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        virtual-machines/"$( git rev-parse HEAD )"/bin/run-nixos-vm
+                                                                                                                                        "virtual-machines/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     update-promote =
