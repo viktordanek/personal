@@ -310,11 +310,13 @@
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
                                                                                             ''
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
-                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/mobile/identity.asc.age > /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/mobile/known-hosts.asc.age > /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
-                                                                                                Host github.com
+                                                                                                Host mobile
+                                                                                                HostName 192.168.1.202
                                                                                                 IdentityFile ${ outputs.identity }
+                                                                                                Port 8022
                                                                                                 UserKnownHostsFile ${ outputs.known-hosts }
                                                                                                 StrictHostKeyChecking true
                                                                                                 EOF
