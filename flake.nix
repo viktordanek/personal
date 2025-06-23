@@ -148,19 +148,6 @@
                                                                     done
                                                                 '' ;
                                                         } ;
-                                                repository =
-                                                    name : mount :
-                                                        pkgs.writeShellApplication
-                                                            {
-                                                                name = name ;
-                                                                runtimeInputs = [ ] ;
-                                                                text =
-                                                                    ''
-                                                                        export GIT_DIR=${ mount }/git
-                                                                        export GIT_WORK_TREE=${ mount }/workspace/work-tree
-                                                                        idea ${ mount }/workspace
-                                                                    '' ;
-                                                            } ;
                                                 ssh-command =
                                                     configuration-file :
                                                         let
@@ -703,6 +690,19 @@
                                                     filtered = builtins.filter ( script : script.path == path ) scripts ;
                                                     find = if builtins.length filtered == 1 then builtins.head filtered else builtins.throw "bad path" ;
                                                     in find.environment ;
+                                        repository =
+                                            name : mount :
+                                                pkgs.writeShellApplication
+                                                    {
+                                                        name = name ;
+                                                        runtimeInputs = [ ] ;
+                                                        text =
+                                                            ''
+                                                                export GIT_DIR=${ mount }/git
+                                                                export GIT_WORK_TREE=${ mount }/workspace/work-tree
+                                                                idea ${ mount }/workspace
+                                                            '' ;
+                                                    } ;
                                         scripts =
                                             let
                                                 mapper =
