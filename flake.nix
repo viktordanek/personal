@@ -695,7 +695,7 @@
                                                 pkgs.writeShellApplication
                                                     {
                                                         name = name ;
-                                                        runtimeInputs = [ ] ;
+                                                        runtimeInputs = [ pkgs.jetbrains.idea-community ] ;
                                                         text =
                                                             ''
                                                                 export GIT_DIR=${ mount }/git
