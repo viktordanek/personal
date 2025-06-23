@@ -303,6 +303,25 @@
                                                                                             '' ;
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
+                                                                        mobile =
+                                                                            ignore :
+                                                                                {
+                                                                                    init-packages = pkgs : [ pkgs.age ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , outputs } :
+                                                                                            ''
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
+                                                                                                age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
+                                                                                                cat > /mount/config <<EOF
+                                                                                                Host github.com
+                                                                                                IdentityFile ${ outputs.identity }
+                                                                                                UserKnownHostsFile ${ outputs.known-hosts }
+                                                                                                StrictHostKeyChecking true
+                                                                                                EOF
+                                                                                                chmod 0400 /mount/identity /mount/known-hosts /mount/config
+                                                                                            '' ;
+                                                                                    outputs = [ "config" "identity" "known-hosts" ] ;
+                                                                                } ;
                                                                         viktor =
                                                                             ignore :
                                                                                 {
