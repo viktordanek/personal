@@ -538,7 +538,7 @@
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
-                                                                                        { dependencies , ... } :
+                                                                                        { dependencies , outputs } :
                                                                                             ''
                                                                                                 cat > /mount/.envrc <<EOF
                                                                                                 export GIT_DIR=${ outputs.git }
