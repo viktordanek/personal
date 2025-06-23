@@ -149,7 +149,7 @@
                                                                 '' ;
                                                         } ;
                                                 repository =
-                                                    name : workspace :
+                                                    name : mount :
                                                         pkgs.writeShellApplication
                                                             {
                                                                 name = name ;
