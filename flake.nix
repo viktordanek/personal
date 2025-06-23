@@ -356,6 +356,7 @@
                                                                                             cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
                                                                                         config/** filter=git-crypt diff=git-crypt
                                                                                         data/** filter=git-crypt diff=git-crypt
+                                                                                        home/** filter=git-crypt diff=git-crypt
                                                                                         EOF
                                                                                             gpg --list-keys
                                                                                             git-crypt unlock
@@ -363,7 +364,9 @@
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
                                                                                             touch "$GIT_WORK_TREE/data/.gitkeep"
-                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                            mkdir "$GIT_WORK_TREE/home"
+                                                                                            touch "$GIT_WORK_TREE/home/.gitkeep"
+                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep home/.gitkeep
                                                                                             git commit -m "Initialize git-crypt with .gitattributes" 2>&1
                                                                                             git push origin HEAD 2>&1
                                                                                         fi
@@ -859,6 +862,7 @@
                                                             ''
                                                                 export XDG_CONFIG_HOME=${ work-tree }/config
                                                                 export XDG_DATA_HOME=${ work-tree }/data
+                                                                export HOMEY=${ work-tree }/home
                                                                 export GIT_DIR=${ git }
                                                                 export GIT_WORK_TREE=${ work-tree }
                                                                 export GNUPGHOME=${ dot-gnupg }
@@ -874,7 +878,7 @@
                                                                         git push origin HEAD
                                                                     }
                                                                 trap cleanup EXIT
-                                                                gnucash "$XDG_DATA_HOME/gnucash.gnucash"
+                                                                gnucash "$HOMEY/gnucash.gnucash"
                                                             '' ;
                                                     } ;
                                         jrnl =
