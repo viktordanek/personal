@@ -546,7 +546,7 @@
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
-                                                                                        { dependencies , ... } :
+                                                                                        { dependencies , outputs } :
                                                                                             ''
                                                                                                 mkdir /mount/bin
                                                                                                 cat > /mount/.envrc <<EOF
