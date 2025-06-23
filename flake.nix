@@ -543,7 +543,7 @@
                                                                         private =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : { } ;
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
@@ -560,7 +560,7 @@
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
-                                                                                                ${ ssh-command ( foobar [ "personal" "dot-ssh" "mobile" ] "config" ) }
+                                                                                                ${ ssh-command dependencies.dot-ssh.mobile }
                                                                                                 git config user.email "${ config.personal.email }"
                                                                                                 git config user.name "${ config.personal.description }"
                                                                                                 git remote add origin mobile:private
