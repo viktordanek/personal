@@ -548,7 +548,7 @@
                                                                                                 ${ ssh-command dependencies.dot-ssh.config }
                                                                                                 git config user.email "${ config.personal.email }"
                                                                                                 git config user.name "${ config.personal.description }"
-                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                 git remote add origin "github:viktordanek/personal.git"
                                                                                                 git fetch origin main 2>&1
                                                                                                 git checkout origin/main 2>&1
