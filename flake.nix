@@ -569,12 +569,14 @@
                                                                                                                                     ''
                                                                                                                                         fun ( )
                                                                                                                                             {
-                                                                                                                                                GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                                                GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                                export GIT_DIR="$1"
+                                                                                                                                                export GIT_WORK_TREE="$2/worktree"
+                                                                                                                                                git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                                git rev-parse HEAD > "${ outputs.workspace }/worktree/inputs.$3.commit" < /dev/null
                                                                                                                                             }
-                                                                                                                                        fun ${ foobar [ "personal" "repository" "personal" ] "workspace" } personal
-                                                                                                                                        fun ${ foobar [ "personal" "repository" "secrets" ] "workspace" } secrets
-                                                                                                                                        fun ${ foobar [ "personal" "repository" "visitor" ] "worktree" } visitor
+                                                                                                                                        fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
+                                                                                                                                        fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
+                                                                                                                                        fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace } visitor
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "worktree" } --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "worktree" }  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "worktree" }
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         mv result virtual-machines/$( git rev-parse HEAD )
