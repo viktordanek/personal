@@ -630,9 +630,10 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "development-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild pkgs.libuuid ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         sudo nixos-rebuild test --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         SCRATCH=$( uuidgen )
@@ -643,7 +644,7 @@
                                                                                                                                         git commit -a
                                                                                                                                         git checkout development
                                                                                                                                         git rebase origin/development
-                                                                                                                                        git rebase "$SCRATCH
+                                                                                                                                        git rebase "$SCRATCH"
                                                                                                                                         git push origin HEAD
                                                                                                                                     '' ;
                                                                                                                             } ;
