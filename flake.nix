@@ -519,7 +519,90 @@
                                                                         } ;
                                                                 repository =
                                                                     {
-                                                                        age-secrets =
+                                                                        personal =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , ... } :
+                                                                                            ''
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                echo ${ dependencies.dot-ssh.config }
+                                                                                            '' ;
+                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                } ;
+                                                                        private =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; personal = tree.personal.repository.personal ; secrets = tree.repository.secrets ; visitor = tree.personal.repository.visitor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , outputs } :
+                                                                                            let
+                                                                                                bin =
+                                                                                                    pkgs.stdenv.mkDerivation
+                                                                                                        {
+                                                                                                            installPhase =
+                                                                                                                let
+                                                                                                                    live-promote =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "live-promote" ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        fun ( )
+                                                                                                                                            {
+                                                                                                                                                GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git commit -am "" --allow-empty --allow-empty-message < /dev/null
+                                                                                                                                                GIT_DIR="$1/git" GIT_WORK_TREE="$1/work-tree" git rev-parse HEAD > "inputs.$2.commit" < /dev/null
+                                                                                                                                            }
+                                                                                                                                        fun ${ foobar [ "personal" "repository" "personal" ] "worktree" } personal
+                                                                                                                                        fun ${ foobar [ "personal" "repository" "secrets" ] "worktree" } secrets
+                                                                                                                                        fun ${ foobar [ "personal" "repository" "visitor" ] "worktree" } visitor
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "worktree" } --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "worktree" }  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "worktree" }
+                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        mv result virtual-machines/$( git rev-parse HEAD )
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
+                                                                                                                                        virtual-machines/$( git rev-parse HEAD )/bin/run-nixos-vm
+                                                                                                                                    '' ;
+                                                                                                                            } ;
+                                                                                                                        in
+                                                                                                                            ''
+                                                                                                                                mkdir --parents $out/bin
+                                                                                                                            '' ;
+                                                                                                            name = "bin" ;
+                                                                                                            nativeBuildInputs = [ pkgs.makeWrapper ] ;
+                                                                                                        } ;
+                                                                                                in
+                                                                                                    ''
+                                                                                                        mkdir /mount/bin
+                                                                                                        mkdir /mount/virtual-machines
+                                                                                                        cat > /mount/.envrc <<EOF
+                                                                                                        export GIT_DIR=${ outputs.git }
+                                                                                                        export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                        export PATH="$PATH:${ bin }/bin"
+                                                                                                        EOF
+                                                                                                        export GIT_DIR=/mount/git
+                                                                                                        export WORKSPACE=/mount/workspace
+                                                                                                        export GIT_WORK_TREE="$WORKSPACE/work-tree"
+                                                                                                        mkdir "$GIT_DIR"
+                                                                                                        mkdir --parents "$GIT_WORK_TREE"
+                                                                                                        git init 2>&1
+                                                                                                        ${ ssh-command dependencies.dot-ssh.config }
+                                                                                                        git config user.email "${ config.personal.email }"
+                                                                                                        git config user.name "${ config.personal.description }"
+                                                                                                        git remote add origin mobile:private
+                                                                                                        git fetch origin main 2>&1
+                                                                                                        git checkout -b "scratch/$( uuidgen )" 2>&1
+                                                                                                    '' ;
+                                                                                    outputs = [ ".envrc" "bin" "git" "virtual-machines" "workspace" ] ;
+                                                                                } ;
+                                                                        secrets =
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
@@ -543,53 +626,6 @@
                                                                                                 git init 2>&1
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
-                                                                                } ;
-                                                                        personal =
-                                                                            ignore :
-                                                                                {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
-                                                                                    init-script =
-                                                                                        { dependencies , ... } :
-                                                                                            ''
-                                                                                                export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/work-tree
-                                                                                                mkdir "$GIT_DIR"
-                                                                                                mkdir "$GIT_WORK_TREE"
-                                                                                                git init 2>&1
-                                                                                                echo ${ dependencies.dot-ssh.config }
-                                                                                            '' ;
-                                                                                    outputs = [ "git" "work-tree" ] ;
-                                                                                } ;
-                                                                        private =
-                                                                            ignore :
-                                                                                {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
-                                                                                    init-script =
-                                                                                        { dependencies , outputs } :
-                                                                                            ''
-                                                                                                mkdir /mount/bin
-                                                                                                mkdir /mount/virtual-machines
-                                                                                                cat > /mount/.envrc <<EOF
-                                                                                                export GIT_DIR=${ outputs.git }
-                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
-                                                                                                export PATH="$PATH:${ outputs.bin }"
-                                                                                                EOF
-                                                                                                export GIT_DIR=/mount/git
-                                                                                                export WORKSPACE=/mount/workspace
-                                                                                                export GIT_WORK_TREE="$WORKSPACE/work-tree"
-                                                                                                mkdir "$GIT_DIR"
-                                                                                                mkdir --parents "$GIT_WORK_TREE"
-                                                                                                git init 2>&1
-                                                                                                ${ ssh-command dependencies.dot-ssh.config }
-                                                                                                git config user.email "${ config.personal.email }"
-                                                                                                git config user.name "${ config.personal.description }"
-                                                                                                git remote add origin mobile:private
-                                                                                                git fetch origin main 2>&1
-                                                                                                git checkout -b "scratch/$( uuidgen )" 2>&1
-                                                                                            '' ;
-                                                                                    outputs = [ ".envrc" "bin" "git" "virtual-machines" "workspace" ] ;
                                                                                 } ;
                                                                         visitor =
                                                                             ignore :
