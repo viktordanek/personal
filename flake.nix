@@ -323,6 +323,53 @@
                                                                                     outputs = [ "config" "identity" "known-hosts" ] ;
                                                                                 } ;
                                                                     } ;
+                                                                gnucash =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                            init-script =
+                                                                                { ... } :
+                                                                                    ''
+                                                                                        export GIT_DIR=/mount/git
+                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                        mkdir "$GIT_DIR"
+                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
+                                                                                        git init 2>&1
+                                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
+                                                                                        git config user.email ${ config.personal.email }
+                                                                                        git config user.name "${ config.personal.description }"
+                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                        git remote add origin ${ config.personal.gnucash.remote }
+                                                                                        if git fetch origin ${ config.personal.gnucash.branch } 2>&1
+                                                                                        then
+                                                                                            echo "branch already exists"
+                                                                                            git checkout ${ config.personal.gnucash.branch } 2>&1
+                                                                                            git-crypt unlock
+                                                                                        else
+                                                                                            echo "branch does not already exist"
+                                                                                            git checkout -b ${ config.personal.gnucash.branch } 2>&1
+                                                                                            git-crypt init 2>&1
+                                                                                            echo git-crypt add-gpg-user ${ config.personal.gnucash.recipient } 2>&1
+                                                                                            git-crypt add-gpg-user ${ config.personal.gnucash.recipient } 2>&1
+                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                                        data/** filter=git-crypt diff=git-crypt
+                                                                                        EOF
+                                                                                            gpg --list-keys
+                                                                                            git-crypt unlock
+                                                                                            mkdir "$GIT_WORK_TREE/config"
+                                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
+                                                                                            mkdir "$GIT_WORK_TREE/data"
+                                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
+                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                            git push origin HEAD 2>&1
+                                                                                        fi
+                                                                                    '' ;
+                                                                            outputs = [ "git" "work-tree" ] ;
+                                                                        } ;
                                                                 jrnl =
                                                                     ignore :
                                                                         {
@@ -1328,6 +1375,7 @@
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
                                                                         ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
                                                                         ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
+                                                                        ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString config.personal.current-time }" )
                                                                         ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString config.personal.current-time }" )
                                                                     ] ;
                                                                 password = config.personal.password ;
@@ -1354,6 +1402,12 @@
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
+                                                                gnucash =
+                                                                    {
+                                                                        branch = lib.mkOption { default = "artifact/021fcf9e3792326d96e0610ef0aaa60036d230fa3e18a2a3fffab22" ; type = lib.types.str ; } ;
+                                                                        recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
+                                                                    } ;
                                                                 jrnl =
                                                                     {
                                                                         branch = lib.mkOption { default = "artifact/6787fa9629bad98dde0ad1a1ae5ee50f4dab6a81fa543ee68275307" ; type = lib.types.str ; } ;
