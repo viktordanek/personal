@@ -650,22 +650,27 @@
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
-                                                                                        { dependencies , ... } :
+                                                                                        { dependencies , outputs } :
                                                                                             ''
+                                                                                                cat > /mount/.envrc <<EOF
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                EOF
                                                                                                 export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/work-tree
+                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
                                                                                                 mkdir "$GIT_DIR"
-                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
                                                                                                 ${ ssh-command dependencies.dot-ssh.config }
-                                                                                                git config user.email "viktordanek10@gmail.com"
-                                                                                                git config user.name "Viktor Danek"
-                                                                                                git remote add origin git@github.com:viktordanek/visitor.git
+                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin "git@github.com:viktordanek/visitor.git"
                                                                                                 git fetch origin main 2>&1
                                                                                                 git checkout origin/main 2>&1
-                                                                                                git checkout -b "scratch/$( uuidgen )" 2>&1
+                                                                                                git checkout -b "scratch/$( uuidgen)" 2>&1
                                                                                             '' ;
-                                                                                    outputs = [ "git" "work-tree" ] ;
+                                                                                    outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
                                                                     } ;
                                                             } ;
