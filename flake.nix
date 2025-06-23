@@ -565,7 +565,7 @@
                                                                             ignore :
                                                                                 {
                                                                                     dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
-                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
                                                                                             ''
