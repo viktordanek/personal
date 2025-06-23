@@ -874,7 +874,7 @@
                                                                         git push origin HEAD
                                                                     }
                                                                 trap cleanup EXIT
-                                                                gnucash "$XDG_DATA_HOME/gnucash.gnucash
+                                                                gnucash "$XDG_DATA_HOME/gnucash.gnucash"
                                                             '' ;
                                                     } ;
                                         jrnl =
