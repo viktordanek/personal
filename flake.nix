@@ -465,7 +465,7 @@
                                                                                             touch "$GIT_WORK_TREE/config/.gitkeep"
                                                                                             mkdir "$GIT_WORK_TREE/data"
                                                                                             touch "$GIT_WORK_TREE/data/.gitkeep"
-                                                                                            touch "$GIT_WORK/finance.ledger"
+                                                                                            touch "$GIT_WORK_TREE/finance.ledger"
                                                                                             git add .gitattributes config/.gitkeep data/.gitkeep
                                                                                             git commit -m "Initialize git-crypt with .gitattributes" 2>&1
                                                                                             git push origin HEAD 2>&1
@@ -1486,6 +1486,17 @@
                                                                         ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
                                                                         ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString config.personal.current-time }" )
                                                                         ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString config.personal.current-time }" )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "artifact" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.libuuid ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            echo $( cat )/$( uuidgen | sha512sum | cut --bytes -128 ) | cut --bytes -64
+                                                                                        '' ;
+                                                                                }
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
@@ -1526,7 +1537,7 @@
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 ledger =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/21ca904b4c24b0b5583f0bc2341e20bf8bff1a8e7f47f1694b980ba" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/0aa409110e55f05015414c3c8cbf05505392815bd992acb86958db8" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
