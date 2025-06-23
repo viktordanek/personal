@@ -422,6 +422,55 @@
                                                                                     '' ;
                                                                             outputs = [ "git" "work-tree" ] ;
                                                                         } ;
+                                                                ledger =
+                                                                    ignore :
+                                                                        {
+                                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
+                                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                            init-script =
+                                                                                { ... } :
+                                                                                    ''
+                                                                                        export GIT_DIR=/mount/git
+                                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                                        mkdir "$GIT_DIR"
+                                                                                        mkdir "$GIT_WORK_TREE"
+                                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
+                                                                                        git init 2>&1
+                                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
+                                                                                        git config user.email ${ config.personal.email }
+                                                                                        git config user.name "${ config.personal.description }"
+                                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                        git remote add origin ${ config.personal.ledger.remote }
+                                                                                        if git fetch origin ${ config.personal.ledger.branch } 2>&1
+                                                                                        then
+                                                                                            echo "branch already exists"
+                                                                                            git checkout ${ config.personal.ledger.branch } 2>&1
+                                                                                            git-crypt unlock
+                                                                                        else
+                                                                                            echo "branch does not already exist"
+                                                                                            git checkout -b ${ config.personal.ledger.branch } 2>&1
+                                                                                            git-crypt init 2>&1
+                                                                                            echo git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                            git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                                        data/** filter=git-crypt diff=git-crypt
+                                                                                        EOF
+                                                                                            gpg --list-keys
+                                                                                            echo before unlock
+                                                                                            git-crypt unlock
+                                                                                            echo after unlock
+                                                                                            mkdir "$GIT_WORK_TREE/config"
+                                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
+                                                                                            mkdir "$GIT_WORK_TREE/data"
+                                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
+                                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                            git push origin HEAD 2>&1
+                                                                                        fi
+                                                                                    '' ;
+                                                                            outputs = [ "git" "work-tree" ] ;
+                                                                        } ;
                                                                 pass =
                                                                     ignore :
                                                                         {
@@ -905,6 +954,55 @@
                                                         nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                         src = ./. ;
                                                     } ;
+                                                ledger =
+                                                    ignore :
+                                                        {
+                                                            dependencies = tree : { dot-ssh = tree.personal.dot-ssh.boot ; dot-gnupg = tree.personal.dot-gnupg ; } ;
+                                                            init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                            init-script =
+                                                                { ... } :
+                                                                    ''
+                                                                        export GIT_DIR=/mount/git
+                                                                        export GIT_WORK_TREE=/mount/work-tree
+                                                                        mkdir "$GIT_DIR"
+                                                                        mkdir "$GIT_WORK_TREE"
+                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
+                                                                        git init 2>&1
+                                                                        ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
+                                                                        git config user.email ${ config.personal.email }
+                                                                        git config user.name "${ config.personal.description }"
+                                                                        ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                        git remote add origin ${ config.personal.ledger.remote }
+                                                                        if git fetch origin ${ config.personal.ledger.branch } 2>&1
+                                                                        then
+                                                                            echo "branch already exists"
+                                                                            git checkout ${ config.personal.ledger.branch } 2>&1
+                                                                            git-crypt unlock
+                                                                        else
+                                                                            echo "branch does not already exist"
+                                                                            git checkout -b ${ config.personal.ledger.branch } 2>&1
+                                                                            git-crypt init 2>&1
+                                                                            echo git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                            git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                            cat > "$GIT_WORK_TREE/.gitattributes" <<EOF
+                                                                        config/** filter=git-crypt diff=git-crypt
+                                                                        data/** filter=git-crypt diff=git-crypt
+                                                                        EOF
+                                                                            gpg --list-keys
+                                                                            echo before unlock
+                                                                            git-crypt unlock
+                                                                            echo after unlock
+                                                                            mkdir "$GIT_WORK_TREE/config"
+                                                                            touch "$GIT_WORK_TREE/config/.gitkeep"
+                                                                            mkdir "$GIT_WORK_TREE/data"
+                                                                            touch "$GIT_WORK_TREE/data/.gitkeep"
+                                                                            git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                            git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                            git push origin HEAD 2>&1
+                                                                        fi
+                                                                    '' ;
+                                                            outputs = [ "git" "work-tree" ] ;
+                                                        } ;
                                         pass =
                                             password-store-dir : git-dir : dot-gnupg :
                                                 pkgs.stdenv.mkDerivation
@@ -1408,6 +1506,7 @@
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
                                                                         ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
                                                                         ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
+                                                                        ( ledger "my-ledger" "my-calcurse-ledger" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
                                                                         ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString config.personal.current-time }" )
                                                                         ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString config.personal.current-time }" )
                                                                     ] ;
@@ -1448,6 +1547,12 @@
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
+                                                                ledger =
+                                                                    {
+                                                                        branch = lib.mkOption { default = "artifact/d9fa348dcf0b602008ba681681b357a7fda9c609679861c8df347ba" ; type = lib.types.str ; } ;
+                                                                        recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
+                                                                        remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
+                                                                    } ;
                                                                 name = lib.mkOption { type = lib.types.str ; } ;
                                                                 pass =
                                                                     {
