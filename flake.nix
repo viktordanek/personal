@@ -572,7 +572,8 @@
                                                                                                                                                 export GIT_DIR="$1"
                                                                                                                                                 export GIT_WORK_TREE="$2/worktree"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                                                git rev-parse HEAD > "${ outputs.workspace }/worktree/inputs.$3.commit" < /dev/null
+                                                                                                                                                TARGET=${ outputs.workspace }
+                                                                                                                                                git rev-parse HEAD > "$TARGET/worktree/inputs.$3.commit" < /dev/null
                                                                                                                                             }
                                                                                                                                         fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
                                                                                                                                         fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
