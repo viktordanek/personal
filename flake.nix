@@ -1493,7 +1493,7 @@
                                                                                     runtimeInputs = [ pkgs.coreutils pkgs.libuuid ] ;
                                                                                     text =
                                                                                         ''
-                                                                                            echo $( cat )/$( uuidgen | sha512sum | cut --bytes -128 ) | cut --bytes -64
+                                                                                            echo "$( cat )/$( uuidgen | sha512sum | cut --bytes -128 )" | cut --bytes -64
                                                                                         '' ;
                                                                                 }
                                                                         )
