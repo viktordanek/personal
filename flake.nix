@@ -540,6 +540,35 @@
                                                                                             '' ;
                                                                                     outputs = [ "git" "work-tree" ] ;
                                                                                 } ;
+                                                                        private =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , ... } :
+                                                                                            ''
+                                                                                                mkdir /mount/bin
+                                                                                                cat > /mount/.envrc <<EOF
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                export PATH="$PATH:${ outputs.bin }"
+                                                                                                EOF
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export WORKSPACE=/mount/workspace
+                                                                                                export GIT_WORK_TREE="$WORKSPACE/work-tree"
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                ${ ssh-command ( foobar [ "personal" "dot-ssh" "mobile" ] "config" ) }
+                                                                                                git config user.email "${ config.personal.email }"
+                                                                                                git config user.name "${ config.personal.description }"
+                                                                                                git remote add origin mobile:private
+                                                                                                git fetch origin main
+                                                                                                git checkout -b "scratch/$( uuidgen )"
+                                                                                            '' ;
+                                                                                    outputs = [ ".envrc" "bin" "git" "workspace" ] ;
+                                                                                } ;
                                                                         visitor =
                                                                             ignore :
                                                                                 {
@@ -1494,6 +1523,17 @@
                                                                                     text =
                                                                                         ''
                                                                                             echo "$( cat )/$( uuidgen | sha512sum | cut --bytes -128 )" | cut --bytes -64
+                                                                                        '' ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "private-studio" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nix pkgs.jetbrains.idea-community ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            idea ${ foobar [ "personal" "repository" "private" ] [ "workspace" ] }
                                                                                         '' ;
                                                                                 }
                                                                         )
