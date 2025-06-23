@@ -874,6 +874,7 @@
                                                                         sleep 10s
                                                                         git add --all config
                                                                         git add --all data
+                                                                        git add --all home
                                                                         git commit -m "${ message }" --allow-empty --allow-empty-message
                                                                         git push origin HEAD
                                                                     }
