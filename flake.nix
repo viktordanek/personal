@@ -543,7 +543,7 @@
                                                                                                 git remote add origin "git@github.com:viktordanek/personal.git"
                                                                                                 git fetch origin main 2>&1
                                                                                                 git checkout origin/main 2>&1
-                                                                                                git checkout -b "scratch/$( uuidgen)"
+                                                                                                git checkout -b "scratch/$( uuidgen)" 2>&1
                                                                                             '' ;
                                                                                     outputs = [ "envrc" "git" "workspace" ] ;
                                                                                 } ;
