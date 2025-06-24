@@ -582,9 +582,9 @@
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "workspace" }/work-tree --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "workspace" }/work-tree  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "workspace" }/work-tree
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
-                                                                                                                                        mv result "${ outputs.virtual-machines }/$TARGET"
+                                                                                                                                        VIRTUAL_MACHINES=${ outputs.virtual-machines }
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        export VIRTUAL_MACHINES=${ outputs.virtual-machines }
                                                                                                                                         "$VIRTUAL_MACHINES/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
                                                                                                                             } ;
