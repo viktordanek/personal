@@ -1718,6 +1718,7 @@
                                                                                         '' ;
                                                                                 }
                                                                         )
+                                                                        ( repository "my-private-studio" ( foobar [ "personal" "repository" "private" ] "workspace" ) )
                                                                         ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" ) )
                                                                     ] ;
                                                                 password = config.personal.password ;
