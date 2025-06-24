@@ -705,6 +705,7 @@
                                                                                                         git config user.name "${ config.personal.description }"
                                                                                                         git remote add origin mobile:private
                                                                                                         git fetch origin main 2>&1
+                                                                                                        git checkout origin/main 2>&1
                                                                                                         git checkout -b "scratch/$( uuidgen )" 2>&1
                                                                                                     '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "virtual-machines" "workspace" ] ;
