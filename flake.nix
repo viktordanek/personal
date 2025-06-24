@@ -584,7 +584,8 @@
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         mv result "${ outputs.virtual-machines }/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        ${ outputs.virtual-machines }/$TARGET/bin/run-nixos-vm
+                                                                                                                                        export VIRTUAL_MACHINES=${ outputs.virtual-machines }
+                                                                                                                                        "$VIRTUAL_MACHINES/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     update-promote =
