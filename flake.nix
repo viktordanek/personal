@@ -595,9 +595,9 @@
                                                                                                                                     ''
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
                                                                                                                                         git commit -am "promoted $0" --allow-empty
-                                                                                                                                        mv result virtual-machines/$( git rev-parse HEAD )
-                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
+                                                                                                                                        mv result "virtual-machines/$TARGET"
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         "virtual-machines/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
                                                                                                                             } ;
