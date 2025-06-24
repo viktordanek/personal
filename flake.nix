@@ -564,21 +564,22 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "live-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         fun ( )
                                                                                                                                             {
                                                                                                                                                 export GIT_DIR="$1"
-                                                                                                                                                export GIT_WORK_TREE="$2/worktree"
+                                                                                                                                                export GIT_WORK_TREE="$2"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
                                                                                                                                                 TARGET=${ outputs.workspace }
-                                                                                                                                                git rev-parse HEAD > "$TARGET/worktree/inputs.$3.commit" < /dev/null
+                                                                                                                                                git rev-parse HEAD > "$TARGET/work-tree/inputs.$3.commit" < /dev/null
                                                                                                                                             }
                                                                                                                                         fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
                                                                                                                                         fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
                                                                                                                                         fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace } visitor
-                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "worktree" } --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "worktree" }  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "worktree" }
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "workspace" }/work-tree --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "workspace" }/work-tree  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "workspace" }/work-tree
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         mv result "virtual-machines/$TARGET"
@@ -590,9 +591,10 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "update-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
@@ -605,9 +607,10 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "stable-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
@@ -621,9 +624,10 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "stress-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nixos-rebuild ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         nixos-rebuild build-vm-with-bootloader --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
@@ -705,6 +709,7 @@
                                                                                                         git config user.name "${ config.personal.description }"
                                                                                                         git remote add origin mobile:private
                                                                                                         git fetch origin main 2>&1
+                                                                                                        git checkout origin/main 2>&1
                                                                                                         git checkout -b "scratch/$( uuidgen )" 2>&1
                                                                                                     '' ;
                                                                                     outputs = [ ".envrc" "bin" "git" "virtual-machines" "workspace" ] ;
@@ -798,7 +803,7 @@
                                                 pkgs.writeShellApplication
                                                     {
                                                         name = name ;
-                                                        runtimeInputs = [ pkgs.jetbrains.idea-community ] ;
+                                                        runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
                                                         text =
                                                             ''
                                                                 export GIT_DIR=${ mount }/git
