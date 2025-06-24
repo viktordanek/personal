@@ -675,8 +675,8 @@
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
                                                                                                                                 makeWrapper ${ live-promote }/bin/live-promote $out/bin/live-promote
-                                                                                                                                makeWrapper ${ update-promote } $out/bin/upgrade-promote
-                                                                                                                                makeWrapper ${ stable-promote } $out/bin/stable-promote
+                                                                                                                                makeWrapper ${ update-promote }/bin/update-promote $out/bin/upgrade-promote
+                                                                                                                                makeWrapper ${ stable-promote }/bin/stable-promote $out/bin/stable-promote
                                                                                                                                 makeWrapper ${ stress-promote } $out/bin/stress-promote
                                                                                                                                 makeWrapper ${ development-promote } $out/bin/development-promote
                                                                                                                                 makeWrapper ${ main-promote } $out/bin/main-promote
