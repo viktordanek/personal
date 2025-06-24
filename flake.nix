@@ -657,7 +657,7 @@
                                                                                                                    main-promote =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
-                                                                                                                                name = "development-promote" ;
+                                                                                                                                name = "main-promote" ;
                                                                                                                                 runtimeInputs = [ pkgs.git pkgs.nix pkgs.nixos-rebuild pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
