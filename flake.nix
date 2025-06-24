@@ -674,7 +674,7 @@
                                                                                                                         in
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
-                                                                                                                                makeWrapper ${ live-promote } $out/bin/live-promote
+                                                                                                                                makeWrapper ${ live-promote }/bin/live-promote $out/bin/live-promote
                                                                                                                                 makeWrapper ${ update-promote } $out/bin/upgrade-promote
                                                                                                                                 makeWrapper ${ stable-promote } $out/bin/stable-promote
                                                                                                                                 makeWrapper ${ stress-promote } $out/bin/stress-promote
