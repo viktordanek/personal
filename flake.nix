@@ -809,7 +809,7 @@
                                                             ''
                                                                 export GIT_DIR=${ mount }/git
                                                                 export GIT_WORK_TREE=${ mount }/workspace/work-tree
-                                                                idea ${ mount }/workspace
+                                                                idea-community ${ mount }
                                                             '' ;
                                                     } ;
                                         scripts =
