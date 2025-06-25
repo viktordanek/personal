@@ -576,7 +576,7 @@
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
                                                                                                                                                 TARGET=${ outputs.workspace }
                                                                                                                                                 git rev-parse HEAD > "$TARGET/work-tree/inputs.$3.commit" < /dev/null
-                                                                                                                                                git clone --depth 1 --branch $( git rev-parse HEAD ) "$GIT_DIR" "$TEMPORARY/$3"
+                                                                                                                                                git clone --depth 1 --branch "$( git rev-parse HEAD )" "$GIT_DIR" "$TEMPORARY/$3"
                                                                                                                                             }
                                                                                                                                         fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
                                                                                                                                         fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
@@ -588,6 +588,7 @@
                                                                                                                                         mv result "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         "$VIRTUAL_MACHINES/$TARGET/bin/run-nixos-vm"
+                                                                                                                                        rm --recursive --force "$TEMPORARY"
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     update-promote =
