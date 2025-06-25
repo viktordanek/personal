@@ -180,7 +180,7 @@
                                                                                         export GIT_WORK_TREE=/mount/work-tree
                                                                                         mkdir "$GIT_DIR"
                                                                                         mkdir "$GIT_WORK_TREE"
-                                                                                        export GNUPGHOME=${ foobar [ "personal" "dot-gnupg" ] "config" }
+                                                                                        export GNUPGHOME=${foobar [ "personal" "dot-gnupg" ] "config" }
                                                                                         git init 2>&1
                                                                                         ${ ssh-command ( foobar [ "personal" "dot-ssh" "boot" ] "config" ) }
                                                                                         git config user.email ${ config.personal.email }
@@ -567,6 +567,7 @@
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        TEMPORARY=$( mktemp --directory )
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         fun ( )
                                                                                                                                             {
@@ -575,11 +576,12 @@
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
                                                                                                                                                 TARGET=${ outputs.workspace }
                                                                                                                                                 git rev-parse HEAD > "$TARGET/work-tree/inputs.$3.commit" < /dev/null
+                                                                                                                                                git clone --depth 1 --branch $( git rev-parse HEAD ) "$GIT_DIR" "$TEMPORARY/$3"
                                                                                                                                             }
                                                                                                                                         fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
                                                                                                                                         fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
                                                                                                                                         fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace } visitor
-                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal ${ foobar [ "personal" "repository" "personal" ] "workspace" }/work-tree --override-input secrets ${ foobar [ "personal" "repository" "secrets" ] "workspace" }/work-tree  --override-input visitor ${ foobar [ "personal" "repository" "visitor" ] "workspace" }/work-tree
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal "$TEMPORARY/personal" --override-input secrets  "$TEMPORARY/secrets"  --override-input visitor "$TEMPORARY/visitor"
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
