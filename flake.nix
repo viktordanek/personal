@@ -567,28 +567,33 @@
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        TEMPORARY=$( mktemp --directory )
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         fun ( )
                                                                                                                                             {
                                                                                                                                                 export GIT_DIR="$1"
                                                                                                                                                 export GIT_WORK_TREE="$2"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                                                TARGET=${ outputs.workspace }
-                                                                                                                                                git rev-parse HEAD > "$TARGET/work-tree/inputs.$3.commit" < /dev/null
-                                                                                                                                                git clone --depth 1 --branch "$( git rev-parse HEAD )" "$GIT_DIR" "$TEMPORARY/$3"
+                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE"
                                                                                                                                             }
-                                                                                                                                        fun ${ dependencies.personal.git } ${ dependencies.personal.workspace } personal
-                                                                                                                                        fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace } secrets
-                                                                                                                                        fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace } visitor
-                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --override-input personal "$TEMPORARY/personal" --override-input secrets  "$TEMPORARY/secrets"  --override-input visitor "$TEMPORARY/visitor"
+                                                                                                                                        cat > work-tree/nixos-rebuild.sh <<EOF
+                                                                                                                                        /nix/store/39m63ii736bs3fc5sfma32zl366hf4gq-nixos-rebuild/bin/nixos-rebuild \
+                                                                                                                                          build-vm \
+                                                                                                                                          --flake ${ outputs.workspace }/work-tree#myhost \
+                                                                                                                                          $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) \
+                                                                                                                                          $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets ) \
+                                                                                                                                          $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor )
+                                                                                                                                        EOF
+                                                                                                                                        chmod a+rwx work-tree/nixos-rebuild.sh
+                                                                                                                                        git add nixos-rebuild.sh
                                                                                                                                         git commit -am "promoted $0" --allow-empty
+                                                                                                                                        work-tree/nixos-rebuild.sh
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
-                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET/result"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        "$VIRTUAL_MACHINES/$TARGET/bin/run-nixos-vm"
-                                                                                                                                        rm --recursive --force "$TEMPORARY"
+                                                                                                                                        cd "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        result/bin/run-nixos-vm
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     update-promote =
