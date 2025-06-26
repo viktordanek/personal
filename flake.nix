@@ -592,7 +592,7 @@
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
                                                                                                                                         mkdir --parents $VIRTUAL_MACHINES/$TARGET
                                                                                                                                         mv result "$VIRTUAL_MACHINES/$TARGET/result"
-                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs-1.47.0-bin }/bin
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         cd "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         result/bin/run-nixos-vm
 
