@@ -590,7 +590,7 @@
                                                                                                                                         work-tree/nixos-rebuild.sh
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
-                                                                                                                                        mkdir --parents $VIRTUAL_MACHINES/$TARGET
+                                                                                                                                        mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         mv result "$VIRTUAL_MACHINES/$TARGET/result"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         cd "$VIRTUAL_MACHINES/$TARGET"
