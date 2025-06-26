@@ -573,7 +573,6 @@
                                                                                                                                                 export GIT_DIR="$1"
                                                                                                                                                 export GIT_WORK_TREE="$2"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null
-                                                                                                                                                HASH_ID="$( git rev-parse HEAD )"
                                                                                                                                                 echo -n "--override-input $3 $GIT_WORK_TREE"
                                                                                                                                             }
                                                                                                                                         cat > work-tree/nixos-rebuild.sh <<EOF
