@@ -607,9 +607,12 @@
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
-                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET/result"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        "virtual-machines/$TARGET/bin/run-nixos-vm"
+                                                                                                                                        export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
+                                                                                                                                        cd "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        result/bin/run-nixos-vm
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     stable-promote =
@@ -624,10 +627,13 @@
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
-                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET/result"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
-                                                                                                                                        "virtual-machines/$TARGET/bin/run-nixos-vm"
+                                                                                                                                        cd "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        result/bin/run-nixos-vm
+
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                    stress-promote =
@@ -642,9 +648,11 @@
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
-                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET/result"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
-                                                                                                                                        "virtual-machines/$TARGET/bin/run-nixos-vm"
+                                                                                                                                        cd "$VIRTUAL_MACHINES/$TARGET"
+                                                                                                                                        result/bin/run-nixos-vm
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                    development-promote =
