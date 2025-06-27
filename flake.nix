@@ -575,18 +575,17 @@
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
                                                                                                                                                 echo -n "--override-input $3 $GIT_WORK_TREE ."
                                                                                                                                             }
-                                                                                                                                        cat > work-tree/nixos-rebuild.sh <<EOF
-                                                                                                                                        nixos-rebuild \
+                                                                                                                                        cat > nixos-rebuild.sh <<EOF
+                                                                                                                                        ${ pkgs.nixos-rebuild }/bin/nixos-rebuild \
                                                                                                                                           build-vm \
                                                                                                                                           --flake ${ outputs.workspace }/work-tree#myhost \
-                                                                                                                                          $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) \
-                                                                                                                                          $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets ) \
+                                                                                                                                          $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal )
+                                                                                                                                          $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets )
                                                                                                                                           $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor )
                                                                                                                                         EOF
-                                                                                                                                        chmod a+rwx work-tree/nixos-rebuild.sh
-                                                                                                                                        git add nixos-rebuild.sh
+                                                                                                                                        chmod a+rwx nixos-rebuild.sh
                                                                                                                                         git commit -am "promoted $0" --allow-empty > /dev/null 2>&1
-                                                                                                                                        work-tree/nixos-rebuild.sh
+                                                                                                                                        nixos-rebuild.sh
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
                                                                                                                                         mkdir --parents "$VIRTUAL_MACHINES/$TARGET"
@@ -666,7 +665,11 @@
                                                                                                                                         git commit -a
                                                                                                                                         git checkout development
                                                                                                                                         git rebase origin/development
-                                                                                                                                        git rebase "$SCRATCH"
+                                                                                                                                        if ! git rebase "$SCRATCH" ; then
+                                                                                                                                          date +%s > ${ outputs.workspace }/work-tree/current-time.nix
+                                                                                                                                          git add current-time.nix
+                                                                                                                                          git rebase --continue
+                                                                                                                                        fi
                                                                                                                                         git push origin HEAD
                                                                                                                                     '' ;
                                                                                                                             } ;
@@ -685,7 +688,6 @@
                                                                                                                                           echo "Conflict detected. Overwriting current-time.nix with version from origin/development..."
                                                                                                                                           date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                           git add current-time.nix
-                                                                                                                                          git rm nixos-rebuild.sh
                                                                                                                                           git rebase --continue
                                                                                                                                         fi
                                                                                                                                         sudo nixos-rebuild switch --flake ${ outputs.workspace }/work-tree#myhost
