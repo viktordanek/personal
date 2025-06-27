@@ -568,7 +568,14 @@
                                                                                                                                 runtimeInputs = [ pkgs.nix ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree
+                                                                                                                                        fun ( )
+                                                                                                                                            {
+                                                                                                                                                export GIT_DIR="$1"
+                                                                                                                                                export GIT_WORK_TREE="$2"
+                                                                                                                                                git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
+                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE"
+                                                                                                                                            }
+                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree secrets ) $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree visitor )
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     live-promote =
