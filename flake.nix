@@ -606,7 +606,8 @@
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
-                                                                                                                                        mv result "virtual-machines/$TARGET"
+                                                                                                                                        VIRTUAL_MACHINES=${ outputs.virtual-machines }
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         "virtual-machines/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
@@ -622,7 +623,8 @@
                                                                                                                                         nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
-                                                                                                                                        mv result "virtual-machines/$TARGET"
+                                                                                                                                        VIRTUAL_MACHINES=${ outputs.virtual-machines }
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         "virtual-machines/$TARGET/bin/run-nixos-vm"
@@ -639,7 +641,8 @@
                                                                                                                                         nixos-rebuild build-vm-with-bootloader --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
-                                                                                                                                        mv result "virtual-machines/$TARGET"
+                                                                                                                                        VIRTUAL_MACHINES=${ outputs.virtual-machines }
+                                                                                                                                        mv result "$VIRTUAL_MACHINES/$TARGET"
                                                                                                                                         export LD_LIBRARY_PATH=${ pkgs.e2fsprogs }/bin
                                                                                                                                         "virtual-machines/$TARGET/bin/run-nixos-vm"
                                                                                                                                     '' ;
