@@ -555,6 +555,7 @@
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
                                                                                             let
+
                                                                                                 bin =
                                                                                                     pkgs.stdenv.mkDerivation
                                                                                                         {
