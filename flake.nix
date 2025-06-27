@@ -651,7 +651,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "development-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild pkgs.libuuid ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.coreutils pkgs.git pkgs.nixos-rebuild pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
