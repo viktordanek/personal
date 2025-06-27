@@ -1759,6 +1759,8 @@
                                                                         )
                                                                         ( repository "my-private-studio" ( foobar [ "personal" "repository" "private" ] "workspace" ) )
                                                                         ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" ) )
+                                                                        ( repository "my-secrets-studio" ( foobar [ "personal" "repository" "secrets" ] "workspace" ) )
+                                                                        ( repository "my-visitor-studio" ( foobar [ "personal" "repository" "visitor" ] "workspace" ) )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
@@ -1863,11 +1865,14 @@
                                     tests =
                                         {
                                             wtf =
-                                                builtins.import nixpkgs { system = system ; }.writeShellApplication
-                                                    {
-                                                        name = "wtf" ;
-                                                        text = "exit 0" ;
-                                                    } ;
+                                                let
+                                                    pkgs = nixpkgs.legacyPackages.${system} ;
+                                                    in
+                                                        pkgs.writeShellApplication
+                                                            {
+                                                                name = "wtf" ;
+                                                                text = "exit 0" ;
+                                                            } ;
                                         } ;
                                 } ;
             } ;
