@@ -567,6 +567,7 @@
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
+                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         fun ( )
                                                                                                                                             {
                                                                                                                                                 export GIT_DIR="$1"
@@ -584,7 +585,7 @@
                                                                                                                                         EOF
                                                                                                                                         chmod a+rwx work-tree/nixos-rebuild.sh
                                                                                                                                         git add nixos-rebuild.sh
-                                                                                                                                        git commit -am "promoted $0" --allow-empty
+                                                                                                                                        git commit -am "promoted $0" --allow-empty > /dev/null 2>&1
                                                                                                                                         work-tree/nixos-rebuild.sh
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
@@ -682,7 +683,7 @@
                                                                                                                                         git rebase origin/main
                                                                                                                                         if ! git rebase origin/development; then
                                                                                                                                           echo "Conflict detected. Overwriting current-time.nix with version from origin/development..."
-                                                                                                                                          git checkout --theirs current-time.nix
+                                                                                                                                          date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                           git add current-time.nix
                                                                                                                                           git rm nixos-rebuild.sh
                                                                                                                                           git rebase --continue
