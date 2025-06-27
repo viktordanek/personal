@@ -15,7 +15,7 @@
                     } :
                         let
                             unimplemented = path : value : builtins.throw "The ${ builtins.typeOf value } visitor for ${ builtins.concatStringsSep " / " ( builtins.map builtins.toJSON path ) } is purposefully unimplemented." ;
-                            in
+                            module =
                                 { config , lib , pkgs , ... } :
                                     let
                                         dependencies =
@@ -561,6 +561,16 @@
                                                                                                         {
                                                                                                             installPhase =
                                                                                                                 let
+                                                                                                                    checks =
+                                                                                                                        pkgs.writeShellApplication
+                                                                                                                            {
+                                                                                                                                name = "checks" ;
+                                                                                                                                runtimeInputs = [ pkgs.nix ] ;
+                                                                                                                                text =
+                                                                                                                                    ''
+                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree
+                                                                                                                                    '' ;
+                                                                                                                            } ;
                                                                                                                     live-promote =
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
@@ -707,6 +717,7 @@
                                                                                                                         in
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
+                                                                                                                                makeWrapper ${ checks }/bin/checks $out/bin/checks
                                                                                                                                 makeWrapper ${ live-promote }/bin/live-promote $out/bin/live-promote
                                                                                                                                 makeWrapper ${ update-promote }/bin/update-promote $out/bin/update-promote
                                                                                                                                 makeWrapper ${ stable-promote }/bin/stable-promote $out/bin/stable-promote
@@ -725,7 +736,7 @@
                                                                                                         cat > /mount/.envrc <<EOF
                                                                                                         export GIT_DIR=${ outputs.git }
                                                                                                         export GIT_WORK_TREE=${ outputs.workspace }/work-tree
-                                                                                                        export PATH="$PATH:${ bin }/bin"
+                                                                                                        export PATH="$PATH:${ pkgs.coreutils }/bin:${ pkgs.git }/bin:${ pkgs.nix }/bin:${ pkgs.nixos-rebuild }/bin:${ bin }/bin"
                                                                                                         EOF
                                                                                                         export GIT_DIR=/mount/git
                                                                                                         export WORKSPACE=/mount/workspace
@@ -1846,5 +1857,18 @@
                                                             } ;
                                                     } ;
                                             } ;
+                            in
+                                {
+                                    module = module ;
+                                    tests =
+                                        {
+                                            wtf =
+                                                builtins.import nixpkgs { system = system ; }.writeShellApplication
+                                                    {
+                                                        name = "wtf" ;
+                                                        text = "exit 0" ;
+                                                    } ;
+                                        } ;
+                                } ;
             } ;
 }
