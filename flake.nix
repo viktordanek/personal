@@ -674,7 +674,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "main-promote" ;
-                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nix pkgs.nixos-rebuild pkgs.libuuid ] ;
+                                                                                                                                runtimeInputs = [ pkgs.git pkgs.nix pkgs.nixos-rebuild pkgs.nano pkgs.libuuid ] ;
                                                                                                                                 text =
                                                                                                                                     ''
                                                                                                                                         git fetch origin development
