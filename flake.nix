@@ -1863,11 +1863,14 @@
                                     tests =
                                         {
                                             wtf =
-                                                builtins.import nixpkgs { system = system ; }.writeShellApplication
-                                                    {
-                                                        name = "wtf" ;
-                                                        text = "exit 0" ;
-                                                    } ;
+                                                let
+                                                    pkgs = nixpkgs.legacyPackages.${system} ;
+                                                    in
+                                                        pkgs.writeShellApplication
+                                                            {
+                                                                name = "wtf" ;
+                                                                text = "exit 0" ;
+                                                            } ;
                                         } ;
                                 } ;
             } ;
