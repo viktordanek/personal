@@ -567,13 +567,12 @@
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         fun ( )
                                                                                                                                             {
                                                                                                                                                 export GIT_DIR="$1"
                                                                                                                                                 export GIT_WORK_TREE="$2"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
-                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE . \"
+                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE . \\"
                                                                                                                                             }
                                                                                                                                         cat > work-tree/nixos-rebuild.sh <<EOF
                                                                                                                                         nixos-rebuild \
@@ -688,7 +687,7 @@
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
                                                                                                                                 makeWrapper ${ live-promote }/bin/live-promote $out/bin/live-promote
-                                                                                                                                makeWrapper ${ update-promote }/bin/update-promote $out/bin/upgrade-promote
+                                                                                                                                makeWrapper ${ update-promote }/bin/update-promote $out/bin/update-promote
                                                                                                                                 makeWrapper ${ stable-promote }/bin/stable-promote $out/bin/stable-promote
                                                                                                                                 makeWrapper ${ stress-promote }/bin/stress-promote $out/bin/stress-promote
                                                                                                                                 makeWrapper ${ development-promote }/bin/development-promote $out/bin/development-promote
