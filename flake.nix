@@ -1864,15 +1864,14 @@
                                     module = module ;
                                     tests =
                                         {
-                                            wtf =
+                                            visitor =
                                                 let
-                                                    pkgs = nixpkgs.legacyPackages.${system} ;
-                                                    in
-                                                        pkgs.writeShellApplication
-                                                            {
-                                                                name = "wtf" ;
-                                                                text = "exit 0" ;
-                                                            } ;
+                                                    visitors =
+                                                        {
+                                                            null = path : value : true ;
+                                                        } ;
+                                                    value = true ;
+                                                    in visitor.lib.test nixpkgs system true visitors value ;
                                         } ;
                                 } ;
             } ;
