@@ -680,6 +680,7 @@
                                                                                                                                         git fetch origin main
                                                                                                                                         git checkout main
                                                                                                                                         git rebase origin/main
+                                                                                                                                        git checkout origin/development -- path/to/current-time.nix
                                                                                                                                         git rebase origin/development
                                                                                                                                         sudo nixos-rebuild switch --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git push origin HEAD
