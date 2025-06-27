@@ -680,10 +680,15 @@
                                                                                                                                         git fetch origin main
                                                                                                                                         git checkout main
                                                                                                                                         git rebase origin/main
-                                                                                                                                        git checkout origin/development -- path/to/current-time.nix
-                                                                                                                                        git rebase origin/development
+                                                                                                                                        if ! git rebase origin/development; then
+                                                                                                                                          echo "Conflict detected. Overwriting current-time.nix with version from origin/development..."
+                                                                                                                                          git checkout --theirs current-time.nix
+                                                                                                                                          git add current-time.nix
+                                                                                                                                          git rm nixos-rebuild.sh
+                                                                                                                                          git rebase --continue
+                                                                                                                                        fi
                                                                                                                                         sudo nixos-rebuild switch --flake ${ outputs.workspace }/work-tree#myhost
-                                                                                                                                        git push origin HEAD
+                                                                                                                                        git push --force-with-lease origin HEAD
                                                                                                                                         nix-collect-garbage
                                                                                                                                     '' ;
                                                                                                                             } ;
