@@ -717,7 +717,7 @@
                                                                                                                         in
                                                                                                                             ''
                                                                                                                                 mkdir --parents $out/bin
-                                                                                                                                makeWrapper ${ checks }/bin/check $out/bin/check
+                                                                                                                                makeWrapper ${ checks }/bin/checks $out/bin/checks
                                                                                                                                 makeWrapper ${ live-promote }/bin/live-promote $out/bin/live-promote
                                                                                                                                 makeWrapper ${ update-promote }/bin/update-promote $out/bin/update-promote
                                                                                                                                 makeWrapper ${ stable-promote }/bin/stable-promote $out/bin/stable-promote
