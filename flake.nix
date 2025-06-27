@@ -582,7 +582,7 @@
                                                                                                                                           --flake ${ outputs.workspace }/work-tree#myhost \
                                                                                                                                           $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) \
                                                                                                                                           $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets ) \
-                                                                                                                                          $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor ) \
+                                                                                                                                          $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor )
                                                                                                                                         EOF
                                                                                                                                         chmod a+rwx nixos-rebuild.sh
                                                                                                                                         git commit -am "promoted $0" --allow-empty > /dev/null 2>&1
