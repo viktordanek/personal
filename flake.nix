@@ -572,7 +572,7 @@
                                                                                                                                                 export GIT_DIR="$1"
                                                                                                                                                 export GIT_WORK_TREE="$2"
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
-                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE . \\"
+                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE . /"
                                                                                                                                             }
                                                                                                                                         cat > work-tree/nixos-rebuild.sh <<EOF
                                                                                                                                         nixos-rebuild \
