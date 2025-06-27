@@ -694,7 +694,7 @@
                                                                                                                                         git rebase origin/main
                                                                                                                                         if ! git rebase origin/development; then
                                                                                                                                           echo "Conflict detected. Overwriting current-time.nix with version from origin/development..."
-                                                                                                                                          date +%s > ${ outputs.workspace }/work-tree/current-time.nix
+                                                                                                                                          git checkout --theirs current-time.nix
                                                                                                                                           git add current-time.nix
                                                                                                                                           git rebase --continue
                                                                                                                                         fi
