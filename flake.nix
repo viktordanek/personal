@@ -576,7 +576,7 @@
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     live-promote =
-                                                                                                                        pkgs.writeShellApplication/home/emory/stash/direct/e4a0323f8ba7a461/personal/repository/private/mount/workspace/workspace/work-tree
+                                                                                                                        pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "live-promote" ;
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
