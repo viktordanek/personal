@@ -1,7 +1,6 @@
 {
     inputs =
         {
-	        visitor.url = "github:viktordanek/visitor" ;
         } ;
     outputs =
         { self , visitor } :
@@ -11,7 +10,8 @@
                         agenix ,
                         nixpkgs ,
                         secrets ,
-                        system
+                        system ,
+                        visitor
                     } :
                         let
                             unimplemented = path : value : builtins.throw "The ${ builtins.typeOf value } visitor for ${ builtins.concatStringsSep " / " ( builtins.map builtins.toJSON path ) } is purposefully unimplemented." ;
