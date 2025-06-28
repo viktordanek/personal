@@ -1889,7 +1889,10 @@
                                                     visitor-null =
                                                         pkgs.stdenv.mkDerivation
                                                             {
-                                                                installPhase = builtins.toString ( visitor.lib.test nixpkgs system null { null = path : value : null ; } null ) ;
+                                                                installPhase =
+                                                                    let
+                                                                        script = visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
+                                                                        in builtins.trace ( builtins.typeOf script ) script ;
                                                                 name = "visitor-null" ;
                                                                 src = ./. ;
                                                             } ;
