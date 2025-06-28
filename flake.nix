@@ -1886,6 +1886,8 @@
                                             pkgs = builtins.getAttr system nixpkgs.legacyPackages ;
                                             in
                                                 {
+                                                    visitor-null =
+                                                        visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
                                                     wtf =
                                                         pkgs.stdenv.mkDerivation
                                                             {
