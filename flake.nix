@@ -1887,7 +1887,12 @@
                                             in
                                                 {
                                                     visitor-null =
-                                                        visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
+                                                        pkgs.stdenv.mkDerivation
+                                                            {
+                                                                installPhase = visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
+                                                                name = "visitor-null" ;
+                                                                src = ./. ;
+                                                            } ;
                                                     # wtf =
                                                     #     pkgs.stdenv.mkDerivation
                                                     #         {
