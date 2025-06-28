@@ -1889,7 +1889,7 @@
                                                     visitor-null =
                                                         pkgs.stdenv.mkDerivation
                                                             {
-                                                                installPhase = visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
+                                                                installPhase = builtins.toString ( visitor.lib.test nixpkgs system null { null = path : value : null ; } null ) ;
                                                                 name = "visitor-null" ;
                                                                 src = ./. ;
                                                             } ;
