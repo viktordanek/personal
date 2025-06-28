@@ -818,6 +818,7 @@
                                                                                                 fi
                                                                                                 git checkout -b "scratch/$( uuidgen )"
                                                                                             '' ;
+                                                                                    outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
                                                                         visitor =
                                                                             ignore :
