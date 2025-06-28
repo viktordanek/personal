@@ -565,7 +565,7 @@
                                                                                                                         pkgs.writeShellApplication
                                                                                                                             {
                                                                                                                                 name = "checks" ;
-                                                                                                                                runtimeInputs = [ pkgs.nix ] ;
+                                                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.nix ] ;
                                                                                                                                 text =
                                                                                                                                     ''
                                                                                                                                         fun ( )
@@ -575,7 +575,14 @@
                                                                                                                                                 git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
                                                                                                                                                 echo -n "--override-input $3 $GIT_WORK_TREE"
                                                                                                                                             }
-                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree secrets )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree visitor )"
+                                                                                                                                        cleanup ( )
+                                                                                                                                            {
+                                                                                                                                                cp ${ outputs.workspace }/flake.lock.backup ${ outputs.workspace }/work-tree/flake.lock
+                                                                                                                                            }
+                                                                                                                                        cp ${ outputs.workspace }/work-tree/flake.lock ${ outputs.workspace }/flake.lock.backup
+                                                                                                                                        trap cleanup EXIT
+                                                                                                                                        nix flake lock "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree secrets )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree visitor )" ${ outputs.workspace }/work-tree
+                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     live-promote =
