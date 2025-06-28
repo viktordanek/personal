@@ -1891,7 +1891,7 @@
                                                             {
                                                                 installPhase =
                                                                     ''
-                                                                        echo WTF
+                                                                        echo WTF ${ builtins.typeOf personal_.test }
                                                                         exit 64
                                                                     '' ;
                                                                 name = "wtf" ;
