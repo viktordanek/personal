@@ -571,12 +571,12 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.personal.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/work-tree \
+                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/worktree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     live-promote =
-                                                                                                                        pkgs.writeShellApplication
+                                                                                                                        pkgs.writeShellApplication/home/emory/stash/direct/e4a0323f8ba7a461/personal/repository/private/mount/workspace/workspace/work-tree
                                                                                                                             {
                                                                                                                                 name = "live-promote" ;
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.nixos-rebuild ] ;
@@ -785,6 +785,39 @@
                                                                                                 git checkout -b "scratch/$( uuidgen)" 2>&1
                                                                                             '' ;
                                                                                     outputs = [ ".envrc" "git" "workspace" ] ;
+                                                                                } ;
+                                                                        stash =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , outputs } :
+                                                                                            ''
+                                                                                                cat > /mount/.envrc <<EOF
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                EOF
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
+                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                git config user.name "Viktor Danek"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin git@github.com:viktordanek/stash.git
+                                                                                                if git getch origin main 2>&1
+                                                                                                then
+                                                                                                    git checkout origin/main 2>&1
+                                                                                                else
+                                                                                                    git checkout -b main 2>&1
+                                                                                                    git commit -m "" --allow-empty --allow-empty-message
+                                                                                                    git push origin HEAD
+                                                                                                fi
+                                                                                                git checkout -b "scratch/$( uuidgen )"
+                                                                                            '' ;
                                                                                 } ;
                                                                         visitor =
                                                                             ignore :
@@ -1764,6 +1797,7 @@
                                                                         ( repository "my-private-studio" ( foobar [ "personal" "repository" "private" ] "workspace" ) )
                                                                         ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" ) )
                                                                         ( repository "my-secrets-studio" ( foobar [ "personal" "repository" "secrets" ] "workspace" ) )
+                                                                        ( repository "my-stash-studio" ( foobar [ "personal" "repository" "stash" ] "workspace" ) )
                                                                         ( repository "my-visitor-studio" ( foobar [ "personal" "repository" "visitor" ] "workspace" ) )
                                                                     ] ;
                                                                 password = config.personal.password ;
