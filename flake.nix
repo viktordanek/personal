@@ -1887,9 +1887,8 @@
                                                 let
                                                     visitors =
                                                         {
-                                                            null = path : value : true ;
                                                         } ;
-                                                    value = "hei" ;
+                                                    value = "hi" ;
                                                     in visitor.lib.test nixpkgs system true visitors value ;
                                         } ;
                                 } ;
