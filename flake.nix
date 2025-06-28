@@ -1886,27 +1886,27 @@
                                             pkgs = builtins.getAttr system nixpkgs.legacyPackages ;
                                             in
                                                 {
-                                                    visitor-null =
-                                                        pkgs.stdenv.mkDerivation
-                                                            {
-                                                                installPhase =
-                                                                    let
-                                                                        script = visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
-                                                                        in builtins.trace ( builtins.typeOf script ) script ;
-                                                                name = "visitor-null" ;
-                                                                src = ./. ;
-                                                            } ;
-                                                    # wtf =
+                                                    # visitor-null =
                                                     #     pkgs.stdenv.mkDerivation
                                                     #         {
                                                     #             installPhase =
-                                                    #                 ''
-                                                    #                     echo WTF ${ builtins.typeOf visitor.lib.test }
-                                                    #                     exit 64
-                                                    #                 '' ;
-                                                    #             name = "wtf" ;
+                                                    #                 let
+                                                    #                     script = visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
+                                                    #                     in builtins.trace ( builtins.typeOf script ) script ;
+                                                    #             name = "visitor-null" ;
                                                     #             src = ./. ;
                                                     #         } ;
+                                                    wtf =
+                                                        pkgs.stdenv.mkDerivation
+                                                            {
+                                                                installPhase =
+                                                                    ''
+                                                                        echo WTF ${ builtins.typeOf visitor.lib.test }
+                                                                        exit 64
+                                                                    '' ;
+                                                                name = "wtf" ;
+                                                                src = ./. ;
+                                                            } ;
                                                 } ;
                                 } ;
             } ;
