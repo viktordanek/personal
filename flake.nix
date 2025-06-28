@@ -1,17 +1,17 @@
 {
     inputs =
         {
-	        visitor.url = "github:viktordanek/visitor" ;
         } ;
     outputs =
-        { self , visitor } :
+        { self } :
             {
                 lib =
                     {
                         agenix ,
                         nixpkgs ,
                         secrets ,
-                        system
+                        system ,
+                        visitor
                     } :
                         let
                             unimplemented = path : value : builtins.throw "The ${ builtins.typeOf value } visitor for ${ builtins.concatStringsSep " / " ( builtins.map builtins.toJSON path ) } is purposefully unimplemented." ;
@@ -568,26 +568,11 @@
                                                                                                                                 runtimeInputs = [ pkgs.coreutils pkgs.nix ] ;
                                                                                                                                 text =
                                                                                                                                     ''
-                                                                                                                                        fun ( )
-                                                                                                                                            {
-                                                                                                                                                export GIT_DIR="$1"
-                                                                                                                                                export GIT_WORK_TREE="$2"
-                                                                                                                                                git commit -am "" --allow-empty --allow-empty-message < /dev/null > /dev/null 2>&1
-                                                                                                                                                echo -n "--override-input $3 $GIT_WORK_TREE"
-                                                                                                                                            }
-                                                                                                                                        cleanup ( )
-                                                                                                                                            {
-                                                                                                                                                cp ${ outputs.workspace }/flake.lock.backup ${ outputs.workspace }/work-tree/flake.lock
-                                                                                                                                            }
-                                                                                                                                        if [ ! -f ${ outputs.workspace }/work-tree/flake.lock ]
-                                                                                                                                        then
-                                                                                                                                            nix flake lock ${ outputs.workspace }/work-tree
-                                                                                                                                            git add flake.lock
-                                                                                                                                        fi
-                                                                                                                                        cp ${ outputs.workspace }/work-tree/flake.lock ${ outputs.workspace }/flake.lock.backup
-                                                                                                                                        trap cleanup EXIT
-                                                                                                                                        nix flake lock "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree secrets )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree visitor )" ${ outputs.workspace }/work-tree
-                                                                                                                                        nix flake check ${ outputs.workspace }/work-tree
+                                                                                                                                        nix flake check \
+                                                                                                                                            --override-input personal ${ dependencies.personal.workspace }/work-tree \
+                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/work-tree \
+                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/worktree \
+                                                                                                                                            ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
                                                                                                                     live-promote =
@@ -801,6 +786,40 @@
                                                                                             '' ;
                                                                                     outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
+                                                                        stash =
+                                                                            ignore :
+                                                                                {
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.viktor ; } ;
+                                                                                    init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                    init-script =
+                                                                                        { dependencies , outputs } :
+                                                                                            ''
+                                                                                                cat > /mount/.envrc <<EOF
+                                                                                                export GIT_DIR=${ outputs.git }
+                                                                                                export GIT_WORK_TREE=${ outputs.workspace }/work-tree
+                                                                                                EOF
+                                                                                                export GIT_DIR=/mount/git
+                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
+                                                                                                mkdir "$GIT_DIR"
+                                                                                                mkdir --parents "$GIT_WORK_TREE"
+                                                                                                git init 2>&1
+                                                                                                ${ ssh-command dependencies.dot-ssh.config }
+                                                                                                git config user.email "viktordanek10@gmail.com"
+                                                                                                git config user.name "Viktor Danek"
+                                                                                                ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
+                                                                                                git remote add origin git@github.com:viktordanek/stash.git
+                                                                                                if git getch origin main 2>&1
+                                                                                                then
+                                                                                                    git checkout origin/main 2>&1
+                                                                                                else
+                                                                                                    git checkout -b main 2>&1
+                                                                                                    git commit -m "" --allow-empty --allow-empty-messageq
+                                                                                                    git push origin HEAD
+                                                                                                fi
+                                                                                                git checkout -b "scratch/$( uuidgen )"
+                                                                                            '' ;
+                                                                                    outputs = [ ".envrc" "git" "workspace" ] ;
+                                                                                } ;
                                                                         visitor =
                                                                             ignore :
                                                                                 {
@@ -865,8 +884,6 @@
                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
                                                         text =
                                                             ''
-                                                                export GIT_DIR=${ mount }/git
-                                                                export GIT_WORK_TREE=${ mount }/workspace/work-tree
                                                                 idea-community ${ mount }
                                                             '' ;
                                                     } ;
@@ -1779,6 +1796,7 @@
                                                                         ( repository "my-private-studio" ( foobar [ "personal" "repository" "private" ] "workspace" ) )
                                                                         ( repository "my-personal-studio" ( foobar [ "personal" "repository" "personal" ] "workspace" ) )
                                                                         ( repository "my-secrets-studio" ( foobar [ "personal" "repository" "secrets" ] "workspace" ) )
+                                                                        ( repository "my-stash-studio" ( foobar [ "personal" "repository" "stash" ] "workspace" ) )
                                                                         ( repository "my-visitor-studio" ( foobar [ "personal" "repository" "visitor" ] "workspace" ) )
                                                                     ] ;
                                                                 password = config.personal.password ;
@@ -1881,17 +1899,26 @@
                             in
                                 {
                                     module = module ;
-                                    tests =
-                                        {
-                                            visitor =
-                                                let
-                                                    visitors =
-                                                        {
-                                                            null = path : value : true ;
-                                                        } ;
-                                                    value = true ;
-                                                    in visitor.lib.test nixpkgs system true visitors value ;
-                                        } ;
+                                    tests.${ system } =
+                                        let
+                                            pkgs = builtins.getAttr system nixpkgs.legacyPackages ;
+                                            visitors =
+                                                {
+                                                    lambda = path : value : "103a798535e88ad24601208d72f211c8fee7decc327a92eaaa20a1734491cc3b43457a7656217632c22264b35d9dc558ee5663870936ac1cbabd2b16154df853" ;
+                                                    null = path : value : "283b18f4ec295dd925b61a760258a3bda187b170b92ccd75158f603b78181ff9f6bf4e216e09c74ee9a811af7aeb2b7abed9d4610eec0c899dd3f87d387d8c0a" ;
+                                                } ;
+                                            in
+                                                {
+                                                    visitor-bool = visitor.lib.test pkgs false false visitors true ;
+                                                    visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
+                                                    visitor-int = visitor.lib.test pkgs false false visitors 0 ;
+                                                    visitor-list = visitor.lib.test pkgs [ "103a798535e88ad24601208d72f211c8fee7decc327a92eaaa20a1734491cc3b43457a7656217632c22264b35d9dc558ee5663870936ac1cbabd2b16154df853" [ ] "283b18f4ec295dd925b61a760258a3bda187b170b92ccd75158f603b78181ff9f6bf4e216e09c74ee9a811af7aeb2b7abed9d4610eec0c899dd3f87d387d8c0a" { } ] true visitors [ ( x : x ) [ ] null { } ] ;
+                                                    visitor-lambda = visitor.lib.test pkgs "103a798535e88ad24601208d72f211c8fee7decc327a92eaaa20a1734491cc3b43457a7656217632c22264b35d9dc558ee5663870936ac1cbabd2b16154df853" true visitors ( x : x ) ;
+                                                    visitor-null = visitor.lib.test pkgs "283b18f4ec295dd925b61a760258a3bda187b170b92ccd75158f603b78181ff9f6bf4e216e09c74ee9a811af7aeb2b7abed9d4610eec0c899dd3f87d387d8c0a" true visitors null ;
+                                                    visitor-path = visitor.lib.test pkgs false false visitors ./. ;
+                                                    visitor-set = visitor.lib.test pkgs { lambda = "103a798535e88ad24601208d72f211c8fee7decc327a92eaaa20a1734491cc3b43457a7656217632c22264b35d9dc558ee5663870936ac1cbabd2b16154df853" ; list = [ ] ; null = "283b18f4ec295dd925b61a760258a3bda187b170b92ccd75158f603b78181ff9f6bf4e216e09c74ee9a811af7aeb2b7abed9d4610eec0c899dd3f87d387d8c0a" ; set = { } ; } true visitors { lambda = x : x ; list = [ ] ; null = null ; set = { } ; } ;
+                                                    visitor-string = visitor.lib.test pkgs false false visitors "" ;
+                                                } ;
                                 } ;
             } ;
 }
