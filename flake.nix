@@ -1891,7 +1891,7 @@
                                                             {
                                                                 installPhase =
                                                                     ''
-                                                                        echo WTF ${ builtins.typeOf visitor.lib.module }
+                                                                        echo WTF ${ builtins.typeOf visitor.lib.test }
                                                                         exit 64
                                                                     '' ;
                                                                 name = "wtf" ;
