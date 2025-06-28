@@ -1888,17 +1888,17 @@
                                                 {
                                                     visitor-null =
                                                         visitor.lib.test nixpkgs system null { null = path : value : null ; } null ;
-                                                    wtf =
-                                                        pkgs.stdenv.mkDerivation
-                                                            {
-                                                                installPhase =
-                                                                    ''
-                                                                        echo WTF ${ builtins.typeOf visitor.lib.test }
-                                                                        exit 64
-                                                                    '' ;
-                                                                name = "wtf" ;
-                                                                src = ./. ;
-                                                            } ;
+                                                    # wtf =
+                                                    #     pkgs.stdenv.mkDerivation
+                                                    #         {
+                                                    #             installPhase =
+                                                    #                 ''
+                                                    #                     echo WTF ${ builtins.typeOf visitor.lib.test }
+                                                    #                     exit 64
+                                                    #                 '' ;
+                                                    #             name = "wtf" ;
+                                                    #             src = ./. ;
+                                                    #         } ;
                                                 } ;
                                 } ;
             } ;
