@@ -1883,14 +1883,6 @@
                                     module = module ;
                                     tests =
                                         {
-                                            visitor =
-                                                let
-                                                    visitors =
-                                                        {
-                                                            null = path : value : true ;
-                                                        } ;
-                                                    value = true ;
-                                                    in visitor.lib.test nixpkgs system true visitors value ;
                                         } ;
                                 } ;
             } ;
