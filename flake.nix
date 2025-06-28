@@ -579,6 +579,11 @@
                                                                                                                                             {
                                                                                                                                                 cp ${ outputs.workspace }/flake.lock.backup ${ outputs.workspace }/work-tree/flake.lock
                                                                                                                                             }
+                                                                                                                                        if [ ! -f ${ outputs.workspace }/work-tree/flake.lock ]
+                                                                                                                                        then
+                                                                                                                                            nix flake lock ${ outputs.workspace }/work-tree
+                                                                                                                                            git add flake.lock
+                                                                                                                                        fi
                                                                                                                                         cp ${ outputs.workspace }/work-tree/flake.lock ${ outputs.workspace }/flake.lock.backup
                                                                                                                                         trap cleanup EXIT
                                                                                                                                         nix flake lock "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree secrets )" "$( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree visitor )" ${ outputs.workspace }/work-tree
