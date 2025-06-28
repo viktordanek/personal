@@ -1882,15 +1882,22 @@
                                 {
                                     module = module ;
                                     tests.${ system } =
-                                        {
-                                            visitor =
-                                                let
-                                                    visitors =
-                                                        {
-                                                        } ;
-                                                    value = "hi" ;
-                                                    in visitor.lib.test nixpkgs system true visitors value ;
-                                        } ;
+                                        let
+                                            pkgs = builtins.getAttr system nixpkgs.legacyPackages ;
+                                            in
+                                                {
+                                                    wtf =
+                                                        pkgs.stdenv.mkDerivation
+                                                            {
+                                                                installPhase =
+                                                                    ''
+                                                                        echo WTF
+                                                                        exit 64
+                                                                    '' ;
+                                                                name = "wtf" ;
+                                                                src = ./. ;
+                                                            } ;
+                                                } ;
                                 } ;
             } ;
 }
