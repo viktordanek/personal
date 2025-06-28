@@ -1881,7 +1881,7 @@
                             in
                                 {
                                     module = module ;
-                                    tests =
+                                    tests.${ system } =
                                         {
                                             visitor =
                                                 let
