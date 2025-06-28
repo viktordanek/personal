@@ -813,7 +813,7 @@
                                                                                                     git checkout origin/main 2>&1
                                                                                                 else
                                                                                                     git checkout -b main 2>&1
-                                                                                                    git commit -m "" --allow-empty --allow-empty-message
+                                                                                                    git commit -m "" --allow-empty --allow-empty-messageq
                                                                                                     git push origin HEAD
                                                                                                 fi
                                                                                                 git checkout -b "scratch/$( uuidgen )"
@@ -884,8 +884,6 @@
                                                         runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.jetbrains.idea-community ] ;
                                                         text =
                                                             ''
-                                                                export GIT_DIR=${ mount }/git
-                                                                export GIT_WORK_TREE=${ mount }/workspace/work-tree
                                                                 idea-community ${ mount }
                                                             '' ;
                                                     } ;
