@@ -1889,7 +1889,7 @@
                                                         {
                                                             null = path : value : true ;
                                                         } ;
-                                                    value = null ;
+                                                    value = true ;
                                                     in visitor.lib.test nixpkgs system true visitors value ;
                                         } ;
                                 } ;
