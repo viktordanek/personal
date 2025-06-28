@@ -571,7 +571,7 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.personal.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/worktree \
+                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
