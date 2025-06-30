@@ -1941,7 +1941,7 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar = stash2.lib { }
+                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
