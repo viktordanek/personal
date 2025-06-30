@@ -1823,6 +1823,7 @@
                                                                                                     echo hi
                                                                                                     echo ${ builtins.typeOf xx }
                                                                                                     echo ${ builtins.typeOf xxx }
+                                                                                                    echo ${ xxx.foobar.target }
                                                                                                 '' ;
                                                                                 }
                                                                         )
