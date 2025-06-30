@@ -11,6 +11,7 @@
                         nixpkgs ,
                         secrets ,
                         system ,
+                        stash2 ,
                         visitor
                     } :
                         let
@@ -550,7 +551,7 @@
                                                                         private =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; personal = tree.personal.repository.personal ; secrets = tree.personal.repository.secrets ; visitor = tree.personal.repository.visitor ; } ;
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; personal = tree.personal.repository.personal ; secrets = tree.personal.repository.secrets ; stash = tree.personal.repository.stash ; visitor = tree.personal.repository.visitor ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
@@ -570,8 +571,9 @@
                                                                                                                                     ''
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.personal.workspace }/worktree \
+                                                                                                                                            --override-input secrets ${ dependencies.secrets.workspace }/work-tree \
+                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/worktree \
+                                                                                                                                            --override-input visitor ${ dependencies.visitor.workspace }/worktree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
@@ -596,6 +598,7 @@
                                                                                                                                           --flake ${ outputs.workspace }/work-tree#myhost \
                                                                                                                                           $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) \
                                                                                                                                           $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets ) \
+                                                                                                                                          $( fun ${ dependencies.secrets.git } ${ dependencies.stash.workspace }/work-tree stash ) \
                                                                                                                                           $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor )
                                                                                                                                         EOF
                                                                                                                                         chmod a+rwx nixos-rebuild.sh
@@ -618,7 +621,7 @@
                                                                                                                                 text =
                                                                                                                                     ''
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
-                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input stash --update-input visitor
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
@@ -1796,6 +1799,17 @@
                                                                         ( repository "my-secrets-studio" ( foobar [ "personal" "repository" "secrets" ] "workspace" ) )
                                                                         ( repository "my-stash-studio" ( foobar [ "personal" "repository" "stash" ] "workspace" ) )
                                                                         ( repository "my-visitor-studio" ( foobar [ "personal" "repository" "visitor" ] "workspace" ) )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "foobar-stash" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            echo hi
+                                                                                        '' ;
+                                                                                }
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
