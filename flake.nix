@@ -1806,23 +1806,9 @@
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
                                                                                         let
-                                                                                            widget =
-                                                                                                stash2.lib
-                                                                                                    {
-                                                                                                        arguments = { } ;
-                                                                                                        current-time = config.personal.current-time ;
-                                                                                                        nixpkgs = nixpkgs ;
-                                                                                                        system = system ;
-                                                                                                        user = config.personal.name ;
-                                                                                                        visitor = visitor ;
-                                                                                                        working-directory = "/tmp" ;
-                                                                                                    } ;
-                                                                                            xxx = widget.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
-                                                                                            xxxx = xxx.outputs ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
-                                                                                                    echo ${ xxxx.foobar.target }
                                                                                                 '' ;
                                                                                 }
                                                                         )
