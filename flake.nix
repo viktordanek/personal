@@ -1723,25 +1723,27 @@
                                                                                         ConditionPathExists = "!/home/${ config.personal.name }/workspaces/secrets" ;
                                                                                         ExecStart =
                                                                                             let
-                                                                                                application =
-                                                                                                    pkgs.writeShellApplication
+                                                                                                derivation =
+                                                                                                    pkgs.stdenv.mkDerivation
                                                                                                         {
-                                                                                                            name = "application" ;
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.findutils pkgs.gnupg ] ;
-                                                                                                            text =
+                                                                                                            installPhase =
                                                                                                                 ''
+                                                                                                                    mkdir --parents $out/scripts $out/bin
                                                                                                                     find ${ secrets } -type f -name "*.age" | while read -r FILE
                                                                                                                     do
                                                                                                                         RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
                                                                                                                         RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                        mkdir --parents "$RELATIVE_DIRECTORY"
-                                                                                                                        echo age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE"
-                                                                                                                        age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE"
-                                                                                                                        chmod 0400 "$RELATIVE_PATH"
+                                                                                                                        echo mkdir --parents "$RELATIVE_DIRECTORY" >> $out/scripts/application
+                                                                                                                        echo age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE" >> $out/scripts/application
+                                                                                                                        echo chmod 0400 "$RELATIVE_PATH" >> $out/scripts/application
                                                                                                                     done
-                                                                                                                '' ;
+                                                                                                                    chmod 0500 $out/script/application
+                                                                                                                    makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.gnupg pkgs.coreutils ] }
+                                                                                                                ''  ;
+                                                                                                            name = "derivation" ;
+                                                                                                            nativeBuildInputs = [ pkgs.coreutils pkgs.findutils ] ;
                                                                                                         } ;
-                                                                                                in "${ application }/bin/application" ;
+                                                                                                in "${ derivation }/bin/application" ;
                                                                                         StateDirectory = "workspaces/secrets" ;
                                                                                         User = config.personal.name ;
                                                                                     } ;
