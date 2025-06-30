@@ -1802,6 +1802,17 @@
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
+                                                                                    name = "current-time" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            exec date --date @${ builtins.toString config.personal.current-time } "$@}"
+                                                                                        ''
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
                                                                                     name = "foobar-stash" ;
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
