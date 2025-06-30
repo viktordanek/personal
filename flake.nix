@@ -1817,7 +1817,7 @@
                                                                                                         user = config.personal.name ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = widget.implementation.names { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            xxx = widget.implementation.outputs { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
