@@ -1813,8 +1813,8 @@
                                                                                                         current-time = config.personal.current-time ;
                                                                                                         nixpkgs = nixpkgs ;
                                                                                                         system = system ;
-                                                                                                        visitor = visitor ;
                                                                                                         user = config.personal.name ;
+                                                                                                        visitor = visitor ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
                                                                                             xxx = widget.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
