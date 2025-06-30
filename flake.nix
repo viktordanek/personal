@@ -1737,7 +1737,7 @@
                                                                                                                         echo age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE" >> $out/scripts/application
                                                                                                                         echo chmod 0400 "$RELATIVE_PATH" >> $out/scripts/application
                                                                                                                     done
-                                                                                                                    chmod 0500 $out/script/application
+                                                                                                                    chmod 0500 $out/scripts/application
                                                                                                                     makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
                                                                                                                 ''  ;
                                                                                                             name = "derivation" ;
