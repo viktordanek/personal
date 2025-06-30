@@ -1804,24 +1804,24 @@
                                                                                 {
                                                                                     name = "foobar-stash" ;
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                    let
-                                                                                        widget =
-                                                                                            stash2.lib.implementation
-                                                                                                {
-                                                                                                    current-time = config.personal.current-time ;
-                                                                                                    functions = { } ;
-                                                                                                    nixpkgs = nixpkgs ;
-                                                                                                    system = system ;
-                                                                                                    visitor = visitor ;
-                                                                                                    user = config.personal.name ;
-                                                                                                    working-directory = "/tmp" ;
-                                                                                                } ;
-                                                                                        xxx = widget { foobar = x : x ; } ;
-                                                                                        in
-                                                                                        text =
-                                                                                            ''
-                                                                                                echo ${ xxx.names.foobar }
-                                                                                            '' ;
+                                                                                    text =
+                                                                                        let
+                                                                                            widget =
+                                                                                                stash2.lib.implementation
+                                                                                                    {
+                                                                                                        current-time = config.personal.current-time ;
+                                                                                                        functions = { } ;
+                                                                                                        nixpkgs = nixpkgs ;
+                                                                                                        system = system ;
+                                                                                                        visitor = visitor ;
+                                                                                                        user = config.personal.name ;
+                                                                                                        working-directory = "/tmp" ;
+                                                                                                    } ;
+                                                                                            xxx = widget { foobar = x : x ; } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    echo ${ xxx.names.foobar }
+                                                                                                '' ;
                                                                                 }
                                                                         )
                                                                     ] ;
