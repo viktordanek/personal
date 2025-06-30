@@ -1733,7 +1733,7 @@
                                                                                                                     do
                                                                                                                         RELATIVE_PATH="${ builtins.concatStringsSep "" [ "\\" "$" "{" "FILE#${ secrets }/" "}" ] }"
                                                                                                                         RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                        echo FILE="$FILE"
+                                                                                                                        echo FILE="$FILE" >> $out/scripts/application
                                                                                                                         echo mkdir --parents "$RELATIVE_DIRECTORY" >> $out/scripts/application
                                                                                                                         echo age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE" >> $out/scripts/application
                                                                                                                         echo chmod 0400 "$RELATIVE_PATH" >> $out/scripts/application
