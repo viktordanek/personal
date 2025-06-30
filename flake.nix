@@ -1821,7 +1821,7 @@
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
-                                                                                                    echo ${ builtins.typeOf widget }
+                                                                                                    echo ${ xxx.foobar }
                                                                                                 '' ;
                                                                                 }
                                                                         )
