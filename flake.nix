@@ -1941,6 +1941,7 @@
                                                 } ;
                                             in
                                                 {
+                                                    stash-foobar = stash2.lib { }
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
