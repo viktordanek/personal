@@ -1806,7 +1806,7 @@
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
                                                                                         ''
-                                                                                            exec date --date @${ builtins.toString config.personal.current-time } "$@}"
+                                                                                            exec date --date @${ builtins.toString config.personal.current-time } "$@"
                                                                                         '' ;
                                                                                 }
                                                                         )
