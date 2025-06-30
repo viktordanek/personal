@@ -1767,7 +1767,7 @@
                                                                                                                         STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
                                                                                                                         cat >> $out/scripts/application <<EOF
                                                                                                                         mkdir --parents "$RELATIVE_DIRECTORY"
-                                                                                                                        age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE"
+                                                                                                                        age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
                                                                                                                         chmod 0400 "$RELATIVE_PATH"
                                                                                                                     EOF
                                                                                                                     done
