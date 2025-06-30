@@ -551,7 +551,7 @@
                                                                         private =
                                                                             ignore :
                                                                                 {
-                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; personal = tree.personal.repository.personal ; secrets = tree.personal.repository.secrets ; visitor = tree.personal.repository.visitor ; } ;
+                                                                                    dependencies = tree : { dot-ssh = tree.personal.dot-ssh.mobile ; personal = tree.personal.repository.personal ; secrets = tree.personal.repository.secrets ; stash = tree.personal.repository.stash ; visitor = tree.personal.repository.visitor ; } ;
                                                                                     init-packages = pkgs : [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
                                                                                     init-script =
                                                                                         { dependencies , outputs } :
