@@ -1953,7 +1953,15 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
+                                                    stash-foobar =
+                                                        stash2.lib
+                                                            {
+                                                                nixpkgs = nixpkgs ;
+                                                                outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ;
+                                                                stash = { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                system = system ;
+                                                                visitor = visitor ;
+                                                            } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
