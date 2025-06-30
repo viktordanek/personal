@@ -1817,10 +1817,12 @@
                                                                                                         visitor = visitor ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
+                                                                                            xxx = xxx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
                                                                                                     echo ${ builtins.typeOf xx }
+                                                                                                    echo ${ builtins.typeOf xxx }
                                                                                                 '' ;
                                                                                 }
                                                                         )
