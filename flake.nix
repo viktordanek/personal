@@ -1817,7 +1817,7 @@
                                                                                                         visitor = visitor ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = xxx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            xxx = xx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
