@@ -1824,7 +1824,6 @@
                                                                                                     echo ${ builtins.typeOf xx }
                                                                                                     echo ${ builtins.typeOf xxx }
                                                                                                     echo ${ builtins.typeOf xxx.outputs }
-                                                                                                    echo ${ builtins.concatStringsSep " - " ( builtins.attrNames xxx.outputs ) }
                                                                                                 '' ;
                                                                                 }
                                                                         )
