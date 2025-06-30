@@ -1807,7 +1807,7 @@
                                                                                     text =
                                                                                         let
                                                                                             widget =
-                                                                                                stash2.lib.implementation
+                                                                                                stash2.lib
                                                                                                     {
                                                                                                         current-time = config.personal.current-time ;
                                                                                                         functions = { } ;
@@ -1817,7 +1817,7 @@
                                                                                                         user = config.personal.name ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = widget.names { foobar = x : x ; } ;
+                                                                                            xxx = widget.implementation.names { foobar = x : x ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
