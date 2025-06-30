@@ -19,6 +19,7 @@
                             module =
                                 { config , lib , pkgs , ... } :
                                     let
+                                        current-time = builtins.toString ( builtins.import config.personal.current-time ) ;
                                         dependencies =
                                             let
                                                 list =
@@ -74,7 +75,7 @@
                                                                             tree2 =
                                                                                 visitor.lib.implementation
                                                                                     {
-                                                                                        lambda = path : value : dependency : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" dependency ] ] ) ;
+                                                                                        lambda = path : value : dependency : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" dependency ] ] ) ;
                                                                                     }
                                                                                     resources ;
                                                                             outputs_ =
@@ -97,7 +98,7 @@
                                                                                                                                 config.personal.name
                                                                                                                                 config.personal.stash
                                                                                                                                 "direct"
-                                                                                                                                ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) )
+                                                                                                                                ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) )
                                                                                                                             ]
                                                                                                                             ( builtins.map builtins.toJSON path )
                                                                                                                             [
@@ -572,7 +573,7 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.secrets.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/work-tree \
+                                                                                                                                            --override-input stash ${ dependencies.stash.workspace }/work-tree \
                                                                                                                                             --override-input visitor ${ dependencies.visitor.workspace }/work-tree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
@@ -811,7 +812,7 @@
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                 git remote add origin git@github.com:viktordanek/stash.git
-                                                                                                if git getch origin main 2>&1
+                                                                                                if git fetch origin main 2>&1
                                                                                                 then
                                                                                                     git checkout origin/main 2>&1
                                                                                                 else
@@ -870,7 +871,7 @@
                                                                         } ;
                                                             } ;
                                                     } ;
-                                        foobar = path : output : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] ] ) ;
+                                        foobar = path : output : builtins.concatStringsSep "/" ( builtins.concatLists [ [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) ) ] ( builtins.map builtins.toJSON path ) [ "mount" output ] ] ) ;
                                         scripts-foobar =
                                             path :
                                                 let
@@ -970,7 +971,7 @@
                                                                                                                         output :
                                                                                                                             {
                                                                                                                                 name = output ;
-                                                                                                                                value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) value "mount" output ] ;
+                                                                                                                                value = builtins.concatStringsSep "/" [ "" "home" config.personal.name config.personal.stash "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) ) value "mount" output ] ;
                                                                                                                             }
                                                                                                                     )
                                                                                                                     list
@@ -1003,7 +1004,7 @@
                                                                                                         mkdir --parents "$ROOT"
                                                                                                         exec 201> "$ROOT/lock"
                                                                                                         flock -x 201
-                                                                                                        export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }"
+                                                                                                        export UNIQ_TOKEN="${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) }"
                                                                                                         STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" "$UNIQ_TOKEN" ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                         export MOUNT="$STASH/mount"
                                                                                                         mkdir --parents "$MOUNT"
@@ -1079,7 +1080,7 @@
                                                                                                 then
                                                                                                     exec 201> "$ROOT/lock"
                                                                                                     flock -x 201
-                                                                                                    STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
+                                                                                                    STASH=${ builtins.concatStringsSep "/" ( builtins.concatLists [ [ "$ROOT" "direct" ( builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) ) ] ( builtins.map builtins.toJSON resource.path ) ] ) } ;
                                                                                                     if [ -d "$STASH" ]
                                                                                                     then
                                                                                                         if [ -f "$STASH/release.failure.yaml" ]
@@ -1133,9 +1134,9 @@
                                                     text =
                                                         ''
                                                             ${ builtins.concatStringsSep "\n" ( builtins.map ( script : ''${ script.setup }/bin/setup'' ) ( builtins.sort ( a : b : a.index < b.index ) scripts ) ) }
-                                                            if [ ! -e /home/${ config.personal.name }/${ config.personal.stash }/direct/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }/teardown ]
+                                                            if [ ! -e /home/${ config.personal.name }/${ config.personal.stash }/direct/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) }/teardown ]
                                                             then
-                                                                ln --symbolic ${ teardown }/bin/teardown /home/${ config.personal.name }/${ config.personal.stash }/direct/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) }/teardown
+                                                                ln --symbolic ${ teardown }/bin/teardown /home/${ config.personal.name }/${ config.personal.stash }/direct/${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) }/teardown
                                                             fi
                                                         '' ;
                                                 } ;
@@ -1700,7 +1701,7 @@
                                                                                                                     RECYCLE_BIN="$( mktemp --directory )"
                                                                                                                     if [ -d /home/${ config.personal.name }/${ config.personal.stash }/direct ]
                                                                                                                     then
-                                                                                                                        find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString config.personal.current-time ) ) } | while read -r DIRECTORY
+                                                                                                                        find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) } | while read -r DIRECTORY
                                                                                                                         do
                                                                                                                             if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
                                                                                                                             then
@@ -1778,11 +1779,11 @@
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
                                                                         ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
-                                                                        ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
-                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString config.personal.current-time }" )
-                                                                        ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString config.personal.current-time }" )
-                                                                        ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString config.personal.current-time }" )
-                                                                        ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString config.personal.current-time }" )
+                                                                        ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
+                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString current-time }" )
+                                                                        ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
+                                                                        ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString current-time }" )
+                                                                        ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString current-time }" )
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
@@ -1802,6 +1803,17 @@
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
+                                                                                    name = "current-time" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            exec date --date @${ builtins.toString current-time } "$@"
+                                                                                        '' ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
                                                                                     name = "foobar-stash" ;
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
@@ -1810,7 +1822,7 @@
                                                                                                 stash2.lib
                                                                                                     {
                                                                                                         arguments = { } ;
-                                                                                                        current-time = config.personal.current-time ;
+                                                                                                        current-time = current-time ;
                                                                                                         nixpkgs = nixpkgs ;
                                                                                                         system = system ;
                                                                                                         user = config.personal.name ;
@@ -1941,7 +1953,7 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
+                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
