@@ -1695,23 +1695,54 @@
                                                                                                     pkgs.writeShellApplication
                                                                                                         {
                                                                                                             name = "application" ;
-                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     GNUPGHOME=$( pwd )
                                                                                                                     export GNUPGHOME
                                                                                                                     mkdir --parents "$GNUPGHOME"
                                                                                                                     chmod 0700 "$GNUPGHOME"
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
-                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import "/work/secret-keys.asc" 2>&1
-                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
-                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import /var/lib/workspaces/secrets/secret-keys.asc 2>&1
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/secrets/ownertrust.asc 2>&1
                                                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
                                                                                         StateDirectory = "workspaces/dot-gnupg" ;
                                                                                         User = config.personal.name ;
+                                                                                        WorkingDirectory = "/var/lib/workspaces/dot-gnupg" ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
+                                                                        dot-ssh =
+                                                                            {
+                                                                                after = [ "network.target" "secrets.service" ] ;
+                                                                                requires = [ "secrets.service" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/dot-gnupg" ;
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    cat > /mount/config <<EOF
+                                                                                                                    Host github.com
+                                                                                                                    IdentityFile ${ /var/lib/workspaces/secrets/identity }
+                                                                                                                    UserKnownHostsFile ${ /var/lib/workspaces/secrets/known-hosts }
+                                                                                                                    StrictHostKeyChecking true
+                                                                                                                    EOF
+                                                                                                                    chmod 0400 /mount/identity /mount/known-hosts /mount/config
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application" ;
+                                                                                        StateDirectory = "workspaces/dot-ssh" ;
+                                                                                        User = config.personal.name ;
+                                                                                        WorkingDirectory = "/var/lib/workspaces/dot-ssh" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
