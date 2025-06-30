@@ -1736,7 +1736,7 @@
                                                                                                                         RELATIVE_DIRECTORY=$( dirname $RELATIVE_PATH )
                                                                                                                         mkdir --parents $RELATIVE_DIRECTORY
                                                                                                                         age --decrypt --identity ${ config.personal.agenix } --output $RELATIVE_PATH $FILE
-                                                                                                                        chmod 0400 $RELATIVE_PATH
+                                                                                                                        chmod 0400 "$RELATIVE_PATH"
                                                                                                                     done
                                                                                                                 '' ;
                                                                                                         } ;
