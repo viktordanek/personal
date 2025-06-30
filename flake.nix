@@ -1807,7 +1807,7 @@
                                                                                     text =
                                                                                         ''
                                                                                             exec date --date @${ builtins.toString config.personal.current-time } "$@}"
-                                                                                        ''
+                                                                                        '' ;
                                                                                 }
                                                                         )
                                                                         (
