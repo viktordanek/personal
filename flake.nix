@@ -1809,8 +1809,8 @@
                                                                                             widget =
                                                                                                 stash2.lib
                                                                                                     {
+                                                                                                        arguments = { } ;
                                                                                                         current-time = config.personal.current-time ;
-                                                                                                        functions = { } ;
                                                                                                         nixpkgs = nixpkgs ;
                                                                                                         system = system ;
                                                                                                         visitor = visitor ;
