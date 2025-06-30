@@ -1698,7 +1698,7 @@
                                                                                                             runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    GNUPGHOME=$( pwd )/dot-gnupg
+                                                                                                                    GNUPGHOME=$( pwd )
                                                                                                                     export GNUPGHOME
                                                                                                                     mkdir --parents "$GNUPGHOME"
                                                                                                                     chmod 0700 "$GNUPGHOME"
@@ -1710,8 +1710,8 @@
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
+                                                                                        StateDirectory = "workspaces/dot-gnupg" ;
                                                                                         User = config.personal.name ;
-                                                                                        WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
@@ -1741,8 +1741,8 @@
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
+                                                                                        StateDirectory = "workspaces/secrets" ;
                                                                                         User = config.personal.name ;
-                                                                                        WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
