@@ -1819,26 +1819,19 @@
                                                                                     text =
                                                                                         let
                                                                                             xx =
-                                                                                                stash2.lib
+                                                                                                stash2.lib.implementation
                                                                                                     {
                                                                                                         arguments = { } ;
-                                                                                                        current-time = current-time ;
                                                                                                         nixpkgs = nixpkgs ;
                                                                                                         system = system ;
                                                                                                         user = config.personal.name ;
                                                                                                         visitor = visitor ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = xx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
-                                                                                                    echo ${ builtins.typeOf xx }
-                                                                                                    echo ${ builtins.typeOf xxx }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar.target }
-                                                                                                    echo ${ xxx.outputs.foobar.target }
+                                                                                                    echo ${ xx.outputs.foobar.target }
                                                                                                 '' ;
                                                                                 }
                                                                         )
@@ -1954,7 +1947,7 @@
                                             in
                                                 {
                                                     stash-foobar =
-                                                        stash2.lib
+                                                        stash2.lib.test
                                                             {
                                                                 nixpkgs = nixpkgs ;
                                                                 outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ;
