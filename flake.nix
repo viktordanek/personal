@@ -1821,6 +1821,7 @@
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
+                                                                                                    echo ${ xxx.names.foobar }
                                                                                                 '' ;
                                                                                 }
                                                                         )
