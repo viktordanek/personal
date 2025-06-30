@@ -1768,7 +1768,7 @@
                                                                                                                         cat >> $out/scripts/application <<EOF
                                                                                                                         mkdir --parents "$RELATIVE_DIRECTORY"
                                                                                                                         age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
-                                                                                                                        chmod 0400 "$RELATIVE_PATH"
+                                                                                                                        chmod 0400 "$STRIPPED"
                                                                                                                     EOF
                                                                                                                     done
                                                                                                                     chmod 0500 $out/scripts/application
