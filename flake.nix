@@ -1817,11 +1817,12 @@
                                                                                                         user = config.personal.name ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = widget.implementation.outputs { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            xxx = widget.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            xxxx = xxx.outputs ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
-                                                                                                    echo ${ xxx.foobar.target }
+                                                                                                    echo ${ xxxx.foobar.target }
                                                                                                 '' ;
                                                                                 }
                                                                         )
