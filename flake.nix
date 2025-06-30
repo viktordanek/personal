@@ -597,6 +597,7 @@
                                                                                                                                           --flake ${ outputs.workspace }/work-tree#myhost \
                                                                                                                                           $( fun ${ dependencies.personal.git } ${ dependencies.personal.workspace }/work-tree personal ) \
                                                                                                                                           $( fun ${ dependencies.secrets.git } ${ dependencies.secrets.workspace }/work-tree secrets ) \
+                                                                                                                                          $( fun ${ dependencies.secrets.git } ${ dependencies.stash.workspace }/work-tree stash ) \
                                                                                                                                           $( fun ${ dependencies.visitor.git } ${ dependencies.visitor.workspace }/work-tree visitor )
                                                                                                                                         EOF
                                                                                                                                         chmod a+rwx nixos-rebuild.sh
@@ -619,7 +620,7 @@
                                                                                                                                 text =
                                                                                                                                     ''
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
-                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input visitor
+                                                                                                                                        nixos-rebuild build-vm --flake ${ outputs.workspace }/work-tree#myhost --update-input personal --update-input secrets --update-input stash --update-input visitor
                                                                                                                                         git commit -am "promoted $0" --allow-empty
                                                                                                                                         TARGET="$( git rev-parse HEAD )"
                                                                                                                                         VIRTUAL_MACHINES=${ outputs.virtual-machines }
