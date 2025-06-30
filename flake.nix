@@ -1738,10 +1738,11 @@
                                                                                                                         echo chmod 0400 "$RELATIVE_PATH" >> $out/scripts/application
                                                                                                                     done
                                                                                                                     chmod 0500 $out/script/application
-                                                                                                                    makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.gnupg pkgs.coreutils ] }
+                                                                                                                    makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
                                                                                                                 ''  ;
                                                                                                             name = "derivation" ;
                                                                                                             nativeBuildInputs = [ pkgs.coreutils pkgs.findutils ] ;
+                                                                                                            src = ./. ;
                                                                                                         } ;
                                                                                                 in "${ derivation }/bin/application" ;
                                                                                         StateDirectory = "workspaces/secrets" ;
