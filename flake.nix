@@ -814,7 +814,7 @@
                                                                                                 else
                                                                                                     git checkout -b main 2>&1
                                                                                                 fi
-                                                                                                git checkout -b "scratch/$( uuidgen )"
+                                                                                                git checkout -b "scratch/$( uuidgen )" 2>&1
                                                                                             '' ;
                                                                                     outputs = [ ".envrc" "git" "workspace" ] ;
                                                                                 } ;
