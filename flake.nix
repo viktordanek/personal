@@ -1733,7 +1733,6 @@
                                                                                                                     find ${ secrets } -type f -name "*.age" | while read -r FILE
                                                                                                                     do
                                                                                                                         RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
-                                                                                                                        BASENAME=$( basename $FILE )
                                                                                                                         RELATIVE_DIRECTORY=$( dirname $RELATIVE_PATH )
                                                                                                                         mkdir --parents $RELATIVE_DIRECTORY
                                                                                                                         age --decrypt --identity ${ config.personal.agenix } --output $RELATIVE_PATH $FILE
