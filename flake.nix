@@ -1820,7 +1820,7 @@
                                                                                             xxx = widget { foobar = x : x ; } ;
                                                                                             in
                                                                                                 ''
-                                                                                                    echo ${ xxx.names.foobar }
+                                                                                                    echo hi
                                                                                                 '' ;
                                                                                 }
                                                                         )
