@@ -1804,10 +1804,24 @@
                                                                                 {
                                                                                     name = "foobar-stash" ;
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                    text =
-                                                                                        ''
-                                                                                            echo hi
-                                                                                        '' ;
+                                                                                    let
+                                                                                        widget =
+                                                                                            stash2.lib.implementation
+                                                                                                {
+                                                                                                    current-time = config.personal.current-time ;
+                                                                                                    functions = { } ;
+                                                                                                    nixpkgs = nixpkgs ;
+                                                                                                    system = system ;
+                                                                                                    visitor = visitor ;
+                                                                                                    user = config.personal.name ;
+                                                                                                    working-directory = "/tmp" ;
+                                                                                                } ;
+                                                                                        xxx = widget { foobar = x : x ; } ;
+                                                                                        in
+                                                                                        text =
+                                                                                            ''
+                                                                                                echo ${ xxx.names.foobar }
+                                                                                            '' ;
                                                                                 }
                                                                         )
                                                                     ] ;
