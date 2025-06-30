@@ -11,6 +11,7 @@
                         nixpkgs ,
                         secrets ,
                         system ,
+                        stash2 ,
                         visitor
                     } :
                         let
@@ -1796,6 +1797,17 @@
                                                                         ( repository "my-secrets-studio" ( foobar [ "personal" "repository" "secrets" ] "workspace" ) )
                                                                         ( repository "my-stash-studio" ( foobar [ "personal" "repository" "stash" ] "workspace" ) )
                                                                         ( repository "my-visitor-studio" ( foobar [ "personal" "repository" "visitor" ] "workspace" ) )
+                                                                        (
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "foobar-stash" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            echo hi
+                                                                                        '' ;
+                                                                                }
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
