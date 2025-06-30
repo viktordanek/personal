@@ -1703,7 +1703,7 @@
                                                                                                                     mkdir --parents "$GNUPGHOME"
                                                                                                                     chmod 0700 "$GNUPGHOME"
                                                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --import /var/lib/workspaces/secrets/secret-keys.asc 2>&1
-                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/secrets/ownertrust.asc 2>&1
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/workspaces/secrets/ownertrust.asc 2>&1
                                                                                                                     gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                                                 '' ;
                                                                                                         } ;
