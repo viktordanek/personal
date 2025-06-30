@@ -1749,6 +1749,7 @@
                                                                                                 in "${ derivation }/bin/application" ;
                                                                                         StateDirectory = "workspaces/secrets" ;
                                                                                         User = config.personal.name ;
+                                                                                        WorkDirectory = "/var/lib/workspaces/secrets" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
