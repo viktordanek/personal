@@ -1698,7 +1698,8 @@
                                                                                                             runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    export GNUPGHOME=$( pwd )/dot-gnupg
+                                                                                                                    GNUPGHOME=$( pwd )/dot-gnupg
+                                                                                                                    export GNUPGHOME
                                                                                                                     mkdir --parents "$GNUPGHOME"
                                                                                                                     chmod 0700 "$GNUPGHOME"
                                                                                                                     age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
