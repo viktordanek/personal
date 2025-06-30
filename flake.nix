@@ -11,7 +11,6 @@
                         nixpkgs ,
                         secrets ,
                         system ,
-                        stash2 ,
                         visitor
                     } :
                         let
@@ -1683,6 +1682,102 @@
                                                             {
                                                                 services =
                                                                     {
+                                                                        dot-gnupg =
+                                                                            {
+                                                                                after = [ "network.target" "secrets.service" ] ;
+                                                                                requires = [ "secrets.service" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/dot-gnupg" ;
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    export GNUPGHOME=$( pwd )/dot-gnupg
+                                                                                                                    mkdir --parents "$GNUPGHOME"
+                                                                                                                    chmod 0700 "$GNUPGHOME"
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/secret-keys.asc ${ secrets }/secret-keys.asc.age
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import "/work/secret-keys.asc" 2>&1
+                                                                                                                    age --decrypt --identity ${ config.personal.agenix } --output /work/ownertrust.asc ${ secrets }/ownertrust.asc.age
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /work/ownertrust.asc 2>&1
+                                                                                                                    gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application" ;
+                                                                                        User = config.personal.name ;
+                                                                                        WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
+                                                                        secrets =
+                                                                            {
+                                                                                after = [ "network.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/secrets" ;
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.findutils pkgs.gnupg ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    find ${ secrets } -type f -name "*.age" | while read -r FILE
+                                                                                                                    do
+                                                                                                                        RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
+                                                                                                                        BASENAME=$( basename $FILE )
+                                                                                                                        RELATIVE_DIRECTORY=$( dirname $RELATIVE_PATH )
+                                                                                                                        mkdir --parents $RELATIVE_DIRECTORY
+                                                                                                                        age --decrypt --identity ${ config.personal.agenix } --output $RELATIVE_PATH $FILE
+                                                                                                                        chmod 0400 $RELATIVE_PATH
+                                                                                                                    done
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application" ;
+                                                                                        User = config.personal.name ;
+                                                                                        WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
+                                                                        setup =
+                                                                            {
+                                                                                after = [ "network.target" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                    } ;
+                                                                                wants = [ "secrets.service" "dot-gnupg.service" ] ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
+                                                                        teardown =
+                                                                            {
+                                                                                after = [ "network.target" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ pkgs.gnutar pkgs.zstd ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    tar --create --file=- . | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application" ;
+                                                                                        User = config.personal.name ;
+                                                                                        WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                    } ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                            } ;
                                                                         stash-cleanup =
                                                                             {
                                                                                 after = [ "network.target" ] ;
@@ -1737,6 +1832,20 @@
                                                                     } ;
                                                                 timers =
                                                                     {
+                                                                        setup =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = "hourly" ;
+                                                                                    } ;
+                                                                            } ;
+                                                                        teardown =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = "daily" ;
+                                                                                    } ;
+                                                                            } ;
                                                                         stash-cleanup =
                                                                             {
                                                                                 timerConfig =
@@ -1809,31 +1918,6 @@
                                                                                         ''
                                                                                             exec date --date @${ builtins.toString current-time } "$@"
                                                                                         '' ;
-                                                                                }
-                                                                        )
-                                                                        (
-                                                                            pkgs.writeShellApplication
-                                                                                {
-                                                                                    name = "foobar-stash" ;
-                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                    text =
-                                                                                        let
-                                                                                            xx =
-                                                                                                stash2.lib.implementation
-                                                                                                    {
-                                                                                                        arguments = { } ;
-                                                                                                        nixpkgs = nixpkgs ;
-                                                                                                        stash = { foobar = x : { outputs = [ "target" ] ; } ; } ;
-                                                                                                        system = system ;
-                                                                                                        user = config.personal.name ;
-                                                                                                        visitor = visitor ;
-                                                                                                        working-directory = "/tmp" ;
-                                                                                                    } ;
-                                                                                            in
-                                                                                                ''
-                                                                                                    echo hi
-                                                                                                    echo ${ xx.outputs.foobar.target }
-                                                                                                '' ;
                                                                                 }
                                                                         )
                                                                     ] ;
@@ -1947,17 +2031,6 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar =
-                                                        stash2.lib.test
-                                                            {
-                                                                nixpkgs = nixpkgs ;
-                                                                stash = { foobar = x : { outputs = [ "target" ] ; } ; } ;
-                                                                system = system ;
-                                                                visitor = visitor ;
-                                                            }
-                                                            {
-                                                                outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ;
-                                                            } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
