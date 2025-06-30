@@ -1823,6 +1823,7 @@
                                                                                                     {
                                                                                                         arguments = { } ;
                                                                                                         nixpkgs = nixpkgs ;
+                                                                                                        stash = { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                                                         system = system ;
                                                                                                         user = config.personal.name ;
                                                                                                         visitor = visitor ;
@@ -1950,10 +1951,12 @@
                                                         stash2.lib.test
                                                             {
                                                                 nixpkgs = nixpkgs ;
-                                                                outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ;
                                                                 stash = { foobar = x : { outputs = [ "target" ] ; } ; } ;
                                                                 system = system ;
                                                                 visitor = visitor ;
+                                                            }
+                                                            {
+                                                                outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ;
                                                             } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
