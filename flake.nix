@@ -1806,9 +1806,21 @@
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
                                                                                         let
+                                                                                            xx =
+                                                                                                stash2.lib
+                                                                                                    {
+                                                                                                        arguments = { } ;
+                                                                                                        current-time = config.personal.current-time ;
+                                                                                                        nixpkgs = nixpkgs ;
+                                                                                                        system = system ;
+                                                                                                        user = config.personal.name ;
+                                                                                                        visitor = visitor ;
+                                                                                                        working-directory = "/tmp" ;
+                                                                                                    } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
+                                                                                                    echo ${ builtins.typeOf xx }
                                                                                                 '' ;
                                                                                 }
                                                                         )
