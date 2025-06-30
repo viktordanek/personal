@@ -572,8 +572,8 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.secrets.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/worktree \
-                                                                                                                                            --override-input visitor ${ dependencies.visitor.workspace }/worktree \
+                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/work-tree \
+                                                                                                                                            --override-input visitor ${ dependencies.visitor.workspace }/work-tree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
@@ -1805,9 +1805,29 @@
                                                                                     name = "foobar-stash" ;
                                                                                     runtimeInputs = [ pkgs.coreutils ] ;
                                                                                     text =
-                                                                                        ''
-                                                                                            echo hi
-                                                                                        '' ;
+                                                                                        let
+                                                                                            xx =
+                                                                                                stash2.lib
+                                                                                                    {
+                                                                                                        arguments = { } ;
+                                                                                                        current-time = config.personal.current-time ;
+                                                                                                        nixpkgs = nixpkgs ;
+                                                                                                        system = system ;
+                                                                                                        user = config.personal.name ;
+                                                                                                        visitor = visitor ;
+                                                                                                        working-directory = "/tmp" ;
+                                                                                                    } ;
+                                                                                            xxx = xx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    echo hi
+                                                                                                    echo ${ builtins.typeOf xx }
+                                                                                                    echo ${ builtins.typeOf xxx }
+                                                                                                    echo ${ builtins.typeOf xxx.outputs }
+                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar }
+                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar.target }
+                                                                                                    echo ${ xxx.outputs.foobar.target }
+                                                                                                '' ;
                                                                                 }
                                                                         )
                                                                     ] ;
@@ -1921,6 +1941,7 @@
                                                 } ;
                                             in
                                                 {
+                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
