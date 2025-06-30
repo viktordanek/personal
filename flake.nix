@@ -1732,8 +1732,8 @@
                                                                                                                 ''
                                                                                                                     cat > /mount/config <<EOF
                                                                                                                     Host github.com
-                                                                                                                    IdentityFile ${ /var/lib/workspaces/secrets/identity }
-                                                                                                                    UserKnownHostsFile ${ /var/lib/workspaces/secrets/known-hosts }
+                                                                                                                    IdentityFile /var/lib/workspaces/secrets/identity
+                                                                                                                    UserKnownHostsFile /var/lib/workspaces/secrets/known-hosts
                                                                                                                     StrictHostKeyChecking true
                                                                                                                     EOF
                                                                                                                     chmod 0400 /mount/identity /mount/known-hosts /mount/config
