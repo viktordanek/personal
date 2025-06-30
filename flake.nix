@@ -1817,11 +1817,11 @@
                                                                                                         user = config.personal.name ;
                                                                                                         working-directory = "/tmp" ;
                                                                                                     } ;
-                                                                                            xxx = widget { foobar = x : x ; } ;
+                                                                                            xxx = widget.names { foobar = x : x ; } ;
                                                                                             in
                                                                                                 ''
                                                                                                     echo hi
-                                                                                                    echo ${ xxx.names.foobar }
+                                                                                                    echo ${ xxx.foobar }
                                                                                                 '' ;
                                                                                 }
                                                                         )
