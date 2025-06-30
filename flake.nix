@@ -813,8 +813,6 @@
                                                                                                     git checkout origin/main 2>&1
                                                                                                 else
                                                                                                     git checkout -b main 2>&1
-                                                                                                    git commit -m "" --allow-empty --allow-empty-message
-                                                                                                    git push origin HEAD
                                                                                                 fi
                                                                                                 git checkout -b "scratch/$( uuidgen )"
                                                                                             '' ;
