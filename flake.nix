@@ -572,7 +572,7 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.secrets.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/work-tree \
+                                                                                                                                            --override-input stash ${ dependencies.stash.workspace }/work-tree \
                                                                                                                                             --override-input visitor ${ dependencies.visitor.workspace }/work-tree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
@@ -811,7 +811,7 @@
                                                                                                 git config user.name "Viktor Danek"
                                                                                                 ln --symbolic ${ post-commit }/bin/post-commit "$GIT_DIR/hooks/post-commit"
                                                                                                 git remote add origin git@github.com:viktordanek/stash.git
-                                                                                                if git getch origin main 2>&1
+                                                                                                if git fetch origin main 2>&1
                                                                                                 then
                                                                                                     git checkout origin/main 2>&1
                                                                                                 else
@@ -1941,7 +1941,7 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
+                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
