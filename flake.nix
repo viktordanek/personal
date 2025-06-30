@@ -572,8 +572,8 @@
                                                                                                                                         nix flake check \
                                                                                                                                             --override-input personal ${ dependencies.personal.workspace }/work-tree \
                                                                                                                                             --override-input secrets ${ dependencies.secrets.workspace }/work-tree \
-                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/worktree \
-                                                                                                                                            --override-input visitor ${ dependencies.visitor.workspace }/worktree \
+                                                                                                                                            --override-input secrets ${ dependencies.stash.workspace }/work-tree \
+                                                                                                                                            --override-input visitor ${ dependencies.visitor.workspace }/work-tree \
                                                                                                                                             ${ outputs.workspace }/work-tree
                                                                                                                                     '' ;
                                                                                                                             } ;
