@@ -1764,7 +1764,7 @@
                                                                                                                     do
                                                                                                                         RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
                                                                                                                         RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                        STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH" "%" "." "age" "}" ] }
+                                                                                                                        STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
                                                                                                                         cat >> $out/scripts/application <<EOF
                                                                                                                         mkdir --parents "$RELATIVE_DIRECTORY"
                                                                                                                         age --decrypt --identity "${ config.personal.agenix }" --output "$RELATIVE_PATH" "$FILE"
