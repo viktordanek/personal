@@ -1741,7 +1741,7 @@
                                                                                                                     makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
                                                                                                                 ''  ;
                                                                                                             name = "derivation" ;
-                                                                                                            nativeBuildInputs = [ pkgs.coreutils pkgs.findutils ] ;
+                                                                                                            nativeBuildInputs = [ pkgs.coreutils pkgs.findutils pkgs.makeWrapper ] ;
                                                                                                             src = ./. ;
                                                                                                         } ;
                                                                                                 in "${ derivation }/bin/application" ;
