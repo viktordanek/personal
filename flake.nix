@@ -1826,6 +1826,7 @@
                                                                                                     echo ${ builtins.typeOf xxx.outputs }
                                                                                                     echo ${ builtins.typeOf xxx.outputs.foobar }
                                                                                                     echo ${ builtins.typeOf xxx.outputs.foobar.target }
+                                                                                                    echo ${ xxx.outputs.foobar.target }
                                                                                                 '' ;
                                                                                 }
                                                                         )
