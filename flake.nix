@@ -2162,7 +2162,7 @@
                                                                     } ;
                                                                 jrnl =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/6787fa9629bad98dde0ad1a1ae5ee50f4dab6a81fa543ee68275307" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/26cd15c3965a659263334b9ffc8b01020a1e5b6fe84fddc66c98b51" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
