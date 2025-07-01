@@ -2145,7 +2145,6 @@
                                                                                                     runtimeInputs = [ pkgs.pass ] ;
                                                                                                     text =
                                                                                                         ''
-                                                                                                            export GNUPGHOME=${ password-store-dir }
                                                                                                             ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
                                                                                                             FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
 
