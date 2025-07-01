@@ -1818,7 +1818,6 @@
                                                                     [
                                                                         pkgs.git
                                                                         pkgs.git-crypt
-                                                                        pkgs.jrnl
                                                                         setup
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
@@ -2111,6 +2110,7 @@
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
+                                                                        jrnl
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
