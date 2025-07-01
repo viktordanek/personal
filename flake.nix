@@ -1734,7 +1734,7 @@
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     git init
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -vvv -F /var/lib/workspaces/dot-ssh/config"
                                                                                                                     git config user.email ${ config.personal.email }
                                                                                                                     git config user.name "${ config.personal.name }"
                                                                                                                     git remote add origin ${ config.personal.pass.remote }
