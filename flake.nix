@@ -1717,10 +1717,10 @@
                                                                         dot-password-store =
                                                                             {
                                                                                 after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                conditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                 requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 application =
