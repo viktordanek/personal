@@ -1592,7 +1592,7 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "application" ;
-                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             export GNUPGHOME=/var/lib/workspaces/dot-gnupg
@@ -1817,6 +1817,7 @@
                                                                     [
                                                                         pkgs.git
                                                                         pkgs.git-crypt
+                                                                        pkgs.jrnl
                                                                         setup
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
