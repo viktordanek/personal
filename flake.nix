@@ -1712,6 +1712,10 @@
                                                                                         User = config.personal.name ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-gnupg" ;
                                                                                     } ;
+                                                                                unitConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-gnupg" ;
+                                                                                    } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
                                                                         dot-password-store =
@@ -1746,6 +1750,7 @@
                                                                                     {
                                                                                         ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
+                                                                                wantedBy = [ "multi-user.service" ] ;
                                                                             } ;
                                                                         dot-ssh =
                                                                             {
@@ -1753,7 +1758,6 @@
                                                                                 requires = [ "secrets.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-ssh" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 application =
@@ -1776,6 +1780,10 @@
                                                                                         StateDirectory = "workspaces/dot-ssh" ;
                                                                                         User = config.personal.name ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-ssh" ;
+                                                                                    } ;
+                                                                                unitConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-ssh" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
@@ -1815,6 +1823,10 @@
                                                                                         StateDirectory = "workspaces/secrets" ;
                                                                                         User = config.personal.name ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/secrets" ;
+                                                                                    } ;
+                                                                                unitConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/secrets" ;
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
