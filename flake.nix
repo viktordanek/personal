@@ -1751,6 +1751,63 @@
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
+                                                                                ledger =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.ledger.remote }
+                                                                                                                            if git fetch origin ${ config.personal.ledger.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.ledger.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.ledger.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/ledger" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/ledger" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/ledger" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 secrets =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
@@ -2337,6 +2394,67 @@
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
                                                                                 }
+                                                                        )                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/chromium add config data
+                                                                                                            git -C /var/lib/workspaces/chromium commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    chromium "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/chromium \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/chromium/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/chromium/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.chromium ] }
+                                                                                            '' ;
+                                                                                    name = "chromium" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    touch "$LEDGER_FILE"
+                                                                                                    ledger $@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/ledger \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.ledger ] }
+                                                                                            '' ;
+                                                                                    name = "ledger" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
                                                                         )
                                                                     ] ;
                                                                 password = config.personal.password ;
@@ -2379,6 +2497,7 @@
                                                                 ledger =
                                                                     {
                                                                         branch = lib.mkOption { default = "artifact/0aa409110e55f05015414c3c8cbf05505392815bd992acb86958db8" ; type = lib.types.str ; } ;
+                                                                        file = lib.mkOption { default = "ledger.txt" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
