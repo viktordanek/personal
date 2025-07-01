@@ -1510,13 +1510,13 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/jrnl" ;
+                                                                                                StateDirectory = "workspaces/calcurse" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/jrnl" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/calcurse" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/jrnl" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/calcurse" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
