@@ -1679,6 +1679,23 @@
                                                                     } ;
                                                             } ;
                                                         systemd =
+                                                            let
+                                                                post-commit =
+                                                                    let
+                                                                        application =
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "post-commit" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            while ! git push origin HEAD
+                                                                                            do
+                                                                                                sleep 1s
+                                                                                            done
+                                                                                        '' ;
+                                                                                } ;
+                                                                        in "${ application }/bin/post-commit" ;
                                                             {
                                                                 services =
                                                                     {
@@ -1734,15 +1751,13 @@
                                                                                                             text =
                                                                                                                 ''
                                                                                                                     git init
-                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -vvv -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
                                                                                                                     git config user.email ${ config.personal.email }
                                                                                                                     git config user.name "${ config.personal.name }"
+                                                                                                                    ln --symbolic ${ post-commit } .git/hooks
                                                                                                                     git remote add origin ${ config.personal.pass.remote }
-                                                                                                                    echo 007
                                                                                                                     git fetch origin ${ config.personal.pass.branch } 2>&1
-                                                                                                                    echo 008
                                                                                                                     git checkout ${ config.personal.pass.branch } 2>&1
-                                                                                                                    echo 009
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
@@ -1777,6 +1792,13 @@
                                                                                                                     IdentityFile /var/lib/workspaces/secrets/dot-ssh/boot/identity.asc
                                                                                                                     UserKnownHostsFile /var/lib/workspaces/secrets/dot-ssh/boot/known-hosts.asc
                                                                                                                     StrictHostKeyChecking true
+
+                                                                                                                    HostName 192.168.1.202
+                                                                                                                    Host mobile
+                                                                                                                    IdentityFile /var/lib/workspaces/secrets/dot-ssh/boot/identity.asc
+                                                                                                                    UserKnownHostsFile /var/lib/workspaces/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                    StrictHostKeyChecking true
+                                                                                                                    Port 202
                                                                                                                     EOF
                                                                                                                     chmod 0400 config
                                                                                                                 '' ;
