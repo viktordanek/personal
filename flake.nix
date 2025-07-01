@@ -2213,7 +2213,7 @@
                                                                                                       }
 
                                                                                                       # Replace completion function for pass
-                                                                                                      complete -F __pass_ext_completion pass
+                                                                                                      complete -o default -F __pass_ext_completion -o bashdefault pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
