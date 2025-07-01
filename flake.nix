@@ -2221,13 +2221,33 @@
 
                                                                                                         _pass
                                                                                                       }
+                                                                                                        # Patch top-level subcommand completion
+                                                                                                        __pass_top_level_completion() {
+                                                                                                          local cur prev words cword
+                                                                                                          _init_completion || return
 
-                                                                                                      # Replace completion function for pass
-                                                                                                      # Remove any existing completion
-                                                                                                      complete -r pass 2>/dev/null || true
+                                                                                                          local commands="init insert edit generate show rm grep find cp mv git push pull sync otp import ls help version phonetic expiry warn"
+                                                                                                          COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
+                                                                                                        }
 
-                                                                                                      # Register the new one
-                                                                                                      complete -o default -F __pass_ext_completion pass
+                                                                                                        # Remove existing completion
+                                                                                                        complete -r pass 2>/dev/null || true
+
+                                                                                                        # Register patched completion for pass:
+                                                                                                        # If first word after 'pass', do top-level completion
+                                                                                                        # Otherwise, use __pass_ext_completion for subcommand completion
+                                                                                                        _pass_combined_completion() {
+                                                                                                          local cword
+                                                                                                          _get_comp_words_by_ref -n =: cur prev words cword
+
+                                                                                                          if (( cword == 1 )); then
+                                                                                                            __pass_top_level_completion
+                                                                                                          else
+                                                                                                            __pass_ext_completion
+                                                                                                          fi
+                                                                                                        }
+
+                                                                                                        complete -F _pass_combined_completion pass
 
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
