@@ -2226,7 +2226,7 @@
                                                                                                         ${ pkgs.writeShellScript "phonetic" phonetic } \
                                                                                                         $out/extensions/phonetic.bash \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspacess/dot-password-store-dir \
-                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils ] }
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
