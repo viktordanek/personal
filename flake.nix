@@ -2202,11 +2202,11 @@
                                                                                                         local cur prev words cword
                                                                                                         _init_completion || return
 
-                                                                                                        local subcommand="${builtins.concatStringsSep "" [ "$" "{" "COMP_WORDS[1]" "}" ]}"
-                                                                                                        if [[ "${builtins.concatStringsSep "" [ "$" "{" "subcommand" "}" ]}" == "phonetic" ]]; then
-                                                                                                          ${builtins.concatStringsSep "" [ "$" "{" "COMP_WORDS[1]" "}" ]}="show"
-                                                                                                          COMP_LINE="${builtins.concatStringsSep "" [ "$" "{" "COMP_LINE/phonetic/show" "}" ]}"
-                                                                                                          COMP_POINT=${builtins.concatStringsSep "" [ "$" "{" "#COMP_LINE" "}" ]}
+                                                                                                        local subcommand="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}"
+                                                                                                        if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]]; then
+                                                                                                          ${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}="show"
+                                                                                                          COMP_LINE="${builtins.concatStringsSep "" [ "\\" ""$" "{" "COMP_LINE/phonetic/show" "}" ]}"
+                                                                                                          COMP_POINT=${builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ]}
                                                                                                         fi
 
                                                                                                         _pass
