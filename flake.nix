@@ -2226,8 +2226,8 @@
                                                                                                         --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                     makeWrapper \
-                                                                                                        ${ pkgs.writeShellScript "warning" warning } \
-                                                                                                        $out/extensions/warning.bash \
+                                                                                                        ${ pkgs.writeShellScript "warn" warn } \
+                                                                                                        $out/extensions/warn.bash \
                                                                                                         --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
                                                                                                         --set GNUPGHOME "$GNUPGHOME" \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gnupg pkgs.pass ] }
