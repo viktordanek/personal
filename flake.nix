@@ -2048,7 +2048,7 @@
                                                                                                 --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
                                                                                                 --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols }
                                                                                             mkdir --parents $out/share/bash-completion/completions
-                                                                                            ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completions/completions
+                                                                                            ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                             mkdir --parents $out/share/man/man1
                                                                                             ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
                                                                                         '' ;
