@@ -2191,41 +2191,28 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
-# Add custom subcommands
+# Set up custom subcommands (they're no-arg extensions)
 _pass_custom_subcommands="phonetic expiry warn"
 
-# Source upstream pass completion
-# This defines `_pass` and registers the default `complete -F _pass pass`
+# Source the original completion logic
 source ${pkgs.pass}/share/bash-completion/completions/pass
 
-# Override completion function for `pass`
-__pass_custom_complete()
-{
+# Wrap existing _pass function to handle phonetic like show
+__pass_with_phonetic_completion() {
   local cur prev words cword
   _init_completion || return
 
-  # handle subcommand completions
-  local subcommand="${ builtins.concatStringsSep "" [ "$" "{" "words[1]" "}" ] }"
+  if [[ ${ builtins.concatStringsSep "" [ "$" "{" "COMP_WORDS[1]" "}" ] } == phonetic ]]; then
+    COMP_WORDS[1]=show
+    COMP_LINE=${ builtins.concatStringsSep "" [ "$" "{" "COMP_LINE/phonetic/show" "}" ] }
+    COMP_POINT=${ builtins.concatStringsSep "" [ "$" "{" "#COMP_LINE" "}" ] }
+  fi
 
-  case "$subcommand" in
-    phonetic)
-      # Replace subcommand with "show" and call original completion
-      words[1]="show"
-      _pass
-      ;;
-    expiry|warn)
-      # No completion
-      return 0
-      ;;
-    *)
-      # Fallback to original
-      _pass
-      ;;
-  esac
+  _pass
 }
 
-# Override only after sourcing original one
-complete -F __pass_custom_complete pass
+# Rebind only the completion function — keep original _pass
+complete -F __pass_with_phonetic_completion pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
