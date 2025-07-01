@@ -1580,6 +1580,63 @@
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
+                                                                                jrnl =
+                                                                                    {
+                                                                                        after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.jrnl.remote }
+                                                                                                                            if git fetch origin ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                touch data/.gitkeep
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/workspaces/jrnl" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/jrnl" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/jrnl" ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 secrets =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
