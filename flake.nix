@@ -2207,6 +2207,7 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
+                                                                                                    _pass_custom_subcommands="phonetic expiry warn"
                                                                                                     export PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
                                                                                                     source ${ pkgs.pass }/share/bash-completion/completions/pass
                                                                                                     EOF
