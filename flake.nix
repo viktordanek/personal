@@ -1733,15 +1733,10 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    echo 002
                                                                                                                     git init
-                                                                                                                    echo 003
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
-                                                                                                                    echo 004
                                                                                                                     git config user.email ${ config.personal.email }
-                                                                                                                    echo 005
                                                                                                                     git config user.name "${ config.personal.name }"
-                                                                                                                    echo 006
                                                                                                                     git remote add origin ${ config.personal.pass.remote }
                                                                                                                     echo 007
                                                                                                                     git fetch origin ${ config.personal.pass.branch } 2>&1
@@ -1752,6 +1747,7 @@
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
                                                                                         StateDirectory = "workspaces/dot-password-store" ;
+                                                                                        User = config.personal.name ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
                                                                                 unitConfig =
