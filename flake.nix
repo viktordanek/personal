@@ -1750,7 +1750,7 @@
                                                                                     {
                                                                                         ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
-                                                                                wantedBy = [ "multi-user.service" ] ;
+                                                                                wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
                                                                         dot-ssh =
                                                                             {
