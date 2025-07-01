@@ -1733,7 +1733,7 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    chmod 0700 .
+                                                                                                                    chown ${ config.personal.name }:${ config.personal.name } .
                                                                                                                     git init
                                                                                                                     git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
                                                                                                                     git config user.email ${ config.personal.email }
