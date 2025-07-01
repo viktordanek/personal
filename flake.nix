@@ -1298,11 +1298,6 @@
                                                                                 group = "root" ;
                                                                             } ;
                                                                     } ;
-                                                                systemPackages =
-                                                                    [
-                                                                        pkgs.pass
-                                                                        pkgs.bash-completion
-                                                                    ] ;
                                                                 variables =
                                                                     {
                                                                     } ;
