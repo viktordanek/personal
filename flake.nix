@@ -2226,6 +2226,7 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
+                                                                                                            git -C /var/lib/workspaces/calcurse add config data
                                                                                                             git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
@@ -2255,6 +2256,7 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
+                                                                                                            git -C /var/lib/workspaces/calcurse add config data
                                                                                                             git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
@@ -2285,6 +2287,7 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
+                                                                                                            git -C /var/lib/workspaces/chromium add config data
                                                                                                             git -C /var/lib/workspaces/chromium commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
@@ -2314,6 +2317,7 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
+                                                                                                            git -C /var/lib/workspaces/jrnl add config data
                                                                                                             git -C /var/lib/workspaces/jrnl commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
