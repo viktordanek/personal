@@ -1582,7 +1582,7 @@
                                                                                     } ;
                                                                                 jrnl =
                                                                                     {
-                                                                                        after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                         requires = [ "dot-ssh.service" ] ;
                                                                                         serviceConfig =
                                                                                             {
@@ -1635,6 +1635,7 @@
                                                                                             {
                                                                                                 ConditionPathExists = "!/var/lib/workspaces/jrnl" ;
                                                                                             } ;
+                                                                                        wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
                                                                                 secrets =
