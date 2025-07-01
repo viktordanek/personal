@@ -2230,7 +2230,7 @@
                                                                                                         $out/extensions/warn.bash \
                                                                                                         --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
                                                                                                         --set GNUPGHOME "$GNUPGHOME" \
-                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gnupg pkgs.pass ] }
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gawk pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
