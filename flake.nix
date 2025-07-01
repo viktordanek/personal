@@ -2224,7 +2224,7 @@
                                                                                                     mkdir $out/extensions
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.writeShellScript "expiry" expiry } \
-                                                                                                        $out/extensions/expiry \
+                                                                                                        $out/extensions/expiry.bash \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
                                                                                                         --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.pass ] }
