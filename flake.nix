@@ -1717,7 +1717,7 @@
                                                                         dot-password-store =
                                                                             {
                                                                                 after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
-                                                                                conditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
+                                                                                ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                 requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
