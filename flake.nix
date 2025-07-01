@@ -1720,7 +1720,6 @@
                                                                                 requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 application =
@@ -1742,6 +1741,10 @@
                                                                                                 in "${ application }/bin/application" ;
                                                                                         StateDirectory = "workspaces/pass" ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-password-store" ;
+                                                                                    } ;
+                                                                                unitConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
                                                                             } ;
                                                                         dot-ssh =
