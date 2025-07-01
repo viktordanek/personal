@@ -2042,7 +2042,7 @@
                                                                                             makeWrapper \
                                                                                                 ${ pkgs.pass }/bin/pass \
                                                                                                 $out/bin/pass \
-                                                                                                --set PASSWORD_STORE_DIR /var/lib/workspace/dot-password-store \
+                                                                                                --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
                                                                                                 --set PASSWORD_STORE_GPG_OPTS "--homedir /var/lib/workspace/dot-gnupg" \
                                                                                                 --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length } \
                                                                                                 --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
