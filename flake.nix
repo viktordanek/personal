@@ -2438,7 +2438,7 @@
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     touch "$LEDGER_FILE"
-                                                                                                    ledger $@"
+                                                                                                    ledger "$@"
                                                                                                 '' ;
                                                                                         in
                                                                                             ''
