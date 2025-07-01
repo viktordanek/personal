@@ -2198,7 +2198,7 @@
                                                                                                       local cur prev words cword
                                                                                                       _init_completion || return
 
-                                                                                                      case "\${words[1]}" in
+                                                                                                      case "${ builtins.concatStringsSep "" [ "$" "{" "words[1]" "}" ] } in
                                                                                                         phonetic)
                                                                                                           words[1]=show
                                                                                                           _pass
