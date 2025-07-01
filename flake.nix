@@ -2226,6 +2226,7 @@
                                                                                                         ${ pkgs.writeShellScript "phonetic" phonetic } \
                                                                                                         $out/extensions/phonetic.bash \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspacess/dot-password-store-dir \
+                                                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir /var/lib/workspaces/dot-gnupg" \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
