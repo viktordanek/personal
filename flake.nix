@@ -1688,7 +1688,7 @@
                                                                                 requires = [ "secrets.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/dot-gnupg" ;
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-gnupg" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 application =
@@ -1714,13 +1714,43 @@
                                                                                     } ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
+                                                                        dot-password-store =
+                                                                            {
+                                                                                after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                serviceConfig =
+                                                                                    {
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
+                                                                                        ExecStart =
+                                                                                            let
+                                                                                                application =
+                                                                                                    pkgs.writeShellApplication
+                                                                                                        {
+                                                                                                            name = "application" ;
+                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                            text =
+                                                                                                                ''
+                                                                                                                    git init
+                                                                                                                    git config core.sshCommand "${ pkgs.openssh }/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                    git config user.email ${ config.personal.email }
+                                                                                                                    git config user.name "${ config.personal.name }"
+                                                                                                                    git remote add origin ${ config.personal.pass.remote }
+                                                                                                                    git fetch origin ${ config.personal.pass.branch } 2>&1
+                                                                                                                    git checkout ${ config.personal.pass.branch } 2>&1
+                                                                                                                '' ;
+                                                                                                        } ;
+                                                                                                in "${ application }/bin/application"
+                                                                                        StateDirectory = "workspaces/pass" ;
+                                                                                        WorkingDirectory = "/var/lib/workspaces/dot-password-store"
+                                                                                    } ;
+                                                                            } ;
                                                                         dot-ssh =
                                                                             {
                                                                                 after = [ "network.target" "secrets.service" ] ;
                                                                                 requires = [ "secrets.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/dot-gnupg" ;
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/dot-ssh" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 application =
@@ -1751,7 +1781,7 @@
                                                                                 after = [ "network.target" ] ;
                                                                                 serviceConfig =
                                                                                     {
-                                                                                        ConditionPathExists = "!/home/${ config.personal.name }/workspaces/secrets" ;
+                                                                                        ConditionPathExists = "!/var/lib/workspaces/secrets" ;
                                                                                         ExecStart =
                                                                                             let
                                                                                                 derivation =
