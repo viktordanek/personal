@@ -2227,7 +2227,7 @@
                                                                                                           _init_completion || return
 
                                                                                                           local commands="init insert edit generate show rm grep find cp mv git push pull sync otp import ls help version phonetic expiry warn"
-                                                                                                          COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
+                                                                                                          COMPREPLY=( \$( compgen -W "$commands" -- "$cur" ) )
                                                                                                         }
 
                                                                                                         # Remove existing completion
