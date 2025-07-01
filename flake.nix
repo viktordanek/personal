@@ -2144,7 +2144,7 @@
 
                                                                                                 # Extract long key IDs from the encrypted file
                                                                                                 mapfile -t LONG_KEY_IDS < <(
-                                                                                                  pass gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                  gpg --list-packets "$FILE" 2>/dev/null \
                                                                                                   | awk '/^:pubkey enc packet:/ { print $NF }'
                                                                                                 )
 
