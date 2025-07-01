@@ -2006,7 +2006,7 @@
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/pass.1
                                                                                                     k=$(grep -n '^\.SH SIMPLE EXAMPLES' $out/pass.1 | cut -d: -f1)
-                                                                                                    head --lines $k $out/pass.1 > $out/pass.2
+                                                                                                    head --lines $(( $k - 1 )) $out/pass.1 > $out/pass.2
                                                                                                     cat >> $out/pass.2 <<EOF
 
                                                                                                     .SH EXTENSIONS
