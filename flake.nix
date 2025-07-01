@@ -1614,14 +1614,11 @@
                                                                                                                                 cat > .gitattributes <<EOF
                                                                                                                             config/** filter=git-crypt diff=git-crypt
                                                                                                                             data/** filter=git-crypt diff=git-crypt
-                                                                                                                            journal.txt filter=git-crypt diff=git-crypt
                                                                                                                             EOF
                                                                                                                                 git-crypt unlock
                                                                                                                                 mkdir config
                                                                                                                                 touch config/.gitkeep
                                                                                                                                 mkdir data
-                                                                                                                                touch data/.gitkeep
-                                                                                                                                touch journal.txt
                                                                                                                                 git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
                                                                                                                                 git commit -m "Initialize git-crypt with .gitattributes" 2>&1
                                                                                                                                 git push origin HEAD 2>&1
@@ -2116,13 +2113,24 @@
                                                                             pkgs.stdenv.mkDerivation
                                                                                 {
                                                                                     installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/jrnl commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    jrnl "$@"
+                                                                                                '' ;
                                                                                         ''
                                                                                             mkdir --parents $out/bin
                                                                                             makeWrapper \
-                                                                                                ${ pkgs.jrnl }/bin/jrnl \
+                                                                                                ${ pkgs.writeShellScript "script" script } \
                                                                                                 $out/bin/jrnl \
                                                                                                 --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
-                                                                                                --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data
+                                                                                                --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data \
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.jrnl ] }
                                                                                         '' ;
                                                                                     name = "jrnl" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
