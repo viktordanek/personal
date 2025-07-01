@@ -2251,9 +2251,10 @@
                                                                                                         complete -F _pass_combined_completion pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
-                                                                                                    date > $out/FLAG2
-                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/pass
-                                                                                                    cat >> $out/pass <<EOF
+                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/pass.1
+                                                                                                    head --lines $k $out/pass.1 > $out/pass.2
+                                                                                                    k=$(grep -n '^\.SH SIMPLE EXAMPLES' $out/pass.1 | cut -d: -f1)
+                                                                                                    cat >> $out/pass.2 <<EOF
 
                                                                                                     .SH EXTENSIONS
                                                                                                     The following custom subcommands are added:
@@ -2271,7 +2272,8 @@
                                                                                                     Display warnings about password store status.
 
                                                                                                     EOF
-                                                                                                    gzip --to-stdout $out/pass > $out/share/man/man1/pass.1.gz
+                                                                                                    tail --lines -$k $out/pass.1 >> $out/pass.2
+                                                                                                    gzip --to-stdout $out/pass.2 > $out/share/man/man1/pass.1.gz
                                                                                                     # rm $out/pass
                                                                                                     mkdir $out/extensions
                                                                                                     makeWrapper \
@@ -2294,7 +2296,7 @@
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gawk pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
-                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused pkgs.gzip ] ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.gnugrep pkgs.makeWrapper pkgs.gnused pkgs.gzip ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
