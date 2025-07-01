@@ -1877,7 +1877,6 @@
                                                                         setup
                                                                         teardown
                                                                         pkgs.jetbrains.idea-community
-                                                                        ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
                                                                         ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString current-time }" )
                                                                         ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
                                                                         ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString current-time }" )
@@ -2177,7 +2176,7 @@
                                                                                                             git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
-                                                                                                    calcurse "$@"
+                                                                                                    calcurse --config "$XDG_CONFIG_HOME" --directory "$XDG_DATA_HOME" "$@"
                                                                                                 '' ;
                                                                                         in
                                                                                             ''
@@ -2185,11 +2184,12 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/calcurse \
+                                                                                                    --set CALCURSE_EDITOR ${ pkgs.micro }/bin/micro \
                                                                                                     --set XDG_CONFIG_HOME /var/lib/workspaces/calcurse/config \
                                                                                                     --set XDG_DATA_HOME /var/lib/workspaces/calcurse/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
                                                                                             '' ;
-                                                                                    name = "jrnl" ;
+                                                                                    name = "calcurse" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
                                                                                 }
