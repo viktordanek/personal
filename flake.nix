@@ -2047,9 +2047,13 @@
                                                                                                 --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length } \
                                                                                                 --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
                                                                                                 --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols }
+                                                                                            mkdir --parents $out/share/bash-completions/completions
+                                                                                            ln --symbolic ${ pkgs.pass }/share/bash-completions/completions/pass $out/share/bash-completions/completions
+                                                                                            mkdir --parents $out/share/man/man1
+                                                                                            ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
                                                                                         '' ;
                                                                                     name = "pass" ;
-                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
