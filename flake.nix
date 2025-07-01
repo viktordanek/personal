@@ -2213,7 +2213,12 @@
                                                                                                       }
 
                                                                                                       # Replace completion function for pass
-                                                                                                      complete -o default -F __pass_ext_completion -o bashdefault pass
+                                                                                                      # Remove any existing completion
+                                                                                                      complete -r pass 2>/dev/null || true
+
+                                                                                                      # Register the new one
+                                                                                                      complete -F __pass_ext_completion pass
+
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
