@@ -1567,13 +1567,13 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/calcurse" ;
+                                                                                                StateDirectory = "workspaces/chromium" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/calcurse" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/chromijm" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/calcurse" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/chromium" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
