@@ -2497,7 +2497,7 @@
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 ledger =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/4a519cfd23e5858f105c532a4e36013334d5091c47002cd81bb3914" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/32c193fb3a5310462e48a7c5174d9c3110f83077d13de52a9a80a40" ; type = lib.types.str ; } ;
                                                                         file = lib.mkOption { default = "ledger.txt" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
