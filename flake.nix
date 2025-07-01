@@ -2191,32 +2191,41 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
-                                                                                                    source ${ pkgs.pass }/share/bash-completion/completions/pass
-                                                                                                    _pass_custom_subcommands="phonetic expiry warn"
-                                                                                                    __pass_custom_complete()
-                                                                                                    {
-                                                                                                      local cur prev words cword
-                                                                                                      _init_completion || return
+# Add custom subcommands
+_pass_custom_subcommands="phonetic expiry warn"
 
-                                                                                                      case "${ builtins.concatStringsSep "" [ "$" "{" "words[1]" "}" ] } in
-                                                                                                        phonetic)
-                                                                                                          words[1]=show
-                                                                                                          _pass
-                                                                                                          ;;
-                                                                                                        expiry|warn)
-                                                                                                          # no special options
-                                                                                                          ;;
-                                                                                                        warn)
-                                                                                                            words[1]=show
-                                                                                                            ;;
-                                                                                                        *)
-                                                                                                          _pass
-                                                                                                          ;;
-                                                                                                      esac
-                                                                                                    }
+# Source upstream pass completion
+# This defines `_pass` and registers the default `complete -F _pass pass`
+source ${pkgs.pass}/share/bash-completion/completions/pass
 
-                                                                                                    complete -F __pass_custom_complete pass
+# Override completion function for `pass`
+__pass_custom_complete()
+{
+  local cur prev words cword
+  _init_completion || return
 
+  # handle subcommand completions
+  local subcommand="${ builtins.concatStringsSep "" [ "$" "{" "words[1]" "}" ] }"
+
+  case "$subcommand" in
+    phonetic)
+      # Replace subcommand with "show" and call original completion
+      words[1]="show"
+      _pass
+      ;;
+    expiry|warn)
+      # No completion
+      return 0
+      ;;
+    *)
+      # Fallback to original
+      _pass
+      ;;
+  esac
+}
+
+# Override only after sourcing original one
+complete -F __pass_custom_complete pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
