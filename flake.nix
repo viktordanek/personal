@@ -2110,7 +2110,23 @@
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
-                                                                        pkgs.jrnl
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        ''
+                                                                                            mkdir --parents $out/bin
+                                                                                            makeWrapper \
+                                                                                                ${ pkgs.jrnl }/bin/jrnl \
+                                                                                                $out/bin/jrnl \
+                                                                                                --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
+                                                                                                --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data
+                                                                                        '' ;
+                                                                                    name = "jrnl" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                } ;
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
