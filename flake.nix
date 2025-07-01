@@ -2442,7 +2442,7 @@
                                                                                                     ACCOUNT="$1"  # Default account name
                                                                                                     EQUITY_ACCOUNT="$2"
                                                                                                     AMOUNT="$3"  # Default amount
-                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "2:-$( date +%Y/%m/%d)" "}" ] }"
+                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "4:-$( date +%Y/%m/%d)" "}" ] }"
                                                                                                     cat > "$LEDGER_FILE" <<EOF
                                                                                                     $DATE Opening Balances
                                                                                                         $ACCOUNT         \$${AMOUNT}
