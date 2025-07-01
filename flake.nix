@@ -1790,7 +1790,8 @@
                                                                                                                                 mkdir config
                                                                                                                                 touch config/.gitkeep
                                                                                                                                 mkdir data
-                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                touch data/.gitkeep
+                                                                                                                                git add config data
                                                                                                                                 git commit -m "Initialize git-crypt with .gitattributes" 2>&1
                                                                                                                                 git push origin HEAD 2>&1
                                                                                                                             fi
@@ -2496,7 +2497,7 @@
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 ledger =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/9f2f0aca247b1e94ede20898599c6348996c50c65e6b0b47c815a79" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/4a519cfd23e5858f105c532a4e36013334d5091c47002cd81bb3914" ; type = lib.types.str ; } ;
                                                                         file = lib.mkOption { default = "ledger.txt" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
