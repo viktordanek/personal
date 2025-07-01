@@ -2131,76 +2131,68 @@
                                                                                                     echo OPEN
                                                                                                     printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
                                                                                                     echo CLOSE
-                                                                                                    pass show "$@"
-                                                                                                    echo "PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR"
-                                                                                                    echo "PASSWORD_STORE_GPG_OPTS=$PASSWORD_STORE_GPG_OPTS"
                                                                                                 '' ;
                                                                                         warn =
-                                                                                            pkgs.writeShellApplication
-                                                                                                {
-                                                                                                    name = "warn" ;
-                                                                                                    runtimeInputs = [ pkgs.pass ] ;
-                                                                                                    text =
-                                                                                                        ''
-                                                                                                            ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
-                                                                                                            FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+                                                                                            ''
+                                                                                                ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
+                                                                                                FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
 
-                                                                                                            if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                                                              echo "Usage: pass warn <entry>" >&2
-                                                                                                              exit 1
-                                                                                                            fi
+                                                                                                if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                  echo "Usage: pass warn <entry>" >&2
+                                                                                                  exit 1
+                                                                                                fi
 
-                                                                                                            # Extract long key IDs from the encrypted file
-                                                                                                            mapfile -t LONG_KEY_IDS < <(
-                                                                                                              gpg --list-packets "$FILE" 2>/dev/null \
-                                                                                                              | awk '/^:pubkey enc packet:/ { print $NF }'
-                                                                                                            )
+                                                                                                # Extract long key IDs from the encrypted file
+                                                                                                mapfile -t LONG_KEY_IDS < <(
+                                                                                                  pass gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                  | awk '/^:pubkey enc packet:/ { print $NF }'
+                                                                                                )
 
-                                                                                                            if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
-                                                                                                              echo "No encryption keys found in $FILE" >&2
-                                                                                                              exit 1
-                                                                                                            fi
+                                                                                                if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                                                  echo "No encryption keys found in $FILE" >&2
+                                                                                                  exit 1
+                                                                                                fi
 
-                                                                                                            echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
+                                                                                                echo "Encryption Long Key IDs found in $ENTRY:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
 
-                                                                                                            # Convert long key IDs to full fingerprints
-                                                                                                            mapfile -t ENCRYPTION_FPRS < <(
-                                                                                                              for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
-                                                                                                                gpg --with-colons --fingerprint "$longid" 2>/dev/null \
-                                                                                                                | awk -F: '/^fpr:/ { print $10; exit }'
-                                                                                                              done
-                                                                                                            )
+                                                                                                # Convert long key IDs to full fingerprints
+                                                                                                mapfile -t ENCRYPTION_FPRS < <(
+                                                                                                  for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                                                    gpg --with-colons --fingerprint "$longid" 2>/dev/null \
+                                                                                                    | awk -F: '/^fpr:/ { print $10; exit }'
+                                                                                                  done
+                                                                                                )
 
-                                                                                                            echo "Corresponding full fingerprints:" >&2
-                                                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
+                                                                                                echo "Corresponding full fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
 
-                                                                                                            mapfile -t CURRENT_FPRS < $PASSWORD_STORE_DIR/.gpg-id
+                                                                                                mapfile -t CURRENT_FPRS < $PASSWORD_STORE_DIR/.gpg-id
 
 
-                                                                                                            echo "Current trusted key fingerprints:" >&2
-                                                                                                            printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
+                                                                                                echo "Current trusted key fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
 
-                                                                                                            # Check if all encryption fingerprints are in current trusted keys
-                                                                                                            WARNING=0
-                                                                                                            for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                                                              if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
-                                                                                                                echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
-                                                                                                                echo "   $fpr" >&2
-                                                                                                                WARNING=1
-                                                                                                              fi
-                                                                                                            done
+                                                                                                # Check if all encryption fingerprints are in current trusted keys
+                                                                                                WARNING=0
+                                                                                                for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
+                                                                                                  if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                                                    echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
+                                                                                                    echo "   $fpr" >&2
+                                                                                                    WARNING=1
+                                                                                                  fi
+                                                                                                done
 
-                                                                                                            # Finally, show the password
-                                                                                                            pass show "$ENTRY"
+                                                                                                # Finally, show the password
+                                                                                                pass show "$ENTRY"
 
-                                                                                                            exit $WARNING
-                                                                                                        '' ;
-                                                                                                } ;
+                                                                                                exit $WARNING
+                                                                                            '' ;
                                                                                             in
                                                                                                 ''
+                                                                                                    GNUPGHOME=/var/lib/workspaces/dot-gnupg
                                                                                                     PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
-                                                                                                    PASSWORD_STORE_GPG_OPTS="--homedir /var/lib/workspaces/dot-gnupg"
+                                                                                                    PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                                     mkdir --parents $out/bin
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.pass }/bin/pass \
@@ -2233,6 +2225,12 @@
                                                                                                         --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
                                                                                                         --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.writeShellScript "warning" warning } \
+                                                                                                        $out/extensions/warning.bash \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set GNUPGHOME "$GNUPGHOME" \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
