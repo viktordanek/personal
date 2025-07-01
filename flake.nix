@@ -2251,6 +2251,7 @@
                                                                                                         complete -F _pass_combined_completion pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
+                                                                                                    date > $out/FLAG2
                                                                                                     gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/share/man/man1/pass.1
                                                                                                     cat >> $out/share/man/man1/pass.1 <<EOF
 
