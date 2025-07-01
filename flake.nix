@@ -2195,17 +2195,17 @@
                                                                                                     _pass_custom_subcommands="phonetic expiry warn"
 
                                                                                                     # Source the original completion logic
-                                                                                                    source ${pkgs.pass}/share/bash-completion/completions/pass
+                                                                                                    source ${ pkgs.pass }/share/bash-completion/completions/pass
 
                                                                                                     # Wrap existing _pass function to handle phonetic like show
                                                                                                     __pass_with_phonetic_completion() {
                                                                                                       local cur prev words cword
                                                                                                       _init_completion || return
 
-                                                                                                      if [[ ${ builtins.concatStringsSep "" [ "$" "{" "COMP_WORDS[1]" "}" ] } == phonetic ]]; then
+                                                                                                      if [[ ${ builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ] } == phonetic ]]; then
                                                                                                         COMP_WORDS[1]=show
-                                                                                                        COMP_LINE=${ builtins.concatStringsSep "" [ "$" "{" "COMP_LINE/phonetic/show" "}" ] }
-                                                                                                        COMP_POINT=${ builtins.concatStringsSep "" [ "$" "{" "#COMP_LINE" "}" ] }
+                                                                                                        COMP_LINE=${ builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ] }
+                                                                                                        COMP_POINT=${ builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ] }
                                                                                                       fi
 
                                                                                                       _pass
