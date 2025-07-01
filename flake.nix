@@ -2110,7 +2110,7 @@
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
-                                                                        jrnl
+                                                                        pkgs.jrnl
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
