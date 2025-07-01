@@ -1733,8 +1733,6 @@
                                                                                                             runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
                                                                                                             text =
                                                                                                                 ''
-                                                                                                                    echo 001
-                                                                                                                    chown ${ config.personal.name } .
                                                                                                                     echo 002
                                                                                                                     git init
                                                                                                                     echo 003
