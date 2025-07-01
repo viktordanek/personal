@@ -2123,15 +2123,16 @@
                                                                                                     trap cleanup EXIT
                                                                                                     jrnl "$@"
                                                                                                 '' ;
-                                                                                        ''
-                                                                                            mkdir --parents $out/bin
-                                                                                            makeWrapper \
-                                                                                                ${ pkgs.writeShellScript "script" script } \
-                                                                                                $out/bin/jrnl \
-                                                                                                --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
-                                                                                                --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data \
-                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.jrnl ] }
-                                                                                        '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/jrnl \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.jrnl ] }
+                                                                                            '' ;
                                                                                     name = "jrnl" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
