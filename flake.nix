@@ -2252,8 +2252,8 @@
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     date > $out/FLAG2
-                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/share/man/man1/pass.1
-                                                                                                    cat >> $out/share/man/man1/pass.1 <<EOF
+                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/pass
+                                                                                                    cat >> $out/pass <<EOF
 
                                                                                                     .SH EXTENSIONS
                                                                                                     The following custom subcommands are added:
@@ -2271,6 +2271,8 @@
                                                                                                     Display warnings about password store status.
 
                                                                                                     EOF
+                                                                                                    gzip --to-stdout $out/pass > $out/share/man/man1/pass.1.gz
+                                                                                                    # rm $out/pass
                                                                                                     mkdir $out/extensions
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.writeShellScript "expiry" expiry } \
