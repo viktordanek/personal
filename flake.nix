@@ -2430,6 +2430,19 @@
                                                                                 {
                                                                                     installPhase =
                                                                                         let
+                                                                                            open =
+                                                                                                ''
+                                                                                                    ACCOUNT="$1"  # Default account name
+                                                                                                    EQUITY_ACCOUNT="$2"
+                                                                                                    AMOUNT="$3"  # Default amount
+                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "2:-$( date +%Y/%m/%d)" "}" ] }"
+                                                                                                    cat > "$LEDGER_FILE" <<EOF
+                                                                                                    $DATE Opening Balances
+                                                                                                        $ACCOUNT         \$${AMOUNT}
+                                                                                                        $EQUITY_ACCOUNT
+                                                                                                    EOF
+                                                                                                    ledger balance
+                                                                                                '' ;
                                                                                             script =
                                                                                                 ''
                                                                                                     cleanup ( )
@@ -2447,6 +2460,13 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/ledger \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "open" open } \
+                                                                                                    $out/bin/open-account \
                                                                                                     --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
                                                                                                     --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
                                                                                                     --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
