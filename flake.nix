@@ -2129,6 +2129,7 @@
                                                                                                     done < <( pass show "$@" )
 
                                                                                                     echo OPEN
+                                                                                                    pass show "$@"
                                                                                                     printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
                                                                                                     echo CLOSE
                                                                                                 '' ;
