@@ -2432,6 +2432,13 @@
                                                                                         let
                                                                                             open =
                                                                                                 ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    touch "$LEDGER_FILE"
                                                                                                     ACCOUNT="$1"  # Default account name
                                                                                                     EQUITY_ACCOUNT="$2"
                                                                                                     AMOUNT="$3"  # Default amount
@@ -2445,12 +2452,6 @@
                                                                                                 '' ;
                                                                                             script =
                                                                                                 ''
-                                                                                                    cleanup ( )
-                                                                                                        {
-                                                                                                            git -C /var/lib/workspaces/ledger add config data
-                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
-                                                                                                        }
-                                                                                                    trap cleanup EXIT
                                                                                                     touch "$LEDGER_FILE"
                                                                                                     ledger "$@"
                                                                                                 '' ;
