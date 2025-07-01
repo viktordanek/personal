@@ -2217,7 +2217,7 @@
                                                                                                       complete -r pass 2>/dev/null || true
 
                                                                                                       # Register the new one
-                                                                                                      complete -F __pass_ext_completion pass
+                                                                                                      complete -o default -F __pass_ext_completion pass
 
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
