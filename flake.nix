@@ -1739,7 +1739,7 @@
                                                                                                                     git checkout ${ config.personal.pass.branch } 2>&1
                                                                                                                 '' ;
                                                                                                         } ;
-                                                                                                in "${ application }/bin/application"
+                                                                                                in "${ application }/bin/application" ;
                                                                                         StateDirectory = "workspaces/pass" ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-password-store"
                                                                                     } ;
