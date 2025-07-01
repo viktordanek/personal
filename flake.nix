@@ -1720,7 +1720,7 @@
                                                                             } ;
                                                                         dot-password-store =
                                                                             {
-                                                                                after = [ "network.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                 requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
                                                                                 serviceConfig =
                                                                                     {
@@ -1754,6 +1754,7 @@
                                                                                     {
                                                                                         ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
+                                                                                wants = [ "network-online.target" ] ;
                                                                                 wantedBy = [ "multi-user.target" ] ;
                                                                             } ;
                                                                         dot-ssh =
