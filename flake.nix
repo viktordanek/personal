@@ -2176,7 +2176,7 @@
                                                                                                             git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
-                                                                                                    calcurse --config "$XDG_CONFIG_HOME" --directory "$XDG_DATA_HOME" "$@"
+                                                                                                    calcurse -C "$XDG_CONFIG_HOME" -D "$XDG_DATA_HOME" "$@"
                                                                                                 '' ;
                                                                                         in
                                                                                             ''
