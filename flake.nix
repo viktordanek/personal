@@ -2211,7 +2211,7 @@
                                                                                                       __pass_ext_completion() {
 
                                                                                                         local subcommand="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}"
-                                                                                                        if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]]; then
+                                                                                                        if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]] || [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "warn" ]] ; then
                                                                                                           COMP_WORDS[1]="show"
                                                                                                           COMP_LINE="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ]}"
                                                                                                           COMP_POINT=${builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ]}
