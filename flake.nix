@@ -2199,12 +2199,14 @@
                                                                                                 } ;
                                                                                             in
                                                                                                 ''
+                                                                                                    PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
+                                                                                                    PASSWORD_STORE_GPG_OPTS="--homedir /var/lib/workspaces/dot-gnupg"
                                                                                                     mkdir --parents $out/bin
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.pass }/bin/pass \
                                                                                                         $out/bin/pass \
-                                                                                                        --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
-                                                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir /var/lib/workspaces/dot-gnupg" \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
                                                                                                         --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length } \
                                                                                                         --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
                                                                                                         --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols } \
@@ -2222,14 +2224,14 @@
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.writeShellScript "expiry" expiry } \
                                                                                                         $out/extensions/expiry.bash \
-                                                                                                        --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
                                                                                                         --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.writeShellScript "phonetic" phonetic } \
                                                                                                         $out/extensions/phonetic.bash \
-                                                                                                        --set PASSWORD_STORE_DIR /var/lib/workspacess/dot-password-store-dir \
-                                                                                                        --set PASSWORD_STORE_GPG_OPTS "--homedir /var/lib/workspaces/dot-gnupg" \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
