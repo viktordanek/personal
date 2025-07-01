@@ -2050,7 +2050,7 @@
                                                                                             mkdir --parents $out/share/bash-completion/completions
                                                                                             # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                             cat > $out/share/bash-completion/completions/pass <<EOF
-                                                                                            export PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store
+                                                                                            export PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
                                                                                             source ${ pkgs.pass }/share/bash-completion/completions/pass
                                                                                             EOF
                                                                                             mkdir --parents $out/share/man/man1
