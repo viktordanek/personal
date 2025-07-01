@@ -2200,55 +2200,41 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
-                                                                                                      export PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR
-                                                                                                      # Set up custom subcommands (they're no-arg extensions)
-                                                                                                      _pass_custom_subcommands+=" phonetic expiry warn"
+                                                                                                        # Register custom subcommands
+                                                                                                        _pass_custom_subcommands+=" phonetic expiry warn"
 
-                                                                                                      # Source the original completion logic
-                                                                                                      source ${pkgs.pass}/share/bash-completion/completions/pass
+                                                                                                        # Set password store directory
+                                                                                                        export PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR
 
-                                                                                                      # Patch completion
-                                                                                                      __pass_ext_completion() {
+                                                                                                        # Source original completion
+                                                                                                        source ${ pkgs.pass }/share/bash-completion/completions/pass
 
-                                                                                                        local subcommand="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}"
-                                                                                                        if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]]; then
-                                                                                                          COMP_WORDS[1]="show"
-                                                                                                          COMP_LINE="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ]}"
-                                                                                                          COMP_POINT=${builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ]}
-                                                                                                        fi
-                                                                                                        local cur prev words cword
-                                                                                                        _init_completion || return
-
-                                                                                                        _pass
-                                                                                                      }
-                                                                                                        # Patch top-level subcommand completion
-                                                                                                        __pass_top_level_completion() {
+                                                                                                        # Override complete function
+                                                                                                        _pass_combined_completion() {
                                                                                                           local cur prev words cword
                                                                                                           _init_completion || return
 
                                                                                                           local commands="init insert edit generate show rm grep find cp mv git push pull sync otp import ls help version phonetic expiry warn"
-                                                                                                          COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
-                                                                                                        }
 
-                                                                                                        # Remove existing completion
-                                                                                                        complete -r pass 2>/dev/null || true
-
-                                                                                                        # Register patched completion for pass:
-                                                                                                        # If first word after 'pass', do top-level completion
-                                                                                                        # Otherwise, use __pass_ext_completion for subcommand completion
-                                                                                                        _pass_combined_completion() {
-                                                                                                          local cword
-                                                                                                          _get_comp_words_by_ref -n =: cur prev words cword
-
-                                                                                                          if (( cword == 1 )); then
-                                                                                                            __pass_top_level_completion
+                                                                                                          if [[ $cword -eq 1 ]]; then
+                                                                                                            # First argument: subcommand completion
+                                                                                                            COMPREPLY=( $(compgen -W "$commands" -- "$cur") )
                                                                                                           else
-                                                                                                            __pass_ext_completion
+                                                                                                            # Subcommand-specific logic
+                                                                                                            if [[ "${ builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]}" ] } == "phonetic" ]]; then
+                                                                                                              COMP_WORDS[1]="show"
+                                                                                                              COMP_LINE="${ builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ]  }"
+                                                                                                              COMP_POINT=${ builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ] }
+                                                                                                            fi
+                                                                                                            _pass
                                                                                                           fi
                                                                                                         }
 
-                                                                                                        complete -F _pass_combined_completion pass
+                                                                                                        # Unregister previous completion
+                                                                                                        complete -r pass 2>/dev/null || true
 
+                                                                                                        # Register new function
+                                                                                                        complete -F _pass_combined_completion pass
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
