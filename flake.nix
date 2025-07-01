@@ -2290,7 +2290,7 @@
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gawk pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
-                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused pkgs.gunzip ] ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused pkgs.gzip ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
