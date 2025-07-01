@@ -2058,6 +2058,7 @@
                                                                                         '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
+                                                                                    outputs = [ "pass" "extensions" ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
