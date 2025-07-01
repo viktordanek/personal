@@ -1464,6 +1464,63 @@
                                                                     {
                                                                         services =
                                                                             {
+                                                                                calcurse =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.calcurse.remote }
+                                                                                                                            if git fetch origin ${ config.personal.calcurse.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.calcurse.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.calcurse.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.calcurse.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.calcurse.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/jrnl" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/jrnl" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/jrnl" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 dot-gnupg =
                                                                                     {
                                                                                         after = [ "network.target" "secrets.service" ] ;
@@ -1824,7 +1881,6 @@
                                                                         ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString current-time }" )
                                                                         ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
                                                                         ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString current-time }" )
-                                                                        ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString current-time }" )
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
@@ -2106,6 +2162,35 @@
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.gnugrep pkgs.makeWrapper pkgs.gnused pkgs.gzip ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    calcurse "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/calcurse \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/calcurse/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/calcurse/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
+                                                                                            '' ;
+                                                                                    name = "jrnl" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
