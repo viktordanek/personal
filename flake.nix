@@ -2199,8 +2199,6 @@
 
                                                                                                       # Patch completion
                                                                                                       __pass_ext_completion() {
-                                                                                                        local cur prev words cword
-                                                                                                        _init_completion || return
 
                                                                                                         local subcommand="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}"
                                                                                                         if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]]; then
@@ -2208,6 +2206,8 @@
                                                                                                           COMP_LINE="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ]}"
                                                                                                           COMP_POINT=${builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ]}
                                                                                                         fi
+                                                                                                        local cur prev words cword
+                                                                                                        _init_completion || return
 
                                                                                                         _pass
                                                                                                       }
