@@ -2131,7 +2131,7 @@
                                                                                                     $out/bin/jrnl \
                                                                                                     --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
                                                                                                     --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data \
-                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.jrnl ] }
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.jrnl pkgs.micro ] }
                                                                                             '' ;
                                                                                     name = "jrnl" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
