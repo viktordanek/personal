@@ -1569,7 +1569,7 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/chromium" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/chromijm" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/chromium" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
