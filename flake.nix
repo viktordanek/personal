@@ -2200,6 +2200,7 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
+                                                                                                      export PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR
                                                                                                       # Set up custom subcommands (they're no-arg extensions)
                                                                                                       _pass_custom_subcommands+=" phonetic expiry warn"
 
