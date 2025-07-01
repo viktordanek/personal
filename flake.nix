@@ -1539,6 +1539,11 @@
                                                                                 group = "root" ;
                                                                             } ;
                                                                     } ;
+                                                                systemPackages =
+                                                                    [
+                                                                        pkgs.pass
+                                                                        pkgs.bash-completion
+                                                                    ] ;
                                                                 variables =
                                                                     {
                                                                     } ;
@@ -1581,7 +1586,11 @@
                                                             } ;
                                                         programs =
                                                             {
-                                                                bash.interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
+                                                                bash =
+                                                                    {
+                                                                        enableCompletion = true ;
+                                                                        interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
+                                                                    } ;
                                                                 dconf.enable = true ;
                                                                 direnv =
                                                                     {
