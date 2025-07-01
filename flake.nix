@@ -295,6 +295,7 @@
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
+                                                                                                HostName github.com
                                                                                                 Host github.com
                                                                                                 IdentityFile ${ outputs.identity }
                                                                                                 UserKnownHostsFile ${ outputs.known-hosts }
@@ -1789,6 +1790,7 @@
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             cat > config <<EOF
+                                                                                                                            HostName github.com
                                                                                                                             Host github.com
                                                                                                                             IdentityFile /var/lib/workspaces/secrets/dot-ssh/boot/identity.asc
                                                                                                                             UserKnownHostsFile /var/lib/workspaces/secrets/dot-ssh/boot/known-hosts.asc
