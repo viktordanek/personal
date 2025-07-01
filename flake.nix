@@ -2227,7 +2227,7 @@
                                                                                                         $out/extensions/expiry \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
                                                                                                         --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
-                                                                                                        --set PATH ${
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
