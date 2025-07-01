@@ -1614,13 +1614,15 @@
                                                                                                                                 cat > .gitattributes <<EOF
                                                                                                                             config/** filter=git-crypt diff=git-crypt
                                                                                                                             data/** filter=git-crypt diff=git-crypt
+                                                                                                                            journal.txt filter=git-crypt diff=git-crypt
                                                                                                                             EOF
                                                                                                                                 git-crypt unlock
                                                                                                                                 mkdir config
                                                                                                                                 touch config/.gitkeep
                                                                                                                                 mkdir data
                                                                                                                                 touch data/.gitkeep
-                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep
+                                                                                                                                touch journal.txt
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
                                                                                                                                 git commit -m "Initialize git-crypt with .gitattributes" 2>&1
                                                                                                                                 git push origin HEAD 2>&1
                                                                                                                             fi
