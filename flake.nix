@@ -1627,7 +1627,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/workspaces/jrnl" ;
+                                                                                                StateDirectory = "workspaces/jrnl" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/jrnl" ;
                                                                                             } ;
