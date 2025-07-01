@@ -2191,9 +2191,32 @@
                                                                                                     mkdir --parents $out/share/bash-completion/completions
                                                                                                     # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
                                                                                                     cat > $out/share/bash-completion/completions/pass <<EOF
-                                                                                                    _pass_custom_subcommands="phonetic expiry warn"
-                                                                                                    export PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
                                                                                                     source ${ pkgs.pass }/share/bash-completion/completions/pass
+                                                                                                    _pass_custom_subcommands="phonetic expiry warn"
+                                                                                                    __pass_custom_complete()
+                                                                                                    {
+                                                                                                      local cur prev words cword
+                                                                                                      _init_completion || return
+
+                                                                                                      case "\${words[1]}" in
+                                                                                                        phonetic)
+                                                                                                          words[1]=show
+                                                                                                          _pass
+                                                                                                          ;;
+                                                                                                        expiry|warn)
+                                                                                                          # no special options
+                                                                                                          ;;
+                                                                                                        warn)
+                                                                                                            words[1]=show
+                                                                                                            ;;
+                                                                                                        *)
+                                                                                                          _pass
+                                                                                                          ;;
+                                                                                                      esac
+                                                                                                    }
+
+                                                                                                    complete -F __pass_custom_complete pass
+
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
