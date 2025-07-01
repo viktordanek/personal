@@ -2449,7 +2449,7 @@
                                                                                                     --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
                                                                                                     --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
                                                                                                     --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
-                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.ledger ] }
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.ledger ] }
                                                                                             '' ;
                                                                                     name = "ledger" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
