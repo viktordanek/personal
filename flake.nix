@@ -2248,10 +2248,27 @@
                                                                                                         }
 
                                                                                                         complete -F _pass_combined_completion pass
-
                                                                                                     EOF
                                                                                                     mkdir --parents $out/share/man/man1
-                                                                                                    ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
+                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/share/man/man1/pass.1
+                                                                                                    cat >> $out/share/man/man1/pass.1 <<EOF
+
+                                                                                                    .SH EXTENSIONS
+                                                                                                    The following custom subcommands are added:
+
+                                                                                                    .TP
+                                                                                                    .B phonetic
+                                                                                                    Show passwords with phonetic spelling for easier communication.
+
+                                                                                                    .TP
+                                                                                                    .B expiry
+                                                                                                    Manage password expiration dates and notifications.
+
+                                                                                                    .TP
+                                                                                                    .B warn
+                                                                                                    Display warnings about password store status.
+
+                                                                                                    EOF
                                                                                                     mkdir $out/extensions
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.writeShellScript "expiry" expiry } \
@@ -2273,7 +2290,7 @@
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gawk pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
-                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused pkgs.gunzip ] ;
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
