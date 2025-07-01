@@ -2223,10 +2223,11 @@
                                                                                                     ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
                                                                                                     mkdir $out/extensions
                                                                                                     makeWrapper \
-                                                                                                        ${ expiry } \
+                                                                                                        ${ pkgs.writeShellScript "expiry" expiry } \
                                                                                                         $out/extensions/expiry \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
-                                                                                                        --set DEADLINE ${ builtins.toString config.personal.pass.deadline }
+                                                                                                        --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
+                                                                                                        --set PATH ${
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
