@@ -2129,9 +2129,11 @@
                                                                                                     done < <( pass show "$@" )
 
                                                                                                     echo OPEN
-                                                                                                    pass show "$@"
                                                                                                     printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
                                                                                                     echo CLOSE
+                                                                                                    pass show "$@"
+                                                                                                    echo "PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR"
+                                                                                                    echo "PASSWORD_STORE_GPG_OPTS=$PASSWORD_STORE_GPG_OPTS"
                                                                                                 '' ;
                                                                                         warn =
                                                                                             pkgs.writeShellApplication
