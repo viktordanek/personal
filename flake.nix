@@ -1743,7 +1743,7 @@
                                                                                                                 '' ;
                                                                                                         } ;
                                                                                                 in "${ application }/bin/application" ;
-                                                                                        StateDirectory = "workspaces/pass" ;
+                                                                                        StateDirectory = "workspaces/dot-password-store" ;
                                                                                         WorkingDirectory = "/var/lib/workspaces/dot-password-store" ;
                                                                                     } ;
                                                                                 unitConfig =
