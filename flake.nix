@@ -2041,9 +2041,9 @@
                                                                                             expiry =
                                                                                                 ''
                                                                                                     TIMESTAMP=$(date +%s)
-                                                                                                    git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                    pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
                                                                                                       [[ "$file" != *.gpg ]] && continue
-                                                                                                      last_commit_ts=$( git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                                      last_commit_ts=$( pass git log -1 --format="%at" -- "$file" || echo 0)
                                                                                                       age=$((TIMESTAMP - last_commit_ts))
                                                                                                       if (( age >= DEADLINE )); then
                                                                                                         key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg}" "}" ] }"
@@ -2227,7 +2227,7 @@
                                                                                                         $out/extensions/expiry.bash \
                                                                                                         --set PASSWORD_STORE_DIR /var/lib/workspaces/dot-password-store \
                                                                                                         --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
-                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git pkgs.pass ] }
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
                                                                                                 '' ;
                                                                                     name = "pass" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.gnused ] ;
