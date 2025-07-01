@@ -1642,7 +1642,6 @@
                                                                                         after = [ "network.target" ] ;
                                                                                         serviceConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/secrets" ;
                                                                                                 ExecStart =
                                                                                                     let
                                                                                                         derivation =
