@@ -2125,7 +2125,7 @@
                                                                                     name = "jrnl" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
-                                                                                } ;
+                                                                                }
                                                                         )
                                                                     ] ;
                                                                 password = config.personal.password ;
