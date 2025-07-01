@@ -2025,7 +2025,7 @@
                                                                                                     Display warnings about password store status.
 
                                                                                                     EOF
-                                                                                                    tail --lines -$k $out/pass.1 >> $out/pass.2
+                                                                                                    tail --lines +$k $out/pass.1 >> $out/pass.2
                                                                                                     gzip --to-stdout $out/pass.2 > $out/share/man/man1/pass.1.gz
                                                                                                     # rm $out/pass
                                                                                                     mkdir $out/extensions
