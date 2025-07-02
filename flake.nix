@@ -2759,6 +2759,7 @@
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/main
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$MAIN_SCRATCH"
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private push origin main
+                                                                                                                                                            nix-collect-garbage
                                                                                                                                                             exit 0
                                                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                         then
