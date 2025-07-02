@@ -2010,7 +2010,7 @@
                                                                                                                             ${ pkgs.systemd }/bin/systemctl start setup.service
                                                                                                                         '' ;
                                                                                                                 } ;
-                                                                                                        in "${ application }/bin/application"
+                                                                                                        in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces" ;
