@@ -2655,7 +2655,7 @@
                                                                                                                                         read -p "Success Message:  " MESSAGE
                                                                                                                                         git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
                                                                                                                                         SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH}"
+                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
                                                                                                                                         git -C /var/lib/workspaces/repository/private reset origin/development
                                                                                                                                         git -C /var/lib/workspaces/repository/private checkout development
                                                                                                                                         git -C /var/lib/workspaces/repository/private rebase origin/development
