@@ -2017,14 +2017,14 @@
                                                                             {
                                                                                 timerConfig =
                                                                                     {
-                                                                                        OnCalendar = "hourly" ;
+                                                                                        OnCalendar = config.personal.frequency.setup ;
                                                                                     } ;
                                                                             } ;
                                                                         teardown =
                                                                             {
                                                                                 timerConfig =
                                                                                     {
-                                                                                        OnCalendar = "daily" ;
+                                                                                        OnCalendar = config.personal.frequency.teardown ;
                                                                                     } ;
                                                                             } ;
                                                                         stash-cleanup =
@@ -2800,6 +2800,11 @@
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
+                                                                frequency =
+                                                                    {
+                                                                        setup = lib.mkOption { default = "hourly" ; type = lib.types.str ; } ;
+                                                                        teardown = lib.mkOption { default = "daily" ; type = lib.types.str ; } ;
+                                                                    } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
                                                                 gnucash =
                                                                     {
