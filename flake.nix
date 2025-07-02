@@ -2657,9 +2657,11 @@
                                                                                                                 echo "The CURRENT_TIME is $CURRENT_TIME.  We have commited personal and secrets repository and recorded the commit hashes."
                                                                                                                 if nix flake check --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                 then
+                                                                                                                    echo "We have successfully checked the private repository using local sources."
                                                                                                                     rm --force nixos.qcow2 result
                                                                                                                     if nixos-rebuild build-vm --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                     then
+                                                                                                                        echo "We have successfully built the private repository using local sources"
                                                                                                                         if result/bin/run-nixos-vm
                                                                                                                         then
                                                                                                                             SATISFACTORY=""
@@ -2669,30 +2671,39 @@
                                                                                                                             done
                                                                                                                             if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                             then
-                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout -b "scratch/$( uuidgen )"
+                                                                                                                                echo "Since the run using local sources was satisfactory we are going to pull request changes to personal and secrets back into main."
+                                                                                                                                PERSONAL_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout -b "$PERSONAL_BRANCH"
                                                                                                                                 git -C /var/lib/workspaces/${ epoch }/repository/personal fetch origin main
                                                                                                                                 if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]]
                                                                                                                                 then
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main
-                                                                                                                                    read -rp "Describe the changes in personal:  " CHANGES
+                                                                                                                                    read -rp "Title the changes in personal:  " TITLE
+                                                                                                                                    read -rp "Body the changes in personal:  " BODY
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/personal reset --soft origin/main
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/personal commit -am "$CHANGES"
-                                                                                                                                    # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                                    cd /var/lib/workspaces/${ epoch }/repository/personal
+                                                                                                                                    gh pr create --title "$TITLE" --body "$BODY" --base main --head "$PERSONAL_BRANCH"
                                                                                                                                 fi
-                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b "scratch/$( uuidgen )"
+                                                                                                                                SECRETS_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b "$SECRETS_BRANCH"
                                                                                                                                 git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
                                                                                                                                 if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
                                                                                                                                 then
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main
-                                                                                                                                    read -rp "Describe the changes in personal:  " CHANGES
+                                                                                                                                    read -rp "Title the changes in secrets:  " TITLE
+                                                                                                                                    read -rp "Body the changes in secrets:  " BODY
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/secrets reset --soft origin/main
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/secrets commit -am "$CHANGES"
-                                                                                                                                    # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                                    cd /var/lib/workspaces/${ epoch }/repository/secrets
+                                                                                                                                    gh pr create --title "$TITLE" --body "$BODY" --base main --head "$SECRETS_BRANCH"
                                                                                                                                 fi
                                                                                                                                 rm result
                                                                                                                                 while [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]] && [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
                                                                                                                                 do
-                                                                                                                                    sleep 1s
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/personal fetch origin main
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
+                                                                                                                                    sleep 1m
                                                                                                                                 done
                                                                                                                                 if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                                 then
