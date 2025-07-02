@@ -1829,7 +1829,7 @@
                                                                                                                             git config user.email ${ config.personal.name }
                                                                                                                             git config user.name ${ config.personal.email }
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
-                                                                                                                            git remote add origin ${ config.personal.private.remote }
+                                                                                                                            git remote add origin ${ config.personal.repository.private.remote }
                                                                                                                             git fetch origin main
                                                                                                                             git checkout origin/main
                                                                                                                             git checkout -b scratch/$( uuidgen )
