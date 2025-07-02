@@ -2803,7 +2803,7 @@
                                                                                                                                 else
                                                                                                                                     MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
-                                                                                                                                    echo "$MESSAGE"
+                                                                                                                                    echo "$MESSAGE" >&2
                                                                                                                                     exit 64
                                                                                                                                 fi
                                                                                                                             elif [[ "$SATISFACTORY" == "n" ]]
@@ -2811,13 +2811,13 @@
                                                                                                                                 read -rp "Details:  " DETAILS
                                                                                                                                 MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
                                                                                                                                 git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
-                                                                                                                                echo "$MESSAGE"
+                                                                                                                                echo "$MESSAGE" >&2
                                                                                                                                 exit 64
                                                                                                                             fi
                                                                                                                         else
                                                                                                                             MESSAGE="The private repository failed to run the vm from local sources at $CURRENT_TIME"
                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
-                                                                                                                            echo "$MESSAGE"
+                                                                                                                            echo "$MESSAGE" >&2
                                                                                                                             exit 64
                                                                                                                         fi
                                                                                                                     else
