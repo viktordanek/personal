@@ -1944,20 +1944,20 @@
                                                                                                                         let
                                                                                                                               secretFiles =
                                                                                                                                 [
-                                                                                                                                    "wifi.nix.age"
-                                                                                                                                    "dot-ssh/viktor/identity.asc.age"
-                                                                                                                                    "dot-ssh/viktor/known-hosts.asc.age"
-                                                                                                                                    "dot-ssh/boot/identity.asc.age"
-                                                                                                                                    "dot-ssh/boot/known-hosts.asc.age"
-                                                                                                                                    "secret-keys.asc.age"
-                                                                                                                                    "ownertrust.asc.age"
-                                                                                                                                    "github-token.asc.age"
+                                                                                                                                    "wifi.nix"
+                                                                                                                                    "dot-ssh/viktor/identity.asc"
+                                                                                                                                    "dot-ssh/viktor/known-hosts.asc"
+                                                                                                                                    "dot-ssh/boot/identity.asc"
+                                                                                                                                    "dot-ssh/boot/known-hosts.asc"
+                                                                                                                                    "secret-keys.asc"
+                                                                                                                                    "ownertrust.asc"
+                                                                                                                                    "github-token.asc"
                                                                                                                                 ] ;
                                                                                                                             in
                                                                                                                         ''
                                                                                                                             mkdir --parents $out/src $out/scripts $out/bin
                                                                                                                             cp -r ${ secrets } $out/src
-                                                                                                                            ln --symbolic ${ pkgs.writeShellScript "application" ( builtins.concatStringsSep "\n" ( builtins.map ( secretFile : ''mkdir --parents $( dirname ${ secretFile } ) && age --decrypt --identity ${ config.personal.agenix } --output ${ secretFile } $OUT/${ secretFile } && chmod 0400 ${ secretFile }'' ) secretFiles ) ) } $out/scripts/application
+                                                                                                                            ln --symbolic ${ pkgs.writeShellScript "application" ( builtins.concatStringsSep "\n" ( builtins.map ( secretFile : ''mkdir --parents $( dirname ${ secretFile } ) && age --decrypt --identity ${ config.personal.agenix } --output ${ secretFile } $OUT/${ secretFile }.age && chmod 0400 ${ secretFile }'' ) secretFiles ) ) } $out/scripts/application
                                                                                                                             makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] } --set OUT ${ secrets }
                                                                                                                         ''  ;
                                                                                                                     name = "derivation" ;
