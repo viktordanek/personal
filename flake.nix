@@ -1606,6 +1606,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-gnupg" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
@@ -1642,6 +1643,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-password-store" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
@@ -1686,6 +1688,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-ssh" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
@@ -1742,6 +1745,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/jrnl" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
@@ -1800,6 +1804,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/ledger" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
@@ -1838,6 +1843,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/private" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
@@ -1881,6 +1887,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/personal" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/personal" ;
                                                                                             } ;
@@ -1920,6 +1927,7 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/secrets" ;
                                                                                                 User = config.personal.name ;
+                                                                                                Type = "oneshot" ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
@@ -1934,27 +1942,31 @@
                                                                                         after = [ "network.target" ] ;
                                                                                         serviceConfig =
                                                                                             {
+                                                                                                ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /var/lib/workspaces/${epoch}/secrets";
                                                                                                 ExecStart =
                                                                                                     let
                                                                                                         derivation =
                                                                                                             pkgs.stdenv.mkDerivation
                                                                                                                 {
                                                                                                                     installPhase =
+                                                                                                                        let
+                                                                                                                              secretFiles =
+                                                                                                                                [
+                                                                                                                                    "wifi.nix"
+                                                                                                                                    "dot-ssh/viktor/identity.asc"
+                                                                                                                                    "dot-ssh/viktor/known-hosts.asc"
+                                                                                                                                    "dot-ssh/boot/identity.asc"
+                                                                                                                                    "dot-ssh/boot/known-hosts.asc"
+                                                                                                                                    "secret-keys.asc"
+                                                                                                                                    "ownertrust.asc"
+                                                                                                                                    "github-token.asc"
+                                                                                                                                ] ;
+                                                                                                                            in
                                                                                                                         ''
-                                                                                                                            mkdir --parents $out/scripts $out/bin
-                                                                                                                            find ${ secrets } -type f -name "*.age" | while read -r FILE
-                                                                                                                            do
-                                                                                                                                RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
-                                                                                                                                RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                                STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
-                                                                                                                                cat >> $out/scripts/application <<EOF
-                                                                                                                                mkdir --parents "$RELATIVE_DIRECTORY"
-                                                                                                                                age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
-                                                                                                                                chmod 0400 "$STRIPPED"
-                                                                                                                            EOF
-                                                                                                                            done
-                                                                                                                            chmod 0500 $out/scripts/application
-                                                                                                                            makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
+                                                                                                                            mkdir --parents $out/src $out/scripts $out/bin
+                                                                                                                            cp -r ${ secrets } $out/src
+                                                                                                                            ln --symbolic ${ pkgs.writeShellScript "application" ( builtins.concatStringsSep "\n" ( builtins.map ( secretFile : ''mkdir --parents $( dirname ${ secretFile } ) && age --decrypt --identity ${ config.personal.agenix } --output ${ secretFile } $OUT/${ secretFile }.age && chmod 0400 ${ secretFile }'' ) secretFiles ) ) } $out/scripts/application
+                                                                                                                            makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] } --set OUT ${ secrets }
                                                                                                                         ''  ;
                                                                                                                     name = "derivation" ;
                                                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.findutils pkgs.makeWrapper ] ;
@@ -1962,6 +1974,7 @@
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/secrets" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
@@ -2009,6 +2022,7 @@
                                                                                 teardown =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
+                                                                                        enable = false ;
                                                                                         serviceConfig =
                                                                                             {
                                                                                                 ExecStart =
