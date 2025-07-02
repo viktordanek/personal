@@ -11,7 +11,6 @@
                         nixpkgs ,
                         secrets ,
                         system ,
-                        stash2 ,
                         visitor
                     } :
                         let
@@ -20,6 +19,7 @@
                                 { config , lib , pkgs , ... } :
                                     let
                                         current-time = builtins.toString ( builtins.import config.personal.current-time ) ;
+                                        epoch = builtins.substring 0 16 ( builtins.hashString "sha512" ( builtins.toString ( builtins.import config.personal.current-time ) ) ) ;
                                         dependencies =
                                             let
                                                 list =
@@ -296,6 +296,7 @@
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/identity.asc.age > /mount/identity
                                                                                                 age --decrypt --identity ${ config.personal.agenix } ${ secrets }/dot-ssh/boot/known-hosts.asc.age > /mount/known-hosts
                                                                                                 cat > /mount/config <<EOF
+                                                                                                HostName github.com
                                                                                                 Host github.com
                                                                                                 IdentityFile ${ outputs.identity }
                                                                                                 UserKnownHostsFile ${ outputs.known-hosts }
@@ -534,7 +535,7 @@
                                                                                                 export GIT_WORK_TREE=${ outputs.workspace }/work-tree
                                                                                                 EOF
                                                                                                 export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
+                                                                                                export GIT_WORK_TREE=/mount/workspaces/work-tree
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
@@ -684,7 +685,7 @@
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         sudo nixos-rebuild test --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
-                                                                                                                                        SCRATCH=$( uuidgen )
+                                                                                                                                        SCRATCH="scratch/$( uuidgen )"
                                                                                                                                         git checkout -b "$SCRATCH"
                                                                                                                                         git fetch origin development
                                                                                                                                         git diff origin/development
@@ -1278,247 +1279,6 @@
                                                         nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                         src = ./. ;
                                                     } ;
-                                        pass =
-                                            password-store-dir : git-dir : dot-gnupg :
-                                                pkgs.stdenv.mkDerivation
-                                                    {
-                                                        installPhase =
-                                                            let
-                                                                password-store-extensions-dir =
-                                                                    pkgs.stdenv.mkDerivation
-                                                                        {
-                                                                            installPhase =
-                                                                                let
-                                                                                    expiry =
-                                                                                        pkgs.writeShellApplication
-                                                                                            {
-                                                                                                name = "expiry" ;
-                                                                                                runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.pass ] ;
-                                                                                                text =
-                                                                                                    ''
-                                                                                                        export PASSWORD_STORE_DIR=${ password-store-dir }
-                                                                                                        export GIT_WORK_TREE=${ password-store-dir }
-                                                                                                        export GIT_DIR=${ git-dir }
-                                                                                                        YEAR_SECONDS=$((366 * 86400))
-                                                                                                        TIMESTAMP=$(date +%s)
-
-                                                                                                        # Get a list of all password keys tracked by Git
-                                                                                                        git ls-tree -r --name-only HEAD | while IFS= read -r file; do
-                                                                                                          # Skip non-.gpg files
-                                                                                                          [[ "$file" != *.gpg ]] && continue
-
-                                                                                                          # Get the last commit timestamp for the file
-                                                                                                          last_commit_ts=$( git log -1 --format="%at" -- "$file" || echo 0)
-
-                                                                                                          # Compute the age
-                                                                                                          age=$((TIMESTAMP - last_commit_ts))
-
-                                                                                                          if (( age >= YEAR_SECONDS )); then
-                                                                                                            # Strip ".gpg" and print
-                                                                                                            key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg}" "}" ] }"
-                                                                                                            echo "$key"
-                                                                                                          fi
-                                                                                                        done
-                                                                                                    '' ;
-                                                                                            } ;
-                                                                                    phonetic =
-                                                                                        pkgs.writeShellApplication
-                                                                                            {
-                                                                                                name = "phonetic" ;
-                                                                                                runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                                text =
-                                                                                                    ''
-                                                                                                        declare -A NATO=(
-                                                                                                          [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
-                                                                                                          [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
-                                                                                                          [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
-                                                                                                          [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
-                                                                                                          [Y]=YANKEE [Z]=ZULU
-                                                                                                        )
-
-                                                                                                        declare -A PHONETIC_LOWER=(
-                                                                                                          [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
-                                                                                                          [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
-                                                                                                          [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
-                                                                                                          [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
-                                                                                                          [y]=yam [z]=zucchini
-                                                                                                        )
-
-                                                                                                        declare -A DIGITS=(
-                                                                                                          [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
-                                                                                                          [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
-                                                                                                        )
-
-                                                                                                        declare -A SYMBOLS=(
-                                                                                                          ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
-                                                                                                          ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
-                                                                                                          ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
-                                                                                                          [',']=Comma ['.']=Dot ['/']=ForwardSlash
-                                                                                                          ["\\"]=BackwardSlash
-                                                                                                          ["\'"]=SingleQuote
-                                                                                                          ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
-                                                                                                          ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
-                                                                                                          ['[']=LeftSquareBracket [']']=RightSquareBracket
-                                                                                                          ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
-                                                                                                        )
-
-                                                                                                        declare -A CONTROL=(
-                                                                                                          [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
-                                                                                                          [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
-                                                                                                          [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
-                                                                                                          [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
-                                                                                                          [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
-                                                                                                          [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
-                                                                                                          [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
-                                                                                                          [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
-                                                                                                          [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
-                                                                                                          [127]=DELETE
-                                                                                                        )
-
-                                                                                                        output=()
-
-                                                                                                        while IFS= read -r -n1 char; do
-                                                                                                          [[ -z "$char" ]] && continue
-                                                                                                          ascii=$(printf "%d" "'$char")
-
-                                                                                                          if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
-                                                                                                            raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
-                                                                                                            transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
-                                                                                                            output+=("$transformed")
-
-                                                                                                          elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
-                                                                                                            output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
-
-                                                                                                          elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
-                                                                                                            output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
-
-                                                                                                          elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
-                                                                                                            output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
-
-                                                                                                          elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
-                                                                                                            output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
-
-                                                                                                          else
-                                                                                                            output+=("Unknown($ascii)")
-                                                                                                          fi
-                                                                                                        done < <( pass show "$@" )
-
-                                                                                                        echo OPEN
-                                                                                                        printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
-                                                                                                        echo CLOSE
-                                                                                                    '' ;
-                                                                                            } ;
-                                                                                warn =
-                                                                                    pkgs.writeShellApplication
-                                                                                        {
-                                                                                            name = "warn" ;
-                                                                                            runtimeInputs = [ pkgs.pass ] ;
-                                                                                            text =
-                                                                                                ''
-                                                                                                    export GNUPGHOME=${ password-store-dir }
-                                                                                                    ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
-                                                                                                    FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
-
-                                                                                                    if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
-                                                                                                      echo "Usage: pass warn <entry>" >&2
-                                                                                                      exit 1
-                                                                                                    fi
-
-                                                                                                    # Extract long key IDs from the encrypted file
-                                                                                                    mapfile -t LONG_KEY_IDS < <(
-                                                                                                      gpg --list-packets "$FILE" 2>/dev/null \
-                                                                                                      | awk '/^:pubkey enc packet:/ { print $NF }'
-                                                                                                    )
-
-                                                                                                    if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
-                                                                                                      echo "No encryption keys found in $FILE" >&2
-                                                                                                      exit 1
-                                                                                                    fi
-
-                                                                                                    echo "Encryption Long Key IDs found in $ENTRY:" >&2
-                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
-
-                                                                                                    # Convert long key IDs to full fingerprints
-                                                                                                    mapfile -t ENCRYPTION_FPRS < <(
-                                                                                                      for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
-                                                                                                        gpg --with-colons --fingerprint "$longid" 2>/dev/null \
-                                                                                                        | awk -F: '/^fpr:/ { print $10; exit }'
-                                                                                                      done
-                                                                                                    )
-
-                                                                                                    echo "Corresponding full fingerprints:" >&2
-                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
-
-                                                                                                    mapfile -t CURRENT_FPRS < ${ password-store-dir }/.gpg-id
-
-
-                                                                                                    echo "Current trusted key fingerprints:" >&2
-                                                                                                    printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
-
-                                                                                                    # Check if all encryption fingerprints are in current trusted keys
-                                                                                                    WARNING=0
-                                                                                                    for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
-                                                                                                      if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
-                                                                                                        echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
-                                                                                                        echo "   $fpr" >&2
-                                                                                                        WARNING=1
-                                                                                                      fi
-                                                                                                    done
-
-                                                                                                    # Finally, show the password
-                                                                                                    pass show "$ENTRY"
-
-                                                                                                    exit $WARNING
-                                                                                                '' ;
-                                                                                        } ;
-                                                                                in
-                                                                                    ''
-                                                                                        mkdir $out
-                                                                                        ln --symbolic ${ expiry }/bin/expiry $out/expiry.bash
-                                                                                        ln --symbolic ${ phonetic }/bin/phonetic $out/phonetic.bash
-                                                                                        ln --symbolic ${ warn }/bin/warn $out/warn.bash
-                                                                                    '' ;
-                                                                            nativeBuildInputs = [ pkgs.coreutils ] ;
-                                                                            name = "password-store-extensions-dir" ;
-                                                                            src = ./. ;
-                                                                        } ;
-                                                                completion =
-                                                                    # pkgs.writeShellApplication
-                                                                    #     {
-                                                                    #         name = "completion" ;
-                                                                    #        text =
-                                                                                ''
-                                                                                    export PASSWORD_STORE_DIR=${ password-store-dir }
-                                                                                    # shellcheck disable=SC1091
-                                                                                    source ${ pkgs.pass }/share/bash-completion/completions/pass
-                                                                                '' ;
-                                                                    #    } ;
-                                                                in
-                                                                    ''
-                                                                        mkdir --parents $out/bin
-                                                                        GNUPGHOME=${ dot-gnupg }
-                                                                        makeWrapper \
-                                                                            ${ pkgs.pass }/bin/pass \
-                                                                            $out/bin/pass \
-                                                                            --set PASSWORD_STORE_DIR ${ password-store-dir } \
-                                                                            --set PASSWORD_STORE_GPG_OPTS "--homedir $GNUPGHOME" \
-                                                                            --set PASSWORD_STORE_ENABLE_EXTENSIONS true \
-                                                                            --set PASSWORD_STORE_EXTENSIONS_DIR $extensions \
-                                                                            --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
-                                                                            --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols } \
-                                                                            --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length }
-                                                                        mkdir --parents $extensions
-                                                                        ln --symbolic ${ password-store-extensions-dir }/* $extensions
-                                                                        mkdir --parents $out/share/bash-completion/completions
-                                                                        ln --symbolic ${ pkgs.writeShellScript "completion" completion } $out/share/bash-completion/completions/pass
-                                                                        mkdir --parents $out/share/man/man1
-                                                                        ln --symbolic ${ pkgs.pass }/share/man/man1/pass.1.gz $out/share/man/man1/pass.1.gz
-                                                                    '' ;
-                                                       name = "pass" ;
-                                                       nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper pkgs.pass ] ;
-                                                       outputs = [ "out" "extensions" ] ;
-                                                       src = ./. ;
-                                                    } ;
                                         in
                                             {
                                                 config =
@@ -1581,7 +1341,11 @@
                                                             } ;
                                                         programs =
                                                             {
-                                                                bash.interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
+                                                                bash =
+                                                                    {
+                                                                        enableCompletion = true ;
+                                                                        interactiveShellInit = ''eval "$( ${ pkgs.direnv }/bin/direnv hook bash )"'' ;
+                                                                    } ;
                                                                 dconf.enable = true ;
                                                                 direnv =
                                                                     {
@@ -1680,63 +1444,633 @@
                                                                     } ;
                                                             } ;
                                                         systemd =
-                                                            {
-                                                                services =
+                                                            let
+                                                                post-commit =
+                                                                    let
+                                                                        application =
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "post-commit" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            while ! git push origin HEAD
+                                                                                            do
+                                                                                                sleep 1s
+                                                                                            done
+                                                                                        '' ;
+                                                                                } ;
+                                                                        in "${ application }/bin/post-commit" ;
+                                                                in
                                                                     {
-                                                                        stash-cleanup =
+                                                                        services =
                                                                             {
-                                                                                after = [ "network.target" ] ;
-                                                                                serviceConfig =
+                                                                                calcurse =
                                                                                     {
-                                                                                        ExecStart =
-                                                                                            let
-                                                                                                script =
-                                                                                                    pkgs.writeShellApplication
-                                                                                                        {
-                                                                                                            name = "script" ;
-                                                                                                            runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
-                                                                                                            text =
-                                                                                                                ''
-                                                                                                                    NOW="$( date +%s )"
-                                                                                                                    RECYCLE_BIN="$( mktemp --directory )"
-                                                                                                                    if [ -d /home/${ config.personal.name }/${ config.personal.stash }/direct ]
-                                                                                                                    then
-                                                                                                                        find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) } | while read -r DIRECTORY
-                                                                                                                        do
-                                                                                                                            if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.calcurse.remote }
+                                                                                                                            if git fetch origin ${ config.personal.calcurse.branch } 2>&1
                                                                                                                             then
-                                                                                                                                "$DIRECTORY/teardown"
+                                                                                                                                git checkout ${ config.personal.calcurse.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.calcurse.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.calcurse.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.calcurse.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
                                                                                                                             fi
-                                                                                                                            if [ -f "$DIRECTORY/release.success.yaml" ]
-                                                                                                                            then
-                                                                                                                                LAST_ACCESS="$( stat "$DIRECTORY/release.success.yaml" --format "%X" )"
-                                                                                                                                if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ builtins.toString config.personal.stale } ]
-                                                                                                                                then
-                                                                                                                                    mv "$DIRECTORY" "$RECYCLE_BIN"
-                                                                                                                                fi
-                                                                                                                            fi
-                                                                                                                        done
-                                                                                                                    fi
-                                                                                                                '' ;
-                                                                                                        } ;
-                                                                                                in "${ script }/bin/script" ;
-                                                                                        User = config.personal.name ;
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/calcurse" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/calcurse" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/calcurse" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
-                                                                                wantedBy = [ "multi-user.target" ] ;
-                                                                            } ;
-                                                                        stash-setup =
-                                                                            {
-                                                                                after = [ "network.target" ] ;
-                                                                                serviceConfig =
+                                                                                chromium =
                                                                                     {
-                                                                                        ExecStart = "${ setup }/bin/setup" ;
-                                                                                        User = config.personal.name ;
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.chromium.remote }
+                                                                                                                            if git fetch origin ${ config.personal.chromium.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.chromium.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.chromium.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.chromium.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/chromium" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/chromium" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/chromium" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
-                                                                                wantedBy = [ "multi-user.target" ] ;
+                                                                                dot-gnupg =
+                                                                                    {
+                                                                                        after = [ "network.target" "secrets.service" ] ;
+                                                                                        requires = [ "secrets.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-gnupg" ;
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            GNUPGHOME=$( pwd )
+                                                                                                                            export GNUPGHOME
+                                                                                                                            mkdir --parents "$GNUPGHOME"
+                                                                                                                            chmod 0700 "$GNUPGHOME"
+                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import /var/lib/workspaces/${ epoch }/secrets/secret-keys.asc 2>&1
+                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/workspaces/${ epoch }/secrets/ownertrust.asc 2>&1
+                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-gnupg" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-gnupg" ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                dot-password-store =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.name }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks
+                                                                                                                            git remote add origin ${ config.personal.pass.remote }
+                                                                                                                            git fetch origin ${ config.personal.pass.branch } 2>&1
+                                                                                                                            git checkout ${ config.personal.pass.branch } 2>&1
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-password-store" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-password-store" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                dot-ssh =
+                                                                                    {
+                                                                                        after = [ "network.target" "secrets.service" ] ;
+                                                                                        requires = [ "secrets.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            cat > config <<EOF
+                                                                                                                            HostName github.com
+                                                                                                                            Host github.com
+                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                            StrictHostKeyChecking true
+
+                                                                                                                            HostName 192.168.1.202
+                                                                                                                            Host mobile
+                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                            StrictHostKeyChecking true
+                                                                                                                            Port 202
+                                                                                                                            EOF
+                                                                                                                            chmod 0400 config
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-ssh" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-ssh" ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                jrnl =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.jrnl.remote }
+                                                                                                                            if git fetch origin ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.jrnl.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.jrnl.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                git add .gitattributes config/.gitkeep data/.gitkeep journal.txt
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/jrnl" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/jrnl" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                ledger =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-gnupg.service" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                                            git init 2>&1
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.email }
+                                                                                                                            git config user.name "${ config.personal.description }"
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.ledger.remote }
+                                                                                                                            if git fetch origin ${ config.personal.ledger.branch } 2>&1
+                                                                                                                            then
+                                                                                                                                git checkout ${ config.personal.ledger.branch } 2>&1
+                                                                                                                                git-crypt unlock
+                                                                                                                            else
+                                                                                                                                git checkout -b ${ config.personal.ledger.branch } 2>&1
+                                                                                                                                git-crypt init 2>&1
+                                                                                                                                echo git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                                                                git-crypt add-gpg-user ${ config.personal.ledger.recipient } 2>&1
+                                                                                                                                cat > .gitattributes <<EOF
+                                                                                                                            config/** filter=git-crypt diff=git-crypt
+                                                                                                                            data/** filter=git-crypt diff=git-crypt
+                                                                                                                            EOF
+                                                                                                                                git-crypt unlock
+                                                                                                                                mkdir config
+                                                                                                                                touch config/.gitkeep
+                                                                                                                                mkdir data
+                                                                                                                                touch data/.gitkeep
+                                                                                                                                git add config data
+                                                                                                                                git commit -m "Initialize git-crypt with .gitattributes" 2>&1
+                                                                                                                                git push origin HEAD 2>&1
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/ledger" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/ledger" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                repository-private =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.repository.private.remote }
+                                                                                                                            git fetch origin ${ config.personal.repository.private.branch }
+                                                                                                                            git checkout origin/${ config.personal.repository.private.branch }
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/private" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/private" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                repository-personal =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.repository.personal.remote }
+                                                                                                                            if git fetch origin ${ config.personal.repository.personal.branch }
+                                                                                                                            then
+                                                                                                                                git checkout origin/${ config.personal.repository.personal.branch }
+                                                                                                                            else
+                                                                                                                                git checkout -b main
+                                                                                                                                git commit -am "" -allow-empty --allow-empty-message
+                                                                                                                            fi
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/personal" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/personal" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/personal" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                repository-secrets =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.repository.secrets.remote }
+                                                                                                                            git fetch origin ${ config.personal.repository.secrets.branch }
+                                                                                                                            git checkout origin/${ config.personal.repository.secrets.branch }
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/secrets" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/secrets" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                secrets =
+                                                                                    {
+                                                                                        after = [ "network.target" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        derivation =
+                                                                                                            pkgs.stdenv.mkDerivation
+                                                                                                                {
+                                                                                                                    installPhase =
+                                                                                                                        ''
+                                                                                                                            mkdir --parents $out/scripts $out/bin
+                                                                                                                            find ${ secrets } -type f -name "*.age" | while read -r FILE
+                                                                                                                            do
+                                                                                                                                RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
+                                                                                                                                RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
+                                                                                                                                STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
+                                                                                                                                cat >> $out/scripts/application <<EOF
+                                                                                                                                mkdir --parents "$RELATIVE_DIRECTORY"
+                                                                                                                                age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
+                                                                                                                                chmod 0400 "$STRIPPED"
+                                                                                                                            EOF
+                                                                                                                            done
+                                                                                                                            chmod 0500 $out/scripts/application
+                                                                                                                            makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
+                                                                                                                        ''  ;
+                                                                                                                    name = "derivation" ;
+                                                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.findutils pkgs.makeWrapper ] ;
+                                                                                                                    src = ./. ;
+                                                                                                                } ;
+                                                                                                        in "${ derivation }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/secrets" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/secrets" ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                setup =
+                                                                                    {
+                                                                                        after = [ "network.target" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                            } ;
+                                                                                        wants = [ "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                teardown =
+                                                                                    {
+                                                                                        after = [ "network.target" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.gnutar pkgs.zstd ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            tar --create --file=- . | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                stash-cleanup =
+                                                                                    {
+                                                                                        after = [ "network.target" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        script =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "script" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.findutils ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            NOW="$( date +%s )"
+                                                                                                                            RECYCLE_BIN="$( mktemp --directory )"
+                                                                                                                            if [ -d /home/${ config.personal.name }/${ config.personal.stash }/direct ]
+                                                                                                                            then
+                                                                                                                                find /home/${ config.personal.name }/${ config.personal.stash }/direct -mindepth 1 -maxdepth 1 -type d ! -name ${ builtins.substring 0 config.personal.hash-length ( builtins.hashString "sha512" ( builtins.toString current-time ) ) } | while read -r DIRECTORY
+                                                                                                                                do
+                                                                                                                                    if [ -L "$DIRECTORY/teardown" ] && [ -x "DIRECTORY/teardown" ]
+                                                                                                                                    then
+                                                                                                                                        "$DIRECTORY/teardown"
+                                                                                                                                    fi
+                                                                                                                                    if [ -f "$DIRECTORY/release.success.yaml" ]
+                                                                                                                                    then
+                                                                                                                                        LAST_ACCESS="$( stat "$DIRECTORY/release.success.yaml" --format "%X" )"
+                                                                                                                                        if [ "$(( "$NOW" - "$LAST_ACCESS" ))" -gt ${ builtins.toString config.personal.stale } ]
+                                                                                                                                        then
+                                                                                                                                            mv "$DIRECTORY" "$RECYCLE_BIN"
+                                                                                                                                        fi
+                                                                                                                                    fi
+                                                                                                                                done
+                                                                                                                            fi
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ script }/bin/script" ;
+                                                                                                User = config.personal.name ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
+                                                                                stash-setup =
+                                                                                    {
+                                                                                        after = [ "network.target" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart = "${ setup }/bin/setup" ;
+                                                                                                User = config.personal.name ;
+                                                                                            } ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                             } ;
-                                                                    } ;
                                                                 timers =
                                                                     {
+                                                                        setup =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = config.personal.frequency.setup ;
+                                                                                    } ;
+                                                                            } ;
+                                                                        teardown =
+                                                                            {
+                                                                                timerConfig =
+                                                                                    {
+                                                                                        OnCalendar = config.personal.frequency.teardown ;
+                                                                                    } ;
+                                                                            } ;
                                                                         stash-cleanup =
                                                                             {
                                                                                 timerConfig =
@@ -1774,16 +2108,9 @@
                                                                 packages =
                                                                     [
                                                                         pkgs.git
-                                                                        pkgs.git-crypt
-                                                                        setup
-                                                                        teardown
                                                                         pkgs.jetbrains.idea-community
-                                                                        ( pass ( foobar [ "personal" "pass" ] "work-tree" ) ( foobar [ "personal" "pass" ] "git" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) )
-                                                                        ( calcurse "my-calcurse" "my-calcurse-git" ( foobar [ "personal" "calcurse" ] "git" ) ( foobar [ "personal" "calcurse" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
-                                                                        ( chromium "my-chromium" ( foobar [ "personal" "chromium" ] "git" ) ( foobar [ "personal" "chromium" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "Chromium ${ builtins.toString current-time }" )
                                                                         ( ledger "my-ledger" "my-ledger-git" ( foobar [ "personal" "ledger" ] "git" ) ( foobar [ "personal" "ledger" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "calcurse ${ builtins.toString current-time }" )
                                                                         ( gnucash "my-gnucash" ( foobar [ "personal" "gnucash" ] "git" ) ( foobar [ "personal" "gnucash" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "gnucash ${ builtins.toString current-time }" )
-                                                                        ( jrnl "my-jrnl" "my-jrnl-git" ( foobar [ "personal" "jrnl" ] "git" ) ( foobar [ "personal" "jrnl" ] "work-tree" ) ( foobar [ "personal" "dot-gnupg" ] "config" ) "jrnl ${ builtins.toString current-time }" )
                                                                         (
                                                                             pkgs.writeShellApplication
                                                                                 {
@@ -1812,34 +2139,732 @@
                                                                                 }
                                                                         )
                                                                         (
-                                                                            pkgs.writeShellApplication
+                                                                            pkgs.stdenv.mkDerivation
                                                                                 {
-                                                                                    name = "foobar-stash" ;
-                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                    text =
+                                                                                    installPhase =
                                                                                         let
-                                                                                            xx =
-                                                                                                stash2.lib
-                                                                                                    {
-                                                                                                        arguments = { } ;
-                                                                                                        current-time = current-time ;
-                                                                                                        nixpkgs = nixpkgs ;
-                                                                                                        system = system ;
-                                                                                                        user = config.personal.name ;
-                                                                                                        visitor = visitor ;
-                                                                                                        working-directory = "/tmp" ;
-                                                                                                    } ;
-                                                                                            xxx = xx.implementation { foobar = x : { outputs = [ "target" ] ; } ; } ;
+                                                                                            expiry =
+                                                                                                ''
+                                                                                                    TIMESTAMP=$(date +%s)
+                                                                                                    pass git ls-tree -r --name-only HEAD | while IFS= read -r file; do
+                                                                                                      [[ "$file" != *.gpg ]] && continue
+                                                                                                      last_commit_ts=$( pass git log -1 --format="%at" -- "$file" || echo 0)
+                                                                                                      age=$((TIMESTAMP - last_commit_ts))
+                                                                                                      if (( age >= DEADLINE )); then
+                                                                                                        key="${ builtins.concatStringsSep "" [ "$" "{" "file%.gpg" "}" ] }"
+                                                                                                        echo "$key"
+                                                                                                      fi
+                                                                                                    done
+                                                                                                '' ;
+                                                                                            phonetic =
+                                                                                                ''
+                                                                                                    declare -A NATO=(
+                                                                                                      [A]=ALPHA [B]=BRAVO [C]=CHARLIE [D]=DELTA [E]=ECHO [F]=FOXTROT
+                                                                                                      [G]=GOLF [H]=HOTEL [I]=INDIA [J]=JULIETT [K]=KILO [L]=LIMA
+                                                                                                      [M]=MIKE [N]=NOVEMBER [O]=OSCAR [P]=PAPA [Q]=QUEBEC [R]=ROMEO
+                                                                                                      [S]=SIERRA [T]=TANGO [U]=UNIFORM [V]=VICTOR [W]=WHISKEY [X]=XRAY
+                                                                                                      [Y]=YANKEE [Z]=ZULU
+                                                                                                    )
+
+                                                                                                    declare -A PHONETIC_LOWER=(
+                                                                                                      [a]=apple [b]=banana [c]=cherry [d]=date [e]=elder [f]=fig
+                                                                                                      [g]=grape [h]=hazel [i]=ivy [j]=juniper [k]=kiwi [l]=lemon
+                                                                                                      [m]=mango [n]=nectar [o]=olive [p]=peach [q]=quince [r]=raisin
+                                                                                                      [s]=strawberry [t]=tomato [u]=ugli [v]=vanilla [w]=walnut [x]=xigua
+                                                                                                      [y]=yam [z]=zucchini
+                                                                                                    )
+
+                                                                                                    declare -A DIGITS=(
+                                                                                                      [0]=Zero [1]=One [2]=Two [3]=Three [4]=Four
+                                                                                                      [5]=Five [6]=Six [7]=Seven [8]=Eight [9]=Nine
+                                                                                                    )
+
+                                                                                                    declare -A SYMBOLS=(
+                                                                                                      ['@']=At ['#']=Hash ['$']=Dollar ['%']=Percent ['&']=Ampersand
+                                                                                                      ['*']=Asterisk ['_']=Underscore ['-']=Dash ['=']=Equal ['+']=Plus
+                                                                                                      ['^']=Caret ['~']=Tilde ['|']=Pipe [':']=Colon [';']=Semicolon
+                                                                                                      [',']=Comma ['.']=Dot ['/']=ForwardSlash
+                                                                                                      ["\\"]=BackwardSlash
+                                                                                                      ["\'"]=SingleQuote
+                                                                                                      ['"']=DoubleQuote ['`']=Backtick ['<']=Less ['>']=Greater
+                                                                                                      ['?']=Question ['(']=LeftRoundBracket [')']=RightRoundBracket
+                                                                                                      ['[']=LeftSquareBracket [']']=RightSquareBracket
+                                                                                                      ['{']=LeftCurlyBracket ['}']=RightCurlyBracket
+                                                                                                    )
+
+                                                                                                    declare -A CONTROL=(
+                                                                                                      [0]=NULL [1]=STARTOFHEADING [2]=STARTOFTEXT [3]=ENDOFTEXT
+                                                                                                      [4]=ENDOFTRANSMISSION [5]=ENQUIRY [6]=ACKNOWLEDGE [7]=BELL
+                                                                                                      [8]=BACKSPACE [9]=TAB [10]=NEWLINE [11]=VERTICALTAB
+                                                                                                      [12]=FORMFEED [13]=CARRIAGERETURN [14]=SHIFTOUT [15]=SHIFTIN
+                                                                                                      [16]=DATALINKESCAPE [17]=DEVICECONTROL1 [18]=DEVICECONTROL2
+                                                                                                      [19]=DEVICECONTROL3 [20]=DEVICECONTROL4 [21]=NEGATIVEACKNOWLEDGE
+                                                                                                      [22]=SYNCHRONOUSIDLE [23]=ENDOFTRANSMITBLOCK [24]=CANCEL
+                                                                                                      [25]=ENDOFMEDIUM [26]=SUBSTITUTE [27]=ESCAPE [28]=FILESEPARATOR
+                                                                                                      [29]=GROUPSEPARATOR [30]=RECORDSEPARATOR [31]=UNITSEPARATOR
+                                                                                                      [127]=DELETE
+                                                                                                    )
+
+                                                                                                    output=()
+
+                                                                                                    while IFS= read -r -n1 char; do
+                                                                                                      [[ -z "$char" ]] && continue
+                                                                                                      ascii=$(printf "%d" "'$char")
+
+                                                                                                      if [[ $ascii -lt 32 || $ascii -eq 127 ]]; then
+                                                                                                        raw="${ builtins.concatStringsSep "" [ "$" "{" "CONTROL[$ascii]:-UNKNOWN" "}" ] }"
+                                                                                                        transformed="${ builtins.concatStringsSep "" [ "$" "{" "raw:0:1," "}" ] }${ builtins.concatStringsSep "" [ "$" "{" "raw:1^^" "}" ] }"  # lowercase first letter, rest uppercase
+                                                                                                        output+=("$transformed")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [A-Z] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "NATO[$char]:-UNKNOWN" "}" ] }")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [a-z] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "PHONETIC_LOWER[$char]:-unknown" "}" ] }")
+
+                                                                                                      elif [[ ${ builtins.concatStringsSep "" [ "$" "{" "char" "}" ] } =~ [0-9] ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "DIGITS[$char]:-Digit$char" "}" ] }")
+
+                                                                                                      elif [[ -n "${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]+set" "}" ] }" ]]; then
+                                                                                                        output+=("${ builtins.concatStringsSep "" [ "$" "{" "SYMBOLS[$char]" "}" ] }")
+
+                                                                                                      else
+                                                                                                        output+=("Unknown($ascii)")
+                                                                                                      fi
+                                                                                                    done < <( pass show "$@" )
+
+                                                                                                    echo OPEN
+                                                                                                    printf "%s\n" "${ builtins.concatStringsSep "" [ "$" "{" "output[@]" "}" ] }"
+                                                                                                    echo CLOSE
+                                                                                                '' ;
+                                                                                        warn =
+                                                                                            ''
+                                                                                                ENTRY=${ builtins.concatStringsSep "" [ "$" "{" "1:-" "}" ] }
+                                                                                                FILE="$PASSWORD_STORE_DIR/$ENTRY.gpg"
+                                                                                                if [[ -z "$ENTRY" || ! -f "$FILE" ]]; then
+                                                                                                  echo "Usage: pass warn <entry>" >&2
+                                                                                                  exit 1
+                                                                                                fi
+                                                                                                mapfile -t LONG_KEY_IDS < <(
+                                                                                                  gpg --list-packets "$FILE" 2>/dev/null \
+                                                                                                  | awk '/^:pubkey enc packet:/ { print $NF }'
+                                                                                                )
+                                                                                                if [[ ${ builtins.concatStringsSep "" [ "$" "{" "#LONG_KEY_IDS[@]" "}" ] } -eq 0 ]]; then
+                                                                                                  echo "No encryption keys found in $FILE" >&2
+                                                                                                  exit 1
+                                                                                                fi
+                                                                                                echo "Encryption Long Key IDs found in $ENTRY:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }" >&2
+                                                                                                mapfile -t ENCRYPTION_FPRS < <(
+                                                                                                  for longid in "${ builtins.concatStringsSep "" [ "$" "{" "LONG_KEY_IDS[@]" "}" ] }"; do
+                                                                                                    gpg --with-colons --fingerprint "$longid" 2>/dev/null \
+                                                                                                    | awk -F: '/^fpr:/ { print $10; exit }'
+                                                                                                  done
+                                                                                                )
+                                                                                                echo "Corresponding full fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }" >&2
+                                                                                                mapfile -t CURRENT_FPRS < $PASSWORD_STORE_DIR/.gpg-id
+                                                                                                echo "Current trusted key fingerprints:" >&2
+                                                                                                printf '  %s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" >&2
+                                                                                                WARNING=0
+                                                                                                for fpr in "${ builtins.concatStringsSep "" [ "$" "{" "ENCRYPTION_FPRS[@]" "}" ] }"; do
+                                                                                                  if ! printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "CURRENT_FPRS[@]" "}" ] }" | grep -qx "$fpr"; then
+                                                                                                    echo "⚠️  Warning: $ENTRY was encrypted with an unknown or old GPG key fingerprint:" >&2
+                                                                                                    echo "   $fpr" >&2
+                                                                                                    WARNING=1
+                                                                                                  fi
+                                                                                                done
+                                                                                                pass show "$ENTRY"
+                                                                                                exit $WARNING
+                                                                                            '' ;
                                                                                             in
                                                                                                 ''
-                                                                                                    echo hi
-                                                                                                    echo ${ builtins.typeOf xx }
-                                                                                                    echo ${ builtins.typeOf xxx }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar }
-                                                                                                    echo ${ builtins.typeOf xxx.outputs.foobar.target }
-                                                                                                    echo ${ xxx.outputs.foobar.target }
+                                                                                                    GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                    PASSWORD_STORE_DIR=/var/lib/workspaces/${ epoch }/dot-password-store
+                                                                                                    PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
+                                                                                                    mkdir --parents $out/bin
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.pass }/bin/pass \
+                                                                                                        $out/bin/pass \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
+                                                                                                        --set PASSWORD_STORE_GENERATED_LENGTH ${ builtins.toString config.personal.pass.generated-length } \
+                                                                                                        --set PASSWORD_STORE_CHARACTER_SET ${ config.personal.pass.character-set } \
+                                                                                                        --set PASSWORD_STORE_CHARACTER_SET_NO_SYMBOLS ${ config.personal.pass.character-set-no-symbols } \
+                                                                                                        --set PASSWORD_STORE_ENABLE_EXTENSIONS true \
+                                                                                                        --set PASSWORD_STORE_EXTENSIONS_DIR $out/extensions
+                                                                                                    mkdir --parents $out/share/bash-completion/completions
+                                                                                                    # ln --symbolic ${ pkgs.pass }/share/bash-completion/completions/pass $out/share/bash-completion/completions
+                                                                                                    cat > $out/share/bash-completion/completions/pass <<EOF
+                                                                                                      export PASSWORD_STORE_DIR=$PASSWORD_STORE_DIR
+                                                                                                      # Set up custom subcommands (they're no-arg extensions)
+                                                                                                      _pass_custom_subcommands+=" phonetic expiry warn"
+
+                                                                                                      # Source the original completion logic
+                                                                                                      source ${pkgs.pass}/share/bash-completion/completions/pass
+
+                                                                                                      # Patch completion
+                                                                                                      __pass_ext_completion() {
+
+                                                                                                        local subcommand="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_WORDS[1]" "}" ]}"
+                                                                                                        if [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "phonetic" ]] || [[ "${builtins.concatStringsSep "" [ "\\" "$" "{" "subcommand" "}" ]}" == "warn" ]] ; then
+                                                                                                          COMP_WORDS[1]="show"
+                                                                                                          COMP_LINE="${builtins.concatStringsSep "" [ "\\" "$" "{" "COMP_LINE/phonetic/show" "}" ]}"
+                                                                                                          COMP_POINT=${builtins.concatStringsSep "" [ "\\" "$" "{" "#COMP_LINE" "}" ]}
+                                                                                                        fi
+                                                                                                        local cur prev words cword
+                                                                                                        _init_completion || return
+
+                                                                                                        _pass
+                                                                                                      }
+                                                                                                        # Patch top-level subcommand completion
+                                                                                                        __pass_top_level_completion() {
+                                                                                                          local cur prev words cword
+                                                                                                          _init_completion || return
+
+                                                                                                          local commands="init insert edit generate show rm grep find cp mv git push pull sync otp import ls help version phonetic expiry warn"
+                                                                                                          COMPREPLY=( \$( compgen -W "\$commands" -- "\$cur" ) )
+                                                                                                        }
+
+                                                                                                        # Remove existing completion
+                                                                                                        complete -r pass 2>/dev/null || true
+
+                                                                                                        # Register patched completion for pass:
+                                                                                                        # If first word after 'pass', do top-level completion
+                                                                                                        # Otherwise, use __pass_ext_completion for subcommand completion
+                                                                                                        _pass_combined_completion() {
+                                                                                                          local cword
+                                                                                                          _get_comp_words_by_ref -n =: cur prev words cword
+
+                                                                                                          if (( cword == 1 )); then
+                                                                                                            __pass_top_level_completion
+                                                                                                          else
+                                                                                                            __pass_ext_completion
+                                                                                                          fi
+                                                                                                        }
+
+                                                                                                        complete -F _pass_combined_completion pass
+                                                                                                    EOF
+                                                                                                    mkdir --parents $out/share/man/man1
+                                                                                                    gunzip --stdout ${ pkgs.pass }/share/man/man1/pass.1.gz > $out/pass.1
+                                                                                                    k=$(grep -n '^\.SH SIMPLE EXAMPLES' $out/pass.1 | cut -d: -f1)
+                                                                                                    head --lines $(( $k - 1 )) $out/pass.1 > $out/pass.2
+                                                                                                    cat >> $out/pass.2 <<EOF
+
+                                                                                                    .SH EXTENSIONS
+                                                                                                    The following custom subcommands are added:
+
+                                                                                                    .TP
+                                                                                                    .B phonetic
+                                                                                                    Show passwords with phonetic spelling for easier communication.
+
+                                                                                                    .TP
+                                                                                                    .B expiry
+                                                                                                    Manage password expiration dates and notifications.
+
+                                                                                                    .TP
+                                                                                                    .B warn
+                                                                                                    Display warnings about password store status.
+
+                                                                                                    EOF
+                                                                                                    tail --lines +$k $out/pass.1 >> $out/pass.2
+                                                                                                    gzip --to-stdout $out/pass.2 > $out/share/man/man1/pass.1.gz
+                                                                                                    # rm $out/pass
+                                                                                                    mkdir $out/extensions
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.writeShellScript "expiry" expiry } \
+                                                                                                        $out/extensions/expiry.bash \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set DEADLINE ${ builtins.toString config.personal.pass.deadline } \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.writeShellScript "phonetic" phonetic } \
+                                                                                                        $out/extensions/phonetic.bash \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set PASSWORD_STORE_GPG_OPTS "$PASSWORD_STORE_GPG_OPTS" \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.pass ] }
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.writeShellScript "warn" warn } \
+                                                                                                        $out/extensions/warn.bash \
+                                                                                                        --set PASSWORD_STORE_DIR "$PASSWORD_STORE_DIR" \
+                                                                                                        --set GNUPGHOME "$GNUPGHOME" \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.gawk pkgs.gnupg pkgs.pass ] }
                                                                                                 '' ;
+                                                                                    name = "pass" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.gnugrep pkgs.makeWrapper pkgs.gnused pkgs.gzip ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    calcurse -C "$XDG_CONFIG_HOME" -D "$XDG_DATA_HOME" "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/calcurse \
+                                                                                                    --set CALCURSE_EDITOR ${ pkgs.micro }/bin/micro \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/calcurse/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/calcurse/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
+                                                                                            '' ;
+                                                                                    name = "calcurse" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    calcurse -C "$XDG_CONFIG_HOME" -D "$XDG_DATA_HOME" "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/calcurse \
+                                                                                                    --set CALCURSE_EDITOR ${ pkgs.micro }/bin/micro \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/calcurse/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/calcurse/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
+                                                                                            '' ;
+                                                                                    name = "calcurse" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    chromium "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/chromium \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/chromium/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/chromium/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.chromium ] }
+                                                                                            '' ;
+                                                                                    name = "chromium" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/jrnl add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/jrnl commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    jrnl "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/jrnl \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/jrnl/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/jrnl/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.jrnl pkgs.micro ] }
+                                                                                            '' ;
+                                                                                    name = "jrnl" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            script =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    chromium "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/chromium \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/chromium/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/chromium/data \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.chromium ] }
+                                                                                            '' ;
+                                                                                    name = "chromium" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            open =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    touch "$LEDGER_FILE"
+                                                                                                    ACCOUNT="$1"  # Default account name
+                                                                                                    EQUITY_ACCOUNT="$2"
+                                                                                                    AMOUNT="$3"  # Default amount
+                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "4:-$( date +%Y/%m/%d)" "}" ] }"
+                                                                                                    cat > "$LEDGER_FILE" <<EOF
+                                                                                                    $DATE Opening Balances
+                                                                                                        $ACCOUNT         \$${AMOUNT}
+                                                                                                        $EQUITY_ACCOUNT
+                                                                                                    EOF
+                                                                                                    ledger balance
+                                                                                                '' ;
+                                                                                            payment =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    touch "$LEDGER_FILE"
+                                                                                                    ACCOUNT="$1"  # Default account name
+                                                                                                    EQUITY_ACCOUNT="$2"
+                                                                                                    AMOUNT="$3"  # Default amount
+                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "4:-$( date +%Y/%m/%d)" "}" ] }"
+                                                                                                    cat > "$LEDGER_FILE" <<EOF
+                                                                                                    $DATE Opening Balances
+                                                                                                        $ACCOUNT         \$${AMOUNT}
+                                                                                                        $EQUITY_ACCOUNT
+                                                                                                    EOF
+                                                                                                    ledger balance
+                                                                                                '' ;
+                                                                                            script =
+                                                                                                ''
+                                                                                                    touch "$LEDGER_FILE"
+                                                                                                    ledger "$@"
+                                                                                                '' ;
+                                                                                        in
+                                                                                            ''
+                                                                                                mkdir --parents $out/bin
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "script" script } \
+                                                                                                    $out/bin/ledger \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/${ epoch }/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
+                                                                                                makeWrapper \
+                                                                                                    ${ pkgs.writeShellScript "open" open } \
+                                                                                                    $out/bin/open-account \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/${ epoch }/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
+                                                                                            '' ;
+                                                                                    name = "ledger" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        ''
+                                                                                            mkdir --parents $out/bin
+                                                                                            makeWrapper \
+                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community \
+                                                                                                $out/bin/repository-personal \
+                                                                                                --add-flags /var/lib/workspaces/${ epoch }/repository/personal \
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] } \
+                                                                                                --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/personal/github-token.asc )"
+                                                                                        '' ;
+                                                                                    name = "repository-personal" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            promote =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "promote" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.nix pkgs.nixos-rebuild ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                CURRENT_TIME="$( date +%s )"
+                                                                                                                echo "$CURRENT_TIME" > /var/lib/workspaces/${ epoch }/repository/private/current-time.nix
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal rev-parse HEAD > /var/lib/workspaces/${ epoch }/repository/private/personal.hash
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets rev-parse HEAD > /var/lib/workspaces/${ epoch }/repository/secrets.hash
+                                                                                                                echo "The CURRENT_TIME is $CURRENT_TIME.  We have commited personal and secrets repository and recorded the commit hashes."
+                                                                                                                if nix flake check --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets /var/lib/workspaces/${ epoch }/repository/private
+                                                                                                                then
+                                                                                                                    echo "We have successfully checked the private repository using local sources."
+                                                                                                                    rm --force nixos.qcow2 result
+                                                                                                                    if nixos-rebuild build-vm --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets --flake /var/lib/workspaces/${ epoch }/repository/private
+                                                                                                                    then
+                                                                                                                        echo "We have successfully built the private repository using local sources"
+                                                                                                                        if result/bin/run-nixos-vm
+                                                                                                                        then
+                                                                                                                            SATISFACTORY=""
+                                                                                                                            while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                            do
+                                                                                                                                read -rp "Was the local run satisfactory? y/n " SATISFACTORY
+                                                                                                                            done
+                                                                                                                            if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                            then
+                                                                                                                                echo "Since the run using local sources was satisfactory we are going to pull request changes to personal and secrets back into main."
+                                                                                                                                PERSONAL_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout -b "$PERSONAL_BRANCH"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal fetch origin main
+                                                                                                                                if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]]
+                                                                                                                                then
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main
+                                                                                                                                    read -rp "Title the changes in personal:  " TITLE
+                                                                                                                                    read -rp "Body the changes in personal:  " BODY
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/personal reset --soft origin/main
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/personal commit -am "$CHANGES"
+                                                                                                                                    cd /var/lib/workspaces/${ epoch }/repository/personal
+                                                                                                                                    gh pr create --title "$TITLE" --body "$BODY" --base main --head "$PERSONAL_BRANCH"
+                                                                                                                                fi
+                                                                                                                                SECRETS_BRANCH="scratch/$( uuidgen )"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b "$SECRETS_BRANCH"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
+                                                                                                                                if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
+                                                                                                                                then
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main
+                                                                                                                                    read -rp "Title the changes in secrets:  " TITLE
+                                                                                                                                    read -rp "Body the changes in secrets:  " BODY
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/secrets reset --soft origin/main
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/secrets commit -am "$CHANGES"
+                                                                                                                                    cd /var/lib/workspaces/${ epoch }/repository/secrets
+                                                                                                                                    gh pr create --title "$TITLE" --body "$BODY" --base main --head "$SECRETS_BRANCH"
+                                                                                                                                fi
+                                                                                                                                rm result
+                                                                                                                                while [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]] && [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
+                                                                                                                                do
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/personal fetch origin main
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
+                                                                                                                                    sleep 1m
+                                                                                                                                done
+                                                                                                                                if nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/${ epoch }/repository/private
+                                                                                                                                then
+                                                                                                                                    if result/bin/run-nixos-vm
+                                                                                                                                    then
+                                                                                                                                        SATISFACTORY=""
+                                                                                                                                        while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                        do
+                                                                                                                                            read -rp "Was the github run satisfactory? y/n " SATISFACTORY
+                                                                                                                                        done
+                                                                                                                                        if [[ "$SATISFACTORY" != "y" ]]
+                                                                                                                                        then
+                                                                                                                                            if sudo nixos-rebuild test --flake /var/lib/workspaces/${ epoch }/repository/private
+                                                                                                                                            then
+                                                                                                                                                SATISFACTORY=""
+                                                                                                                                                while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                                do
+                                                                                                                                                    read -rp "Was the development run satisfactory? y/n " SATISFACTORY
+                                                                                                                                                done
+                                                                                                                                                if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                                                then
+                                                                                                                                                    echo "Since the development run was satisfactory we are going to rebase the private flake into the development branch."
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private diff origin/development
+                                                                                                                                                    read -rp "Success Message:  " SUCCESS_MESSAGE
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin development
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $SUCCESS_MESSAGE"
+                                                                                                                                                    DEVELOPMENT_SCRATCH="scratch/$( uuidgen )"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private checkout -b "$DEVELOPMENT_SCRATCH"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private reset --soft origin/development
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$SUCCESS_MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private checkout development
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/development
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$DEVELOPMENT_SCRATCH"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private push origin development
+                                                                                                                                                    if sudo nixos-rebuild switch --flake /var/lib/workspaces/${ epoch }/repository/private
+                                                                                                                                                    then
+                                                                                                                                                        SATISFACTORY=""
+                                                                                                                                                        while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                                        do
+                                                                                                                                                            read -rp "Was the switch run satisfactory? y/n " SATISFACTORY
+                                                                                                                                                        done
+                                                                                                                                                        if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                                                        then
+                                                                                                                                                            echo "Since the main run was satisfactory we are going to rebase the development branch into the main branch."
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin development
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin main
+                                                                                                                                                            MAIN_SCRATCH="scratch/$( uuidgen )"
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout origin/develop
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout -b "$MAIN_SCRATCH"
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private reset --soft origin/main
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "MAIN SUCCESS AT $CURRENT_TIME:  $SUCCESS_MESSAGE"
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout main
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/main
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$MAIN_SCRATCH"
+                                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private push origin main
+                                                                                                                                                            exit 0
+                                                                                                                                                        elif [[ "$SATISFACTORY" == "n" ]]
+                                                                                                                                                        then
+                                                                                                                                                            read -rp "Details:  " DETAILS
+                                                                                                                                                            MESSAGE="The private repository ran unsatisfactory on switch at $CURRENT_TIME:  $DETAILS:"
+                                                                                                                                                            echo "$MESSAGE" >&2
+                                                                                                                                                            exit 64
+                                                                                                                                                        fi
+                                                                                                                                                    else
+                                                                                                                                                        MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
+                                                                                                                                                        git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                                        echo "$MESSAGE" >&2
+                                                                                                                                                        exit 64
+                                                                                                                                                    fi
+                                                                                                                                                else
+                                                                                                                                                    read -rp "Details:  " DETAILS
+                                                                                                                                                    MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    echo "$MESSAGE" >&2
+                                                                                                                                                    exit 64
+                                                                                                                                                fi
+                                                                                                                                            else
+                                                                                                                                                MESSAGE="The private repository failed to build development at $CURRENT_TIME"
+                                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                                echo "$MESSAGE" >&2
+                                                                                                                                                exit 64
+                                                                                                                                            fi
+                                                                                                                                        elif [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                        then
+                                                                                                                                            read -rp "Details:  " DETAILS
+                                                                                                                                            MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                            echo "$MESSAGE" >&2
+                                                                                                                                            exit 64
+                                                                                                                                        fi
+                                                                                                                                    else
+                                                                                                                                        MESSAGE="The private repository failed to run the vm with bootloader from github sources at $CURRENT_TIME"
+                                                                                                                                        git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                        echo "$MESSAGE" >&2
+                                                                                                                                        exit 64
+                                                                                                                                    fi
+                                                                                                                                else
+                                                                                                                                    MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                    echo "$MESSAGE" >&2
+                                                                                                                                    exit 64
+                                                                                                                                fi
+                                                                                                                            elif [[ "$SATISFACTORY" == "n" ]]
+                                                                                                                            then
+                                                                                                                                read -rp "Details:  " DETAILS
+                                                                                                                                MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                echo "$MESSAGE" >&2
+                                                                                                                                exit 64
+                                                                                                                            fi
+                                                                                                                        else
+                                                                                                                            MESSAGE="The private repository failed to run the vm from local sources at $CURRENT_TIME"
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                            echo "$MESSAGE" >&2
+                                                                                                                            exit 64
+                                                                                                                        fi
+                                                                                                                    else
+                                                                                                                        MESSAGE="The private repository failed to build the vm from local sources at $CURRENT_TIME"
+                                                                                                                        git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                        echo "$MESSAGE"
+                                                                                                                        exit 64
+                                                                                                                    fi
+                                                                                                                else
+                                                                                                                    MESSAGE="The private repository failed checks at $CURRENT_TIME"
+                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                    echo "$MESSAGE"
+                                                                                                                    exit 64
+                                                                                                                fi
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community \
+                                                                                                        $out/bin/repository-private \
+                                                                                                        --add-flags /var/lib/workspaces/${ epoch }/repository/private \
+                                                                                                        --set LD_LIBRARY_PATH pkgs.e2fsprogs \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git promote ] } \
+                                                                                                        --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/secrets/github-token.asc )"
+                                                                                                '' ;
+                                                                                    name = "repository-private" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        ''
+                                                                                            mkdir --parents $out/bin
+                                                                                            makeWrapper \
+                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community \
+                                                                                                $out/bin/repository-secrets \
+                                                                                                --add-flags /var/lib/workspaces/${ epoch }/repository/secrets \
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] } \
+                                                                                                --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/secrets/github-token.asc )"
+                                                                                        '' ;
+                                                                                    name = "repository-secrets" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
                                                                                 }
                                                                         )
                                                                     ] ;
@@ -1853,19 +2878,25 @@
                                                                 agenix = lib.mkOption { type = lib.types.path ; } ;
                                                                 calcurse =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/21c0167f9fc25f1c81ea166a7ea6e0171865527ef2df34ffc1931c6" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/b4cd8c0c6133a53020e6125e4162332e5fdb99902d3b53240045d0a" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 chromium =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/b2a2033a2db62fc7171d9755573f34ef1f662922273aa0b642b80aa" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/eb5e3536f8f42f3e6d42d135cc85c4e0df4b955faaf7d221a0ed5ef" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 current-time = lib.mkOption { type = lib.types.path ; } ;
                                                                 description = lib.mkOption { type = lib.types.str ; } ;
                                                                 email = lib.mkOption { type = lib.types.str ; } ;
+                                                                frequency =
+                                                                    {
+                                                                        setup = lib.mkOption { default = "hourly" ; type = lib.types.str ; } ;
+                                                                        teardown = lib.mkOption { default = "daily" ; type = lib.types.str ; } ;
+                                                                    } ;
+                                                                github = lib.mkOption { type = lib.types.path ; } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
                                                                 gnucash =
                                                                     {
@@ -1875,14 +2906,15 @@
                                                                     } ;
                                                                 jrnl =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/6787fa9629bad98dde0ad1a1ae5ee50f4dab6a81fa543ee68275307" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/26cd15c3965a659263334b9ffc8b01020a1e5b6fe84fddc66c98b51" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
                                                                 hash-length = lib.mkOption { default = 16 ; type = lib.types.int ; } ;
                                                                 ledger =
                                                                     {
-                                                                        branch = lib.mkOption { default = "artifact/0aa409110e55f05015414c3c8cbf05505392815bd992acb86958db8" ; type = lib.types.str ; } ;
+                                                                        branch = lib.mkOption { default = "artifact/32c193fb3a5310462e48a7c5174d9c3110f83077d13de52a9a80a40" ; type = lib.types.str ; } ;
+                                                                        file = lib.mkOption { default = "ledger.txt" ; type = lib.types.str ; } ;
                                                                         recipient = lib.mkOption { default = "688A5A79ED45AED4D010D56452EDF74F9A9A6E20" ; type = lib.types.str ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:AFnRFCb7/artifacts.git" ; type = lib.types.str ; } ;
                                                                     } ;
@@ -1892,6 +2924,7 @@
                                                                         branch = lib.mkOption { default = "scratch/8060776f-fa8d-443e-9902-118cf4634d9e" ; type = lib.types.str ; } ;
                                                                         character-set = lib.mkOption { default = ".,_=2345ABCDEFGHJKLMabcdefghjkmn" ; type = lib.types.str ; } ;
                                                                         character-set-no-symbols = lib.mkOption { default = "6789NPQRSTUVWXYZpqrstuvwxyz" ; type = lib.types.str ; } ;
+                                                                        deadline = lib.mkOption { default = 60 * 60 * 24 * 366 ; type = lib.types.int ; } ;
                                                                         generated-length = lib.mkOption { default = 25 ; type = lib.types.int ; } ;
                                                                         remote = lib.mkOption { default = "git@github.com:nextmoose/secrets.git" ; type = lib.types.str ; } ;
                                                                     } ;
@@ -1911,13 +2944,18 @@
                                                                         personal =
                                                                             {
                                                                                 branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
-                                                                                remote = lib.mkOption { default = "git@github.com:viktordanek/personal.git" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:AFnRFCb7/personal.git" ; type = lib.types.str ; } ;
                                                                             } ;
                                                                         private =
                                                                             {
                                                                                 branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
                                                                                 remote = lib.mkOption { default = "mobile:private" ; type = lib.types.str ; } ;
                                                                             } ;
+                                                                        secrets =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b" ; type = lib.types.str ; } ;
+                                                                           } ;
                                                                     } ;
                                                                 stale = lib.mkOption { default = 60 * 60 * 24 * 7 * 2 ; type = lib.types.int ; } ;
                                                                 stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
@@ -1953,7 +2991,6 @@
                                                 } ;
                                             in
                                                 {
-                                                    stash-foobar = ( stash2.lib { nixpkgs = nixpkgs ; system = system ; visitor = visitor ; } ).test { outputs = { foobar = { target = "/build/31bca02094eb7812/3107c14a528509ec/mount/target" ; } ; } ; stash = { foobar = x : { outputs = [ "target" ] ; } ; } ; } ;
                                                     visitor-bool = visitor.lib.test pkgs false false visitors true ;
                                                     visitor-float = visitor.lib.test pkgs false false visitors 0.0 ;
                                                     visitor-int = visitor.lib.test pkgs false false visitors 0 ;
