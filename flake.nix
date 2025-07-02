@@ -2853,6 +2853,11 @@
                                                                                 branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
                                                                                 remote = lib.mkOption { default = "mobile:private" ; type = lib.types.str ; } ;
                                                                             } ;
+                                                                        secrets =
+                                                                            {
+                                                                                branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:AFnRFCb7/12e5389b-8894-4de5-9cd2-7dab0678d22b" ; type = lib.types.str ; } ;
+                                                                           } ;
                                                                     } ;
                                                                 stale = lib.mkOption { default = 60 * 60 * 24 * 7 * 2 ; type = lib.types.int ; } ;
                                                                 stash = lib.mkOption { default = "stash" ; type = lib.types.str ; } ;
