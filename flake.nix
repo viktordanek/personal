@@ -534,7 +534,7 @@
                                                                                                 export GIT_WORK_TREE=${ outputs.workspace }/work-tree
                                                                                                 EOF
                                                                                                 export GIT_DIR=/mount/git
-                                                                                                export GIT_WORK_TREE=/mount/workspace/work-tree
+                                                                                                export GIT_WORK_TREE=/mount/workspaces/work-tree
                                                                                                 mkdir "$GIT_DIR"
                                                                                                 mkdir --parents "$GIT_WORK_TREE"
                                                                                                 git init 2>&1
@@ -684,7 +684,7 @@
                                                                                                                                         date +%s > ${ outputs.workspace }/work-tree/current-time.nix
                                                                                                                                         sudo nixos-rebuild test --flake ${ outputs.workspace }/work-tree#myhost
                                                                                                                                         git commit -am "promoted $0" --allow-empty
-                                                                                                                                        SCRATCH=$( uuidgen )
+                                                                                                                                        SCRATCH="scratch/$( uuidgen )"
                                                                                                                                         git checkout -b "$SCRATCH"
                                                                                                                                         git fetch origin development
                                                                                                                                         git diff origin/development
@@ -2586,15 +2586,15 @@
                                                                                                         runtimeInputs = [ pkgs.coreutils pkgs.nix pkgs.nixos-rebuild ] ;
                                                                                                         text =
                                                                                                             ''
-                                                                                                                CURRENT_TIME="$( date %s )"
+                                                                                                                CURRENT_TIME="$( date +%s )"
                                                                                                                 echo "$CURRENT_TIME" > /var/lib/workspaces/repository/private/current-time.nix
                                                                                                                 git -C /var/lib/workspaces/repository/personal commit -am "$CURRENT_TIME" --allow-empty
                                                                                                                 git -C /var/lib/workspaces/repository/personal rev-parse HEAD > /var/lib/workspaces/repository/private/personal.hash
-                                                                                                                git -C /var/lib/workspace/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
                                                                                                                 git -C /var/lib/workspaces/repository/secrets rev-parse HEAD > /var/lib/workspaces/repository/secrets.hash
                                                                                                                 if ! nix flake check --override-input personal /var/lib/workspaces/repository/personal --override-input secrets /var/lib/workspaces/repository/secrets /var/lib/workspaces/repository/private
                                                                                                                 then
-                                                                                                                    MESSAGE="The private repository failed checks at $TIMESTAMP"
+                                                                                                                    MESSAGE="The private repository failed checks at $CURRENT_TIME"
                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                     echo "$MESSAGE"
                                                                                                                     exit 64
@@ -2636,7 +2636,7 @@
                                                                                                                                 done
                                                                                                                                 if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/repository/private
                                                                                                                                 then
-                                                                                                                                    MESSAGE="The private repository failed to build the vm with bootloader from github sources at $TIMESTAMP"
+                                                                                                                                    MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                     echo "$MESSAGE"
                                                                                                                                     exit 64
@@ -2653,7 +2653,7 @@
                                                                                                                                         git -C /var/lib/workspaces/repository/private fetch origin development
                                                                                                                                         git -C /var/lib/workspaces/repository/private diff origin/development
                                                                                                                                         read -p "Success Message:  " MESSAGE
-                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $TIMESTAMP:  $SUCCESS_MESSAGE"
+                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
                                                                                                                                         SCRATCH="scratch/$( uuidgen )"
                                                                                                                                         git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH}"
                                                                                                                                         git -C /var/lib/workspaces/repository/private reset origin/development
@@ -2671,7 +2671,7 @@
                                                                                                                                             if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                             then
                                                                                                                                                 git -C /var/lib/repository/private fetch origin main
-                                                                                                                                                SCRATCH="scratch/$( uuidgen )
+                                                                                                                                                SCRATCH="scratch/$( uuidgen )"
                                                                                                                                                 git -C /var/lib/repository/private fetch origin development
                                                                                                                                                 git -C /var/lib/repository/private checkout -b "$SCRATCH"
                                                                                                                                                 git -C /var/lib/repository/private reset --soft origin/development
@@ -2689,7 +2689,7 @@
                                                                                                                                                     if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                                     then
                                                                                                                                                         read -p "Details:  " DETAILS
-                                                                                                                                                        MESSAGE="The promotion was successful on switch at $TIMESTAMP:  $DETAILS"
+                                                                                                                                                        MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
                                                                                                                                                         git -C /var/lib/repository/private commit -am "$MESSAGE"
                                                                                                                                                         git -C /var/lib/repository/private fetch origin main
                                                                                                                                                         git -C /var/lib/repository/private reset --soft origin/main
@@ -2701,12 +2701,12 @@
                                                                                                                                                     elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                     then
                                                                                                                                                         read -p "Details:  " DETAILS
-                                                                                                                                                        MESSAGE="The private repository ran unsatisfactory on switch at $TIMESTAMP:  $DETAILS:"
+                                                                                                                                                        MESSAGE="The private repository ran unsatisfactory on switch at $CURRENT_TIME:  $DETAILS:"
                                                                                                                                                         echo "$MESSAGE"
                                                                                                                                                         exit 64
                                                                                                                                                     fi
                                                                                                                                                 else
-                                                                                                                                                    MESSAGE="The private repository failed to build switch at $TIMESTAMP"
+                                                                                                                                                    MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
                                                                                                                                                     git -C /var/lib/repository/private commit -am "$MESSAGE"
                                                                                                                                                     echo "$MESSAGE"
                                                                                                                                                     exit 64
@@ -2719,20 +2719,20 @@
                                                                                                                                                 exit 64
                                                                                                                                             fi
                                                                                                                                         else
-                                                                                                                                            MESSAGE="The private repository failed to build development at $TIMESTAMP"
+                                                                                                                                            MESSAGE="The private repository failed to build development at $CURRENT_TIME"
                                                                                                                                             git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                             echo "$MESSAGE"
                                                                                                                                             exit 64
                                                                                                                                         fi
                                                                                                                                     elif [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                         read -p "Details:  " DETAILS
-                                                                                                                                        MESSAGE="The private repository ran unsatisfactory from github at $TIMESTAMP: $DETAILS"
+                                                                                                                                        MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
                                                                                                                                         git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                         echo "$MESSAGE"
                                                                                                                                         exit 64
                                                                                                                                     fi
                                                                                                                                 else
-                                                                                                                                    MESSAGE="The private repository failed to run the vm with bootloader from github sources at $TIMESTAMP"
+                                                                                                                                    MESSAGE="The private repository failed to run the vm with bootloader from github sources at $CURRENT_TIME"
                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                     echo "$MESSAGE"
                                                                                                                                     exit 64
@@ -2742,19 +2742,19 @@
                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                         then
                                                                                                                             read -p "Details:  " DETAILS
-                                                                                                                            MESSAGE="The private repository ran unsatisfactory from local sources at $TIMESTAMP:  $DETAILS"
+                                                                                                                            MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
                                                                                                                             git -C /var/lib/workspaces/repository/private commit -am "MESSAGE"
                                                                                                                             echo "$MESSAGE"
                                                                                                                             exit 64
                                                                                                                         fi
                                                                                                                     else
-                                                                                                                        MESSAGE="The private repository failed to run the vm from local sources at $TIMESTAMP"
+                                                                                                                        MESSAGE="The private repository failed to run the vm from local sources at $CURRENT_TIME"
                                                                                                                         git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                         echo "$MESSAGE"
                                                                                                                         exit 64
                                                                                                                     fi
                                                                                                                 else
-                                                                                                                    MESSAGE="The private repository failed to build the vm from local sources at $TIMESTAMP"
+                                                                                                                    MESSAGE="The private repository failed to build the vm from local sources at $CURRENT_TIME"
                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                     echo "$MESSAGE"
                                                                                                                     exit 64
