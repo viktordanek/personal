@@ -1670,20 +1670,20 @@
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             cat > config <<EOF
-                                                                                                                            HostName github.com
                                                                                                                             Host github.com
-                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
-                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
-                                                                                                                            StrictHostKeyChecking true
+                                                                                                                            HostName github.com
+                                                                                                                                IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                                UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                                StrictHostKeyChecking true
 
-                                                                                                                            HostName 192.168.1.202
                                                                                                                             Host mobile
-                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
-                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
-                                                                                                                            StrictHostKeyChecking true
-                                                                                                                            Port 202
-                                                                                                                            EOF
-                                                                                                                            chmod 0400 config
+                                                                                                                                HostName 192.168.1.202
+                                                                                                                                IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                                UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                                StrictHostKeyChecking true
+                                                                                                                                Port 8022
+                                                                                                                                EOF
+                                                                                                                                chmod 0400 config
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
