@@ -1606,6 +1606,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-gnupg" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
@@ -1642,6 +1643,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-password-store" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
@@ -1686,6 +1688,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-ssh" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
@@ -1742,6 +1745,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/jrnl" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
@@ -1800,6 +1804,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/ledger" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
@@ -1838,6 +1843,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/private" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
@@ -1881,6 +1887,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/personal" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/personal" ;
                                                                                             } ;
@@ -1920,6 +1927,7 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/secrets" ;
                                                                                                 User = config.personal.name ;
+                                                                                                Type = "oneshot" ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
@@ -1934,27 +1942,31 @@
                                                                                         after = [ "network.target" ] ;
                                                                                         serviceConfig =
                                                                                             {
+                                                                                                ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /var/lib/workspaces/${epoch}/secrets";
                                                                                                 ExecStart =
                                                                                                     let
                                                                                                         derivation =
                                                                                                             pkgs.stdenv.mkDerivation
                                                                                                                 {
                                                                                                                     installPhase =
+                                                                                                                        let
+                                                                                                                              secretFiles =
+                                                                                                                                [
+                                                                                                                                    "wifi.nix"
+                                                                                                                                    "dot-ssh/viktor/identity.asc"
+                                                                                                                                    "dot-ssh/viktor/known-hosts.asc"
+                                                                                                                                    "dot-ssh/boot/identity.asc"
+                                                                                                                                    "dot-ssh/boot/known-hosts.asc"
+                                                                                                                                    "secret-keys.asc"
+                                                                                                                                    "ownertrust.asc"
+                                                                                                                                    "github-token.asc"
+                                                                                                                                ] ;
+                                                                                                                            in
                                                                                                                         ''
-                                                                                                                            mkdir --parents $out/scripts $out/bin
-                                                                                                                            find ${ secrets } -type f -name "*.age" | while read -r FILE
-                                                                                                                            do
-                                                                                                                                RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
-                                                                                                                                RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                                STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
-                                                                                                                                cat >> $out/scripts/application <<EOF
-                                                                                                                                mkdir --parents "$RELATIVE_DIRECTORY"
-                                                                                                                                age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
-                                                                                                                                chmod 0400 "$STRIPPED"
-                                                                                                                            EOF
-                                                                                                                            done
-                                                                                                                            chmod 0500 $out/scripts/application
-                                                                                                                            makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
+                                                                                                                            mkdir --parents $out/src $out/scripts $out/bin
+                                                                                                                            cp -r ${ secrets } $out/src
+                                                                                                                            ln --symbolic ${ pkgs.writeShellScript "application" ( builtins.concatStringsSep "\n" ( builtins.map ( secretFile : ''mkdir --parents $( dirname ${ secretFile } ) && age --decrypt --identity ${ config.personal.agenix } --output ${ secretFile } $OUT/${ secretFile }.age && chmod 0400 ${ secretFile }'' ) secretFiles ) ) } $out/scripts/application
+                                                                                                                            makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] } --set OUT ${ secrets }
                                                                                                                         ''  ;
                                                                                                                     name = "derivation" ;
                                                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.findutils pkgs.makeWrapper ] ;
@@ -1962,6 +1974,7 @@
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/secrets" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
@@ -1973,16 +1986,43 @@
                                                                                     } ;
                                                                                 setup =
                                                                                     {
-                                                                                        after = [ "network.target" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        after =
+                                                                                            [
+                                                                                                "network.target"
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         serviceConfig =
                                                                                             {
+                                                                                                ExecStart = "${ pkgs.coreutils }/bin/true" ;
                                                                                             } ;
-                                                                                        wants = [ "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        wants =
+                                                                                            [
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
                                                                                 teardown =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
+                                                                                        enable = false ;
                                                                                         serviceConfig =
                                                                                             {
                                                                                                 ExecStart =
@@ -1991,15 +2031,36 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "application" ;
-                                                                                                                    runtimeInputs = [ pkgs.gnutar pkgs.zstd ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.gnutar pkgs.zstd ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            tar --create --file=- . | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                            WORK_DIRECTORY="$( pwd )"
+                                                                                                                            cd "$( mktemp --directory )"
+                                                                                                                            tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 -o "$( mktemp --dry-run --suffix=.tar.zstd )"
+                                                                                                                            if [[ -z "$WORK_DIRECTORY" ]] || [[ "$WORK_DIRECTORY" == "/" ]]
+                                                                                                                            then
+                                                                                                                                echo Refusing to delete
+                                                                                                                            else
+                                                                                                                                rm --recursive --force "$WORK_DIRECTORY"
+                                                                                                                            fi
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                User = config.personal.name ;
-                                                                                                WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                                ExecStartPost =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.systemd ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            ${ pkgs.systemd }/bin/systemctl start setup.service
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
@@ -2705,6 +2766,10 @@
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
                                                                                                                                     sleep 1m
                                                                                                                                 done
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout "scratch/$( uuidgen )"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b "scratch/$( uuidgen )"
                                                                                                                                 if nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                                 then
                                                                                                                                     if result/bin/run-nixos-vm
@@ -2759,6 +2824,7 @@
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/main
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$MAIN_SCRATCH"
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private push origin main
+                                                                                                                                                            nix-collect-garbage
                                                                                                                                                             exit 0
                                                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                         then
