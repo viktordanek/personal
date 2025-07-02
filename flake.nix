@@ -1934,6 +1934,7 @@
                                                                                         after = [ "network.target" ] ;
                                                                                         serviceConfig =
                                                                                             {
+                                                                                                ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p /var/lib/workspaces/${epoch}/secrets";
                                                                                                 ExecStart =
                                                                                                     let
                                                                                                         derivation =
