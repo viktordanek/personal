@@ -2652,95 +2652,93 @@
                                                                                                                                 done
                                                                                                                                 if [[ "$SATISFACTORY" != "y" ]]
                                                                                                                                 then
-                                                                                                                                        git -C /var/lib/workspaces/repository/private fetch origin development
-                                                                                                                                        git -C /var/lib/workspaces/repository/private diff origin/development
-                                                                                                                                        read -p "Success Message:  " MESSAGE
-                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
-                                                                                                                                        SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
-                                                                                                                                        git -C /var/lib/workspaces/repository/private reset origin/development
-                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout development
-                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase origin/development
-                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
-                                                                                                                                        git -C /var/lib/workspacews
-                                                                                                                                        if sudo nixos-rebuild test --flake /var/lib/workspaces/repository/private
+                                                                                                                                    git -C /var/lib/workspaces/repository/private fetch origin development
+                                                                                                                                    git -C /var/lib/workspaces/repository/private diff origin/development
+                                                                                                                                    read -p "Success Message:  " MESSAGE
+                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
+                                                                                                                                    SCRATCH="scratch/$( uuidgen )"
+                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
+                                                                                                                                    git -C /var/lib/workspaces/repository/private reset origin/development
+                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout development
+                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase origin/development
+                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                    git -C /var/lib/workspacews
+                                                                                                                                    if sudo nixos-rebuild test --flake /var/lib/workspaces/repository/private
+                                                                                                                                    then
+                                                                                                                                        SATISFACTORY=""
+                                                                                                                                        while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                        do
+                                                                                                                                            read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                                        done
+                                                                                                                                        if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                         then
-                                                                                                                                            SATISFACTORY=""
-                                                                                                                                            while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
-                                                                                                                                            do
-                                                                                                                                                read -p "Was the run satisfactory? y/n " SATISFACTORY
-                                                                                                                                            done
-                                                                                                                                            if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                                            git -C /var/lib/workspaces/repository/private fetch origin main
+                                                                                                                                            SCRATCH="scratch/$( uuidgen )"
+                                                                                                                                            git -C /var/lib/workspaces/repository/private fetch origin development
+                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
+                                                                                                                                            git -C /var/lib/workspaces/repository/private reset --soft origin/development
+                                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout origin/development
+                                                                                                                                            git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout -b "scratch/$( uuidgen )"
+                                                                                                                                            if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
                                                                                                                                             then
-                                                                                                                                                git -C /var/lib/workspaces/repository/private fetch origin main
-                                                                                                                                                SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                                git -C /var/lib/workspaces/repository/private fetch origin development
-                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
-                                                                                                                                                git -C /var/lib/workspaces/repository/private reset --soft origin/development
-                                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout origin/development
-                                                                                                                                                git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
-                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout -b "scratch/$( uuidgen )"
-                                                                                                                                                if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
+                                                                                                                                                SATISFACTORY=""
+                                                                                                                                                while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                                do
+                                                                                                                                                    read -p "Was the switch satisfactory? y/n " SATISFACTORY
+                                                                                                                                                done
+                                                                                                                                                if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                                 then
-                                                                                                                                                    SATISFACTORY=""
-                                                                                                                                                    while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
-                                                                                                                                                    do
-                                                                                                                                                        read -p "Was the switch satisfactory? y/n " SATISFACTORY
-                                                                                                                                                    done
-                                                                                                                                                    if [[ "$SATISFACTORY" == "y" ]]
-                                                                                                                                                    then
-                                                                                                                                                        read -p "Details:  " DETAILS
-                                                                                                                                                        MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private fetch origin main
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private reset --soft origin/main
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout main
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase origin/main
-                                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
-                                                                                                                                                        exit 0
-                                                                                                                                                    elif [[ "$SATISFACTORY" == "n" ]]
-                                                                                                                                                    then
-                                                                                                                                                        read -p "Details:  " DETAILS
-                                                                                                                                                        MESSAGE="The private repository ran unsatisfactory on switch at $CURRENT_TIME:  $DETAILS:"
-                                                                                                                                                        echo "$MESSAGE"
-                                                                                                                                                        exit 64
-                                                                                                                                                    fi
-                                                                                                                                                else
-                                                                                                                                                    MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
+                                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                                    MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
                                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private fetch origin main
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private reset --soft origin/main
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout main
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase origin/main
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                                    exit 0
+                                                                                                                                                elif [[ "$SATISFACTORY" == "n" ]]
+                                                                                                                                                then
+                                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                                    MESSAGE="The private repository ran unsatisfactory on switch at $CURRENT_TIME:  $DETAILS:"
                                                                                                                                                     echo "$MESSAGE"
                                                                                                                                                     exit 64
                                                                                                                                                 fi
                                                                                                                                             else
-                                                                                                                                                read -p "Details:  " DETAILS
-                                                                                                                                                MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
+                                                                                                                                                MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
                                                                                                                                                 git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                                 echo "$MESSAGE"
                                                                                                                                                 exit 64
                                                                                                                                             fi
                                                                                                                                         else
-                                                                                                                                            MESSAGE="The private repository failed to build development at $CURRENT_TIME"
+                                                                                                                                            read -p "Details:  " DETAILS
+                                                                                                                                            MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
                                                                                                                                             git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                             echo "$MESSAGE"
                                                                                                                                             exit 64
                                                                                                                                         fi
-                                                                                                                                    elif [[ "$SATISFACTORY" != "n" ]]
-                                                                                                                                    then
-                                                                                                                                        read -p "Details:  " DETAILS
-                                                                                                                                        MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
+                                                                                                                                    else
+                                                                                                                                        MESSAGE="The private repository failed to build development at $CURRENT_TIME"
                                                                                                                                         git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                         echo "$MESSAGE"
                                                                                                                                         exit 64
                                                                                                                                     fi
-                                                                                                                                else
-                                                                                                                                    MESSAGE="The private repository failed to run the vm with bootloader from github sources at $CURRENT_TIME"
+                                                                                                                                elif [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                then
+                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                    MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                     echo "$MESSAGE"
                                                                                                                                     exit 64
                                                                                                                                 fi
-
+                                                                                                                            else
+                                                                                                                                MESSAGE="The private repository failed to run the vm with bootloader from github sources at $CURRENT_TIME"
+                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                echo "$MESSAGE"
+                                                                                                                                exit 64
                                                                                                                             fi
                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                         then
