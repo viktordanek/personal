@@ -1848,6 +1848,49 @@
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
+                                                                                repository-personal =
+                                                                                    {
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.repository.personal.remote }
+                                                                                                                            if git fetch origin ${ config.personal.repository.personal.branch }
+                                                                                                                            then
+                                                                                                                                git checkout origin/${ config.personal.repository.personal.branch }
+                                                                                                                            else
+                                                                                                                                git checkout -b main
+                                                                                                                                git commit -am "" -allow-empty --allow-empty-message
+                                                                                                                            fi
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/personal" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/personal" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/personal" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 repository-secrets =
                                                                                     {
                                                                                         after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
@@ -2871,7 +2914,7 @@
                                                                         personal =
                                                                             {
                                                                                 branch = lib.mkOption { default = "main" ; type = lib.types.str ; } ;
-                                                                                remote = lib.mkOption { default = "git@github.com:viktordanek/personal.git" ; type = lib.types.str ; } ;
+                                                                                remote = lib.mkOption { default = "git@github.com:AFnRFCb7/personal.git" ; type = lib.types.str ; } ;
                                                                             } ;
                                                                         private =
                                                                             {
