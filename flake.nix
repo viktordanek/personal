@@ -1973,11 +1973,37 @@
                                                                                     } ;
                                                                                 setup =
                                                                                     {
-                                                                                        after = [ "network.target" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        after =
+                                                                                            [
+                                                                                                "network.target"
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         serviceConfig =
                                                                                             {
+                                                                                                ExecStart = "${ pkgs.coreutils }/bin/trueq" ;
                                                                                             } ;
-                                                                                        wants = [ "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        wants =
+                                                                                            [
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
                                                                                 teardown =
@@ -1991,15 +2017,36 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "application" ;
-                                                                                                                    runtimeInputs = [ pkgs.gnutar pkgs.zstd ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.gnutar pkgs.zstd ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            tar --create --file=- . | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                            WORK_DIRECTORY="$( pwd )"
+                                                                                                                            cd "$( mktemp --directory )"
+                                                                                                                            tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 -o "$( mktemp --dry-run --suffix=.tar.zstd )"
+                                                                                                                            if [[ -z "$WORK_DIRECTORY" ]] || [[ "$WORK_DIRECTORY" == "/" ]]
+                                                                                                                            then
+                                                                                                                                echo Refusing to delete
+                                                                                                                            else
+                                                                                                                                rm --recursive --force "$WORK_DIRECTORY"
+                                                                                                                            fi
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                User = config.personal.name ;
-                                                                                                WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                                ExecStartPost =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.systemd ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            ${ pkgs.systemd }/bin/systemctl start setup.service
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
@@ -2705,6 +2752,10 @@
                                                                                                                                     git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
                                                                                                                                     sleep 1m
                                                                                                                                 done
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal checkout scratch/$( uuidgen )
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b scratch/$( uuidgen )
                                                                                                                                 if nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                                 then
                                                                                                                                     if result/bin/run-nixos-vm
@@ -2759,6 +2810,7 @@
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/main
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$MAIN_SCRATCH"
                                                                                                                                                             git -C /var/lib/workspaces/${ epoch }/repository/private push origin main
+                                                                                                                                                            nix-collect-garbage
                                                                                                                                                             exit 0
                                                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                         then
