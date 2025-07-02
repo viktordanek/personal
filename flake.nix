@@ -1682,7 +1682,7 @@
                                                                                                                                 UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
                                                                                                                                 StrictHostKeyChecking true
                                                                                                                                 Port 8022
-                                                                                                                                EOF
+                                                                                                                            EOF
                                                                                                                                 chmod 0400 config
                                                                                                                         '' ;
                                                                                                                 } ;
