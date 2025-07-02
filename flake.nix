@@ -2783,7 +2783,7 @@
                                                                                         ''
                                                                                             mkdir --parents $out/bin
                                                                                             makeWrapper \
-                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-communit \
+                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community \
                                                                                                 $out/bin/repository-secrets \
                                                                                                 --add-flags /var/lib/workspaces/repository/secrets \
                                                                                                 --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] }
