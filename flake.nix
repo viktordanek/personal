@@ -1962,6 +1962,7 @@
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/secrets" ;
+                                                                                                User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
@@ -2011,7 +2012,6 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces" ;
-                                                                                                User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
