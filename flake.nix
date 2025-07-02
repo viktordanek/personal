@@ -1973,11 +1973,37 @@
                                                                                     } ;
                                                                                 setup =
                                                                                     {
-                                                                                        after = [ "network.target" "calcurse.service" "chromium.service" "dot-gnupg.service" "dot-ssh.service" "jrnl.service" "ledger.service" "repository-personal.service" "repository-private.service" "repository-secrets.service" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        after =
+                                                                                            [
+                                                                                                "network.target"
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         serviceConfig =
                                                                                             {
                                                                                             } ;
-                                                                                        wants = [ "secrets.service" "calcurse.service" "chromium.service" "dot-gnupg.service" "dot-ssh.service" "jrnl.service" "ledger.service" "repository-personal.service" "repository-private.service" "repository-secrets.service" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        wants =
+                                                                                            [
+                                                                                                "network.target"
+                                                                                                "calcurse.service"
+                                                                                                "chromium.service"
+                                                                                                "dot-gnupg.service"
+                                                                                                "dot-ssh.service"
+                                                                                                "jrnl.service"
+                                                                                                "ledger.service"
+                                                                                                "repository-personal.service"
+                                                                                                "repository-private.service"
+                                                                                                "repository-secrets.service"
+                                                                                                "secrets.service"
+                                                                                           ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
                                                                                 teardown =
