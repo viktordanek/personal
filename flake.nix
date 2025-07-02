@@ -2726,7 +2726,7 @@
                                                                                             in
                                                                                                 ''
                                                                                                     makeWrapper \
-                                                                                                        ${ pkgs.jet-brains.idea-community }/bin/idea-community \
+                                                                                                        ${ pkgs.jetbrains.idea-community }/bin/idea-community \
                                                                                                         $out/bin/idea-community \
                                                                                                         --add-flags /var/lib/workspaces/repository/private \
                                                                                                         --set LD_LIBRARY_PATH pkgs.e2fsprogs \
