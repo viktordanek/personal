@@ -1832,7 +1832,7 @@
                                                                                                                             git remote add origin ${ config.personal.repository.private.remote }
                                                                                                                             git fetch origin ${ config.personal.repository.private.branch }
                                                                                                                             git checkout origin/${ config.personal.repository.private.branch }
-                                                                                                                            git checkout -b scratch/$( uuidgen )
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
@@ -1870,7 +1870,7 @@
                                                                                                                             git remote add origin ${ config.personal.repository.secrets.remote }
                                                                                                                             git fetch origin ${ config.personal.repository.secrets.branch }
                                                                                                                             git checkout origin/${ config.personal.repository.secrets.branch }
-                                                                                                                            git checkout -b scratch/$( uuidgen )
+                                                                                                                            git checkout -b "scratch/$( uuidgen )"
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
@@ -2678,7 +2678,7 @@
                                                                                                                                                 git -C /var/lib/repository/private commit -am "$MESSAGE"
                                                                                                                                                 git -C /var/lib/repository/private checkout origin/development
                                                                                                                                                 git -C /var/lib/repository/private rebase "$SCRATCH"
-                                                                                                                                                git -C /var/lib/repository/private checkout -b scratch/$( uuidgen )
+                                                                                                                                                git -C /var/lib/repository/private checkout -b "scratch/$( uuidgen )"
                                                                                                                                                 if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
                                                                                                                                                 then
                                                                                                                                                     SATISFACTORY=""
