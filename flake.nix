@@ -2822,6 +2822,7 @@
                                                                         setup = lib.mkOption { default = "hourly" ; type = lib.types.str ; } ;
                                                                         teardown = lib.mkOption { default = "daily" ; type = lib.types.str ; } ;
                                                                     } ;
+                                                                github = lib.mkOption { type = lib.types.path ; } ;
                                                                 git-crypt = lib.mkOption { default = "" ; type = lib.types.str ; } ;
                                                                 gnucash =
                                                                     {
