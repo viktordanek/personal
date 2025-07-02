@@ -2744,7 +2744,7 @@
                                                                                                                         then
                                                                                                                             read -p "Details:  " DETAILS
                                                                                                                             MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
-                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "MESSAGE"
+                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                             echo "$MESSAGE"
                                                                                                                             exit 64
                                                                                                                         fi
