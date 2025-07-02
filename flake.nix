@@ -1991,10 +1991,18 @@
                                                                                                             pkgs.writeShellApplication
                                                                                                                 {
                                                                                                                     name = "application" ;
-                                                                                                                    runtimeInputs = [ pkgs.gnutar pkgs.zstd ] ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.gnutar pkgs.zstd ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            tar --create --file=- . | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                            WORK_DIRECTORY="$( pwd )"
+                                                                                                                            cd "$( mktemp --directory )"
+                                                                                                                            tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                            if [[ -z "$WORK_DIRECTORY" ]] || [[ "$WORK_DIRECTORY" == "/" ]]
+                                                                                                                            then
+                                                                                                                                echo Refusing to delete
+                                                                                                                            else
+                                                                                                                                rm --recursive --force "$WORK_DIRECTORY"
+                                                                                                                            fi
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
