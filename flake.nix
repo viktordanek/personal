@@ -1606,6 +1606,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-gnupg" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
@@ -1642,6 +1643,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-password-store" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
@@ -1686,6 +1688,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/dot-ssh" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
@@ -1742,6 +1745,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/jrnl" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
@@ -1800,6 +1804,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/ledger" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
@@ -1838,6 +1843,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/private" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
@@ -1881,6 +1887,7 @@
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/personal" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/personal" ;
                                                                                             } ;
@@ -1920,6 +1927,7 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/repository/secrets" ;
                                                                                                 User = config.personal.name ;
+                                                                                                Type = "oneshot" ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
@@ -1966,6 +1974,7 @@
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/secrets" ;
+                                                                                                Type = "oneshot" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
