@@ -1847,6 +1847,44 @@
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
+                                                                                repository-secrets =
+                                                                                    {
+                                                                                        after = [ "network.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.repository.secrets.remote }
+                                                                                                                            git fetch origin ${ config.personal.repository.secrets.branch }
+                                                                                                                            git checkout origin/${ config.personal.repository.secrets.branch }
+                                                                                                                            git checkout -b scratch/$( uuidgen )
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application" ;
+                                                                                                StateDirectory = "workspaces/repository/secrets" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/secrets" ;
+                                                                                            } ;
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/repository/secrets" ;
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ] ;
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 secrets =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
@@ -2573,7 +2611,7 @@
                                                                                                                         done
                                                                                                                         if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                         then
-                                                                                                                            git -C /var/lib/workspaces/repository/personal checkout -b scratch/$( uuidgen )
+                                                                                                                            git -C /var/lib/workspaces/repository/personal checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/personal fetch origin main
                                                                                                                             if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
                                                                                                                             then
@@ -2582,7 +2620,7 @@
                                                                                                                                 git -C /var/lib/workspaces/repository/personal reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
                                                                                                                                 gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
-                                                                                                                            git -C /var/lib/workspaces/repository/secrets checkout -b scratch/$( uuidgen )
+                                                                                                                            git -C /var/lib/workspaces/repository/secrets checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/secrets fetch origin main
                                                                                                                             if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
                                                                                                                             then
