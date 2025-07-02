@@ -1809,6 +1809,44 @@
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
+                                                                                repository-private =
+                                                                                    {
+                                                                                        after = [ "network.target" "dot-ssh.service" ] ;
+                                                                                        requires = [ "dot-ssh.service" ] ;
+                                                                                        serviceConfig =
+                                                                                            {
+                                                                                                ExecStart =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.coreutils pkgs.git pkgs.libuuid ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            git init
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config user.email ${ config.personal.name }
+                                                                                                                            git config user.name ${ config.personal.email }
+                                                                                                                            ln --symbolic ${ post-commit } .git/hooks/post-commit
+                                                                                                                            git remote add origin ${ config.personal.private.remote }
+                                                                                                                            git fetch origin main
+                                                                                                                            git checkout origin/main
+                                                                                                                            git checkout -b scratch/$( uuidgen )
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application"
+                                                                                                StateDirectory = "workspaces/repository/private" ;
+                                                                                                User = config.personal.name ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/private"
+                                                                                            }
+                                                                                        unitConfig =
+                                                                                            {
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/repository/private"
+                                                                                            } ;
+                                                                                        wants = [ "network-online.target" ]
+                                                                                        wantedBy = [ "multi-user.target" ] ;
+                                                                                    } ;
                                                                                 secrets =
                                                                                     {
                                                                                         after = [ "network.target" ] ;
@@ -2450,6 +2488,26 @@
                                                                                                     EOF
                                                                                                     ledger balance
                                                                                                 '' ;
+                                                                                            payment =
+                                                                                                ''
+                                                                                                    cleanup ( )
+                                                                                                        {
+                                                                                                            git -C /var/lib/workspaces/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                        }
+                                                                                                    trap cleanup EXIT
+                                                                                                    touch "$LEDGER_FILE"
+                                                                                                    ACCOUNT="$1"  # Default account name
+                                                                                                    EQUITY_ACCOUNT="$2"
+                                                                                                    AMOUNT="$3"  # Default amount
+                                                                                                    DATE="${ builtins.concatStringsSep "" [ "$" "{" "4:-$( date +%Y/%m/%d)" "}" ] }"
+                                                                                                    cat > "$LEDGER_FILE" <<EOF
+                                                                                                    $DATE Opening Balances
+                                                                                                        $ACCOUNT         \$${AMOUNT}
+                                                                                                        $EQUITY_ACCOUNT
+                                                                                                    EOF
+                                                                                                    ledger balance
+                                                                                                '' ;
                                                                                             script =
                                                                                                 ''
                                                                                                     touch "$LEDGER_FILE"
@@ -2474,6 +2532,207 @@
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
                                                                                             '' ;
                                                                                     name = "ledger" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        let
+                                                                                            promote =
+                                                                                                pkgs.writeShellApplication
+                                                                                                    {
+                                                                                                        name = "promote" ;
+                                                                                                        runtimeInputs = [ pkgs.coreutils pkgs.nix pkgs.nixos-rebuild ] ;
+                                                                                                        text =
+                                                                                                            ''
+                                                                                                                CURRENT_TIME="$( date %s )"
+                                                                                                                echo "$CURRENT_TIME" > /var/lib/workspaces/repository/private/current-time.nix
+                                                                                                                git -C /var/lib/workspaces/repository/personal commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/repository/personal rev-parse HEAD > /var/lib/workspaces/repository/private/personal.hash
+                                                                                                                git -C /var/lib/workspace/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/repository/secrets rev-parse HEAD > /var/lib/workspaces/repository/secrets.hash
+                                                                                                                if ! nix flake check --override-input personal /var/lib/workspaces/repository/personal --override-input secrets /var/lib/workspaces/repository/secrets /var/lib/workspaces/repository/private
+                                                                                                                then
+                                                                                                                    MESSAGE="The private repository failed checks at $TIMESTAMP"
+                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                    echo "$MESSAGE"
+                                                                                                                    exit 64
+                                                                                                                fi
+                                                                                                                rm --force nixos.qcow2 result
+                                                                                                                if nixos-rebuild build-vm --override-input personal /var/lib/workspaces/repository/personal --override-input secrets /var/lib/workspaces/repository/secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                then
+                                                                                                                    if result/bin/run-nixos-vm
+                                                                                                                    then
+                                                                                                                        SATISFACTORY=""
+                                                                                                                        while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                        do
+                                                                                                                            read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                        done
+                                                                                                                        if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                        then
+                                                                                                                            git -C /var/lib/workspaces/repository/personal checkout -b scratch/$( uuidgen )
+                                                                                                                            git -C /var/lib/workspaces/repository/personal fetch origin main
+                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
+                                                                                                                            then
+                                                                                                                                git -C /var/lib/workspaces/repository/personal diff origin/main
+                                                                                                                                read -p "Describe the changes in personal:  " CHANGES
+                                                                                                                                git -C /var/lib/workspaces/repository/personal reset --soft origin/main
+                                                                                                                                git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
+                                                                                                                                gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                            git -C /var/lib/workspaces/repository/secrets checkout -b scratch/$( uuidgen )
+                                                                                                                            git -C /var/lib/workspaces/repository/secrets fetch origin main
+                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
+                                                                                                                            then
+                                                                                                                                git -C /var/lib/workspaces/repository/secrets diff origin/main
+                                                                                                                                read -p "Describe the changes in personal:  " CHANGES
+                                                                                                                                git -C /var/lib/workspaces/repository/secrets reset --soft origin/main
+                                                                                                                                git -C /var/lib/workspaces/repository/secrets commit -am "$CHANGES"
+                                                                                                                                gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                                rm result
+                                                                                                                                while [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                                do
+                                                                                                                                    sleep 1s
+                                                                                                                                done
+                                                                                                                                if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                                then
+                                                                                                                                    MESSAGE="The private repository failed to build the vm with bootloader from github sources at $TIMESTAMP"
+                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                    echo "$MESSAGE"
+                                                                                                                                    exit 64
+                                                                                                                                fi
+                                                                                                                                if result/bin/run-nixos-vm
+                                                                                                                                then
+                                                                                                                                    SATISFACTORY=""
+                                                                                                                                    while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                    do
+                                                                                                                                        read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                                    done
+                                                                                                                                    if [[ "$SATISFACTORY" != "y" ]]
+                                                                                                                                    then
+                                                                                                                                        git -C /var/lib/workspaces/repository/private fetch origin development
+                                                                                                                                        git -C /var/lib/workspaces/repository/private diff origin/development
+                                                                                                                                        read -p "Success Message:  " MESSAGE
+                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $TIMESTAMP:  $SUCCESS_MESSAGE"
+                                                                                                                                        SCRATCH="scratch/$( uuidgen )"
+                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH}"
+                                                                                                                                        git -C /var/lib/workspaces/repository/private reset origin/development
+                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout development
+                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase origin/development
+                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                        git -C /var/lib/workspacews
+                                                                                                                                        if sudo nixos-rebuild test --flake /var/lib/workspaces/repository/private
+                                                                                                                                        then
+                                                                                                                                            SATISFACTORY=""
+                                                                                                                                            while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                            do
+                                                                                                                                                read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                                            done
+                                                                                                                                            if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                                            then
+                                                                                                                                                git -C /var/lib/repository/private fetch origin main
+                                                                                                                                                SCRATCH="scratch/$( uuidgen )
+                                                                                                                                                git -C /var/lib/repository/private fetch origin development
+                                                                                                                                                git -C /var/lib/repository/private checkout -b "$SCRATCH"
+                                                                                                                                                git -C /var/lib/repository/private reset --soft origin/development
+                                                                                                                                                git -C /var/lib/repository/private commit -am "$MESSAGE"
+                                                                                                                                                git -C /var/lib/repository/private checkout origin/development
+                                                                                                                                                git -C /var/lib/repository/private rebase "$SCRATCH"
+                                                                                                                                                git -C /var/lib/repository/private checkout -b scratch/$( uuidgen )
+                                                                                                                                                if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
+                                                                                                                                                then
+                                                                                                                                                    SATISFACTORY=""
+                                                                                                                                                    while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                                    do
+                                                                                                                                                        read -p "Was the switch satisfactory? y/n " SATISFACTORY
+                                                                                                                                                    done
+                                                                                                                                                    if [[ "$SATISFACTORY" == "y" ]]
+                                                                                                                                                    then
+                                                                                                                                                        read -p "Details:  " DETAILS
+                                                                                                                                                        MESSAGE="The promotion was successful on switch at $TIMESTAMP:  $DETAILS"
+                                                                                                                                                        git -C /var/lib/repository/private commit -am "$MESSAGE"
+                                                                                                                                                        git -C /var/lib/repository/private fetch origin main
+                                                                                                                                                        git -C /var/lib/repository/private reset --soft origin/main
+                                                                                                                                                        git -C /var/lib/repository/private commit -am "$MESSAGE"
+                                                                                                                                                        git -C /var/lib/repository/private checkout main
+                                                                                                                                                        git -C /var/lib/repository/private rebase origin/main
+                                                                                                                                                        git -C /var/lib/repository/private rebase "$SCRATCH"
+                                                                                                                                                        exit 0
+                                                                                                                                                    elif [[ "$SATISFACTORY" == "n" ]]
+                                                                                                                                                    then
+                                                                                                                                                        read -p "Details:  " DETAILS
+                                                                                                                                                        MESSAGE="The private repository ran unsatisfactory on switch at $TIMESTAMP:  $DETAILS:"
+                                                                                                                                                        echo "$MESSAGE"
+                                                                                                                                                        exit 64
+                                                                                                                                                    fi
+                                                                                                                                                else
+                                                                                                                                                    MESSAGE="The private repository failed to build switch at $TIMESTAMP"
+                                                                                                                                                    git -C /var/lib/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    echo "$MESSAGE"
+                                                                                                                                                    exit 64
+                                                                                                                                                fi
+                                                                                                                                            else
+                                                                                                                                                read -p "Details:  " DETAILS
+                                                                                                                                                MESSAGE="The private repository ran unsatisfactory on development at $TIMSTAMP:  $DETAILS"
+                                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                echo "$MESSAGE"
+                                                                                                                                                exit 64
+                                                                                                                                            fi
+                                                                                                                                        else
+                                                                                                                                            MESSAGE="The private repository failed to build development at $TIMESTAMP"
+                                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                            echo "$MESSAGE"
+                                                                                                                                            exit 64
+                                                                                                                                        fi
+                                                                                                                                    elif [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                        read -p "Details:  " DETAILS
+                                                                                                                                        MESSAGE="The private repository ran unsatisfactory from github at $TIMESTAMP: $DETAILS"
+                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                        echo "$MESSAGE"
+                                                                                                                                        exit 64
+                                                                                                                                    fi
+                                                                                                                                else
+                                                                                                                                    MESSAGE="The private repository failed to run the vm with bootloader from github sources at $TIMESTAMP"
+                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                    echo "$MESSAGE"
+                                                                                                                                    exit 64
+                                                                                                                                fi
+
+                                                                                                                            fi
+                                                                                                                        elif [[ "$SATISFACTORY" == "n" ]]
+                                                                                                                        then
+                                                                                                                            read -p "Details:  " DETAILS
+                                                                                                                            MESSAGE="The private repository ran unsatisfactory from local sources at $TIMESTAMP:  $DETAILS"
+                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "MESSAGE"
+                                                                                                                            echo "$MESSAGE"
+                                                                                                                            exit 64
+                                                                                                                        fi
+                                                                                                                    else
+                                                                                                                        MESSAGE="The private repository failed to run the vm from local sources at $TIMESTAMP"
+                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                        echo "$MESSAGE"
+                                                                                                                        exit 64
+                                                                                                                    fi
+                                                                                                                else
+                                                                                                                    MESSAGE="The private repository failed to build the vm from local sources at $TIMESTAMP"
+                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                    echo "$MESSAGE"
+                                                                                                                    exit 64
+                                                                                                                fi
+                                                                                                            '' ;
+                                                                                                    } ;
+                                                                                            in
+                                                                                                ''
+                                                                                                    makeWrapper \
+                                                                                                        ${ pkgs.jet-brains.idea-community }/bin/idea-community \
+                                                                                                        $out/bin/idea-community \
+                                                                                                        --add-flags /var/lib/workspaces/repository/private \
+                                                                                                        --set LD_LIBRARY_PATH pkgs.e2fsprogs \
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git promote ] }
+                                                                                                '' ;
+                                                                                    name = "private" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
                                                                                 }
