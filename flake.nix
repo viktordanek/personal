@@ -2613,7 +2613,7 @@
                                                                                                                         then
                                                                                                                             git -C /var/lib/workspaces/repository/personal checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/personal fetch origin main
-                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
+                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
                                                                                                                             then
                                                                                                                                 git -C /var/lib/workspaces/repository/personal diff origin/main
                                                                                                                                 read -rp "Describe the changes in personal:  " CHANGES
@@ -2623,7 +2623,7 @@
                                                                                                                             fi
                                                                                                                             git -C /var/lib/workspaces/repository/secrets checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/secrets fetch origin main
-                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
                                                                                                                             then
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets diff origin/main
                                                                                                                                 read -rp "Describe the changes in personal:  " CHANGES
@@ -2632,7 +2632,7 @@
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
                                                                                                                             fi
                                                                                                                             rm result
-                                                                                                                            while [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            while [[ -n "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ -n "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
                                                                                                                             do
                                                                                                                                 sleep 1s
                                                                                                                             done
