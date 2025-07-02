@@ -2622,6 +2622,24 @@
                                                                             pkgs.stdenv.mkDerivation
                                                                                 {
                                                                                     installPhase =
+                                                                                        ''
+                                                                                            mkdir --parents $out/bin
+                                                                                            makeWrapper \
+                                                                                                ${ pkgs.jetbrains.idea-community }/bin/idea-community \
+                                                                                                $out/bin/repository-personal \
+                                                                                                --add-flags /var/lib/workspaces/${ epoch }/repository/personal \
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] } \
+                                                                                                --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/personal/github-token.asc )"
+                                                                                        '' ;
+                                                                                    name = "repository-personal" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
                                                                                         let
                                                                                             promote =
                                                                                                 pkgs.writeShellApplication
@@ -2810,12 +2828,13 @@
                                                                                                 ''
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.jetbrains.idea-community }/bin/idea-community \
-                                                                                                        $out/bin/idea-community \
+                                                                                                        $out/bin/repository-private \
                                                                                                         --add-flags /var/lib/workspaces/${ epoch }/repository/private \
                                                                                                         --set LD_LIBRARY_PATH pkgs.e2fsprogs \
-                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git promote ] }
+                                                                                                        --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git promote ] } \
+                                                                                                        --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/secrets/github-token.asc )"
                                                                                                 '' ;
-                                                                                    name = "private" ;
+                                                                                    name = "repository-private" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
                                                                                     src = ./. ;
                                                                                 }
@@ -2830,7 +2849,8 @@
                                                                                                 ${ pkgs.jetbrains.idea-community }/bin/idea-community \
                                                                                                 $out/bin/repository-secrets \
                                                                                                 --add-flags /var/lib/workspaces/${ epoch }/repository/secrets \
-                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] }
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] } \
+                                                                                                --set GH_TOKEN "$( cat /var/lib/workspaces/${ epoch }/secrets/github-token.asc )"
                                                                                         '' ;
                                                                                     name = "repository-secrets" ;
                                                                                     nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
