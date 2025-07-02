@@ -1962,7 +1962,6 @@
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/${ epoch }/secrets" ;
-                                                                                                User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
