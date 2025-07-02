@@ -1989,7 +1989,7 @@
                                                                                            ] ;
                                                                                         serviceConfig =
                                                                                             {
-                                                                                                ExecStart = true ;
+                                                                                                ExecStart = "${ pkgs.coreutils }/bin/true" ;
                                                                                             } ;
                                                                                         wants =
                                                                                             [
