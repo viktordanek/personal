@@ -1838,7 +1838,7 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/repository/private" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/private"
+                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/private" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
