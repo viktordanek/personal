@@ -2776,6 +2776,23 @@
                                                                                     src = ./. ;
                                                                                 }
                                                                         )
+                                                                        (
+                                                                            pkgs.stdenv.mkDerivation
+                                                                                {
+                                                                                    installPhase =
+                                                                                        ''
+                                                                                            mkdir --parents $out/bin
+                                                                                            makeWrapper \
+                                                                                                ${ pkgs.jetbrains.idea-community } \
+                                                                                                $out/bin/repository-secrets \
+                                                                                                --add-flags /var/lib/workspaces/repository/secrets \
+                                                                                                --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] }
+                                                                                        '' ;
+                                                                                    name = "repository-secrets" ;
+                                                                                    nativeBuildInputs = [ pkgs.coreutils pkgs.makeWrapper ] ;
+                                                                                    src = ./. ;
+                                                                                }
+                                                                        )
                                                                     ] ;
                                                                 password = config.personal.password ;
                                                             } ;
