@@ -1839,7 +1839,7 @@
                                                                                                 StateDirectory = "workspaces/repository/private" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/repository/private"
-                                                                                            }
+                                                                                            } ;
                                                                                         unitConfig =
                                                                                             {
                                                                                                 ConditionPathExists = "!/var/lib/workspaces/repository/private"
