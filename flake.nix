@@ -1996,7 +1996,8 @@
                                                                                                                         ''
                                                                                                                             WORK_DIRECTORY="$( pwd )"
                                                                                                                             cd "$( mktemp --directory )"
-                                                                                                                            echo tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
+                                                                                                                            id -u >&2
+                                                                                                                            echo tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )" >&2
                                                                                                                             tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 --output="$( mktemp --suffix=.tar.zstd )"
                                                                                                                             if [[ -z "$WORK_DIRECTORY" ]] || [[ "$WORK_DIRECTORY" == "/" ]]
                                                                                                                             then
