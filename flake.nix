@@ -1511,7 +1511,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/calcurse" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/calcurse" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/calcurse" ;
                                                                                             } ;
@@ -1568,7 +1568,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/chromium" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/chromium" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/chromium" ;
                                                                                             } ;
@@ -1605,7 +1605,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/dot-gnupg" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-gnupg" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
@@ -1641,7 +1641,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/dot-password-store" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-password-store" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
@@ -1685,7 +1685,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/dot-ssh" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/dot-ssh" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
@@ -1741,7 +1741,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/jrnl" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/jrnl" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
@@ -1799,7 +1799,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/ledger" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/ledger" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
@@ -1837,7 +1837,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/repository/private" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/private" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
@@ -1875,7 +1875,7 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/repository/secrets" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/repository/secrets" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
@@ -1918,7 +1918,7 @@
                                                                                                                     src = ./. ;
                                                                                                                 } ;
                                                                                                         in "${ derivation }/bin/application" ;
-                                                                                                StateDirectory = "workspaces/secrets" ;
+                                                                                                StateDirectory = "workspaces/${ epoch }/secrets" ;
                                                                                                 User = config.personal.name ;
                                                                                                 WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
