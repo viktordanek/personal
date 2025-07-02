@@ -2725,6 +2725,7 @@
                                                                                                                                             exit 64
                                                                                                                                         fi
                                                                                                                                     elif [[ "$SATISFACTORY" != "n" ]]
+                                                                                                                                    then
                                                                                                                                         read -p "Details:  " DETAILS
                                                                                                                                         MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
                                                                                                                                         git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
