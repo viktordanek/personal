@@ -19,7 +19,7 @@
                                 { config , lib , pkgs , ... } :
                                     let
                                         current-time = builtins.toString ( builtins.import config.personal.current-time ) ;
-                                        epoch = builtins.substring 0 16 ( builtins.hashString "sha512" ( builtins.import config.personal.current-time ) ) ;
+                                        epoch = builtins.substring 0 16 ( builtins.hashString "sha512" ( builtins.toString ( builtins.import config.personal.current-time ) ) ) ;
                                         dependencies =
                                             let
                                                 list =
