@@ -2619,16 +2619,16 @@
                                                                                                                                 read -p "Describe the changes in personal:  " CHANGES
                                                                                                                                 git -C /var/lib/workspaces/repository/personal reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
-                                                                                                                                gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                                # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
                                                                                                                             git -C /var/lib/workspaces/repository/secrets checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/secrets fetch origin main
-                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
+                                                                                                                            if [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
                                                                                                                             then
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets diff origin/main
                                                                                                                                 read -p "Describe the changes in personal:  " CHANGES
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets commit -am "$CHANGES"
-                                                                                                                                gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                                # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
                                                                                                                                 rm result
                                                                                                                                 while [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
                                                                                                                                 do
@@ -2670,15 +2670,15 @@
                                                                                                                                             done
                                                                                                                                             if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                             then
-                                                                                                                                                git -C /var/lib/repository/private fetch origin main
+                                                                                                                                                git -C /var/lib/workspaces/repository/private fetch origin main
                                                                                                                                                 SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                                git -C /var/lib/repository/private fetch origin development
-                                                                                                                                                git -C /var/lib/repository/private checkout -b "$SCRATCH"
-                                                                                                                                                git -C /var/lib/repository/private reset --soft origin/development
-                                                                                                                                                git -C /var/lib/repository/private commit -am "$MESSAGE"
-                                                                                                                                                git -C /var/lib/repository/private checkout origin/development
-                                                                                                                                                git -C /var/lib/repository/private rebase "$SCRATCH"
-                                                                                                                                                git -C /var/lib/repository/private checkout -b "scratch/$( uuidgen )"
+                                                                                                                                                git -C /var/lib/workspaces/repository/private fetch origin development
+                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
+                                                                                                                                                git -C /var/lib/workspaces/repository/private reset --soft origin/development
+                                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout origin/development
+                                                                                                                                                git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                                git -C /var/lib/workspaces/repository/private checkout -b "scratch/$( uuidgen )"
                                                                                                                                                 if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
                                                                                                                                                 then
                                                                                                                                                     SATISFACTORY=""
@@ -2690,13 +2690,13 @@
                                                                                                                                                     then
                                                                                                                                                         read -p "Details:  " DETAILS
                                                                                                                                                         MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
-                                                                                                                                                        git -C /var/lib/repository/private commit -am "$MESSAGE"
-                                                                                                                                                        git -C /var/lib/repository/private fetch origin main
-                                                                                                                                                        git -C /var/lib/repository/private reset --soft origin/main
-                                                                                                                                                        git -C /var/lib/repository/private commit -am "$MESSAGE"
-                                                                                                                                                        git -C /var/lib/repository/private checkout main
-                                                                                                                                                        git -C /var/lib/repository/private rebase origin/main
-                                                                                                                                                        git -C /var/lib/repository/private rebase "$SCRATCH"
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private fetch origin main
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private reset --soft origin/main
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private checkout main
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase origin/main
+                                                                                                                                                        git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
                                                                                                                                                         exit 0
                                                                                                                                                     elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                     then
@@ -2707,13 +2707,13 @@
                                                                                                                                                     fi
                                                                                                                                                 else
                                                                                                                                                     MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
-                                                                                                                                                    git -C /var/lib/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                                     echo "$MESSAGE"
                                                                                                                                                     exit 64
                                                                                                                                                 fi
                                                                                                                                             else
                                                                                                                                                 read -p "Details:  " DETAILS
-                                                                                                                                                MESSAGE="The private repository ran unsatisfactory on development at $TIMSTAMP:  $DETAILS"
+                                                                                                                                                MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
                                                                                                                                                 git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                                 echo "$MESSAGE"
                                                                                                                                                 exit 64
