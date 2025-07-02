@@ -1811,7 +1811,7 @@
                                                                                     } ;
                                                                                 repository-private =
                                                                                     {
-                                                                                        after = [ "network.target" "dot-ssh.service" ] ;
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
                                                                                         requires = [ "dot-ssh.service" ] ;
                                                                                         serviceConfig =
                                                                                             {
@@ -1849,7 +1849,7 @@
                                                                                     } ;
                                                                                 repository-secrets =
                                                                                     {
-                                                                                        after = [ "network.target" "dot-ssh.service" ] ;
+                                                                                        after = [ "network.target" "network-online.target" "dot-ssh.service" ] ;
                                                                                         requires = [ "dot-ssh.service" ] ;
                                                                                         serviceConfig =
                                                                                             {
