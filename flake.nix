@@ -1973,7 +1973,7 @@
                                                                                     } ;
                                                                                 setup =
                                                                                     {
-                                                                                        after = [ "network.target" "secrets.service" "dot-gnupg.service" ] ;
+                                                                                        after = [ "network.target" "secrets.service" "dot-gnupg.service" "teardown.service" ] ;
                                                                                         serviceConfig =
                                                                                             {
                                                                                             } ;
@@ -1998,8 +1998,22 @@
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
+                                                                                                ExecStartPost =
+                                                                                                    let
+                                                                                                        application =
+                                                                                                            pkgs.writeShellApplication
+                                                                                                                {
+                                                                                                                    name = "application" ;
+                                                                                                                    runtimeInputs = [ pkgs.systemd ] ;
+                                                                                                                    text =
+                                                                                                                        ''
+                                                                                                                            ${ pkgs.systemd }/bin/systemctl start setup.service
+                                                                                                                        '' ;
+                                                                                                                } ;
+                                                                                                        in "${ application }/bin/application"
+                                                                                                StateDirectory = "workspaces" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/home/${ config.personal.name }/workspaces" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
