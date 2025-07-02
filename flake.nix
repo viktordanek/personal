@@ -1940,21 +1940,23 @@
                                                                                                             pkgs.stdenv.mkDerivation
                                                                                                                 {
                                                                                                                     installPhase =
+                                                                                                                        let
+                                                                                                                              secretFiles =
+                                                                                                                                [
+                                                                                                                                    "wifi.nix.age"
+                                                                                                                                    "dot-ssh/viktor/identity.asc.age"
+                                                                                                                                    "dot-ssh/viktor/known-hosts.asc.age"
+                                                                                                                                    "dot-ssh/boot/identity.asc.age"
+                                                                                                                                    "dot-ssh/boot/known-hosts.asc.age"
+                                                                                                                                    "secret-keys.asc.age"
+                                                                                                                                    "ownertrust.asc.age"
+                                                                                                                                    "github-token.asc.age"
+                                                                                                                                ] ;
+                                                                                                                            in
                                                                                                                         ''
                                                                                                                             mkdir --parents $out/src $out/scripts $out/bin
                                                                                                                             cp -r ${ secrets } $out/src
-                                                                                                                            find $out/src -type f -name "*.age" | while read -r FILE
-                                                                                                                            do
-                                                                                                                                RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
-                                                                                                                                RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
-                                                                                                                                STRIPPED=${ builtins.concatStringsSep "" [ "$" "{" "RELATIVE_PATH%.*" "}" ] }
-                                                                                                                                cat >> $out/scripts/application <<EOF
-                                                                                                                                mkdir --parents "$RELATIVE_DIRECTORY"
-                                                                                                                                age --decrypt --identity "${ config.personal.agenix }" --output "$STRIPPED" "$FILE"
-                                                                                                                                chmod 0400 "$STRIPPED"
-                                                                                                                            EOF
-                                                                                                                            done
-                                                                                                                            chmod 0500 $out/scripts/application
+                                                                                                                            ln --symbolic ${ pkgs.writeShellScript "application ( builtins.map ( secretFile : ''mkdir --parents $( direname secretFile ) && age --decrypt --identity ${ config.personal.agenix } --output secretFile $out/src/${ secretFile } && chmod 0400 ${ secretFile }'' ) secretFiles ) ) } $out/scripts/application
                                                                                                                             makeWrapper $out/scripts/application $out/bin/application --set PATH ${ pkgs.lib.makeBinPath [ pkgs.age pkgs.coreutils ] }
                                                                                                                         ''  ;
                                                                                                                     name = "derivation" ;
