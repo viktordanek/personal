@@ -2620,6 +2620,7 @@
                                                                                                                                 git -C /var/lib/workspaces/repository/personal reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
+                                                                                                                            fi
                                                                                                                             git -C /var/lib/workspaces/repository/secrets checkout -b "scratch/$( uuidgen )"
                                                                                                                             git -C /var/lib/workspaces/repository/secrets fetch origin main
                                                                                                                             if [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
@@ -2629,27 +2630,28 @@
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
-                                                                                                                                rm result
-                                                                                                                                while [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            fi
+                                                                                                                            rm result
+                                                                                                                            while [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            do
+                                                                                                                                sleep 1s
+                                                                                                                            done
+                                                                                                                            if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                            then
+                                                                                                                                MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
+                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                echo "$MESSAGE"
+                                                                                                                                exit 64
+                                                                                                                            fi
+                                                                                                                            if result/bin/run-nixos-vm
+                                                                                                                            then
+                                                                                                                                SATISFACTORY=""
+                                                                                                                                while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                 do
-                                                                                                                                    sleep 1s
+                                                                                                                                    read -p "Was the run satisfactory? y/n " SATISFACTORY
                                                                                                                                 done
-                                                                                                                                if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                                if [[ "$SATISFACTORY" != "y" ]]
                                                                                                                                 then
-                                                                                                                                    MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
-                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                    echo "$MESSAGE"
-                                                                                                                                    exit 64
-                                                                                                                                fi
-                                                                                                                                if result/bin/run-nixos-vm
-                                                                                                                                then
-                                                                                                                                    SATISFACTORY=""
-                                                                                                                                    while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
-                                                                                                                                    do
-                                                                                                                                        read -p "Was the run satisfactory? y/n " SATISFACTORY
-                                                                                                                                    done
-                                                                                                                                    if [[ "$SATISFACTORY" != "y" ]]
-                                                                                                                                    then
                                                                                                                                         git -C /var/lib/workspaces/repository/private fetch origin development
                                                                                                                                         git -C /var/lib/workspaces/repository/private diff origin/development
                                                                                                                                         read -p "Success Message:  " MESSAGE
