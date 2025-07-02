@@ -1992,7 +1992,6 @@
                                                                                             } ;
                                                                                         wants =
                                                                                             [
-                                                                                                "network.target"
                                                                                                 "calcurse.service"
                                                                                                 "chromium.service"
                                                                                                 "dot-gnupg.service"
