@@ -1844,7 +1844,7 @@
                                                                                             {
                                                                                                 ConditionPathExists = "!/var/lib/workspaces/repository/private" ;
                                                                                             } ;
-                                                                                        wants = [ "network-online.target" ]
+                                                                                        wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
                                                                                 secrets =
