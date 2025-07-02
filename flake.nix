@@ -1941,8 +1941,9 @@
                                                                                                                 {
                                                                                                                     installPhase =
                                                                                                                         ''
-                                                                                                                            mkdir --parents $out/scripts $out/bin
-                                                                                                                            find ${ secrets } -type f -name "*.age" | while read -r FILE
+                                                                                                                            mkdir --parents $out/src $out/scripts $out/bin
+                                                                                                                            cp -r ${ secrets } $out/src
+                                                                                                                            find $out/src -type f -name "*.age" | while read -r FILE
                                                                                                                             do
                                                                                                                                 RELATIVE_PATH="${ builtins.concatStringsSep "" [ "$" "{" "FILE#${ secrets }/" "}" ] }"
                                                                                                                                 RELATIVE_DIRECTORY=$( dirname "$RELATIVE_PATH" )
