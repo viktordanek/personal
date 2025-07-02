@@ -2607,7 +2607,7 @@
                                                                                                                         SATISFACTORY=""
                                                                                                                         while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
                                                                                                                         do
-                                                                                                                            read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                            read -rp "Was the run satisfactory? y/n " SATISFACTORY
                                                                                                                         done
                                                                                                                         if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                         then
@@ -2616,7 +2616,7 @@
                                                                                                                             if [[ ! -z "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
                                                                                                                             then
                                                                                                                                 git -C /var/lib/workspaces/repository/personal diff origin/main
-                                                                                                                                read -p "Describe the changes in personal:  " CHANGES
+                                                                                                                                read -rp "Describe the changes in personal:  " CHANGES
                                                                                                                                 git -C /var/lib/workspaces/repository/personal reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
@@ -2626,7 +2626,7 @@
                                                                                                                             if [[ ! -z "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
                                                                                                                             then
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets diff origin/main
-                                                                                                                                read -p "Describe the changes in personal:  " CHANGES
+                                                                                                                                read -rp "Describe the changes in personal:  " CHANGES
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets reset --soft origin/main
                                                                                                                                 git -C /var/lib/workspaces/repository/secrets commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
@@ -2648,13 +2648,13 @@
                                                                                                                                 SATISFACTORY=""
                                                                                                                                 while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                 do
-                                                                                                                                    read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                                    read -rp "Was the run satisfactory? y/n " SATISFACTORY
                                                                                                                                 done
                                                                                                                                 if [[ "$SATISFACTORY" != "y" ]]
                                                                                                                                 then
                                                                                                                                     git -C /var/lib/workspaces/repository/private fetch origin development
                                                                                                                                     git -C /var/lib/workspaces/repository/private diff origin/development
-                                                                                                                                    read -p "Success Message:  " MESSAGE
+                                                                                                                                    read -rp "Success Message:  " MESSAGE
                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
                                                                                                                                     SCRATCH="scratch/$( uuidgen )"
                                                                                                                                     git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
@@ -2668,7 +2668,7 @@
                                                                                                                                         SATISFACTORY=""
                                                                                                                                         while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                         do
-                                                                                                                                            read -p "Was the run satisfactory? y/n " SATISFACTORY
+                                                                                                                                            read -rp "Was the run satisfactory? y/n " SATISFACTORY
                                                                                                                                         done
                                                                                                                                         if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                         then
@@ -2686,11 +2686,11 @@
                                                                                                                                                 SATISFACTORY=""
                                                                                                                                                 while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                                 do
-                                                                                                                                                    read -p "Was the switch satisfactory? y/n " SATISFACTORY
+                                                                                                                                                    read -rp "Was the switch satisfactory? y/n " SATISFACTORY
                                                                                                                                                 done
                                                                                                                                                 if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                                 then
-                                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                                    read -rp "Details:  " DETAILS
                                                                                                                                                     MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
                                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                                     git -C /var/lib/workspaces/repository/private fetch origin main
@@ -2702,7 +2702,7 @@
                                                                                                                                                     exit 0
                                                                                                                                                 elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                 then
-                                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                                    read -rp "Details:  " DETAILS
                                                                                                                                                     MESSAGE="The private repository ran unsatisfactory on switch at $CURRENT_TIME:  $DETAILS:"
                                                                                                                                                     echo "$MESSAGE"
                                                                                                                                                     exit 64
@@ -2714,7 +2714,7 @@
                                                                                                                                                 exit 64
                                                                                                                                             fi
                                                                                                                                         else
-                                                                                                                                            read -p "Details:  " DETAILS
+                                                                                                                                            read -rp "Details:  " DETAILS
                                                                                                                                             MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
                                                                                                                                             git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                             echo "$MESSAGE"
@@ -2728,7 +2728,7 @@
                                                                                                                                     fi
                                                                                                                                 elif [[ "$SATISFACTORY" != "n" ]]
                                                                                                                                 then
-                                                                                                                                    read -p "Details:  " DETAILS
+                                                                                                                                    read -rp "Details:  " DETAILS
                                                                                                                                     MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
                                                                                                                                     git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                                     echo "$MESSAGE"
@@ -2742,7 +2742,7 @@
                                                                                                                             fi
                                                                                                                         elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                         then
-                                                                                                                            read -p "Details:  " DETAILS
+                                                                                                                            read -rp "Details:  " DETAILS
                                                                                                                             MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
                                                                                                                             git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
                                                                                                                             echo "$MESSAGE"
