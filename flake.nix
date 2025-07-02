@@ -1996,12 +1996,6 @@
                                                                                                                         ''
                                                                                                                             WORK_DIRECTORY="$( pwd )"
                                                                                                                             cd "$( mktemp --directory )"
-                                                                                                                            id -u >&2
-                                                                                                                            echo
-                                                                                                                            echo >&2
-                                                                                                                            echo 'tar --create --ignore-failed-read --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 -o "$( mktemp --suffix=.tar.zstd )"' >&2
-                                                                                                                            echo
-                                                                                                                            echo >&2
                                                                                                                             tar --create --file=- "$WORK_DIRECTORY" | zstd --long=19 --threads=1 -o "$( mktemp --dry-run --suffix=.tar.zstd )"
                                                                                                                             if [[ -z "$WORK_DIRECTORY" ]] || [[ "$WORK_DIRECTORY" == "/" ]]
                                                                                                                             then
