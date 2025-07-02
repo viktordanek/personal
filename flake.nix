@@ -19,6 +19,7 @@
                                 { config , lib , pkgs , ... } :
                                     let
                                         current-time = builtins.toString ( builtins.import config.personal.current-time ) ;
+                                        epoch = builtins.substring 0 16 ( builtins.hashString "sha512" ( builtins.import config.personal.current-time ) ) ;
                                         dependencies =
                                             let
                                                 list =
@@ -1479,9 +1480,9 @@
                                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
                                                                                                                             git init 2>&1
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.email }
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1512,11 +1513,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/calcurse" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/calcurse" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/calcurse" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/calcurse" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/calcurse" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1536,9 +1537,9 @@
                                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
                                                                                                                             git init 2>&1
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.email }
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1569,11 +1570,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/chromium" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/chromium" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/chromium" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/chromium" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/chromium" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1584,7 +1585,7 @@
                                                                                         requires = [ "secrets.service" ] ;
                                                                                         serviceConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/dot-gnupg" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                                 ExecStart =
                                                                                                     let
                                                                                                         application =
@@ -1598,19 +1599,19 @@
                                                                                                                             export GNUPGHOME
                                                                                                                             mkdir --parents "$GNUPGHOME"
                                                                                                                             chmod 0700 "$GNUPGHOME"
-                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import /var/lib/workspaces/secrets/secret-keys.asc 2>&1
-                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/workspaces/secrets/ownertrust.asc 2>&1
+                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import /var/lib/workspaces/${ epoch }/secrets/secret-keys.asc 2>&1
+                                                                                                                            gpg --batch --yes --homedir "$GNUPGHOME" --import-ownertrust /var/lib/workspaces/${ epoch }/secrets/ownertrust.asc 2>&1
                                                                                                                             gpg --batch --yes --homedir "$GNUPGHOME" --update-trustdb 2>&1
                                                                                                                         '' ;
                                                                                                                 } ;
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/dot-gnupg" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/dot-gnupg" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/dot-gnupg" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-gnupg" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
@@ -1630,7 +1631,7 @@
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             git init
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.email }
                                                                                                                             git config user.name "${ config.personal.name }"
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks
@@ -1642,11 +1643,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/dot-password-store" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/dot-password-store" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/dot-password-store" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-password-store" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1669,14 +1670,14 @@
                                                                                                                             cat > config <<EOF
                                                                                                                             HostName github.com
                                                                                                                             Host github.com
-                                                                                                                            IdentityFile /var/lib/workspaces/secrets/dot-ssh/boot/identity.asc
-                                                                                                                            UserKnownHostsFile /var/lib/workspaces/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
                                                                                                                             StrictHostKeyChecking true
 
                                                                                                                             HostName 192.168.1.202
                                                                                                                             Host mobile
-                                                                                                                            IdentityFile /var/lib/workspaces/secrets/dot-ssh/boot/identity.asc
-                                                                                                                            UserKnownHostsFile /var/lib/workspaces/secrets/dot-ssh/boot/known-hosts.asc
+                                                                                                                            IdentityFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/identity.asc
+                                                                                                                            UserKnownHostsFile /var/lib/workspaces/${ epoch }/secrets/dot-ssh/boot/known-hosts.asc
                                                                                                                             StrictHostKeyChecking true
                                                                                                                             Port 202
                                                                                                                             EOF
@@ -1686,11 +1687,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/dot-ssh" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/dot-ssh" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/dot-ssh" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/dot-ssh" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
@@ -1709,9 +1710,9 @@
                                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
                                                                                                                             git init 2>&1
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.email }
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1742,11 +1743,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/jrnl" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/jrnl" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/jrnl" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/jrnl" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1766,9 +1767,9 @@
                                                                                                                     runtimeInputs = [ pkgs.age pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.gnupg ] ;
                                                                                                                     text =
                                                                                                                         ''
-                                                                                                                            export GNUPGHOME=/var/lib/workspaces/dot-gnupg
+                                                                                                                            export GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
                                                                                                                             git init 2>&1
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.email }
                                                                                                                             git config user.name "${ config.personal.description }"
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1800,11 +1801,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/ledger" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/ledger" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/ledger" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/ledger" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1825,7 +1826,7 @@
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             git init
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.name }
                                                                                                                             git config user.name ${ config.personal.email }
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1838,11 +1839,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/repository/private" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/private" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/repository/private" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/private" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1863,7 +1864,7 @@
                                                                                                                     text =
                                                                                                                         ''
                                                                                                                             git init
-                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/dot-ssh/config"
+                                                                                                                            git config core.sshCommand "${ pkgs.openssh }/bin/ssh -F /var/lib/workspaces/${ epoch }/dot-ssh/config"
                                                                                                                             git config user.email ${ config.personal.name }
                                                                                                                             git config user.name ${ config.personal.email }
                                                                                                                             ln --symbolic ${ post-commit } .git/hooks/post-commit
@@ -1876,11 +1877,11 @@
                                                                                                         in "${ application }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/repository/secrets" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/repository/secrets" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/repository/secrets" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/repository/secrets" ;
                                                                                             } ;
                                                                                         wants = [ "network-online.target" ] ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
@@ -1919,11 +1920,11 @@
                                                                                                         in "${ derivation }/bin/application" ;
                                                                                                 StateDirectory = "workspaces/secrets" ;
                                                                                                 User = config.personal.name ;
-                                                                                                WorkingDirectory = "/var/lib/workspaces/secrets" ;
+                                                                                                WorkingDirectory = "/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
                                                                                         unitConfig =
                                                                                             {
-                                                                                                ConditionPathExists = "!/var/lib/workspaces/secrets" ;
+                                                                                                ConditionPathExists = "!/var/lib/workspaces/${ epoch }/secrets" ;
                                                                                             } ;
                                                                                         wantedBy = [ "multi-user.target" ] ;
                                                                                     } ;
@@ -2235,8 +2236,8 @@
                                                                                             '' ;
                                                                                             in
                                                                                                 ''
-                                                                                                    GNUPGHOME=/var/lib/workspaces/dot-gnupg
-                                                                                                    PASSWORD_STORE_DIR=/var/lib/workspaces/dot-password-store
+                                                                                                    GNUPGHOME=/var/lib/workspaces/${ epoch }/dot-gnupg
+                                                                                                    PASSWORD_STORE_DIR=/var/lib/workspaces/${ epoch }/dot-password-store
                                                                                                     PASSWORD_STORE_GPG_OPTS="--homedir $GNUPGHOME"
                                                                                                     mkdir --parents $out/bin
                                                                                                     makeWrapper \
@@ -2360,8 +2361,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/calcurse add config data
-                                                                                                            git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     calcurse -C "$XDG_CONFIG_HOME" -D "$XDG_DATA_HOME" "$@"
@@ -2373,8 +2374,8 @@
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/calcurse \
                                                                                                     --set CALCURSE_EDITOR ${ pkgs.micro }/bin/micro \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/calcurse/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/calcurse/data \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/calcurse/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/calcurse/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
                                                                                             '' ;
                                                                                     name = "calcurse" ;
@@ -2390,8 +2391,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/calcurse add config data
-                                                                                                            git -C /var/lib/workspaces/calcurse commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/calcurse commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     calcurse -C "$XDG_CONFIG_HOME" -D "$XDG_DATA_HOME" "$@"
@@ -2403,8 +2404,8 @@
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/calcurse \
                                                                                                     --set CALCURSE_EDITOR ${ pkgs.micro }/bin/micro \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/calcurse/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/calcurse/data \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/calcurse/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/calcurse/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.calcurse ] }
                                                                                             '' ;
                                                                                     name = "calcurse" ;
@@ -2421,8 +2422,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/chromium add config data
-                                                                                                            git -C /var/lib/workspaces/chromium commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     chromium "$@"
@@ -2433,8 +2434,8 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/chromium \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/chromium/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/chromium/data \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/chromium/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/chromium/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.chromium ] }
                                                                                             '' ;
                                                                                     name = "chromium" ;
@@ -2451,8 +2452,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/jrnl add config data
-                                                                                                            git -C /var/lib/workspaces/jrnl commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/jrnl add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/jrnl commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     jrnl "$@"
@@ -2463,8 +2464,8 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/jrnl \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/jrnl/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/jrnl/data \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/jrnl/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/jrnl/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.jrnl pkgs.micro ] }
                                                                                             '' ;
                                                                                     name = "jrnl" ;
@@ -2480,8 +2481,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/chromium add config data
-                                                                                                            git -C /var/lib/workspaces/chromium commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/chromium commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     chromium "$@"
@@ -2492,8 +2493,8 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/chromium \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/chromium/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/chromium/data \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/chromium/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/chromium/data \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.git pkgs.git-crypt pkgs.chromium ] }
                                                                                             '' ;
                                                                                     name = "chromium" ;
@@ -2510,8 +2511,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/ledger add config data
-                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     touch "$LEDGER_FILE"
@@ -2530,8 +2531,8 @@
                                                                                                 ''
                                                                                                     cleanup ( )
                                                                                                         {
-                                                                                                            git -C /var/lib/workspaces/ledger add config data
-                                                                                                            git -C /var/lib/workspaces/ledger commit -am "" --allow-empty --allow-empty-message
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger add config data
+                                                                                                            git -C /var/lib/workspaces/${ epoch }/ledger commit -am "" --allow-empty --allow-empty-message
                                                                                                         }
                                                                                                     trap cleanup EXIT
                                                                                                     touch "$LEDGER_FILE"
@@ -2557,16 +2558,16 @@
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "script" script } \
                                                                                                     $out/bin/ledger \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
-                                                                                                    --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/${ epoch }/ledger/data/${ config.personal.ledger.file } \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
                                                                                                 makeWrapper \
                                                                                                     ${ pkgs.writeShellScript "open" open } \
                                                                                                     $out/bin/open-account \
-                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/ledger/config \
-                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/ledger/data \
-                                                                                                    --set LEDGER_FILE /var/lib/workspaces/ledger/data/${ config.personal.ledger.file } \
+                                                                                                    --set XDG_CONFIG_HOME /var/lib/workspaces/${ epoch }/ledger/config \
+                                                                                                    --set XDG_DATA_HOME /var/lib/workspaces/${ epoch }/ledger/data \
+                                                                                                    --set LEDGER_FILE /var/lib/workspaces/${ epoch }/ledger/data/${ config.personal.ledger.file } \
                                                                                                     --set PATH ${ pkgs.lib.makeBinPath [ pkgs.bashInteractive pkgs.coreutils pkgs.git pkgs.git-crypt pkgs.glibcLocales pkgs.gnumake pkgs.ledger pkgs.less ] }
                                                                                             '' ;
                                                                                     name = "ledger" ;
@@ -2587,20 +2588,20 @@
                                                                                                         text =
                                                                                                             ''
                                                                                                                 CURRENT_TIME="$( date +%s )"
-                                                                                                                echo "$CURRENT_TIME" > /var/lib/workspaces/repository/private/current-time.nix
-                                                                                                                git -C /var/lib/workspaces/repository/personal commit -am "$CURRENT_TIME" --allow-empty
-                                                                                                                git -C /var/lib/workspaces/repository/personal rev-parse HEAD > /var/lib/workspaces/repository/private/personal.hash
-                                                                                                                git -C /var/lib/workspaces/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
-                                                                                                                git -C /var/lib/workspaces/repository/secrets rev-parse HEAD > /var/lib/workspaces/repository/secrets.hash
-                                                                                                                if ! nix flake check --override-input personal /var/lib/workspaces/repository/personal --override-input secrets /var/lib/workspaces/repository/secrets /var/lib/workspaces/repository/private
+                                                                                                                echo "$CURRENT_TIME" > /var/lib/workspaces/${ epoch }/repository/private/current-time.nix
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal rev-parse HEAD > /var/lib/workspaces/${ epoch }/repository/private/personal.hash
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets commit -am "$CURRENT_TIME" --allow-empty
+                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets rev-parse HEAD > /var/lib/workspaces/${ epoch }/repository/secrets.hash
+                                                                                                                if ! nix flake check --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                 then
                                                                                                                     MESSAGE="The private repository failed checks at $CURRENT_TIME"
-                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                     echo "$MESSAGE"
                                                                                                                     exit 64
                                                                                                                 fi
                                                                                                                 rm --force nixos.qcow2 result
-                                                                                                                if nixos-rebuild build-vm --override-input personal /var/lib/workspaces/repository/personal --override-input secrets /var/lib/workspaces/repository/secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                if nixos-rebuild build-vm --override-input personal /var/lib/workspaces/${ epoch }/repository/personal --override-input secrets /var/lib/workspaces/${ epoch }/repository/secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                 then
                                                                                                                     if result/bin/run-nixos-vm
                                                                                                                     then
@@ -2611,35 +2612,35 @@
                                                                                                                         done
                                                                                                                         if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                         then
-                                                                                                                            git -C /var/lib/workspaces/repository/personal checkout -b "scratch/$( uuidgen )"
-                                                                                                                            git -C /var/lib/workspaces/repository/personal fetch origin main
-                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]]
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/personal checkout -b "scratch/$( uuidgen )"
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/personal fetch origin main
+                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]]
                                                                                                                             then
-                                                                                                                                git -C /var/lib/workspaces/repository/personal diff origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main
                                                                                                                                 read -rp "Describe the changes in personal:  " CHANGES
-                                                                                                                                git -C /var/lib/workspaces/repository/personal reset --soft origin/main
-                                                                                                                                git -C /var/lib/workspaces/repository/personal commit -am "$CHANGES"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal reset --soft origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/personal commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
                                                                                                                             fi
-                                                                                                                            git -C /var/lib/workspaces/repository/secrets checkout -b "scratch/$( uuidgen )"
-                                                                                                                            git -C /var/lib/workspaces/repository/secrets fetch origin main
-                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/secrets checkout -b "scratch/$( uuidgen )"
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/secrets fetch origin main
+                                                                                                                            if [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
                                                                                                                             then
-                                                                                                                                git -C /var/lib/workspaces/repository/secrets diff origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main
                                                                                                                                 read -rp "Describe the changes in personal:  " CHANGES
-                                                                                                                                git -C /var/lib/workspaces/repository/secrets reset --soft origin/main
-                                                                                                                                git -C /var/lib/workspaces/repository/secrets commit -am "$CHANGES"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets reset --soft origin/main
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/secrets commit -am "$CHANGES"
                                                                                                                                 # gh pr create --title "Add feature X" --body "This adds feature X to fix issue Y." --base main --head my-feature-branch
                                                                                                                             fi
                                                                                                                             rm result
-                                                                                                                            while [[ -n "$( git -C /var/lib/workspaces/repository/personal diff origin/main )" ]] && [[ -n "$( git -C /var/lib/workspaces/repository/secrets diff origin/main )" ]]
+                                                                                                                            while [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/personal diff origin/main )" ]] && [[ -n "$( git -C /var/lib/workspaces/${ epoch }/repository/secrets diff origin/main )" ]]
                                                                                                                             do
                                                                                                                                 sleep 1s
                                                                                                                             done
-                                                                                                                            if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/repository/private
+                                                                                                                            if ! nixos-rebuild build-vm-with-bootloader --update-vm personal --update-vm secrets --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                             then
                                                                                                                                 MESSAGE="The private repository failed to build the vm with bootloader from github sources at $CURRENT_TIME"
-                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                 echo "$MESSAGE"
                                                                                                                                 exit 64
                                                                                                                             fi
@@ -2652,18 +2653,18 @@
                                                                                                                                 done
                                                                                                                                 if [[ "$SATISFACTORY" != "y" ]]
                                                                                                                                 then
-                                                                                                                                    git -C /var/lib/workspaces/repository/private fetch origin development
-                                                                                                                                    git -C /var/lib/workspaces/repository/private diff origin/development
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin development
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private diff origin/development
                                                                                                                                     read -rp "Success Message:  " MESSAGE
-                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "DEVELOPMENT SUCCESS AT $CURRENT_TIME:  $MESSAGE"
                                                                                                                                     SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
-                                                                                                                                    git -C /var/lib/workspaces/repository/private reset origin/development
-                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout development
-                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase origin/development
-                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private checkout -b "$SCRATCH"
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private reset origin/development
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private checkout development
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/development
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$SCRATCH"
                                                                                                                                     git -C /var/lib/workspacews
-                                                                                                                                    if sudo nixos-rebuild test --flake /var/lib/workspaces/repository/private
+                                                                                                                                    if sudo nixos-rebuild test --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                                     then
                                                                                                                                         SATISFACTORY=""
                                                                                                                                         while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
@@ -2672,16 +2673,16 @@
                                                                                                                                         done
                                                                                                                                         if [[ "$SATISFACTORY" == "y" ]]
                                                                                                                                         then
-                                                                                                                                            git -C /var/lib/workspaces/repository/private fetch origin main
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin main
                                                                                                                                             SCRATCH="scratch/$( uuidgen )"
-                                                                                                                                            git -C /var/lib/workspaces/repository/private fetch origin development
-                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout -b "$SCRATCH"
-                                                                                                                                            git -C /var/lib/workspaces/repository/private reset --soft origin/development
-                                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout origin/development
-                                                                                                                                            git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
-                                                                                                                                            git -C /var/lib/workspaces/repository/private checkout -b "scratch/$( uuidgen )"
-                                                                                                                                            if sudo nixos-rebuild switch --flake /var/lib/workspaces/repository/private
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin development
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout -b "$SCRATCH"
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private reset --soft origin/development
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout origin/development
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$SCRATCH"
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private checkout -b "scratch/$( uuidgen )"
+                                                                                                                                            if sudo nixos-rebuild switch --flake /var/lib/workspaces/${ epoch }/repository/private
                                                                                                                                             then
                                                                                                                                                 SATISFACTORY=""
                                                                                                                                                 while [[ "$SATISFACTORY" != "y" ]] && [[ "$SATISFACTORY" != "n" ]]
@@ -2692,13 +2693,13 @@
                                                                                                                                                 then
                                                                                                                                                     read -rp "Details:  " DETAILS
                                                                                                                                                     MESSAGE="The promotion was successful on switch at $CURRENT_TIME:  $DETAILS"
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private fetch origin main
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private reset --soft origin/main
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private checkout main
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase origin/main
-                                                                                                                                                    git -C /var/lib/workspaces/repository/private rebase "$SCRATCH"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private fetch origin main
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private reset --soft origin/main
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private checkout main
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase origin/main
+                                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private rebase "$SCRATCH"
                                                                                                                                                     exit 0
                                                                                                                                                 elif [[ "$SATISFACTORY" == "n" ]]
                                                                                                                                                 then
@@ -2709,20 +2710,20 @@
                                                                                                                                                 fi
                                                                                                                                             else
                                                                                                                                                 MESSAGE="The private repository failed to build switch at $CURRENT_TIME"
-                                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                                 echo "$MESSAGE"
                                                                                                                                                 exit 64
                                                                                                                                             fi
                                                                                                                                         else
                                                                                                                                             read -rp "Details:  " DETAILS
                                                                                                                                             MESSAGE="The private repository ran unsatisfactory on development at $CURRENT_TIME:  $DETAILS"
-                                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                             echo "$MESSAGE"
                                                                                                                                             exit 64
                                                                                                                                         fi
                                                                                                                                     else
                                                                                                                                         MESSAGE="The private repository failed to build development at $CURRENT_TIME"
-                                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                        git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                         echo "$MESSAGE"
                                                                                                                                         exit 64
                                                                                                                                     fi
@@ -2730,13 +2731,13 @@
                                                                                                                                 then
                                                                                                                                     read -rp "Details:  " DETAILS
                                                                                                                                     MESSAGE="The private repository ran unsatisfactory from github at $CURRENT_TIME: $DETAILS"
-                                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                     echo "$MESSAGE"
                                                                                                                                     exit 64
                                                                                                                                 fi
                                                                                                                             else
                                                                                                                                 MESSAGE="The private repository failed to run the vm with bootloader from github sources at $CURRENT_TIME"
-                                                                                                                                git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                                git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                                 echo "$MESSAGE"
                                                                                                                                 exit 64
                                                                                                                             fi
@@ -2744,19 +2745,19 @@
                                                                                                                         then
                                                                                                                             read -rp "Details:  " DETAILS
                                                                                                                             MESSAGE="The private repository ran unsatisfactory from local sources at $CURRENT_TIME:  $DETAILS"
-                                                                                                                            git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                            git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                             echo "$MESSAGE"
                                                                                                                             exit 64
                                                                                                                         fi
                                                                                                                     else
                                                                                                                         MESSAGE="The private repository failed to run the vm from local sources at $CURRENT_TIME"
-                                                                                                                        git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                        git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                         echo "$MESSAGE"
                                                                                                                         exit 64
                                                                                                                     fi
                                                                                                                 else
                                                                                                                     MESSAGE="The private repository failed to build the vm from local sources at $CURRENT_TIME"
-                                                                                                                    git -C /var/lib/workspaces/repository/private commit -am "$MESSAGE"
+                                                                                                                    git -C /var/lib/workspaces/${ epoch }/repository/private commit -am "$MESSAGE"
                                                                                                                     echo "$MESSAGE"
                                                                                                                     exit 64
                                                                                                                 fi
@@ -2767,7 +2768,7 @@
                                                                                                     makeWrapper \
                                                                                                         ${ pkgs.jetbrains.idea-community }/bin/idea-community \
                                                                                                         $out/bin/idea-community \
-                                                                                                        --add-flags /var/lib/workspaces/repository/private \
+                                                                                                        --add-flags /var/lib/workspaces/${ epoch }/repository/private \
                                                                                                         --set LD_LIBRARY_PATH pkgs.e2fsprogs \
                                                                                                         --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git promote ] }
                                                                                                 '' ;
@@ -2785,7 +2786,7 @@
                                                                                             makeWrapper \
                                                                                                 ${ pkgs.jetbrains.idea-community }/bin/idea-community \
                                                                                                 $out/bin/repository-secrets \
-                                                                                                --add-flags /var/lib/workspaces/repository/secrets \
+                                                                                                --add-flags /var/lib/workspaces/${ epoch }/repository/secrets \
                                                                                                 --set PATH ${ pkgs.lib.makeBinPath [ pkgs.coreutils pkgs.git ] }
                                                                                         '' ;
                                                                                     name = "repository-secrets" ;
